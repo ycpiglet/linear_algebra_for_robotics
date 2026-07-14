@@ -1,0 +1,17 @@
+# Core scientific-computing environment
+jupyterlab
+numpy
+scipy
+sympy
+matplotlib
+plotly
+ipywidgets
+networkx
+pytest
+
+# Install later, when the corresponding course part begins:
+# jax              # Matrix calculus and automatic differentiation
+# torch            # Optional autodiff comparison
+# cvxpy            # Convex optimization
+# casadi           # Nonlinear optimization and optimal control
+# pytransform3d    # SO(3)/SE(3) visualization and transformations
