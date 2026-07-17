@@ -1,0 +1,109 @@
+---
+id: foundations.change_accumulation
+title: "변화율과 누적량: 미분·적분의 공학적 직관"
+aliases: ["derivative and integral", "미분과 적분", "변화율과 누적"]
+domain: foundations
+one_line: "미분은 지금 얼마나 빠르게 변하는지, 적분은 지금까지 얼마나 쌓였는지를 나타낸다."
+difficulty: 1
+summary: "시간에 따른 기울기와 누적을 위치·속도와 sampling 예제로 설명하고, 차분·합 근사에서 단위와 잡음 문제를 짚는다."
+reading_time: {quick: "4분", core: "20분", full: "40분"}
+prerequisites:
+  intuition: {required: [], helpful: [], not_required: []}
+  application: {required: [], helpful: [], not_required: []}
+  derivation: {required: [], helpful: [], not_required: []}
+  proof:
+    required: []
+    helpful: []
+    not_required: []
+  teaching:
+    required: []
+    helpful: []
+    not_required: []
+relations:
+  requires: []
+  helpful: []
+  derived_from: []
+  deepens: [control.pid, systems.state_space]
+  contrasts_with: []
+  same_structure_as: []
+  used_in: [control.pid, systems.state_space, estimation.kalman_filter]
+review:
+  prompts:
+    - "미분과 적분을 변화율·누적량·단위로 설명할 수 있는가?"
+    - "이산 근사에서 sampling 간격이 필요한 이유를 설명할 수 있는가?"
+tags: [calculus, derivative, integral, sampling]
+---
+
+::: {.concept-hero}
+## 30초 핵심
+
+- **미분** $\dot x$: 아주 짧은 시간 동안 $x$가 얼마나 빨리 변하는가.
+- **적분** $\int x\,dt$: 시간에 따라 $x$가 얼마나 누적되었는가.
+- 컴퓨터에서는 연속시간 식을 그대로 계산하지 않고 sampling 간격 $\Delta t$를 포함한 차분과 합으로 근사한다.
+:::
+
+:::: {.depth-intuition}
+## 먼저 떠올릴 이미지
+
+자동차의 위치가 $x(t)$라면 속도는 그래프의 순간 기울기 $\dot x(t)$이고, 속도계 값을 시간 동안 쌓으면 이동거리 변화 $\int v(t)dt$가 된다. “기울기”와 “면적”이 변화율과 누적량의 기본 이미지다.
+
+## 작동하는 정의
+
+$$
+\dot x(t)=\lim_{h\to0}\frac{x(t+h)-x(t)}{h},\qquad
+x(t)-x(t_0)=\int_{t_0}^{t}\dot x(\tau)d\tau.
+$$
+sampling된 데이터 $x_k=x(k\Delta t)$에서는 흔히
+
+$$
+\dot x_k\approx\frac{x_k-x_{k-1}}{\Delta t},\qquad
+I_k\approx I_{k-1}+x_k\Delta t
+$$
+를 쓴다. 첫 식은 backward difference, 둘째 식은 rectangular integration의 한 형태다.
+
+::: {.callout-warning title="단위 검사는 가장 빠른 오류 탐지기"}
+$x$의 단위가 m이면 $\dot x$는 m/s이고, $\int x\,dt$는 m·s다. $\Delta t$를 빠뜨리면 sampling rate를 바꾸는 순간 알고리즘의 의미가 달라진다.
+:::
+
+## 가장 작은 예
+
+온도 오차가 0.1초 동안 $2^\circ\mathrm C$로 유지되면 누적 오차 증가는
+
+$$2^\circ\mathrm C\times0.1\,\mathrm s=0.2^\circ\mathrm C\,\mathrm s$$
+
+이다. 오차가 한 sample 사이에 $2^\circ\mathrm C$에서 $2.5^\circ\mathrm C$로 변했다면 변화율 근사는 $5^\circ\mathrm C/\mathrm s$다.
+::::
+
+:::: {.depth-application}
+## 전제 장부
+
+| 구분 | 내용 |
+|---|---|
+| 정확한 사실 | 미분의 극한 정의와 적분의 정의는 차분·합 근사와 같지 않다. |
+| 근사 | 유한한 $\Delta t$에서 차분을 미분 대신 사용했다. |
+| 가정 | sample 사이의 변화가 충분히 매끄럽고 $\Delta t$가 알려져 있다고 가정한다. |
+| 실패 조건 | 잡음이 크면 차분이 잡음을 크게 증폭한다. |
+::::
+
+:::: {.depth-proof}
+## 엄밀히 말하면
+
+미분과 적분이 서로를 되돌리는 관계는 미적분학의 기본정리와 그 가정에 의해 보장된다. 불연속, 충격, 측정 잡음이 있는 공학 신호에는 고전적 미분 가능성이 없을 수 있다. 이때 필터링된 미분, 약한 미분, 상태 추정 등 목적에 맞는 도구를 선택한다.
+::::
+
+## 어디에 쓰이는가
+
+- PID의 D항은 오차 변화율, I항은 오차 누적량을 사용한다.
+- 상태공간 모델 $\dot x=f(x,u)$은 상태 변화율을 기술한다.
+- 가속도 적분으로 속도·위치를 추정하지만 bias도 함께 누적된다.
+
+## 다음과 복귀
+
+- 제어 직관: [피드백](../control/feedback.qmd) → [PID](../control/pid.qmd)
+- 동역학 모델: [상태공간](../systems/state-space.qmd)
+
+## 회상 점검
+
+1. 위치·속도·가속도의 단위를 차례대로 적어 보라.
+2. $\Delta t=0.02$ s일 때 누적식에서 $\Delta t$를 빠뜨리면 어떤 일이 생기는가?
+3. 차분 미분이 센서 잡음에 민감한 이유를 말로 설명해 보라.

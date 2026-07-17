@@ -1,0 +1,171 @@
+---
+title: "증명: SIS Importance Weight 재귀"
+id: proof.sis-weight-recursion
+kind: proof
+domain: estimation
+one-line: "Path target와 sequential proposal의 factorization을 나누어 SIS incremental weight를 정확히 유도한다."
+difficulty: 4
+level: density
+dependencies:
+  - proof.importance-sampling-identity
+assumptions:
+  - "상태공간 target과 sequential proposal은 명시된 공통 product 기준측도에 대한 밀도를 갖는다."
+  - "Target support에서 proposal density가 양수이며 이 증명에는 resampling이 없다."
+proves:
+  - estimation.sequential-importance-sampling
+prerequisites:
+  proof:
+    required:
+      - concept: probability.importance-sampling
+        competency: derive
+        reason: target/proposal density ratio가 importance weight임을 사용한다.
+      - concept: estimation.bayes-filtering
+        competency: derive
+        reason: 상태공간모형의 joint factorization을 사용한다.
+---
+
+::: {.depth-proof}
+
+## Proof Contract
+
+### 상태공간과 표기
+
+관측 $y_{1:t}$는 고정한다. 공통 product 기준측도에 대한 density를 사용한다.
+
+$$
+\gamma_t(x_{0:t})
+=\mu_0(x_0)\prod_{s=1}^t
+f_s(x_s\mid x_{s-1})g_s(y_s\mid x_s)
+$$
+
+는 unnormalized path target이고,
+
+$$
+q_{0:t}(x_{0:t}\mid y_{1:t})
+=q_0(x_0)\prod_{s=1}^t
+q_s(x_s\mid x_{0:s-1},y_{1:s})
+$$
+
+는 실제 순차 표본생성 절차의 joint proposal density다.
+
+### 가정
+
+1. $0<\int\gamma_t(x_{0:t})dx_{0:t}<\infty$.
+2. 관심 target support에서 $q_{0:t}>0$.
+3. 각 factor의 density를 실제 표본점에서 평가할 수 있다.
+4. 이 증명에는 resampling이 없다.
+
+### 결론
+
+$$
+\widetilde w_t(x_{0:t})
+=\widetilde w_{t-1}(x_{0:t-1})
+\frac{f_t(x_t\mid x_{t-1})g_t(y_t\mid x_t)}
+{q_t(x_t\mid x_{0:t-1},y_{1:t})}.
+$$
+
+## 전체 유도
+
+Path-space unnormalized importance weight의 정의에서 시작한다.
+
+$$
+\widetilde w_t(x_{0:t})
+=\frac{\gamma_t(x_{0:t})}{q_{0:t}(x_{0:t}\mid y_{1:t})}.
+$$
+
+Target factorization의 마지막 항을 분리하면
+
+$$
+\gamma_t(x_{0:t})
+=\gamma_{t-1}(x_{0:t-1})
+f_t(x_t\mid x_{t-1})g_t(y_t\mid x_t).
+$$
+
+Proposal factorization의 마지막 항도 분리하면
+
+$$
+q_{0:t}(x_{0:t}\mid y_{1:t})
+=q_{0:t-1}(x_{0:t-1}\mid y_{1:t-1})
+q_t(x_t\mid x_{0:t-1},y_{1:t}).
+$$
+
+두 식을 weight 정의에 대입한다.
+
+$$
+\begin{aligned}
+\widetilde w_t(x_{0:t})
+&=\frac{
+\gamma_{t-1}(x_{0:t-1})
+f_t(x_t\mid x_{t-1})g_t(y_t\mid x_t)}{
+q_{0:t-1}(x_{0:t-1}\mid y_{1:t-1})
+q_t(x_t\mid x_{0:t-1},y_{1:t})}\\
+&=\underbrace{\frac{\gamma_{t-1}(x_{0:t-1})}
+{q_{0:t-1}(x_{0:t-1}\mid y_{1:t-1})}}
+_{\widetilde w_{t-1}(x_{0:t-1})}
+\frac{f_t(x_t\mid x_{t-1})g_t(y_t\mid x_t)}
+{q_t(x_t\mid x_{0:t-1},y_{1:t})}.
+\end{aligned}
+$$
+
+이것이 원하는 재귀다. $\square$
+
+## 초기 weight
+
+시각 0에 측정이 없다는 convention에서는
+
+$$
+\gamma_0(x_0)=\mu_0(x_0),
+\qquad
+\widetilde w_0(x_0)=\frac{\mu_0(x_0)}{q_0(x_0)}.
+$$
+
+시각 0의 측정 $y_0$를 포함하는 다른 convention에서는
+
+$$
+\gamma_0(x_0)=\mu_0(x_0)g_0(y_0\mid x_0)
+$$
+
+이므로 초기 weight에도 $g_0$가 들어간다. 두 convention은 모두 가능하지만 한 유도 안에서 섞으면 안 된다.
+
+## Transition proposal 따름정리
+
+$$
+q_t(x_t\mid x_{0:t-1},y_{1:t})
+=f_t(x_t\mid x_{t-1})
+$$
+
+로 선택하면 proposal이 양수인 곳에서 전이 density가 약분되어
+
+$$
+\widetilde w_t
+=\widetilde w_{t-1}g_t(y_t\mid x_t).
+$$
+
+이것이 [Bootstrap Particle Filter](../concepts/probability/bootstrap-particle-filter.qmd)의 likelihood weight가 나오는 이유다.
+
+## 빠뜨리기 쉬운 논리
+
+### 정규화 상수가 없는 이유
+
+$\gamma_t$의 정규화 상수 $p(y_{1:t})$는 모든 입자에 공통이므로 normalized weights
+
+$$
+W_t^{(i)}=\frac{\widetilde w_t^{(i)}}{\sum_j\widetilde w_t^{(j)}}
+$$
+
+에서 소거된다. 이것이 unnormalized target을 쓸 수 있는 이유다.
+
+### Resampling 이후에는 같은 식을 그대로 읽지 않는다
+
+Resampling을 넣으면 ancestor 선택도 표본생성 mechanism의 일부다. Resampling 직후 균등 weight로 reset하고 mutation potential을 적용하는 Feynman–Kac 표현으로 정리해야 한다. 과거 SIS weight를 유지하면서 또 resampling probability를 무시하면 proposal bookkeeping이 중복된다.
+
+### Proposal이 미래 관측을 쓰는 경우
+
+$q_t(x_t\mid x_{0:t-1},y_{1:T})$처럼 미래 관측까지 사용하는 offline proposal도 가능하지만, joint proposal factorization과 분모를 실제 샘플링 법칙에 맞춰 다시 써야 한다. 위 online 식을 그대로 복사하지 않는다.
+
+## 사용처
+
+- [Sequential Importance Sampling](../concepts/probability/sequential-importance-sampling.qmd)
+- [Bootstrap Particle Filter](../concepts/probability/bootstrap-particle-filter.qmd)
+
+:::

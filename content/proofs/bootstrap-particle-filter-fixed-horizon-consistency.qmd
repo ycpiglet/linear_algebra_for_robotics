@@ -1,0 +1,568 @@
+---
+title: "증명: 유한상태 Bootstrap Particle Filter의 고정-Horizon 일관성"
+id: proof.bootstrap-particle-filter-fixed-horizon-consistency
+kind: proof
+domain: estimation
+one-line: "유한 상태공간과 매-step multinomial resampling에서 Bootstrap Particle Filter의 empirical filtering distribution이 모든 고정 유한 horizon에서 참 filter로 확률수렴함을 증명한다."
+difficulty: 5
+level: finite
+dependencies:
+  - proof.elementary-finite-probability-lemmas
+  - proof.resampling-unbiasedness
+  - proof.sis-weight-recursion
+assumptions:
+  - "상태공간은 고정된 유한집합이고 관측열과 horizon은 고정한다."
+  - "초기분포와 transition matrix는 올바른 확률분포이며 likelihood는 비음수·유한하다."
+  - "각 true predictive likelihood normalizer는 양수다."
+  - "모든 시각에 multinomial resampling을 수행하고 transition prior를 proposal로 사용한다."
+proves:
+  - estimation.bootstrap-particle-filter
+prerequisites:
+  proof:
+    required:
+      - concept: estimation.bootstrap-particle-filter
+        competency: derive
+        reason: resample–propagate–weight convention을 사용한다.
+      - concept: estimation.resampling
+        competency: prove
+        reason: offspring empirical measure의 조건부 평균을 사용한다.
+      - concept: estimation.bayes-filtering
+        competency: derive
+        reason: 참 prediction–weighting 재귀와 비교한다.
+---
+
+::: {.depth-proof}
+
+## Proof Contract
+
+### 정확한 범위
+
+이 정리는 다음 한정된 명제를 증명한다.
+
+- 상태공간 $\mathsf X=\{1,\ldots,K\}$는 유한하고 $K$는 $N$과 함께 증가하지 않는다.
+- 관측 $y_{1:T}$와 horizon $T<\infty$를 고정한다.
+- 매 시각 multinomial resampling을 수행하는 resample–propagate–weight Bootstrap Particle Filter를 사용한다.
+- 입자 수 $N\to\infty$일 때 empirical filtering probability vector가 참 filtering vector로 **확률수렴**한다.
+
+일반 상태공간, $T\to\infty$의 time-uniform 안정성, almost-sure particle convergence, CLT, adaptive resampling은 이 정리의 결론이 아니다.
+
+## 참 Bayes filter
+
+초기 확률벡터를 $\pi_0=\mu_0$라 하고, 시각 $t$의 transition matrix를
+
+$$
+F_t(a,x)=P(X_t=x\mid X_{t-1}=a)
+$$
+
+라 한다. 각 행은 비음수이고 합이 1이다. 고정된 관측 $y_t$에 대한 likelihood를
+
+$$
+g_t(x)=p(y_t\mid X_t=x)\in[0,\infty)
+$$
+
+라 쓴다. True prediction, normalizer, update는
+
+$$
+\nu_t(x)=\sum_{a\in\mathsf X}\pi_{t-1}(a)F_t(a,x),
+$$
+
+$$
+c_t=\sum_{x\in\mathsf X}\nu_t(x)g_t(x)>0,
+$$
+
+$$
+\pi_t(x)=\frac{\nu_t(x)g_t(x)}{c_t}.
+$$
+
+$c_t>0$는 관측된 $y_t$가 true predictive model 아래 양의 확률 또는 밀도를 갖는다는 가정이다.
+
+## 증명할 입자 알고리즘
+
+각 $N$에 대해 다음 입자계를 만든다.
+
+### 초기화
+
+$$
+X_0^{(1)},\ldots,X_0^{(N)}
+\overset{iid}{\sim}\mu_0,
+\qquad
+W_0^{(i)}=\frac1N,
+\qquad
+\widehat\pi_0^N(x)
+=\sum_{i=1}^NW_0^{(i)}
+\mathbf1\{X_0^{(i)}=x\}.
+$$
+
+### 시각 $t\ge1$
+
+이전 입자계가 생성한 정보 전체를 $\mathcal F_{t-1}^N$라 한다.
+
+1. **Multinomial resampling**
+
+   조건부로 독립인 ancestor index를
+
+   $$
+   P(A_{t-1}^{(i)}=j\mid\mathcal F_{t-1}^N)
+   =W_{t-1}^{(j)}
+   $$
+
+   에서 뽑고
+
+   $$
+   \bar X_{t-1}^{(i)}=X_{t-1}^{(A_{t-1}^{(i)})}
+   $$
+
+   로 둔다. Resampled empirical vector는
+
+   $$
+   \widehat\rho_{t-1}^N(a)
+   =\frac1N\sum_{i=1}^N
+   \mathbf1\{\bar X_{t-1}^{(i)}=a\}.
+   $$
+
+   $\widehat\pi_{t-1}^N$가 이미 normalized weighted vector를 뜻하므로
+
+   $$
+   P(\bar X_{t-1}^{(i)}=a\mid\mathcal F_{t-1}^N)
+   =\widehat\pi_{t-1}^N(a).
+   $$
+
+2. **Transition propagation**
+
+   Resampled particles가 주어졌을 때 서로 조건부독립으로
+
+   $$
+   P(X_t^{(i)}=x\mid
+   \bar X_{t-1}^{(1:N)},\mathcal F_{t-1}^N)
+   =F_t(\bar X_{t-1}^{(i)},x)
+   $$
+
+   에서 뽑는다. Predictive empirical vector는
+
+   $$
+   \widehat\nu_t^N(x)
+   =\frac1N\sum_{i=1}^N\mathbf1\{X_t^{(i)}=x\}.
+   $$
+
+3. **Likelihood weighting**
+
+   $$
+   \widetilde W_t^{(i)}=g_t(X_t^{(i)}),
+   \qquad
+   \widehat c_t^N
+   =\frac1N\sum_{i=1}^N\widetilde W_t^{(i)}
+   =\sum_x\widehat\nu_t^N(x)g_t(x).
+   $$
+
+   $\widehat c_t^N>0$이면
+
+   $$
+   W_t^{(i)}
+   =\frac{\widetilde W_t^{(i)}}
+   {\sum_{j=1}^N\widetilde W_t^{(j)}},
+   \qquad
+   \widehat\pi_t^N(x)
+   =\sum_{i=1}^NW_t^{(i)}
+   \mathbf1\{X_t^{(i)}=x\}
+   =\frac{\widehat\nu_t^N(x)g_t(x)}
+   {\widehat c_t^N}.
+   $$
+
+   $\widehat c_t^N=0$이면 finite-$N$ 알고리즘은 normalization failure를 보고한다. 정리를 확률변수 전체에 대해 쓰기 위한 proof용 확장에서는 그 사건에 한해 $W_t^{(i)}=1/N$, $\widehat\pi_t^N=\widehat\nu_t^N$로 두고 이후 시각을 계속 정의한다. 이는 실제 구현이 실패를 숨기라는 뜻이 아니다. 아래에서 horizon 안의 실패확률이 0으로 감을 증명하므로 이 임시 확장은 극한에 영향을 주지 않는다.
+
+[SIS weight 재귀](sis-weight-recursion.qmd)에서 transition prior를 proposal로 두면 incremental weight가 $g_t$만 남으므로 위 weighting 식을 얻는다.
+
+## 정리
+
+위 가정 아래 모든 고정 $T<\infty$에 대해
+
+$$
+\max_{0\le t\le T}
+\left\|\widehat\pi_t^N-\pi_t\right\|_1
+\xrightarrow{p}0.
+$$
+
+또한 각 $1\le t\le T$에서
+
+$$
+\left\|\widehat\rho_{t-1}^N-\pi_{t-1}\right\|_1
+\xrightarrow{p}0,
+\qquad
+\left\|\widehat\nu_t^N-\nu_t\right\|_1
+\xrightarrow{p}0,
+$$
+
+이고
+
+$$
+P\left(\text{어떤 }t\le T\text{에서 }
+\widehat c_t^N=0\right)\longrightarrow0.
+$$
+
+따라서 모든 bounded 함수 $\varphi:\mathsf X\to\mathbb R$에 대해
+
+$$
+\sum_x\varphi(x)\widehat\pi_t^N(x)
+\xrightarrow{p}
+\sum_x\varphi(x)\pi_t(x).
+$$
+
+## 준비 보조정리: 조건부 empirical concentration
+
+Sigma-field $\mathcal G_N$이 주어졌을 때 $B_{N,1},\ldots,B_{N,N}$이 조건부독립 Bernoulli이고
+
+$$
+P(B_{N,i}=1\mid\mathcal G_N)=p_{N,i}
+$$
+
+라 하자. 다음 두 양을 둔다.
+
+$$
+\bar B_N=\frac1N\sum_{i=1}^NB_{N,i},
+\qquad
+\bar p_N=\frac1N\sum_{i=1}^Np_{N,i}.
+$$
+
+조건부 선형성으로
+
+$$
+\mathbb E[\bar B_N\mid\mathcal G_N]=\bar p_N.
+$$
+
+조건부독립 때문에 교차 공분산이 0이고
+
+$$
+\begin{aligned}
+\operatorname{Var}(\bar B_N\mid\mathcal G_N)
+&=\frac1{N^2}\sum_{i=1}^N
+p_{N,i}(1-p_{N,i})\\
+&\le\frac1{4N},
+\end{aligned}
+$$
+
+여기서 $p(1-p)\le1/4$를 사용했다. [조건부 Chebyshev 부등식](elementary-finite-probability-lemmas.qmd)으로
+
+$$
+P(|\bar B_N-\bar p_N|>\varepsilon
+\mid\mathcal G_N)
+\le\frac1{4N\varepsilon^2}.
+$$
+
+양변의 기댓값을 취하면 같은 unconditional bound를 얻으므로
+
+$$
+\bar B_N-\bar p_N\xrightarrow{p}0.
+$$
+
+이 보조정리는 각 Bernoulli의 성공확률이 서로 달라도 성립한다.
+
+## 전체 증명
+
+시각에 대한 induction을 사용한다.
+
+### 1. Base case $t=0$
+
+고정된 상태 $x$에 대해
+
+$$
+B_i=\mathbf1\{X_0^{(i)}=x\}
+$$
+
+는 i.i.d. Bernoulli$(\mu_0(x))$다. 방금 보조정리를 자명한 sigma-field에 적용하면
+
+$$
+\widehat\pi_0^N(x)-\mu_0(x)\xrightarrow{p}0.
+$$
+
+상태 수 $K$가 유한하므로 [유한 벡터의 성분수렴 보조정리](elementary-finite-probability-lemmas.qmd)에 의해
+
+$$
+\|\widehat\pi_0^N-\pi_0\|_1\xrightarrow{p}0.
+$$
+
+### 2. Induction hypothesis
+
+어떤 $t\ge1$에서
+
+$$
+\|\widehat\pi_{t-1}^N-\pi_{t-1}\|_1
+\xrightarrow{p}0
+$$
+
+라고 가정한다.
+
+### 3. Resampling step
+
+고정된 상태 $a$에 대해
+
+$$
+B_i=\mathbf1\{\bar X_{t-1}^{(i)}=a\}.
+$$
+
+$\mathcal F_{t-1}^N$로 조건을 주면 이들은 조건부 i.i.d. Bernoulli$(\widehat\pi_{t-1}^N(a))$다. 조건부 empirical concentration으로
+
+$$
+\widehat\rho_{t-1}^N(a)
+-\widehat\pi_{t-1}^N(a)
+\xrightarrow{p}0.
+$$
+
+Induction hypothesis와 삼각부등식을 쓰면
+
+$$
+\begin{aligned}
+|\widehat\rho_{t-1}^N(a)-\pi_{t-1}(a)|
+&\le
+|\widehat\rho_{t-1}^N(a)
+-\widehat\pi_{t-1}^N(a)|\\
+&\quad+
+|\widehat\pi_{t-1}^N(a)-\pi_{t-1}(a)|
+\xrightarrow{p}0.
+\end{aligned}
+$$
+
+유한 성분 보조정리를 다시 적용하여
+
+$$
+\|\widehat\rho_{t-1}^N-\pi_{t-1}\|_1
+\xrightarrow{p}0.
+$$
+
+### 4. Prediction/propagation step
+
+고정된 도착상태 $x$에 대해
+
+$$
+B_i=\mathbf1\{X_t^{(i)}=x\}.
+$$
+
+Resampled particles와 과거 전체로 조건을 주면 이 Bernoulli들은 조건부독립이고 성공확률은
+
+$$
+p_i=F_t(\bar X_{t-1}^{(i)},x)
+$$
+
+다. 그 평균은
+
+$$
+\frac1N\sum_{i=1}^Np_i
+=\sum_a\widehat\rho_{t-1}^N(a)F_t(a,x)
+=:(\widehat\rho_{t-1}^NF_t)(x).
+$$
+
+조건부 empirical concentration으로
+
+$$
+\widehat\nu_t^N(x)
+-(\widehat\rho_{t-1}^NF_t)(x)
+\xrightarrow{p}0.
+$$
+
+한편
+
+$$
+\begin{aligned}
+|(\widehat\rho_{t-1}^NF_t)(x)
+-(\pi_{t-1}F_t)(x)|
+&=\left|
+\sum_a(\widehat\rho_{t-1}^N(a)-\pi_{t-1}(a))
+F_t(a,x)\right|\\
+&\le\sum_a
+|\widehat\rho_{t-1}^N(a)-\pi_{t-1}(a)|
+F_t(a,x)\\
+&\le
+\|\widehat\rho_{t-1}^N-\pi_{t-1}\|_1
+\xrightarrow{p}0.
+\end{aligned}
+$$
+
+True prediction은 $\nu_t=\pi_{t-1}F_t$이므로 삼각부등식과 유한 성분 보조정리로
+
+$$
+\|\widehat\nu_t^N-\nu_t\|_1\xrightarrow{p}0.
+$$
+
+### 5. Normalizer convergence
+
+유한상태에서
+
+$$
+G_t=\max_xg_t(x)<\infty.
+$$
+
+따라서
+
+$$
+\begin{aligned}
+|\widehat c_t^N-c_t|
+&=\left|\sum_xg_t(x)
+(\widehat\nu_t^N(x)-\nu_t(x))\right|\\
+&\le G_t\|\widehat\nu_t^N-\nu_t\|_1
+\xrightarrow{p}0.
+\end{aligned}
+$$
+
+$c_t>0$이므로
+
+$$
+P(\widehat c_t^N\le c_t/2)
+\le
+P(|\widehat c_t^N-c_t|\ge c_t/2)
+\longrightarrow0.
+$$
+
+특히 $\{\widehat c_t^N=0\}\subseteq
+\{\widehat c_t^N\le c_t/2\}$이므로 normalization failure 확률도 0으로 간다.
+
+### 6. Weighting/update step
+
+사건
+
+$$
+E_N=\{\widehat c_t^N>c_t/2\}
+$$
+
+에서는 두 normalized vector가 모두 정의된다. 삼각부등식으로
+
+$$
+\begin{aligned}
+\|\widehat\pi_t^N-\pi_t\|_1
+&=\sum_x\left|
+\frac{g_t(x)\widehat\nu_t^N(x)}{\widehat c_t^N}
+-\frac{g_t(x)\nu_t(x)}{c_t}
+\right|\\
+&\le
+\frac{G_t}{\widehat c_t^N}
+\|\widehat\nu_t^N-\nu_t\|_1
++
+\sum_xg_t(x)\nu_t(x)
+\left|\frac1{\widehat c_t^N}-\frac1{c_t}\right|\\
+&\le
+\frac{2G_t}{c_t}
+\|\widehat\nu_t^N-\nu_t\|_1
++
+c_t\frac{|\widehat c_t^N-c_t|}
+{\widehat c_t^Nc_t}\\
+&\le
+\frac{2G_t}{c_t}
+\|\widehat\nu_t^N-\nu_t\|_1
++
+\frac{2}{c_t}|\widehat c_t^N-c_t|.
+\end{aligned}
+$$
+
+오른쪽은 확률수렴으로 0에 간다. 또한 $P(E_N^c)\to0$이므로 임의의 $\varepsilon>0$에 대해
+
+$$
+\begin{aligned}
+P(\|\widehat\pi_t^N-\pi_t\|_1>\varepsilon)
+&\le P(E_N^c)\\
+&\quad+
+P(\|\widehat\pi_t^N-\pi_t\|_1>\varepsilon,E_N)
+\longrightarrow0.
+\end{aligned}
+$$
+
+따라서 induction conclusion
+
+$$
+\|\widehat\pi_t^N-\pi_t\|_1\xrightarrow{p}0
+$$
+
+을 얻었다.
+
+### 7. 고정 horizon 전체
+
+Induction으로 각 $t=0,\ldots,T$에서 수렴한다. $T+1$개 시각은 유한하므로 union bound에 의해
+
+$$
+P\left(
+\max_{0\le t\le T}
+\|\widehat\pi_t^N-\pi_t\|_1>\varepsilon
+\right)
+\le
+\sum_{t=0}^T
+P(\|\widehat\pi_t^N-\pi_t\|_1>\varepsilon)
+\longrightarrow0.
+$$
+
+같은 union bound를 normalization failure 사건에 적용하면 horizon 내 어떤 failure라도 발생할 확률이 0으로 간다.
+
+마지막으로 $H=\max_x|\varphi(x)|<\infty$이므로
+
+$$
+\left|
+\sum_x\varphi(x)
+(\widehat\pi_t^N(x)-\pi_t(x))
+\right|
+\le H\|\widehat\pi_t^N-\pi_t\|_1
+\xrightarrow{p}0.
+$$
+
+정리의 모든 결론을 얻었다. $\square$
+
+## 조건부 unbiasedness만으로 일관성이 나오지 않는 이유
+
+[Resampling unbiasedness](resampling-unbiasedness.qmd)는
+
+$$
+\mathbb E[\widehat\rho^N(\varphi)\mid\mathcal F]
+=\widehat\pi^N(\varphi)
+$$
+
+를 보장한다. 그러나 평균이 맞는 것만으로 표본오차가 0으로 집중된다는 결론은 나오지 않는다.
+
+### 명시적 반례
+
+입력 weighted 입자에서 ancestor 하나
+
+$$
+J\sim\operatorname{Categorical}(W^{(1:N)})
+$$
+
+만 뽑고, 출력 $N$개를 전부 $x^{(J)}$의 복사본으로 만드는 scheme을 생각하자. Offspring count는
+
+$$
+N_i=N\mathbf1\{J=i\}
+$$
+
+이므로
+
+$$
+\mathbb E[N_i\mid\mathcal F]=NW_i.
+$$
+
+즉 조건부 unbiasedness는 정확히 만족한다. 하지만 출력 empirical measure는 항상 하나의 원자
+
+$$
+\widehat\rho^N=\delta_{x^{(J)}}
+$$
+
+이며, 두 상태에 weight가 각각 $1/2$로 남아 있는 경우에도 혼합분포로 집중하지 않는다. 이 scheme의 분산은 $N$이 커져도 사라지지 않는다.
+
+위 consistency 증명에서 multinomial resampling의
+
+$$
+\operatorname{Var}(\widehat\rho^N(a)\mid\mathcal F)
+\le\frac1{4N}
+$$
+
+가 반드시 필요했던 이유다. **조건부 unbiasedness는 평균 보존이고, consistency는 오차의 집중이다.**
+
+## 정확히 증명하지 않은 것
+
+- 일반 상태공간의 weak convergence
+- Multinomial 이외 scheme의 consistency
+- 고정 $N$에서 $T\to\infty$ 안정성
+- Likelihood normalizing-constant estimator의 unbiasedness
+- Particle genealogy와 smoothing consistency
+- Particle CLT와 asymptotic variance
+
+이 결과들을 사용할 때는 별도 가정과 증명이 필요하다.
+
+## 연결
+
+- [Bootstrap Particle Filter](../concepts/probability/bootstrap-particle-filter.qmd)
+- [Particle Filter 학습 경로](../paths/particle-filter.qmd)
+
+:::

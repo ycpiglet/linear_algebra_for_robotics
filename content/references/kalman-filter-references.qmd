@@ -1,0 +1,325 @@
+---
+title: "칼만 필터 장의 참고문헌과 제품 근거"
+toc: true
+---
+
+이 페이지는 [칼만 필터 본문](../concepts/estimation/kalman-filter.qmd)의 수학적 주장, 공개 구현,
+제품 사양을 서로 다른 근거 등급으로 분리한 **출처 감사표(source audit)**다. 온라인 자료의
+마지막 확인일은 별도 표기가 없으면 **2026-07-16**이다. 제품 가격과 소프트웨어의 기본값은
+바뀔 수 있으므로 확인일과 문서 버전을 함께 읽어야 한다.
+
+## 근거 등급과 읽는 법
+
+| 등급 | 뜻 | 본문에서 허용하는 표현 |
+|---|---|---|
+| 공식 확인 | 원 논문, 표준, 제조사 데이터시트·매뉴얼, 공식 소스 코드가 직접 밝힘 | “문서가 명시한다”, “이 버전의 API가 제공한다” |
+| 교재 모형 | 공개된 자료 형식·사양에 이 교재가 선형 상태공간 모형을 적용함 | “이 교재에서는 …로 모델링한다” |
+| 공개되지 않음 | 회사 내부 행렬·조정값·알고리즘을 1차 자료로 확인할 수 없음 | 사실 단정 금지, “공개 자료로 확인할 수 없다” |
+
+아래의 **위치**는 인쇄 쪽, 절, 식 번호 또는 고정된 커밋의 소스 줄을 가리킨다. PDF 뷰어의
+쪽 번호가 인쇄 쪽과 다르면 둘을 함께 적었다. **뒷받침 범위** 밖의 주장은 그 자료에서 추론하지
+않는다.
+
+## 1. 기본 교재와 원 논문
+
+1. **R. E. Kalman, “A New Approach to Linear Filtering and Prediction Problems,” 1960.**
+   *Journal of Basic Engineering*, 82(1), pp. 35–45,
+   [DOI 10.1115/1.3662552](https://doi.org/10.1115/1.3662552).
+
+   - **위치:** pp. 35–36 “Introduction”; pp. 40–41 “Solution of the Wiener Problem,”
+     Problem I와 식 (16)–(17), Theorem 3과 식 (21), (23), (26), (28)–(30),
+     Remark (h)의 Riccati 재귀 식 (32); pp. 44–45 Appendix.
+   - **본문에서 뒷받침:** 상태전이 모형, 비정상 과정에도 적용되는 재귀 추정, 오차 공분산
+     재귀, Wiener 문제와 상태공간 관점의 역사적 전환.
+   - **경계:** 현대의 입력 잡음과 측정 잡음을 모두 둔 표기, 조지프(Joseph) 형식, ROS 구현은
+     이 논문 하나가 직접 규정하지 않는다. [확인 2026-07-16]
+
+2. **Timothy D. Barfoot, *State Estimation for Robotics*, 2017.** Cambridge University
+   Press; 저자 공개 [교정본 PDF](https://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser17.pdf)
+   (교정 이력 2022-12-10까지).
+
+   - **위치:** §2.2 “Gaussian Probability Density Functions”; §3.1 “Batch
+     Discrete-Time Estimation”; §3.2.3 “Rauch–Tung–Striebel Smoother” (인쇄 p. 55부터);
+     §§3.3.2–3.3.7 “Kalman Filter” (인쇄 pp. 63–73); §§4.2.2–4.2.9
+     Bayes filter, EKF, particle filter, sigma-point filter.
+   - **본문에서 뒷받침:** 가우스 조건부 분포·최대사후확률(Maximum A Posteriori, MAP)·
+     최소제곱과 칼만 필터의 연결, 필터와 평활기의 구분, 비선형 확장으로 가는 학습 경로.
+   - **경계:** 이 교재의 Unitree 수치 예시나 특정 상용 제품의 내부 구현을 뒷받침하지 않는다.
+     [확인 2026-07-16]
+
+3. **Thomas Moore and Daniel Stouch, “A Generalized Extended Kalman Filter
+   Implementation for the Robot Operating System,” 2015.** *Intelligent Autonomous
+   Systems 13*, pp. 335–348,
+   [DOI 10.1007/978-3-319-08338-4_25](https://doi.org/10.1007/978-3-319-08338-4_25);
+   저자 프로젝트의 [개정 원고 PDF](https://github.com/cra-ros-pkg/robot_localization/blob/a63145ac904cc93ee553d0cfb8746406d1b4264d/doc/robot_localization_ias13_revised.pdf).
+
+   - **위치:** §II “Motivation”; §III.A “Extended Kalman Filter Algorithm,” 식 (1)–(7);
+     §IV와 Tables I–II; §V “Discussion.”
+   - **본문에서 뒷받침:** 여러 센서와 선택적 상태 성분을 융합하려는
+     `robot_localization`의 설계 동기, EKF 예측–보정과 조지프 공분산 갱신, 당시 실험의 범위.
+   - **경계:** 논문은 초기 ROS 구현을 설명한다. **현행 ROS 2 메시지·매개변수 계약은 아래의
+     현재 소스 코드로 확인한다.** [확인 2026-07-16]
+
+## 2. 표준·공식 기술 문서
+
+### ROS 단위·좌표계·메시지 계약
+
+1. **Tully Foote and Mike Purvis, [REP-103: Standard Units of Measure and Coordinate
+   Conventions](https://www.ros.org/reps/rep-0103.html).** ROS Enhancement Proposal,
+   Active/Informational, 2010-10-07 작성, 2014-12-31 후속 이력.
+
+   - **위치:** “SI units,” “Coordinate Frame Conventions,” “Axis Orientation,”
+     “Suffix Frames.”
+   - **본문에서 뒷받침:** 미터·초·라디안 계열 단위, 오른손 좌표계, 몸체축 $x$ 전방·$y$
+     좌측·$z$ 위, 지리 좌표의 동–북–상(East-North-Up, ENU) 관례.
+   - **경계:** 개별 센서의 실제 장착변환이나 보정값은 정하지 않는다. [확인 2026-07-16]
+
+2. **Wim Meeussen, [REP-105: Coordinate Frames for Mobile
+   Platforms](https://www.ros.org/reps/rep-0105.html).** ROS Enhancement Proposal,
+   Active/Informational, 2010-10-27.
+
+   - **위치:** “Coordinate Frames”의 `base_link`, `odom`, `map`, `earth`; “Relationship
+     between Frames”; “Frame Authorities.”
+   - **본문에서 뒷받침:** `odom`의 연속적이지만 누적 표류하는 성격, `map`의 전역 정확도와
+     불연속 보정 가능성, `earth → map → odom → base_link` 프레임 트리.
+   - **경계:** Unitree Go2에 장착된 L2의 수치 외부 보정값은 제공하지 않는다.
+     [확인 2026-07-16]
+
+3. **ROS 2 `common_interfaces`, [`sensor_msgs/msg/Imu.msg`](https://github.com/ros2/common_interfaces/blob/0a91a3f88fcaa24364da2392017c174a8fd69b6d/sensor_msgs/msg/Imu.msg#L1-L24).**
+   `sensor_msgs` 5.10.1, rolling 커밋
+   [`0a91a3f`](https://github.com/ros2/common_interfaces/commit/0a91a3f88fcaa24364da2392017c174a8fd69b6d),
+   2026-07-14.
+
+   - **위치:** 소스 L1–L13은 단위와 공분산의 특별값, L15–L24는 필드 정의.
+   - **본문에서 뒷받침:** `orientation`, `angular_velocity`, `linear_acceleration`과 각각의
+     $3\times3$ 행 우선 공분산; 가속도 단위 m/s², 각속도 단위 rad/s; 공분산 전부 0은
+     “알 수 없음,” 첫 원소 -1은 해당 추정치 없음이라는 계약.
+   - **경계:** 메시지에 값이 존재한다는 사실만으로 단위·프레임·공분산이 올바르거나 센서가
+     보정되었다고 보장하지 않는다. [확인 2026-07-16]
+
+4. **ROS 2 `common_interfaces`, [`sensor_msgs/msg/PointCloud2.msg`](https://github.com/ros2/common_interfaces/blob/0a91a3f88fcaa24364da2392017c174a8fd69b6d/sensor_msgs/msg/PointCloud2.msg#L1-L26).**
+   같은 `sensor_msgs` 5.10.1 커밋.
+
+   - **위치:** L1–L10 자료·프레임 설명, L11–L26 필드 정의.
+   - **본문에서 뒷받침:** 시간·프레임을 가진 조직화/비조직화 점군의 원시 컨테이너 형식.
+   - **경계:** `PointCloud2`는 그 자체로 자세·속도 측정이 아니다. 본문처럼 스캔 정합이나
+     라이다 오도메트리 전단부가 별도로 필요하다. [확인 2026-07-16]
+
+### `robot_localization`의 현행 입력 계약
+
+**`cra-ros-pkg/robot_localization` 공식 저장소**, 패키지 3.10.0,
+rolling-devel 커밋 [`a63145a`](https://github.com/cra-ros-pkg/robot_localization/commit/a63145ac904cc93ee553d0cfb8746406d1b4264d),
+2026-04-30.
+
+- **메시지 종류와 선택 벡터:** [`params/ekf.yaml` L74–L92](https://github.com/cra-ros-pkg/robot_localization/blob/a63145ac904cc93ee553d0cfb8746406d1b4264d/params/ekf.yaml#L74-L92)는
+  임의 개수의 `nav_msgs/Odometry`, `geometry_msgs/PoseWithCovarianceStamped`,
+  `geometry_msgs/TwistWithCovarianceStamped`, `sensor_msgs/Imu` 입력과
+  `odom0`, `pose0`, `twist0`, `imu0` 계열 주제 이름, 15성분 구성 벡터의 순서를 명시한다.
+- **프레임 계약:** 같은 파일 [L50–L72](https://github.com/cra-ros-pkg/robot_localization/blob/a63145ac904cc93ee553d0cfb8746406d1b4264d/params/ekf.yaml#L50-L72)와
+  [`preparing_sensor_data.rst` L8–L40](https://github.com/cra-ros-pkg/robot_localization/blob/a63145ac904cc93ee553d0cfb8746406d1b4264d/doc/preparing_sensor_data.rst#L8-L40)는
+  REP-103/105 준수, `map_frame`, `odom_frame`, `base_link_frame`, `world_frame`, 자세·속도
+  변환 규칙과 IMU의 ENU 요구를 설명한다.
+- **IMU 계약:** 자료 준비 지침 [L72–L85](https://github.com/cra-ros-pkg/robot_localization/blob/a63145ac904cc93ee553d0cfb8746406d1b4264d/doc/preparing_sensor_data.rst#L72-L85)와
+  예제 설정 [L162–L177](https://github.com/cra-ros-pkg/robot_localization/blob/a63145ac904cc93ee553d0cfb8746406d1b4264d/params/ekf.yaml#L162-L177)은
+  프레임·부호·공분산, 중력 제거 설정을 확인하게 한다.
+- **실제 구독 코드:** `Odometry`는
+  [`src/ros_filter.cpp` L1437–L1562](https://github.com/cra-ros-pkg/robot_localization/blob/a63145ac904cc93ee553d0cfb8746406d1b4264d/src/ros_filter.cpp#L1437-L1562),
+  `PoseWithCovarianceStamped`는 [L1686–L1717](https://github.com/cra-ros-pkg/robot_localization/blob/a63145ac904cc93ee553d0cfb8746406d1b4264d/src/ros_filter.cpp#L1686-L1717),
+  `TwistWithCovarianceStamped`는 [L1795–L1821](https://github.com/cra-ros-pkg/robot_localization/blob/a63145ac904cc93ee553d0cfb8746406d1b4264d/src/ros_filter.cpp#L1795-L1821),
+  `Imu`는 [L2034–L2055](https://github.com/cra-ros-pkg/robot_localization/blob/a63145ac904cc93ee553d0cfb8746406d1b4264d/src/ros_filter.cpp#L2034-L2055)에 연결된다.
+- **본문에서 뒷받침:** 본문의 “대표 입력은 자세·속도·IMU와 공분산을 가진 메시지”라는 설명,
+  프레임 변환·구성 벡터·중력 처리 주의.
+- **경계:** 원시 점군을 직접 상태 측정으로 받는다는 주장, 모든 입력 잡음의 독립성, 사용자가
+  넣은 공분산의 정확성은 이 계약이 보장하지 않는다. [확인 2026-07-16]
+
+### Unitree L2 SDK의 좌표계·작업 모드·ROS 2 계약
+
+**Unitree Robotics, [`unilidar_sdk2`](https://github.com/unitreerobotics/unilidar_sdk2),
+v2.0.10 (2025-03-10)**, 고정 커밋
+[`0e3c51f`](https://github.com/unitreerobotics/unilidar_sdk2/commit/0e3c51f512e6b8ff60b8c32f160b412cb48445c2).
+
+- **좌표계:** README
+  [§2, L16–L38](https://github.com/unitreerobotics/unilidar_sdk2/blob/0e3c51f512e6b8ff60b8c32f160b412cb48445c2/README.md#L16-L38)은
+  오른손 좌표계, 점군 프레임 $L$의 원점이 바닥 장착면 중심이라는 정의, $L$과 내부 IMU
+  프레임 $I$의 평행한 축, $L$에서 본 $I$ 원점
+  $[-0.007698,-0.014655,0.006670]$ m와 문서 표기의 $T_{LI}$를 제시한다.
+- **작업 모드:** README
+  [§3.2, L55–L78](https://github.com/unitreerobotics/unilidar_sdk2/blob/0e3c51f512e6b8ff60b8c32f160b412cb48445c2/README.md#L55-L78)은
+  bit 0–4의 시야각·2D/3D·IMU·Ethernet/serial·기동 의미, mode 0과 mode 8을 설명한다.
+  이 SDK 문서에서 mode 0은 IMU 활성·Ethernet·자동 시작이다.
+- **이더넷과 원시 예시:** README
+  [§3.3, L80–L133](https://github.com/unitreerobotics/unilidar_sdk2/blob/0e3c51f512e6b8ff60b8c32f160b412cb48445c2/README.md#L80-L133)은
+  호스트 `192.168.1.2`, IMU의 시간·쿼터니언·각속도·선형가속도 및 점군의
+  `(x,y,z,intensity,time,ring)` **출력 예시**를 싣는다. 실행 파일의 실제 UDP 기본값과 mode 0은
+  [`unitree_lidar_sdk/examples/example_lidar_udp.cpp` L13–L35](https://github.com/unitreerobotics/unilidar_sdk2/blob/0e3c51f512e6b8ff60b8c32f160b412cb48445c2/unitree_lidar_sdk/examples/example_lidar_udp.cpp#L13-L35)에서 확인된다.
+- **ROS 2 주제와 프레임:** README
+  [§5.2, L263–L278](https://github.com/unitreerobotics/unilidar_sdk2/blob/0e3c51f512e6b8ff60b8c32f160b412cb48445c2/README.md#L263-L278)과
+  [`launch.py` L16–L34](https://github.com/unitreerobotics/unilidar_sdk2/blob/0e3c51f512e6b8ff60b8c32f160b412cb48445c2/unitree_lidar_ros2/src/unitree_lidar_ros2/launch/launch.py#L16-L34)은
+  `unilidar/cloud`–`unilidar_lidar`, `unilidar/imu`–`unilidar_imu` 기본 쌍을 명시한다.
+- **원시 패킷 파서 위치:** README [§6, L304–L312](https://github.com/unitreerobotics/unilidar_sdk2/blob/0e3c51f512e6b8ff60b8c32f160b412cb48445c2/README.md#L304-L312)가
+  `unitree_lidar_sdk/include/unitree_lidar_protocol.h`와
+  `unitree_lidar_sdk/include/unitree_lidar_utilities.h`를 가리킨다.
+- **본문에서 뒷받침:** L2 내부의 $L$–$I$ 관계, SDK mode 비트, 본문에 인용한 출력 한 표본,
+  ROS 2 기본 주제·프레임.
+- **경계:** $L$에서 **Go2 몸체 `base_link`까지**의 장착변환, Go2 내부 상태추정 알고리즘,
+  필터의 $F,H,Q,R$은 제공하지 않는다. 또한 아래 사용자 매뉴얼 v1.1의 공장 기본 IMU
+  설정과 SDK v2.0.10의 mode 0 설명은 서로 다르므로 실제 장비에서 읽어 확인해야 한다.
+  [확인 2026-07-16]
+
+## 3. 제품 데이터시트·사용자 매뉴얼
+
+### Unitree Go2와 4D LiDAR L2
+
+1. **Unitree Robotics, [Unitree 4D LiDAR L2 User Manual](https://oss-global-cdn.unitree.com/static/Unitree%204D%20LiDAR%20L2%20User%20Manual.pdf),
+   v1.1, 2024-10.** 18 PDF쪽, 문서 번호는 표기되어 있지 않다.
+
+   - **위치:** 표지(PDF p. 1); “Product Overview—Introduction” 인쇄 p. 2
+     (PDF p. 4); “Connection” 인쇄 p. 9; “Coordinate System”과 “Point Cloud Data”
+     인쇄 p. 10; “Troubleshooting” 인쇄 p. 14; “Parameter Specifications” 인쇄
+     pp. 15–16 (PDF pp. 17–18).
+   - **본문에서 뒷받침:** 64,000 points/s 유효 점률, 수평 5.55 Hz·수직 216 Hz,
+     IMU 표본화 1 kHz·보고 500 Hz, 0.05 m 근거리와 반사율별 범위, 통신 방식·기본 UDP
+     수신 포트 6201, 시험 조건과 한계.
+   - **중요한 버전 차이:** 인쇄 p. 2의 공장 기본값은 `3D`, `NEGA`, **`IMU Disable`**,
+     `ENET`, `SELF START`, `GRAY ON`이다. SDK v2.0.10 README의 “factory mode 0 = IMU
+     enabled”와 충돌하므로 어느 쪽도 모든 펌웨어의 보편값으로 확대하지 않는다.
+   - **경계:** 500 Hz는 IMU가 활성화된 때의 보고 능력이지, 모든 출고 장비에서 즉시 관측되는
+     보장값이 아니다. [확인 2026-07-16]
+
+2. **Unitree Robotics, [L2 공식 제품 페이지](https://www.unitree.com/L2/) 및
+   [공식 상점 L2 상품](https://shop.unitree.com/products/unitree-4d-lidar-l2).** 동적 웹
+   페이지로 문서 번호·개정일은 표시되지 않는다.
+
+   - **위치:** 제품 페이지 상단 가격, “Parameter comparison,” L2+내장 IMU만 이용하는
+     POINT-LIO 공개 SLAM 소개; 상점의 단일 L2 상품 가격·통화 필드.
+   - **본문에서 뒷받침:** 확인일 표시 가격 **US$419**, 360°×90°/96° 시야각, 64,000
+     points/s, 5.55 Hz, 0.05 m, 30 m@90% 반사율이라는 제조사 공개 사양과 L2+IMU 공개
+     SLAM 예시.
+   - **경계:** 가격은 확인일의 단품 표시값이며 세금·배송·Go2 통합 비용이 아니다. 제조사
+     사양은 독립 시험 결과가 아니고, POINT-LIO 예시는 Go2의 독점 내부 필터를 공개하지 않는다.
+     [확인 2026-07-16]
+
+3. **Unitree Robotics, [Go2 공식 제품 페이지](https://www.unitree.com/go2/).** 동적 웹
+   페이지로 문서 번호·개정일은 표시되지 않는다.
+
+   - **위치:** 상단 “Price from”; “4D LiDAR L2”; “3D LiDAR Mapping”; 제품 비교표의
+     “Price (Tax and freight excluded).”
+   - **본문에서 뒷받침:** 시작가 **US$1,600**, Go2 제품군의 L2 인식 시스템 및 L2와 앱을
+     사용한 3차원 지도 기능이라는 제조사 설명.
+   - **경계:** 시작가는 모든 구성의 결제액이 아니며, 정확한 L2–몸체 장착변환과 Go2 내부
+     위치추정 알고리즘을 밝히지 않는다. [확인 2026-07-16]
+
+### HBK MicroStrain 3DM-GX5 계열
+
+1. **HBK/MicroStrain, [3DM-GX5-AHRS 공식 제품 페이지](https://www.hbkworld.com/en/products/transducers/inertial-sensors/attitude-and-heading/3dm-gx5-ahrs).**
+   페이지 메타데이터 수정일 2025-10-21.
+
+   - **위치:** “Product overview,” “Key features,” “Technical data,” “Available
+     documents.”
+   - **본문에서 뒷받침:** 삼축 가속도계·자이로·자력계, 온보드 Auto-Adaptive EKF,
+     IMU 1,000 Hz와 EKF 최대 500 Hz라는 현행 제품군 공개 설명.
+   - **가격 경계:** 확인일의 제조사 페이지는 정가 대신 “Request a quote”를 제공한다.
+     따라서 본문의 “공개 정가 없음·견적 필요”까지만 뒷받침한다. [확인 2026-07-16]
+
+2. **HBK/MicroStrain, [3DM-GX5-AHRS Data Sheet](https://delivery-p153383-e1601992.adobeaemcloud.com/adobe/assets/deliver/urn:aaid:aem:64c8e0d6-977c-4a6e-96f1-372215951578/3DM-GX5-AHRS-Data-Sheet.pdf),
+   Document 8400-0093 Revision P, 2024-03-29 생성본.**
+
+   - **위치:** PDF p. 1 “Best in Class Performance”; PDF p. 2 “Data Outputs”와
+     “Computed data output rate”; PDF p. 3 문서 번호·개정판.
+   - **본문에서 뒷받침:** Auto-Adaptive EKF, 필터 상태·시간·자세·편향·불확실성 출력,
+     EKF 1–500 Hz와 IMU 1–1,000 Hz 범위.
+   - **경계:** 데이터시트는 상세한 내부 행렬·잡음 조정값을 공개하지 않는다.
+     [확인 2026-07-16]
+
+3. **LORD/MicroStrain, [3DM-GX5-AHRS User Manual](https://delivery-p153383-e1601992.adobeaemcloud.com/adobe/assets/deliver/urn:aaid:aem:72647533-4ea3-4810-9af6-00543708887e/3DM-GX5-AHRS-User-Manual.pdf),
+   Document 8500-0012 Revision D, 2020-01-16 생성본.** 75 PDF쪽.
+
+   - **위치:** §3.4 “Estimation Filter” 인쇄 pp. 24–25; §§5.10–5.11 인쇄
+     pp. 42–43, 특히 p. 43의 full-state dynamics model, 상태·공분산·1-sigma 불확실성;
+     §5.11.2 “Output Uncertainty.”
+   - **본문에서 뒷받침:** **이 문서의 3DM-GX5-25와 해당 개정판**이 16상태 Auto-Adaptive
+     EKF, 자이로·자력계 편향/척도 추정과 공분산 기반 불확실성 출력을 설명한다는 역사적
+     제품 사례.
+   - **경계:** 레거시 Revision D의 16상태 구성을 모든 현행 3DM-GX5 펌웨어·모델에 그대로
+     적용할 수 없다. 현행 제품의 모든 내부 행렬과 조정값이 공개되었다는 근거도 아니다.
+     [확인 2026-07-16]
+
+## 4. 재현 코드·데이터셋
+
+1. **이 교재의 [칼만 필터 Python 실습](../../courseware/labs/kalman-lab.qmd).**
+
+   - **위치:** 예측–보정, 혁신, 공분산, 결측 측정 실험 코드 셀.
+   - **재현 범위:** NumPy 선형시스템 풀이와 조지프 형식을 사용해 본문의 교육용 수치를
+     다시 계산한다. 본문의 Unitree 한 단계 예시는 **합성 상태·공분산**이며 제품 성능 로그가
+     아니다.
+
+2. **Unitree `unilidar_sdk2` v2.0.10의 고정 소스.** 실제 실행 진입점은
+   [`example_lidar_udp.cpp` L7–L45](https://github.com/unitreerobotics/unilidar_sdk2/blob/0e3c51f512e6b8ff60b8c32f160b412cb48445c2/unitree_lidar_sdk/examples/example_lidar_udp.cpp#L7-L45),
+   공개 출력 전사는 [README L94–L133](https://github.com/unitreerobotics/unilidar_sdk2/blob/0e3c51f512e6b8ff60b8c32f160b412cb48445c2/README.md#L94-L133)에 있다.
+
+   - **재현 범위:** 네트워크 설정, mode 0, 메시지 필드와 한 실행 예시의 형식을 확인할 수
+     있다.
+   - **데이터 경계:** README의 콘솔 전사는 원시 센서 데이터셋이나 성능 벤치마크가 아니다.
+     검토한 Unitree 공식 자료에서 본문 예시와 짝지을 공개 Go2/L2 rosbag 원시 로그는 확인하지
+     못했으므로 있다고 만들지 않는다. [확인 2026-07-16]
+
+3. **`robot_localization` 3.10.0의 공식 회귀 자료.** 고정 커밋의
+   [`test/test1.bag`](https://github.com/cra-ros-pkg/robot_localization/blob/a63145ac904cc93ee553d0cfb8746406d1b4264d/test/test1.bag),
+   [`test/test2.bag`](https://github.com/cra-ros-pkg/robot_localization/blob/a63145ac904cc93ee553d0cfb8746406d1b4264d/test/test2.bag),
+   [`test/test3.bag`](https://github.com/cra-ros-pkg/robot_localization/blob/a63145ac904cc93ee553d0cfb8746406d1b4264d/test/test3.bag)과
+   `test/test_ekf_localization_node_bag*.launch.py/.yaml/.sh`.
+
+   - **재현 범위:** 공개 패키지의 EKF/UKF 회귀 테스트 입력과 실행 구성을 검사하는 자료다.
+   - **경계:** 이 rosbag들은 Unitree L2 또는 본문 합성 예시의 검증 데이터가 아니다.
+     [확인 2026-07-16]
+
+## 5. 역사·인터뷰·뉴스
+
+이 장의 수학식, ROS 계약, 제품 수치와 가격을 뒷받침하는 데 **뉴스 기사나 회고담을 사용하지
+않았다.** 역사적 핵심은 1절의 Kalman 원 논문 pp. 35–36 “Introduction”과 pp. 40–41의
+Theorem 3에서 확인한다. 별도의 인터뷰가 원 논문보다 강한 기술 근거인 것처럼 배치하지 않는다.
+
+### 공개 사실과 추측의 경계: Tesla 예시 {#공개-사실과-추측의-경계-tesla-예시}
+
+- **Tesla, [AI 공식 페이지](https://www.tesla.com/AI?redirect=no).** “Neural Networks”의
+  공개 설명은 카메라 영상에서 지각·제어 문제를 다루는 신경망 맥락을 제공한다.
+- **Tesla, [Model 3 Owner's Manual—Cameras](https://www.tesla.com/ownersmanual/model3/en_pr/GUID-682FF4A7-D083-4C95-925A-5EE3752F4865.html).** “Cameras”와
+  “Drive to Calibrate Cameras”는 카메라 입력과 자체 보정 절차의 공개 범위를 보여 준다.
+
+두 자료는 **공개 범위를 확인하기 위한 1차 자료**이지 이 장의 칼만 필터 수학이나 Unitree·ROS
+수치의 근거가 아니다. 특히 Tesla 현행 시스템이 특정 단계에서 칼만 필터, 최대우도추정,
+입자 필터를 사용한다고 확인하지 않는다. 따라서 본문은 Tesla를 “불확실한 시계열·다중 입력
+문제”의 맥락으로만 언급하며 독점 내부 구현을 추측하지 않는다. [확인 2026-07-16; 자동 링크
+검사에서는 Tesla의 접근 제어가 HTTP 403을 반환하므로 실제 브라우저용 공식 URL과 문서 제목을
+기록함]
+
+## 6. 더 깊이 읽기
+
+1. **Simo Särkkä and Lennart Svensson, *Bayesian Filtering and Smoothing*, 2nd ed.,
+   2023.** Cambridge University Press; 저자 공개
+   [온라인 판](https://users.aalto.fi/~ssarkka/pub/bfs_book_2023_online.pdf).
+
+   - **선형 칼만 필터:** §§6.1–6.4, 인쇄 pp. 91–103.
+   - **연속시간 모형의 이산화:** Chapter 4, 특히 §§4.1–4.5, pp. 45–69.
+   - **EKF와 반복 EKF:** Chapter 7, pp. 108–130.
+   - **Cubature/UKF:** Chapter 8, 특히 §§8.5–8.9, pp. 142–166.
+   - **입자 필터의 빠짐없는 연결:** §§11.1–11.5의 Monte Carlo 근사 → importance sampling
+     → sequential importance sampling(SIS) → resampling → particle filter, pp. 229–244;
+     §§11.6–11.7의 auxiliary/Rao–Blackwellized particle filter.
+   - **RTS 평활:** §§12.1–12.3, pp. 253–261; particle smoothing은 Chapter 15.
+   - **뒷받침 범위:** 본문 이후의 EKF·UKF·SMC/SIS·입자 필터·평활기를 하나의 베이즈 재귀로
+     확장해 공부하는 경로. [확인 2026-07-16]
+
+2. **H. E. Rauch, F. Tung, and C. T. Striebel, “Maximum Likelihood Estimates of
+   Linear Dynamic Systems,” 1965.** *AIAA Journal*, 3(8), pp. 1445–1450,
+   [DOI 10.2514/3.3166](https://doi.org/10.2514/3.3166).
+
+   - **위치:** 논문 전체 pp. 1445–1450의 전방 필터–후방 재귀와 최대우도 추정.
+   - **뒷받침 범위:** 미래 관측까지 사용해 과거 상태를 개선하는 RTS 고정구간 평활기의
+     원 논문 계보. 현대 구현 표기는 Barfoot §3.2.3 또는 Särkkä–Svensson §12.2와 함께 읽는다.
+     [확인 2026-07-16]
+
+3. **이 교재의 연결 문서:** [베이즈 필터링](../concepts/probability/bayes-filtering.qmd)은
+   예측·갱신의 일반 확률 재귀를, [부트스트랩 입자 필터](../concepts/probability/bootstrap-particle-filter.qmd)는
+   중요도 가중치·SIS·퇴화·유효 표본수·재표본화를 이어 간다. 수치 안정성은 본문의 조지프 형식
+   다음에 제곱근 칼만 필터와 UD 분해 필터를 별도 주제로 확장한다.

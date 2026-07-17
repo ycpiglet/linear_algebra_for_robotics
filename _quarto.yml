@@ -1,0 +1,53 @@
+lang: ko
+
+project:
+  pre-render:
+    - .tools/uv/uv run python platform/scripts/atlas.py build
+    - .tools/uv/uv run python platform/scripts/glossary.py build
+  resources:
+    # Keep these paths explicit. Directory-wide resources can rediscover
+    # copies inside another profile's output directory and recursively nest
+    # _site/_book/_proof in a later build.
+    - assets/cover.svg
+    - assets/favicon.svg
+    - assets/fonts/AtlasSansKR-Regular.woff2
+    - assets/fonts/AtlasSansKR-Bold.woff2
+    - assets/fonts/OFL.txt
+    - assets/js/atlas.js
+    - platform/generated/backlinks.json
+    - platform/generated/concept-manifest.json
+    - platform/generated/knowledge-graph.json
+    - platform/generated/paths.json
+
+bibliography: references.bib
+link-citations: true
+
+execute:
+  freeze: auto
+  cache: true
+  warning: false
+
+format:
+  html:
+    theme:
+      light:
+        - cosmo
+        - assets/styles/theme.scss
+      dark:
+        - darkly
+        - assets/styles/theme.scss
+    toc: true
+    toc-depth: 3
+    number-sections: false
+    code-fold: show
+    code-tools: true
+    code-copy: true
+    smooth-scroll: true
+    anchor-sections: true
+    link-external-newwindow: true
+    include-after-body: assets/includes/atlas-scripts.html
+
+filters:
+  - platform/extension/atlas-metadata.lua
+  - platform/extension/static-page-glossary.lua
+  - platform/extension/epub-links.lua

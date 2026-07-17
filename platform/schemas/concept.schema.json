@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linear-algebra-for-robotics.local/schemas/concept.schema.json",
+  "title": "Knowledge Atlas concept metadata",
+  "type": "object",
+  "required": ["id", "title", "domain", "one_line"],
+  "properties": {
+    "id": { "$ref": "#/$defs/stableId" },
+    "title": { "type": "string", "minLength": 1 },
+    "aliases": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true,
+      "default": []
+    },
+    "domain": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$"
+    },
+    "one_line": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string" },
+    "difficulty": { "type": "integer", "minimum": 1, "maximum": 5 },
+    "importance": { "type": "integer", "minimum": 1, "maximum": 5 },
+    "importance_note": { "type": "string", "minLength": 1 },
+    "practice_frequency": { "type": "integer", "minimum": 1, "maximum": 5 },
+    "practice_frequency_note": { "type": "string", "minLength": 1 },
+    "application_areas": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true,
+      "default": []
+    },
+    "reading_time": {
+      "oneOf": [
+        { "type": "integer", "minimum": 1 },
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "properties": {
+            "quick": {
+              "oneOf": [
+                { "type": "integer", "minimum": 1 },
+                { "type": "string", "minLength": 1 }
+              ]
+            },
+            "core": {
+              "oneOf": [
+                { "type": "integer", "minimum": 1 },
+                { "type": "string", "minLength": 1 }
+              ]
+            },
+            "full": {
+              "oneOf": [
+                { "type": "integer", "minimum": 1 },
+                { "type": "string", "minLength": 1 }
+              ]
+            }
+          },
+          "minProperties": 1,
+          "additionalProperties": false
+        }
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "published", "planned", "deprecated"]
+    },
+    "prerequisites": {
+      "type": "object",
+      "propertyNames": {
+        "enum": ["intuition", "application", "analysis", "implementation", "derivation", "proof", "teaching"]
+      },
+      "additionalProperties": { "$ref": "#/$defs/prerequisiteGroup" },
+      "default": {}
+    },
+    "relations": {
+      "type": "object",
+      "properties": {
+        "requires": { "$ref": "#/$defs/idList" },
+        "helpful": { "$ref": "#/$defs/idList" },
+        "derived_from": { "$ref": "#/$defs/idList" },
+        "deepens": { "$ref": "#/$defs/idList" },
+        "contrasts_with": { "$ref": "#/$defs/idList" },
+        "same_structure_as": { "$ref": "#/$defs/idList" },
+        "used_in": { "$ref": "#/$defs/idList" }
+      },
+      "additionalProperties": false,
+      "default": {}
+    },
+    "review": {
+      "oneOf": [
+        { "type": "array", "items": { "type": "string" } },
+        { "type": "object" },
+        { "type": "string" }
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "page_url": { "type": "string", "minLength": 1 },
+    "output-file": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"
+    },
+    "idList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/stableId" },
+      "uniqueItems": true
+    },
+    "prerequisiteReference": {
+      "oneOf": [
+        { "$ref": "#/$defs/stableId" },
+        {
+          "type": "object",
+          "required": ["concept"],
+          "properties": {
+            "concept": { "$ref": "#/$defs/stableId" },
+            "competency": {
+              "type": "string",
+              "enum": ["recognize", "explain", "calculate", "apply", "derive", "prove", "teach"]
+            },
+            "reason": { "type": "string" },
+            "diagnostic": { "type": "string" },
+            "anchor": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "prerequisiteList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/prerequisiteReference" }
+    },
+    "prerequisiteGroup": {
+      "type": "object",
+      "properties": {
+        "required": { "$ref": "#/$defs/prerequisiteList" },
+        "helpful": { "$ref": "#/$defs/prerequisiteList" },
+        "not_required": { "$ref": "#/$defs/prerequisiteList" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

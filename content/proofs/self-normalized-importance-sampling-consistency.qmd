@@ -1,0 +1,158 @@
+---
+title: "증명: Self-Normalized Importance Sampling의 일관성"
+id: proof.snis-consistency
+kind: proof
+domain: probability
+one-line: "분자·분모에 강대수의 법칙을 적용해 SNIS 비율이 목표 기댓값으로 거의 확실히 수렴함을 증명한다."
+difficulty: 4
+level: density
+dependencies:
+  - proof.importance-sampling-identity
+assumptions:
+  - "Unnormalized target의 정규화 상수는 유한하고 양수다."
+  - "Proposal은 target support를 덮으며 표본은 i.i.d.다."
+  - "가중 관심 함수는 절대적분 가능하다."
+proves:
+  - probability.importance-sampling
+prerequisites:
+  proof:
+    required:
+      - concept: probability.measure-foundations
+        competency: explain
+        reason: 강대수의 법칙을 명시된 가정 아래 사용한다.
+      - concept: probability.importance-sampling
+        competency: calculate
+        reason: unnormalized weight와 SNIS estimator를 알아야 한다.
+---
+
+::: {.depth-proof}
+
+## Proof Contract
+
+### 상태공간과 표기
+
+- $\lambda$: 공통 기준측도
+- $\gamma:\mathsf X\to[0,\infty)$: unnormalized target density
+- $Z=\int\gamma(x)\lambda(dx)$
+- $\pi(x)=\gamma(x)/Z$: normalized target density
+- $q$: proposal probability density
+- $X^{(i)}\overset{iid}{\sim}q$
+- $w(x)=\gamma(x)/q(x)$ where $q(x)>0$
+
+### 가정
+
+1. $0<Z<\infty$.
+2. $q(x)>0$ for $\lambda$-almost every $x$ such that $\gamma(x)>0$.
+3. $\int|\varphi(x)|\gamma(x)\lambda(dx)<\infty$.
+4. 표본 $X^{(i)}$는 $q$로부터 i.i.d.다.
+
+가정 2는 분모 $Z$ 전체를 복원해야 하므로, [IS 항등식](importance-sampling-identity.qmd)에서 특정 $\varphi$만 볼 때보다 강한 전체 target support 조건이다.
+
+### 결론
+
+분모가 양수일 때
+
+$$
+\widehat I_N^{\mathrm{SNIS}}
+=\frac{\sum_{i=1}^Nw(X^{(i)})\varphi(X^{(i)})}
+{\sum_{i=1}^Nw(X^{(i)})}
+$$
+
+라 하면
+
+$$
+\widehat I_N^{\mathrm{SNIS}}\xrightarrow{a.s.}
+\mathbb E_\pi[\varphi(X)].
+$$
+
+## 준비: 두 기댓값
+
+Support 가정으로
+
+$$
+\begin{aligned}
+\mathbb E_q[w(X)]
+&=\int\frac{\gamma(x)}{q(x)}q(x)\lambda(dx)
+=\int\gamma(x)\lambda(dx)=Z,\\
+\mathbb E_q[|w(X)\varphi(X)|]
+&=\int|\varphi(x)|\gamma(x)\lambda(dx)<\infty,\\
+\mathbb E_q[w(X)\varphi(X)]
+&=\int\varphi(x)\gamma(x)\lambda(dx).
+\end{aligned}
+$$
+
+또한 $w\ge0$이고 $\mathbb E_q[w]=Z<\infty$이므로 $w$도 적분 가능하다.
+
+## 전체 증명
+
+다음을 정의한다.
+
+$$
+A_N=\frac1N\sum_{i=1}^Nw(X^{(i)})\varphi(X^{(i)}),
+\qquad
+B_N=\frac1N\sum_{i=1}^Nw(X^{(i)}).
+$$
+
+준비 단계의 적분 가능성과 i.i.d. 가정으로 강대수의 법칙을 각각 적용하면
+
+$$
+A_N\xrightarrow{a.s.}
+A=\int\varphi(x)\gamma(x)\lambda(dx),
+$$
+
+$$
+B_N\xrightarrow{a.s.}B=Z>0.
+$$
+
+확률 1인 두 수렴사건의 교집합에서 생각하자. $B_N\to Z>0$이므로 어떤 유한한 무작위 $N_0$가 존재하여 모든 $N\ge N_0$에 대해 $B_N>Z/2>0$이다. 따라서 그 이후 비율이 정의되고, 실수의 연속함수 $(a,b)\mapsto a/b$를 $b>0$에서 적용하면
+
+$$
+\widehat I_N^{\mathrm{SNIS}}
+=\frac{A_N}{B_N}
+\xrightarrow{a.s.}
+\frac{A}{Z}
+=\int\varphi(x)\frac{\gamma(x)}Z\lambda(dx)
+=\mathbb E_\pi[\varphi(X)].
+$$
+
+$\square$
+
+## 왜 finite-N unbiasedness는 따라오지 않는가
+
+비율의 기댓값은 일반적으로 기댓값의 비율이 아니다.
+
+$$
+\mathbb E\left[\frac{A_N}{B_N}\right]
+\ne\frac{\mathbb E[A_N]}{\mathbb E[B_N]}.
+$$
+
+### 명시적 반례
+
+$\mathsf X=\{0,1\}$, proposal $q(0)=q(1)=1/2$, unnormalized target $\gamma(0)=1,\gamma(1)=2$, $\varphi(x)=x$로 두자. Target은 $\pi(1)=2/3$이므로 참 기댓값은 $2/3$이다.
+
+하지만 $N=1$이면 weight가 분자와 분모에서 약분되어
+
+$$
+\widehat I_1^{\mathrm{SNIS}}=\varphi(X^{(1)})=X^{(1)}.
+$$
+
+따라서
+
+$$
+\mathbb E_q[\widehat I_1^{\mathrm{SNIS}}]=1/2\ne2/3.
+$$
+
+일관성은 $N\to\infty$의 성질이며 finite-N unbiasedness와 다르다.
+
+## 이 증명이 말하지 않는 것
+
+- 유한 분산이나 CLT는 증명하지 않았다. 이를 위해 보통 $\mathbb E_q[w^2(\varphi-I)^2]<\infty$ 같은 2차 적률 조건이 추가로 필요하다.
+- MCMC proposal 표본처럼 의존된 표본에는 i.i.d. SLLN 대신 해당 chain의 ergodic theorem이 필요하다.
+- 표본 수가 고정된 상태에서 차원이 증가할 때 weight collapse가 없다는 보장은 없다.
+
+## 사용처
+
+- [Importance Sampling](../concepts/probability/importance-sampling.qmd)
+- [Sequential Importance Sampling](../concepts/probability/sequential-importance-sampling.qmd)
+
+:::

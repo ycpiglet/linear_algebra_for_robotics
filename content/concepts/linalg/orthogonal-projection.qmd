@@ -1,0 +1,111 @@
+---
+id: linalg.orthogonal_projection
+title: "직교투영: 도달 가능한 것 중 가장 가까운 답"
+aliases: ["orthogonal projection", "직교 투영", "projection theorem"]
+domain: linear_algebra
+one_line: "직교투영은 어떤 점을 부분공간 안의 가장 가까운 점으로 내려놓는 연산이다."
+difficulty: 2
+summary: "column space에 대한 최단점을 직교 residual로 정의하고 정규방정식, rank-deficient 경우의 유일성, QR·SVD 연결을 설명한다."
+reading_time: {quick: "5분", core: "30분", full: "60분"}
+prerequisites:
+  intuition:
+    required:
+      - concept: linalg.linear_system
+        competency: explain
+        reason: "column space를 행렬의 도달 가능한 출력으로 해석한다."
+    helpful: []
+    not_required: []
+  application:
+    required:
+      - concept: linalg.linear_system
+        competency: apply
+        reason: "행렬–벡터 곱과 transpose를 계산한다."
+    helpful: []
+  derivation:
+    required:
+      - concept: linalg.linear_system
+        competency: apply
+        reason: "정규방정식의 shape를 추적한다."
+    helpful: []
+  proof: {required: [], helpful: [], not_required: []}
+  teaching:
+    required:
+      - concept: linalg.linear_system
+        competency: apply
+        reason: "투영의 shape와 해의 유일성을 설명한다."
+    helpful: []
+    not_required: []
+relations:
+  requires: [linalg.linear_system]
+  helpful: []
+  derived_from: [linalg.inner_product]
+  deepens: [linalg.least_squares]
+  contrasts_with: []
+  same_structure_as: [estimation.innovation_orthogonality]
+  used_in: [linalg.least_squares, estimation.kalman_filter]
+review:
+  prompts:
+    - "최단거리 residual이 부분공간과 직교해야 하는 이유를 설명할 수 있는가?"
+    - "rank deficiency에서 투영점과 계수의 유일성을 구분할 수 있는가?"
+tags: [projection, orthogonality, column-space, residual]
+---
+
+::: {.concept-hero}
+## 30초 핵심
+
+$b$가 $A$의 열로 만들 수 있는 공간 밖에 있으면 $Ax=b$는 풀리지 않는다. 이때 $b$를 column space에 수직으로 내려놓은 점 $\hat b=A\hat x$가 가장 가까운 답이며, 남은 오차 $r=b-A\hat x$는 그 공간의 모든 방향과 직교한다.
+:::
+
+:::: {.depth-intuition}
+## 먼저 떠올릴 이미지
+
+공중의 점에서 평면으로 가장 짧게 내려가는 길은 평면과 수직이다. 부분공간으로의 직교투영도 같다. 거리의 제곱을 더 줄일 수 있는 평면 안 방향이 남아 있다면 최단점이 아니다.
+
+## 작동하는 정의
+
+부분공간 $S\subset\mathbb R^m$에 대한 $b$의 직교투영 $\hat b\in S$는
+
+$$b-\hat b\perp S$$
+
+를 만족하는 유일한 점이다. $S=\operatorname{col}(A)$, $\hat b=A\hat x$라면 각 열 $a_j$에 대해 $a_j^\top(b-A\hat x)=0$이므로
+
+$$A^\top(b-A\hat x)=0.$$
+
+이 식이 [최소제곱](least-squares.qmd)의 정규방정식이다.
+::::
+
+:::: {.depth-application}
+## 가장 작은 예
+
+$A=(1,1)^\top$, $b=(2,0)^\top$라 하자. $A$의 column space는 $y=x$ 직선이다. 투영 계수는
+
+$$\hat x=\frac{A^\top b}{A^\top A}=\frac{2}{2}=1,$$
+
+그래서 $\hat b=(1,1)^\top$, $r=(1,-1)^\top$이다. 실제로 $A^\top r=1-1=0$이다.
+
+## 전제 장부
+
+| 구분 | 내용 |
+|---|---|
+| 정확한 사실 | 유한차원 내적공간에서 닫힌 부분공간에 대한 직교투영은 유일하다. |
+| 가정 | 여기서는 Euclidean inner product $u^\top v$를 사용한다. |
+| 일반화 | 가중 내적을 쓰면 “수직”과 “가까움”의 모양이 달라진다. |
+| 실패 조건 | 열이 종속이면 $\hat b$는 유일하지만 이를 만드는 $\hat x$는 여러 개일 수 있다. |
+::::
+
+:::: {.depth-proof}
+## 엄밀히 말하면
+
+$P=A(A^\top A)^{-1}A^\top$는 $A$가 full column rank일 때의 투영행렬이다. rank-deficient라면 inverse가 존재하지 않으므로 $P=AA^+$처럼 pseudoinverse를 쓴다. 실제 계산에서는 정규방정식보다 QR 또는 SVD가 안정적이다.
+::::
+
+## 다음과 복귀
+
+- 목적함수와 통계 해석까지: [최소제곱](least-squares.qmd)
+- Kalman을 보다가 왔다면: [innovation의 직교성](../estimation/kalman-filter.qmd#sec-kf-orthogonality)으로 돌아간다.
+
+## 회상 점검
+
+1. 최단거리 오차가 부분공간과 직교해야 하는 이유를 그림 없이 설명해 보라.
+2. 위 예에서 $\|b\|^2=4$, $\|\hat b\|^2=2$, $\|r\|^2=2$임을 확인하라.
+3. 열이 종속일 때 투영점과 계수의 유일성이 어떻게 다른가?

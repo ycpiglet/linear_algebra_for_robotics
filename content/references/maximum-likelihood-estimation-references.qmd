@@ -1,0 +1,128 @@
+---
+title: "최대우도추정 장의 참고문헌과 제품 근거"
+toc: true
+---
+
+이 페이지는 [최대우도추정(Maximum Likelihood Estimation, MLE) 본문](../concepts/statistics/maximum-likelihood-estimation.qmd)의 수학적 주장, RealSense D455의 공개 사양, 교재가 만든 합성자료, 그리고 구현 API를 서로 다른 근거로 추적한다. 동적 웹 문서의 마지막 확인일은 **2026-07-16**이다.
+
+## 근거 등급과 읽는 법
+
+| 표기 | 무엇을 근거로 삼는가 | 허용되는 결론 |
+|---|---|---|
+| **[원전·이론]** | 원 논문과 통계학 교재의 명시된 절·쪽 | 정의·유도·정칙성 조건 |
+| **[공식 제품]** | 제조사 데이터시트·제품 페이지·공식 SDK 문서 | 공개 사양과 API 계약 |
+| **[교육용 합성]** | 이 교재가 선언한 숫자·잡음·장착·좌표변환 | 계산 재현과 개념 설명만 가능 |
+| **[공개되지 않음]** | 공개 1차 자료로 확인할 수 없는 내부 구현 | 사용 여부를 어느 방향으로도 단정하지 않음 |
+
+제품 문서가 센서 기능이나 시험조건을 설명한다는 사실은 그 제품이 본문의 가우스 우도, 이상치 규칙 또는 최적화기를 내부에서 사용한다는 증거가 아니다. 반대로 본문의 합성 실험 결과는 실제 D455의 성능 측정값이 아니다.
+
+## 1. 역사·원전
+
+### Fisher의 1922년 논문
+
+- R. A. Fisher, [“On the Mathematical Foundations of Theoretical Statistics”](https://doi.org/10.1098/rsta.1922.0009), *Philosophical Transactions of the Royal Society A*, 222, 309–368, 1922.
+  - **정확한 위치:** p.310의 정의들; §6 “Formal Solution of Problems of Estimation”, pp.323–330; 특히 p.326의 probability와 likelihood 구분 및 maximum likelihood 논의.
+  - **본문 연결:** [확률과 우도의 구분](../concepts/statistics/maximum-likelihood-estimation.qmd#확률probability과-우도likelihood-같은-식을-다른-방향으로-읽는다), [피셔 역사 카드](../concepts/statistics/maximum-likelihood-estimation.qmd#숨-고르기-피셔fisher가-확률과-우도를-갈라놓은-이유).
+  - **경계:** 역사적 원전이며, 본문의 현대적 정칙성 조건 전체를 이 논문 한 편에서 소급해 읽으면 안 된다.
+
+역사적 우선순위와 현대적 수업 표기는 구분한다. 본문은 Fisher의 원전을 역사 근거로 사용하고, 현대 정의·정리·조건은 아래 교재로 보강한다.
+
+## 2. 교과서·핵심 이론
+
+### 핵심 문헌
+
+1. George Casella and Roger L. Berger, *Statistical Inference*, 2nd ed., Duxbury, 2002, ISBN 9780534243128. [현행 Routledge 재출간판 서지 페이지](https://www.routledge.com/Statistical-Inference/Casella-Berger/p/book/9781032593036).
+   - **정확한 위치:** §§6.3.1–6.3.2, pp.290–295(우도함수·우도원리); §7.2.2, pp.315–323(MLE의 정의·예·불변성).
+   - 현행 링크는 2024년 재출간판의 출판사 페이지이며, 쪽 표시는 원 2판 기준이다.
+2. In Jae Myung, [“Tutorial on Maximum Likelihood Estimation”](<https://doi.org/10.1016/S0022-2496(02)00028-7>), *Journal of Mathematical Psychology* 47(1), 90–100, 2003.
+   - **정확한 위치:** §2.2, pp.91–92(확률과 우도); §§3.1–3.3, pp.93–95(우도방정식, 최대점 확인, 최소제곱과의 관계); §4, pp.96–99(계산 예).
+3. Yudi Pawitan, [*In All Likelihood: Statistical Modelling and Inference Using Likelihood*](https://doi.org/10.1093/oso/9780198507659.001.0001), Oxford University Press, 2001.
+   - **정확한 위치:** Ch.2, pp.21–52(우도 구성); Ch.5, pp.117–148(빈도주의적 성질); Ch.8, pp.213–230(점수와 정보); Ch.9(큰 표본 결과); Ch.13, pp.365–384(강건성·모형 오지정).
+4. NIST/SEMATECH, [e-Handbook §1.3.6.5.2 “Maximum Likelihood”](https://www.itl.nist.gov/div898/handbook/eda/section3/eda3652.htm).
+   - **정확한 위치:** 페이지 안의 “Maximum Likelihood”, “Advantages”, “Disadvantages”, “Software” 절.
+   - **경계:** 공학적 개요와 계산상 장단점의 근거이며, 점근정리의 증명을 대신하지 않는다.
+
+### 본문 주장·식 추적표
+
+| 본문 주장·식 | 본문 위치 | 가장 직접적인 근거 | 적용 조건·경계 |
+|---|---|---|---|
+| 확률은 고정된 모수에서 데이터를, 우도는 관측 데이터를 고정하고 모수를 비교한다 | [§2](../concepts/statistics/maximum-likelihood-estimation.qmd#확률probability과-우도likelihood-같은-식을-다른-방향으로-읽는다) | Fisher §6, p.326; Myung §2.2, pp.91–92 | 우도는 모수에 대한 정규화된 확률분포가 아니다 |
+| 독립 표본이면 우도는 곱이고 로그우도는 합이다 | [공식 카드](../concepts/statistics/maximum-likelihood-estimation.qmd#공식-카드-독립-표본이면-곱-로그를-취하면-합) | Pawitan Ch.2, pp.21–52 | 독립성 또는 조건부 독립성을 먼저 선언해야 한다 |
+| 베르누이 MLE는 내부해에서 표본평균이며 경계도 후보이다 | [베르누이 MLE](../concepts/statistics/maximum-likelihood-estimation.qmd#sec-mle-bernoulli) | Casella–Berger §7.2.2, pp.315–323 | 미분값 0만으로 최대점·존재·유일성을 보장하지 않는다 |
+| 가우스 평균·분산 MLE와 분산의 분모 $n$ | [가우스 MLE](../concepts/statistics/maximum-likelihood-estimation.qmd#sec-mle-gaussian) | Casella–Berger §7.2.2, pp.315–323; Myung §§3.1–3.2, pp.93–94 | 불편표본분산의 분모 $n-1$과 목적이 다르다 |
+| 독립·등분산 가우스 잔차에서 MLE와 보통최소제곱의 최대점이 같다 | [최소제곱 연결](../concepts/statistics/maximum-likelihood-estimation.qmd#sec-mle-least-squares) | Myung §3.3, pp.94–95 | 이분산·상관·비가우스 잡음이면 목적함수가 달라질 수 있다 |
+| 점수, 관측정보 $J=-\nabla^2\ell$, 피셔 정보의 두 표현 | [점수함수](../concepts/statistics/maximum-likelihood-estimation.qmd#점수함수score-function-우도의-오르막-방향), [관측정보](../concepts/statistics/maximum-likelihood-estimation.qmd#sec-mle-observed-information), [피셔 정보](../concepts/statistics/maximum-likelihood-estimation.qmd#sec-mle-fisher-information) | Pawitan Ch.8, pp.213–230 | 지지집합 고정, 미분·적분 교환 등 본문에 적은 정칙성 조건이 필요하다 |
+| $J(\widehat\theta)^{-1}$과 점근정규성은 국소·큰 표본 근사이다 | [관측정보](../concepts/statistics/maximum-likelihood-estimation.qmd#sec-mle-observed-information), [피셔 정보](../concepts/statistics/maximum-likelihood-estimation.qmd#sec-mle-fisher-information) | Pawitan Chs.8–9 | 경계해·작은 표본·혼합/특이모형에는 자동 적용하지 않는다 |
+| 평균 음의 로그우도는 경험 교차엔트로피이고 기대값은 $H(p_*)+D_{\mathrm{KL}}(p_*\|p_\theta)$이다 | [교차엔트로피·KL](../concepts/statistics/maximum-likelihood-estimation.qmd#mle와-교차엔트로피cross-entropy쿨백라이블러-발산kullbackleibler-divergence-kl) | 본문에서 교차엔트로피와 KL 정의를 대입한 항등식; Pawitan Chs.2, 13의 우도·오지정 해석 | 모형족 안에서의 최선이라는 뜻이지 물리적으로 참인 모형이라는 뜻은 아니다 |
+
+## 3. 공식 제품·센서 문서
+
+이 범주의 제품 근거는 [D455 응용 사례](../concepts/statistics/maximum-likelihood-estimation.qmd#sec-mle-d455)만 추적한다.
+
+### RealSense D455 제품 사양
+
+- RealSense, [D400 Series Product Family Datasheet](https://dev.realsenseai.com/download/42003/), 문서번호 **337029-017**, Revision **021**, 2025-10, 160쪽.
+  - **§4.2, Table 4-3, p.77:** D450/D455 계열의 USB 3.1 Gen 1 영상 형식, Z16, 1280×720의 5/15/30 fps 및 낮은 해상도의 최대 90 fps.
+  - **§4.7, Tables 4-12–4-14, pp.85–87:** D455 계열 깊이 품질의 시험조건과 4 m 이하·HD·80% ROI 조건의 정확도/채움률/RMS/시간잡음 지표 및 환경 의존 주석.
+  - **경계:** 시험조건별 품질표는 현재 프레임의 확률분포나 본문 우도의 $\sigma$가 아니다.
+- RealSense, [Compare All Cameras](https://www.realsenseai.com/compare-all-cameras/)의 D455 카드(확인일 2026-07-16).
+  - 전역셔터, 깊이 시야각 87°×58°, 이상적 동작거리 0.6–6 m, 당시 표시가 US$419의 근거다.
+  - 동적 제품 페이지에는 고정 문서번호·개정번호가 없으며 가격·재고는 바뀔 수 있다.
+
+### 좌표·Z16·깊이척도 API
+
+- librealsense 공식 위키, [“Pixel Coordinates”와 “Point Coordinates”](https://github.com/realsenseai/librealsense/wiki/Projection-in-RealSense-SDK-2.0#point-coordinates), 2018-08-02 최종 편집 이력 기준.
+  - 카메라 점 좌표는 m 단위이며 $+x$ 오른쪽, $+y$ 아래, $+z$ 앞쪽이다.
+- librealsense 공식 위키, [“Depth Image Formats”](https://github.com/realsenseai/librealsense/wiki/Projection-in-RealSense-SDK-2.0#depth-image-formats).
+  - `RS2_FORMAT_Z16`은 픽셀마다 부호 없는 16비트 정수를 저장하며, 장치별 단위는 `rs2_get_depth_scale` 또는 `rs2::depth_sensor::get_depth_scale()`로 질의한다.
+  - 값 0은 해당 위치의 유효 깊이가 없음을 뜻한다. D400 계열의 흔한 기본 척도 0.001 m는 `RS2_OPTION_DEPTH_UNITS`로 바뀔 수 있으므로 런타임 조회를 생략할 근거가 아니다.
+- RealSense, [“Projection, Texture-Mapping and Occlusion with RealSense Depth Cameras”](https://dev.realsenseai.com/docs/projection-texture-mapping-and-occlusion-with-intel-realsense-depth-cameras/), 2026-02-12 갱신.
+  - **§2.1 “Camera and World Coordinates”:** 축 방향과 m 단위.
+  - **§2.3 “De-projection”:** 깊이는 광학축 방향의 $z$ 성분이며 유클리드 거리와 다르다.
+  - **§3.1 “Extrinsic Calibration Parameters”:** 장치 내 센서 사이 회전·이동의 의미.
+
+### 공식 사실과 합성 사례의 경계
+
+| 본문 D455 항목 | 분류 | 근거 또는 재현 위치 |
+|---|---|---|
+| D455라는 실제 제품, 공개 시야각·동작거리·스트림·시험조건별 품질 | **[공식 제품]** | 위 데이터시트와 비교 페이지 |
+| 카메라축, Z16, 0 무효값, 장치별 깊이척도 조회 | **[공식 제품]** | 위 공식 투영·SDK 문서 |
+| 로봇 장착 $t_{BC}=(0.18,0,0.42)$ m와 로봇축 정의 | **[교육용 합성]** | [통합 사례 표](../concepts/statistics/maximum-likelihood-estimation.qmd#sec-mle-d455); 특정 로봇 사양이 아님 |
+| Z16 계수 $(1015,2023,4039)$, 조회되었다고 가정한 0.001 m/count | **[교육용 합성]** | 같은 통합 사례의 “원시 숫자”; 실제 장치 로그가 아님 |
+| $\widehat s=1.008$, $\widehat b=0.007$ m, 3032 count의 보정 결과 3.001 m | **[교육용 합성 결과]** | 위 고정 숫자를 최소제곱한 산술 결과; 제품 정확도 보증이 아님 |
+| 펌웨어의 전체 확률모형·손실함수·이상치 규칙 | **[공개되지 않음]** | 위 공개 문서로는 확인 불가 |
+
+## 4. 소프트웨어·API
+
+| 도구·공식 문서 | 정확한 API 위치 | 본문에서 확인하는 것 | 사용 경계 |
+|---|---|---|---|
+| NumPy 2.5, [`numpy.linalg.lstsq`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.lstsq.html#numpy.linalg.lstsq) | signature; “Parameters”; “Returns”; NumPy 2.0의 `rcond` 변경 주석 | $\|b-Ax\|_2$ 최소화, 최소노름 해, `residuals`, `rank`, 특이값 `s` | 문서는 특정 내부 QR/SVD 드라이버를 계약하지 않는다. 본문은 역행렬을 직접 만들지 않고 rank·특이값을 함께 점검한다 |
+| SciPy 1.18.0, [`scipy.optimize.minimize`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize) | signature; “Parameters”의 `method`, `jac`, `hess`, bounds/constraints; “Returns”의 `success`, `message`; “Notes” | 닫힌형 해가 없는 음의 로그우도의 목적함수·미분·제약·종료상태 | 본문의 고정 코드 조각은 이 API를 실행하지 않는다. `success=True`도 전역최대점의 증명이 아니다 |
+| SciPy 1.18.0, [`scipy.special.logsumexp`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.logsumexp.html#scipy.special.logsumexp) | signature; “Parameters”; “Returns”; “Notes” | 혼합모형에서 $\log\sum_i e^{a_i}$를 안정적으로 계산 | 본문은 사용 원칙만 설명하며 현재 고정 코드에는 혼합모형 실행이 없다 |
+| JAX 0.10.2, [`jax.grad`](https://docs.jax.dev/en/latest/_autosummary/jax.grad.html#jax.grad) | signature와 scalar-output 조건 | 해석적 점수를 자동미분 결과와 비교 | 선택적 검증 경로다. 본문은 JAX를 실행하거나 버전을 고정하지 않는다 |
+| JAX 0.10.2, [`jax.hessian`](https://docs.jax.dev/en/latest/_autosummary/jax.hessian.html#jax.hessian) | signature, 반환 Hessian/pytrees 설명 | 관측정보용 Hessian을 유한차분과 교차검증 | dtype·매개화·부호를 맞춰야 하며, 계산된 Hessian이 양의/음의 정부호라는 보장은 없다 |
+
+버전 번호는 확인일의 공식 **stable/latest** 문서가 표시한 값이다. 재현 보고서에서는 실제 실행 환경의 버전과 설정을 별도로 잠가야 한다.
+
+## 5. 데이터·재현
+
+현재 장에는 외부 D455 실측 데이터셋, 장치 일련번호, 펌웨어 로그가 포함되어 있지 않다. 아래 자료는 모두 교육용이며 제품 벤치마크로 인용할 수 없다.
+
+| 재현 대상 | 본문 위치 | 입력 종류·난수 | 예상 출력·검산 |
+|---|---|---|---|
+| D455 최소 예 | [D455 공식 사용 카드](../concepts/statistics/maximum-likelihood-estimation.qmd#sec-mle-d455) | 고정 $d=(1,2,4)$ m, $z=(1.015,2.023,4.039)$ m; 난수 없음 | $\widehat s=1.008$, $\widehat b=0.007$ m; 역보정으로 원 거리 복원 |
+| D455 거리별 4회 예 | [독립 실행 Python 블록](../concepts/statistics/maximum-likelihood-estimation.qmd#sec-mle-d455) | 고정 noise 배열; 난수 없음 | `np.linalg.lstsq`; $A^Tr\approx0$, rank 2 확인 |
+| D455 정적 이상치 실험 | [정적 실험 미리보기](../concepts/statistics/maximum-likelihood-estimation.qmd#정적-실험-미리보기-웹-상호작용은-후속-구현) | seed `20260716`; 거리 5개×40; $s=1.008$, $b=0.007$ m; $\sigma=0.010$ m; 표본 0,20,…,180에 +0.150 m | 본문 표의 0%/5% 추정값, RMSE, 중앙 절대잔차와 JSON 함수 계약 |
+| 엔코더 최소제곱 | [파이썬 구현](../concepts/statistics/maximum-likelihood-estimation.qmd#파이썬-구현-안정적인-풀이와-음의-로그우도) | 고정 배열; 난수 없음 | `theta_hat`, `residual_sum`, `rank`, `singular_values`; rank 미달 시 실패 |
+| 일반 가우스 NLL | [같은 Python 절](../concepts/statistics/maximum-likelihood-estimation.qmd#파이썬-구현-안정적인-풀이와-음의-로그우도) | 고정 직선자료; 난수 없음 | 정규화항을 포함한 유한 NLL; $\sigma\le0$이면 무한대 |
+
+재현할 때는 최소한 장치·펌웨어·SDK/드라이버 버전, 영상 형식·해상도·노출, 실제 `get_depth_scale()` 반환값, 프레임 시각, 표적·거리·표면·조명·온도, ROI와 0 처리 규칙, 적합/검증 분할, 좌표계·단위를 함께 기록한다.
+
+## 6. 추가 읽기
+
+- Pawitan, [*In All Likelihood*, 1st ed.](https://academic.oup.com/book/53921): Ch.5의 빈도주의적 성질, Chs.8–9의 점수·정보·큰 표본 이론, Ch.13의 모형 오지정을 본문 다음 단계로 읽기 좋다.
+- Yudi Pawitan, [*In All Likelihood*, 2nd ed.](https://academic.oup.com/book/62606), Oxford University Press, 2026, DOI [10.1093/oso/9780198950929.001.0001](https://doi.org/10.1093/oso/9780198950929.001.0001). 이 페이지의 정확한 쪽 추적은 1판을 기준으로 했으므로 2판에서는 장 제목으로 다시 찾아야 한다.
+- NIST/SEMATECH, [e-Handbook §1.3.6.5.2](https://www.itl.nist.gov/div898/handbook/eda/section3/eda3652.htm): 증명보다 공학적 장단점과 소프트웨어 구현 관점의 복습용이다.
+- RealSense 공식 위키, [Projection in RealSense SDK 2.0](https://github.com/realsenseai/librealsense/wiki/Projection-in-RealSense-SDK-2.0): 깊이·픽셀·점·외부변환의 좌표계 계약을 실제 코드와 연결할 때 다시 참고한다.
+
+본문으로 돌아가기: [최대우도추정 — 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기](../concepts/statistics/maximum-likelihood-estimation.qmd).

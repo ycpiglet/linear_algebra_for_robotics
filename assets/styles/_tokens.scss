@@ -1,0 +1,102 @@
+/* Robotics Math Atlas design tokens.
+ * This is the single source of truth for web color, spacing, type and motion.
+ * Component styles must consume these variables instead of introducing magic values.
+ */
+:root {
+  color-scheme: light;
+
+  /* Semantic color */
+  --atlas-ink: #172033;
+  --atlas-ink-soft: #34415a;
+  --atlas-muted: #5b6578;
+  --atlas-canvas: #fbfcfe;
+  --atlas-surface: #ffffff;
+  --atlas-surface-2: #f3f6fb;
+  --atlas-line: #d7dfeb;
+  --atlas-line-strong: #b9c6d8;
+  --atlas-blue: #1459b8;
+  --atlas-blue-strong: #0d438e;
+  --atlas-blue-soft: #e8f1ff;
+  --atlas-teal: #087f78;
+  --atlas-teal-soft: #dcf7f2;
+  --atlas-amber: #955000;
+  --atlas-amber-soft: #fff2d6;
+  --atlas-coral: #a92f49;
+  --atlas-coral-soft: #ffe8ed;
+  --atlas-violet: #6740ad;
+  --atlas-violet-soft: #f1eaff;
+  --atlas-green: #217a4c;
+  --atlas-green-soft: #e1f5e9;
+  --atlas-strong: #103f82;
+  --atlas-emphasis: #6340a5;
+  --atlas-highlight: #ffe58f;
+
+  /* Type */
+  --atlas-font-body: "Pretendard Variable", Pretendard, "Noto Sans KR", "Noto Sans CJK KR", "Apple SD Gothic Neo", Inter, system-ui, -apple-system, sans-serif;
+  --atlas-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --atlas-font-size-body: clamp(1rem, 0.97rem + 0.12vw, 1.075rem);
+  --atlas-leading-body: 1.9;
+  --atlas-leading-compact: 1.52;
+  --atlas-tracking-body: 0.016em;
+  --atlas-tracking-heading: -0.016em;
+  --atlas-measure: 76ch;
+  --atlas-paragraph-gap: 1.55rem;
+  --atlas-math-gap: 2rem;
+  --atlas-media-gap: 2.75rem;
+  --atlas-block-gap: 2.25rem;
+
+  /* 4 px-derived spacing scale */
+  --atlas-space-1: 0.25rem;
+  --atlas-space-2: 0.5rem;
+  --atlas-space-3: 0.75rem;
+  --atlas-space-4: 1rem;
+  --atlas-space-5: 1.25rem;
+  --atlas-space-6: 1.5rem;
+  --atlas-space-8: 2rem;
+  --atlas-space-10: 2.5rem;
+  --atlas-space-12: 3rem;
+  --atlas-space-16: 4rem;
+
+  /* Shape, elevation and motion */
+  --atlas-radius-sm: 0.55rem;
+  --atlas-radius: 1rem;
+  --atlas-radius-lg: 1.4rem;
+  --atlas-shadow-sm: 0 5px 18px rgb(29 48 78 / 6%);
+  --atlas-shadow: 0 12px 35px rgb(29 48 78 / 10%);
+  --atlas-shadow-float: 0 18px 48px rgb(29 48 78 / 15%);
+  --atlas-duration-fast: 140ms;
+  --atlas-duration-standard: 240ms;
+  --atlas-ease: cubic-bezier(0.2, 0, 0, 1);
+  --atlas-content: 78rem;
+}
+
+.quarto-dark {
+  color-scheme: dark;
+  --atlas-ink: #edf2fa;
+  --atlas-ink-soft: #cbd5e5;
+  --atlas-muted: #aab4c6;
+  --atlas-canvas: #101621;
+  --atlas-surface: #171f2d;
+  --atlas-surface-2: #202a3a;
+  --atlas-line: #344157;
+  --atlas-line-strong: #53627a;
+  --atlas-blue: #91c0ff;
+  --atlas-blue-strong: #b6d6ff;
+  --atlas-blue-soft: #1d3554;
+  --atlas-teal: #7bdcd0;
+  --atlas-teal-soft: #173e3c;
+  --atlas-amber: #ffc56c;
+  --atlas-amber-soft: #49371d;
+  --atlas-coral: #ff9caf;
+  --atlas-coral-soft: #4d2530;
+  --atlas-violet: #c5a8ff;
+  --atlas-violet-soft: #382b50;
+  --atlas-green: #87d9a9;
+  --atlas-green-soft: #183d2b;
+  --atlas-strong: #a8ceff;
+  --atlas-emphasis: #d0baff;
+  --atlas-highlight: #665315;
+  --atlas-shadow-sm: 0 6px 20px rgb(0 0 0 / 18%);
+  --atlas-shadow: 0 14px 38px rgb(0 0 0 / 28%);
+  --atlas-shadow-float: 0 20px 54px rgb(0 0 0 / 38%);
+}

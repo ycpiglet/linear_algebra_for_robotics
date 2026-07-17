@@ -1,0 +1,18 @@
+---
+title: "로봇공학 수학 용어집"
+subtitle: "한국어 · English · ABBR · notation"
+description: "교재에서 사용하는 핵심 용어의 한영 표기, 약어, 짧은 정의와 관련 개념"
+toc: false
+---
+
+::: {.concept-hero}
+## 단어를 외우는 목록이 아니라 개념 사이의 번역기
+
+처음 등장할 때는 **한글명(English name, ABBR)**을 함께 쓰고, 이후에는 문맥에 맞춰 한글명 또는 약어 하나를 사용합니다. 용어 카드는 대표 표기와 혼동하기 쉬운 이웃 개념을 함께 보여줍니다.
+:::
+
+::: {.callout-important title="가장 자주 생기는 오류"}
+<abbr title="Maximum Likelihood Estimation — 최대우도추정">MLE</abbr>는 **Maximum Likelihood Estimation**, 즉 **최대우도추정**입니다. `Minimum Likelihood Estimation`이 아닙니다. 또한 우도(likelihood)는 관측 데이터를 고정해 모수의 함수로 읽고, 확률(probability)은 모수를 고정해 가능한 데이터를 확률변수로 읽습니다.
+:::
+
+{{< include platform/generated/glossary.qmd >}}

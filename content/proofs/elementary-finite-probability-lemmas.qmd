@@ -1,0 +1,212 @@
+---
+title: "보조정리: 유한 확률 증명에 쓰는 집중·합집합·Borel–Cantelli"
+id: proof.elementary-finite-probability-lemmas
+kind: proof
+domain: probability
+one-line: "Particle Filter와 유한상태 MCMC 증명에서 사용하는 Markov·Chebyshev 부등식, 유한 합집합 논리, 첫 Borel–Cantelli 보조정리를 직접 증명한다."
+difficulty: 3
+level: finite
+dependencies: []
+assumptions:
+  - "등장하는 확률변수의 명시된 1차 또는 2차 적률은 유한하다."
+prerequisites:
+  proof:
+    required:
+      - concept: probability.measure-foundations
+        competency: explain
+        reason: 조건부기댓값과 거의 확실한 수렴이라는 표현을 읽는다.
+---
+
+::: {.depth-proof}
+
+## 이 페이지의 역할
+
+이 페이지는 뒤의 두 완결 증명에서 외부 정리 이름만 호출하지 않도록 필요한 확률 부등식을 한곳에 증명한다. 일반 측도론을 새로 전개하지는 않으며, 확률과 조건부기댓값의 단조성·선형성은 [확률·측도 기반](../concepts/probability/measure-probability-foundations.qmd)에서 정의된 기본 성질로 사용한다.
+
+## 보조정리 1: Markov 부등식
+
+### 명제
+
+$Z\ge0$이고 $\mathbb E[Z]<\infty$, $a>0$이면
+
+$$
+P(Z\ge a)\le\frac{\mathbb E[Z]}a.
+$$
+
+### 증명
+
+모든 표본점에서
+
+$$
+Z\ge a\,\mathbf1_{\{Z\ge a\}}
+$$
+
+다. 양변의 기댓값을 취하면
+
+$$
+\mathbb E[Z]
+\ge a\,\mathbb E[\mathbf1_{\{Z\ge a\}}]
+=aP(Z\ge a).
+$$
+
+$a>0$으로 나누면 결론을 얻는다. $\square$
+
+## 보조정리 2: 조건부 Markov와 Chebyshev 부등식
+
+### 조건부 Markov
+
+$Z\ge0$이고 sigma-field $\mathcal G$가 주어지면 위의 점별 부등식에 조건부기댓값을 취해
+
+$$
+P(Z\ge a\mid\mathcal G)
+=\mathbb E[\mathbf1_{\{Z\ge a\}}\mid\mathcal G]
+\le\frac{\mathbb E[Z\mid\mathcal G]}a
+$$
+
+를 얻는다. 이 부등식은 거의 확실하게 성립한다.
+
+### 조건부 Chebyshev
+
+$M$이 $\mathcal G$-measurable이고
+
+$$
+\mathbb E[(X-M)^2\mid\mathcal G]\le v
+$$
+
+가 거의 확실하게 성립한다고 하자. $Z=(X-M)^2$, $a=\varepsilon^2$를 조건부 Markov 부등식에 넣으면
+
+$$
+P(|X-M|\ge\varepsilon\mid\mathcal G)
+\le\frac{v}{\varepsilon^2}.
+$$
+
+$\mathcal G$가 자명한 sigma-field이고 $M=\mathbb E[X]$이면 보통 Chebyshev 부등식이 된다.
+
+## 보조정리 3: Union bound
+
+사건 $E_1,\ldots,E_K$에 대해 점별로
+
+$$
+\mathbf1_{\cup_{k=1}^K E_k}
+\le\sum_{k=1}^K\mathbf1_{E_k}.
+$$
+
+기댓값을 취하면
+
+$$
+P\left(\bigcup_{k=1}^K E_k\right)
+\le\sum_{k=1}^KP(E_k).
+$$
+
+독립성은 필요하지 않다. 가산 합집합도 유한 부분합에 먼저 적용하고 단조극한을 취하면 같은 부등식을 얻는다.
+
+## 보조정리 4: 유한 벡터의 성분수렴
+
+$K$가 고정된 유한 정수이고 각 $k$에 대해
+
+$$
+Z_{N,k}\xrightarrow{p}0
+$$
+
+라고 하자. 그러면
+
+$$
+\sum_{k=1}^K|Z_{N,k}|\xrightarrow{p}0.
+$$
+
+### 증명
+
+합이 $\varepsilon$보다 크면 적어도 한 성분은 $\varepsilon/K$보다 커야 한다. 따라서 union bound로
+
+$$
+\begin{aligned}
+P\left(\sum_{k=1}^K|Z_{N,k}|>\varepsilon\right)
+&\le
+P\left(\bigcup_{k=1}^K
+\{|Z_{N,k}|>\varepsilon/K\}\right)\\
+&\le\sum_{k=1}^K
+P(|Z_{N,k}|>\varepsilon/K)
+\longrightarrow0.
+\end{aligned}
+$$
+
+$\square$
+
+같은 논리로 유한한 시각 $t=0,\ldots,T$에서 각각 확률수렴하면 그 최대값도 확률수렴한다.
+
+## 보조정리 5: 첫 Borel–Cantelli
+
+### 명제
+
+사건열 $E_1,E_2,\ldots$에 대해
+
+$$
+\sum_{k=1}^{\infty}P(E_k)<\infty
+$$
+
+이면 $E_k$가 무한히 자주 일어날 확률은 0이다.
+
+### 증명
+
+무한히 자주 일어나는 사건은
+
+$$
+\{E_k\ \text{i.o.}\}
+=\bigcap_{K=1}^{\infty}\bigcup_{k=K}^{\infty}E_k
+$$
+
+다. Union bound로
+
+$$
+P\left(\bigcup_{k=K}^{\infty}E_k\right)
+\le\sum_{k=K}^{\infty}P(E_k).
+$$
+
+우변은 수렴급수의 tail이므로 $K\to\infty$에서 0으로 간다. 여기서 필요한 확률의 위에서의 연속성도 countable additivity에서 바로 나온다. 감소사건 $A_K$에 대해
+
+$$
+D_K=A_K\setminus A_{K+1},
+\qquad
+A_\infty=\bigcap_KA_K
+$$
+
+라 두면 $D_K$들은 서로소이고
+
+$$
+A_K=A_\infty\;\dot\cup\!
+\bigcup_{j=K}^{\infty}D_j.
+$$
+
+Countable additivity로
+
+$$
+P(A_K)=P(A_\infty)+
+\sum_{j=K}^{\infty}P(D_j).
+$$
+
+$\sum_jP(D_j)\le1$이므로 tail은 0으로 가고 $P(A_K)\to P(A_\infty)$다. 이를
+
+$$
+A_K=\bigcup_{k=K}^{\infty}E_k
+$$
+
+에 적용하면
+
+$$
+P(E_k\ \text{i.o.})
+=\lim_{K\to\infty}
+P\left(\bigcup_{k=K}^{\infty}E_k\right)=0.
+$$
+
+$\square$
+
+### 독립성이 필요하지 않음
+
+첫 Borel–Cantelli에는 독립성이 필요하지 않다. 반대 방향, 즉 확률합이 무한하면 사건이 무한히 자주 발생한다는 결론에는 추가 독립성 조건이 필요하며 여기서는 사용하지 않는다.
+
+## 사용처
+
+- [Bootstrap Particle Filter의 유한상태 고정-horizon 일관성](bootstrap-particle-filter-fixed-horizon-consistency.qmd)
+- [유한상태 MH convergence와 ergodic average](finite-state-mh-convergence-ergodic-average.qmd)
+
+:::

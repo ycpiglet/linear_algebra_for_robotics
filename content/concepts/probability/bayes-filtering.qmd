@@ -1,0 +1,199 @@
+---
+title: "Bayes Filtering 재귀"
+id: estimation.bayes-filtering
+kind: concept
+domain: estimation
+aliases:
+  - Bayesian filtering
+  - Bayes filter
+  - predict-update recursion
+one-line: "이전 posterior를 동역학으로 예측하고 새 측정 likelihood로 보정한다."
+difficulty: 3
+prerequisites:
+  intuition:
+    required:
+      - concept: probability.measure-foundations
+        competency: explain
+        reason: 확률분포·조건부분포라는 말의 범위를 구분한다.
+    helpful: []
+  proof:
+    required:
+      - concept: probability.measure-foundations
+        competency: explain
+        reason: 조건부독립과 밀도 factorization을 정확히 읽는다.
+    helpful: []
+relations:
+  requires:
+    - probability.measure-foundations
+  used-in:
+    - estimation.sequential-importance-sampling
+    - estimation.bootstrap-particle-filter
+---
+
+::: {.callout-note title="30초 핵심"}
+$$
+\underbrace{p(x_t\mid y_{1:t-1})}_{\text{예측}}
+=\int f_t(x_t\mid x_{t-1})p(x_{t-1}\mid y_{1:t-1})dx_{t-1},
+$$
+
+$$
+\underbrace{p(x_t\mid y_{1:t})}_{\text{보정}}
+=\frac{g_t(y_t\mid x_t)p(x_t\mid y_{1:t-1})}
+{\int g_t(y_t\mid u)p(u\mid y_{1:t-1})du}.
+$$
+
+Bayes filter는 특정 알고리즘이 아니라 모든 Bayesian filtering 방법이 근사하려는 정확한 재귀다.
+:::
+
+::: {.depth-intuition}
+
+## 해결하려는 문제
+
+숨은 상태 $X_t$는 직접 보이지 않고 센서 $Y_t$만 관측한다고 하자. 시간 $t$에 필요한 것은 미래 측정을 쓰지 않은 현재 상태분포
+
+$$
+p(x_t\mid y_{1:t})
+$$
+
+다. 이를 filtering distribution이라 한다.
+
+- **prediction:** 아직 $y_t$를 보기 전의 믿음
+- **filtering:** $y_t$까지 본 현재 상태의 믿음
+- **smoothing:** 미래 측정 $y_{t+1:T}$까지 사용한 과거 상태의 믿음
+
+단순 low-pass smoothing과 Bayesian smoothing은 같은 단어를 쓰더라도 정의가 다르다.
+
+:::
+
+::: {.depth-derivation}
+
+## 상태공간모형과 가정
+
+이 페이지에서는 공통 기준측도에 대한 다음 밀도가 존재한다고 가정한다.
+
+$$
+X_0\sim\mu_0(x_0),\qquad
+X_t\mid X_{t-1}=x_{t-1}\sim f_t(x_t\mid x_{t-1}),
+$$
+
+$$
+Y_t\mid X_t=x_t\sim g_t(y_t\mid x_t).
+$$
+
+그래프 구조가 의미하는 핵심 조건부독립은 다음 두 가지다.
+
+1. **Markov 상태:** $X_t\perp X_{0:t-2},Y_{1:t-1}\mid X_{t-1}$
+2. **현재상태 측정:** $Y_t\perp X_{0:t-1},Y_{1:t-1}\mid X_t$
+
+따라서 joint density는
+
+$$
+p(x_{0:t},y_{1:t})
+=\mu_0(x_0)\prod_{s=1}^t
+f_s(x_s\mid x_{s-1})g_s(y_s\mid x_s)
+$$
+
+로 factorization된다.
+
+::: {.callout-warning title="가정이 깨지면"}
+센서 bias를 상태에 넣지 않았는데 시간상관이 강하게 남는다면, $Y_t$가 현재 $X_t$만으로 과거와 조건부독립이라는 모델이 틀릴 수 있다. 식을 버리는 대신 bias나 colored-noise state를 추가해 Markov 상태를 확장한다.
+:::
+
+## 재귀 유도
+
+### 1. Prediction
+
+전확률법칙과 Markov 조건을 적용한다.
+
+$$
+\begin{aligned}
+p(x_t\mid y_{1:t-1})
+&=\int p(x_t,x_{t-1}\mid y_{1:t-1})dx_{t-1}\\
+&=\int p(x_t\mid x_{t-1},y_{1:t-1})
+ p(x_{t-1}\mid y_{1:t-1})dx_{t-1}\\
+&=\int f_t(x_t\mid x_{t-1})
+ p(x_{t-1}\mid y_{1:t-1})dx_{t-1}.
+\end{aligned}
+$$
+
+### 2. Update
+
+Bayes 정리와 측정 조건부독립을 적용한다.
+
+$$
+\begin{aligned}
+p(x_t\mid y_{1:t})
+&=\frac{p(y_t\mid x_t,y_{1:t-1})p(x_t\mid y_{1:t-1})}
+{p(y_t\mid y_{1:t-1})}\\
+&=\frac{g_t(y_t\mid x_t)p(x_t\mid y_{1:t-1})}
+{\int g_t(y_t\mid u)p(u\mid y_{1:t-1})du}.
+\end{aligned}
+$$
+
+분모는 predictive likelihood이며 update 후 적분이 1이 되게 한다. 관측된 $y_t$에서 이 값이 0이면 조건부분포가 이 식으로 정의되지 않는다.
+
+:::
+
+::: {.depth-application}
+
+## 가장 작은 유한상태 예
+
+문이 열림(1) 또는 닫힘(0) 상태라고 하자. 예측분포가
+
+$$
+P(X_t=1\mid y_{1:t-1})=0.6
+$$
+
+이고, 센서가 `열림`을 보고할 확률이 실제 열림일 때 0.9, 닫힘일 때 0.2라면
+
+$$
+P(X_t=1\mid y_{1:t})
+=\frac{0.9\cdot0.6}{0.9\cdot0.6+0.2\cdot0.4}
+=\frac{0.54}{0.62}\approx0.871.
+$$
+
+측정은 상태를 확정하지 않고 likelihood만큼 상대적 믿음을 바꾼다.
+
+## 언제 닫힌형으로 계산되는가
+
+- 선형 전이·선형 측정·Gaussian 잡음: Kalman filter
+- 유한상태: 행렬 곱과 원소별 곱
+- 일반 비선형·비Gaussian: 적분이 닫히지 않아 EKF, UKF, quadrature, Particle Filter 등으로 근사
+
+## 실패와 반례
+
+### likelihood와 posterior를 혼동
+
+$g_t(y_t\mid x_t)$는 $x_t$에 대한 확률밀도일 필요가 없으며, 그 자체로 적분 1이 되지 않는다. prior/predictive distribution과 곱하고 정규화해야 posterior가 된다.
+
+### 측정을 두 번 사용
+
+같은 $y_t$를 두 번 update하면 독립적인 새 정보처럼 세어 uncertainty를 과도하게 줄인다.
+
+### 틀린 noise independence
+
+서로 상관된 센서를 독립 likelihood의 곱으로 처리하면 같은 오차 원인을 중복 계산할 수 있다.
+
+:::
+
+## 엄밀성 범위
+
+유한상태에서는 모든 적분을 합으로 바꾸면 위 유도가 완전하다. 연속상태에서는 명시한 공통 기준측도에 대한 밀도가 존재한다고 가정했다. 일반 kernel과 정규 조건부분포를 사용하는 버전은 [확률·측도 기반](measure-probability-foundations.qmd)의 심화 범위다.
+
+## 다음 연결
+
+- path 전체를 proposal에서 표본화: [Sequential Importance Sampling](sequential-importance-sampling.qmd)
+- 상태전이를 proposal로 선택하고 매번 resampling: [Bootstrap Particle Filter](bootstrap-particle-filter.qmd)
+- 목표별 체크리스트: [Particle Filter 학습 경로](../../paths/particle-filter.qmd)
+
+## 회상 점검
+
+1. prediction과 update 식을 각각 말로 설명하라.
+2. 두 조건부독립 가정이 joint factorization의 어느 항을 만든다고 볼 수 있는가?
+3. filtering과 smoothing은 어떤 관측정보 집합이 다른가?
+4. predictive likelihood가 0인 관측에서는 왜 단순 Bayes 밀도식이 정의되지 않는가?
+
+## 참고문헌
+
+- Simo Särkkä and Lennart Svensson, *Bayesian Filtering and Smoothing*.
+- Arnaud Doucet, Nando de Freitas, and Neil Gordon (eds.), *Sequential Monte Carlo Methods in Practice*.

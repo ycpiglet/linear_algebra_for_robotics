@@ -1,0 +1,219 @@
+---
+title: "Bootstrap Particle Filter"
+id: estimation.bootstrap-particle-filter
+kind: concept
+domain: estimation
+aliases:
+  - bootstrap filter
+  - condensation algorithm
+  - SIR particle filter
+  - Sequential Importance Resampling
+one-line: "상태전이를 proposal로 사용하고 likelihood로 weight한 뒤 resampling하는 가장 기본적인 Particle Filter다."
+difficulty: 4
+prerequisites:
+  intuition:
+    required:
+      - concept: estimation.bayes-filtering
+        competency: explain
+        reason: 근사하려는 predict-update 재귀를 알아야 한다.
+      - concept: probability.importance-sampling
+        competency: explain
+        reason: likelihood weight의 의미를 이해한다.
+      - concept: estimation.resampling
+        competency: explain
+        reason: weighted particles를 다시 균등가중으로 만드는 이유를 안다.
+    helpful: []
+  implementation:
+    required:
+      - concept: estimation.sequential-importance-sampling
+        competency: derive
+        reason: transition proposal에서 incremental weight가 likelihood로 줄어드는 과정을 알아야 한다.
+      - concept: estimation.resampling
+        competency: calculate
+        reason: ancestor index와 offspring count를 안전하게 구현한다.
+    helpful: []
+relations:
+  requires:
+    - estimation.bayes-filtering
+    - probability.importance-sampling
+    - estimation.sequential-importance-sampling
+    - estimation.resampling
+  derived-from:
+    - estimation.sequential-importance-sampling
+  used-in: []
+---
+
+::: {.callout-note title="30초 핵심"}
+Bootstrap Particle Filter는 다음 세 동작을 반복한다.
+
+1. **복제·제거:** 이전 weight로 ancestor를 resample한다.
+2. **예측:** 선택한 ancestor에서 상태전이 $f_t$로 새 입자를 전파한다.
+3. **보정:** 새 측정 likelihood $g_t(y_t\mid x_t)$로 weight한다.
+
+상태전이를 proposal로 썼기 때문에 SIS의 전이/proposal 비율이 약분되어 incremental weight가 likelihood만 남는다.
+:::
+
+::: {.depth-intuition}
+
+## 무엇을 근사하는가
+
+정확한 목표는 [Bayes filter](bayes-filtering.qmd)의
+
+$$
+p(x_t\mid y_{1:t})
+$$
+
+다. 입자집합은 empirical measure
+
+$$
+\widehat\pi_t^N(dx)=\sum_{i=1}^NW_t^{(i)}\delta_{X_t^{(i)}}(dx)
+$$
+
+로 이를 근사한다. 따라서 관심 함수에 대해
+
+$$
+\mathbb E[\varphi(X_t)\mid y_{1:t}]
+\approx\sum_iW_t^{(i)}\varphi(X_t^{(i)})
+$$
+
+를 계산한다. Dirac measure $\delta_x$는 `x에서 질량 1`인 확률측도이지 보통 함수가 아니다.
+
+:::
+
+::: {.depth-derivation}
+
+## 이 페이지의 정확한 convention
+
+여러 교재가 `propagate–weight–resample`과 `resample–propagate–weight`를 섞어 쓴다. 여기서는 매 시각 다음 **resample–propagate–weight** 알고리즘으로 고정한다.
+
+### 초기화 $t=0$
+
+시각 0의 측정이 없다는 convention을 쓴다.
+
+$$
+X_0^{(i)}\sim\mu_0,
+\qquad W_0^{(i)}=1/N.
+$$
+
+시각 0 측정 $y_0$가 있다면 $g_0(y_0\mid X_0^{(i)})$로 weight하고 정규화한 뒤 시작한다.
+
+### 반복 $t\ge1$
+
+1. **Resample**
+
+   $$
+   A_{t-1}^{(i)}\sim\operatorname{Categorical}(W_{t-1}^{(1:N)})
+   $$
+
+   여기서는 증명 기준으로 multinomial resampling을 쓴다. 구현에서는 residual/stratified/systematic으로 바꿀 수 있다.
+
+2. **Propagate**
+
+   $$
+   X_t^{(i)}\sim f_t(\cdot\mid X_{t-1}^{(A_{t-1}^{(i)})}).
+   $$
+
+3. **Weight**
+
+   $$
+   \widetilde W_t^{(i)}=g_t(y_t\mid X_t^{(i)}),
+   \qquad
+   W_t^{(i)}=\frac{\widetilde W_t^{(i)}}{\sum_j\widetilde W_t^{(j)}}.
+   $$
+
+분모가 0이면 모든 입자가 관측과 불가능하다는 뜻이므로 알고리즘이 정의되지 않는다. 임의의 균등 weight로 덮어쓰면 모델 실패를 숨기게 된다.
+
+## 왜 likelihood만 남는가
+
+SIS incremental weight는
+
+$$
+\frac{f_t(x_t\mid x_{t-1})g_t(y_t\mid x_t)}
+{q_t(x_t\mid x_{t-1},y_t)}.
+$$
+
+Bootstrap filter는 $q_t=f_t$로 두므로, proposal support 안에서
+
+$$
+\alpha_t=g_t(y_t\mid x_t)
+$$
+
+가 된다. 이는 heuristic이 아니라 [SIS weight 재귀](../../proofs/sis-weight-recursion.qmd)의 특수형이다.
+
+:::
+
+::: {.depth-application}
+
+## 가장 작은 예
+
+로봇 위치가 정수 격자에 있고 transition이 `왼쪽/제자리/오른쪽`으로 움직인다고 하자. 거리센서 측정 $y_t$가 들어오면:
+
+- 각 입자를 motion model로 한 칸 전파한다.
+- map에서 예상되는 거리와 실제 $y_t$의 차이로 likelihood를 계산한다.
+- 측정과 맞는 위치의 입자를 큰 weight로 둔다.
+- 다음 시각 전 resampling으로 그 위치의 가설을 더 많이 남긴다.
+
+입자 하나는 로봇 한 대가 아니라 **가능한 상태 가설 하나**다.
+
+## 가정과 보장 범위
+
+| 항목 | 이 페이지의 범위 |
+|---|---|
+| 모델 | 올바르게 정규화된 $\mu_0,f_t,g_t$, 관측된 $y_{1:t}$에서 유한·양의 정규화 상수 |
+| proposal | 매 시각 transition prior $f_t$ |
+| resampling | 구현은 여러 scheme을 허용하지만 연결된 일관성 증명은 매-step multinomial로 한정 |
+| 수렴 | [유한상태 고정-horizon 증명](../../proofs/bootstrap-particle-filter-fixed-horizon-consistency.qmd)은 $T<\infty$를 고정하고 $N\to\infty$일 때 empirical filter의 확률수렴을 보장 |
+| 비보장 | 고정 $N$에서 $t\to\infty$ 안정성, 고차원 효율, 정확한 finite-N posterior 표본 |
+
+::: {.callout-warning title="증명 경계"}
+현재 묶음은 weight 재귀, resampling 조건부 unbiasedness, 그리고 **유한 상태·고정 horizon·multinomial resampling**에서의 consistency를 완전증명한다. 일반 Feynman–Kac 모형의 particle LLN/CLT와 time-uniform stability는 별도 측도확률·SMC 증명 트랙에서 다룬다.
+:::
+
+## 실패 모드
+
+### 날카로운 likelihood
+
+transition proposal은 현재 측정을 보지 않고 입자를 만든다. 센서가 매우 정확하면 대부분 입자가 측정 지지영역을 놓치고 weight가 붕괴한다. guided/locally optimal proposal이 필요할 수 있다.
+
+### 고차원의 저주
+
+상태 차원이 증가하면 prior와 likelihood의 겹침이 급격히 작아질 수 있다. 입자 수를 조금 늘리는 것으로 해결되지 않는다.
+
+### 입자 빈곤
+
+resampling 뒤 동일한 ancestor가 반복된다. transition noise가 작거나 static parameter를 상태처럼 복제하면 다양성이 회복되지 않는다. MCMC rejuvenation, Rao–Blackwellization, parameter-specific method를 고려한다.
+
+### 잘못된 covariance·likelihood
+
+측정 noise를 실제보다 작게 두면 likelihood가 과도하게 날카로워지고 filter가 잘못된 가설에 확신할 수 있다. outlier에는 heavy-tailed/mixture likelihood나 gating이 필요할 수 있다.
+
+## 구현 안전 체크
+
+- log-likelihood로 계산하고 `log-sum-exp`로 정규화
+- 모든 weight가 finite인지 검사
+- 분모 0/NaN을 명시적 실패로 보고
+- resampling 전후 ancestor index를 별도 배열에 보관
+- seed와 resampling scheme을 기록
+- RMSE뿐 아니라 ESS, 고유 ancestor 수, log predictive score를 기록
+- 작은 유한 HMM에서 exact filter와 비교
+
+## 연결
+
+- 전체 목표별 순서: [Particle Filter 학습 경로](../../paths/particle-filter.qmd)
+- 엄밀한 유한상태 결과: [고정-horizon consistency 증명](../../proofs/bootstrap-particle-filter-fixed-horizon-consistency.qmd)
+- MCMC move를 결합하기 위한 기초: [Metropolis–Hastings](metropolis-hastings.qmd)
+
+:::
+
+## 회상 점검
+
+1. Bootstrap Particle Filter에서 proposal은 무엇인가?
+2. incremental weight가 likelihood만 남는 약분을 써라.
+3. `resample–propagate–weight`와 다른 convention을 섞으면 어느 weight가 틀릴 수 있는가?
+4. 고정 $t$, $N\to\infty$ 결과가 고정 $N$, $t\to\infty$ 성능을 보장하지 않는 이유는 무엇인가?
+
+## 참고문헌
+
+- N. J. Gordon, D. J. Salmond, and A. F. M. Smith, “Novel approach to nonlinear/non-Gaussian Bayesian state estimation,” 1993.
+- Arnaud Doucet and Adam M. Johansen, “A Tutorial on Particle Filtering and Smoothing.”
+- Pierre Del Moral, *Feynman-Kac Formulae*.

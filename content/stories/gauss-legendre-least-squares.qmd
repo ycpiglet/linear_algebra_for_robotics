@@ -1,0 +1,43 @@
+---
+id: story.gauss_legendre_least_squares
+title: "먼저 발표한 Legendre, 더 일찍 썼다고 주장한 Gauss"
+one_line: "최소제곱의 유명한 우선권 논쟁은 발견, 출판, 전달, 정당화가 서로 다른 업적임을 보여 준다."
+kind: history
+reading_time: "5분"
+related_concepts: [linalg.least_squares]
+sources:
+  - title: "Gauss and the Invention of Least Squares"
+    author: "Stephen M. Stigler"
+    year: 1981
+    url: "https://doi.org/10.1214/aos/1176345451"
+---
+
+# 먼저 발표한 Legendre, 더 일찍 썼다고 주장한 Gauss
+
+여러 천문·측지 관측을 하나의 궤도나 지구 모양에 맞추려면 서로 모순되는 측정을 절충해야 했다. 최소제곱은 이 현실적인 문제에서 성장했다.
+
+Adrien-Marie Legendre는 1805년에 최소제곱법을 출판했다. Carl Friedrich Gauss는 1809년 저술에서 자신이 그 방법을 훨씬 전부터 사용해 왔다고 주장했다. 이후 이 문제는 통계사에서 가장 유명한 우선권 논쟁 중 하나가 되었다.
+
+역사가 Stephen M. Stigler는 문헌과 데이터에 근거해 Gauss의 조기 사용 주장을 검토하면서도 결론을 단순하게 확정하지 않았다. 그의 분석은 Gauss가 더 일찍 방법을 갖고 있었을 가능성을 논하지만, 동시대 연구자에게 이를 효과적으로 전달하지 못한 문제도 함께 지적한다. [Stigler, “Gauss and the Invention of Least Squares,” 1981](https://doi.org/10.1214/aos/1176345451)
+
+## 누가 ‘발명’했는가보다 더 좋은 질문
+
+한 알고리즘의 역사를 이해할 때는 서로 다른 기여를 나누어 묻는 편이 정확하다.
+
+- 누가 먼저 사용했는가?
+- 누가 먼저 공개했는가?
+- 누가 재현 가능한 방법으로 설명했는가?
+- 누가 확률적 또는 수학적 정당화를 제공했는가?
+- 누가 다른 사람이 사용할 수 있게 확산했는가?
+
+이 구분은 현대 연구에도 그대로 적용된다. 코드가 개인 노트에만 있으면 공동체가 검증할 수 없고, 먼저 공개했다고 해서 모든 후속 정당화까지 한 사람이 한 것은 아니다.
+
+## 수학적 기억 단서
+
+최소제곱은 처음부터 하나의 관점만 가진 방법이 아니었다. 관측을 절충하는 계산법, 기하학적 투영, Gaussian likelihood, 수치 factorization이라는 여러 층이 역사적으로도 나뉘어 발전했다. 그래서 교재에서도 “공식 하나”로 끝내지 않고 가정에 따라 관점을 분리한다.
+
+## 돌아가기
+
+- [최소제곱의 네 관점](../concepts/linalg/least-squares.qmd#네-관점)
+- [최소제곱 학습 경로](../paths/least-squares.qmd)
+

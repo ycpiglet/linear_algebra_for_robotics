@@ -1,0 +1,37 @@
+---
+title: "숨 고르기"
+description: "역사, 어원, 연구자, 공학 실패와 비하인드 이야기"
+toc: false
+---
+
+고밀도 수식 사이에서 2–4분 정도 읽을 수 있는 이야기입니다. 모든 역사적 주장은 출처를
+붙이고, 최초 발견·현대적 정식화·대중적 일화를 구분합니다.
+
+::: {.story-grid #story-list}
+::: {.story-card}
+### 자동조타선에서 태어난 PID의 시간 감각
+
+큰 관성과 지연을 가진 선박은 왜 현재 오차만 보아서는 조종하기 어려웠을까요? Minorsky의
+1922년 자동조타 연구를 현대 PID 용어로 과장하지 않고 읽습니다.
+
+<span class="story-card__meta">역사 · 약 4분</span>
+
+[이야기 읽기](content/stories/minorsky-steering.qmd)
+:::
+
+::: {.story-card}
+### 먼저 발표한 Legendre, 더 일찍 썼다고 주장한 Gauss
+
+최소제곱 우선권 논쟁을 통해 발견·출판·전달·정당화가 왜 서로 다른 연구 업적인지
+살펴봅니다.
+
+<span class="story-card__meta">수학사 · 약 5분</span>
+
+[이야기 읽기](content/stories/gauss-legendre-least-squares.qmd)
+:::
+:::
+
+::: {.callout-note title="이야기를 고르는 기준"}
+Nobel상만 억지로 연결하지 않습니다. 주제에 따라 Turing·Fields·IEEE의 역사, 실제 공학
+사고, 표준화 과정, 이름과 기호가 생긴 배경이 더 적절할 수 있습니다.
+:::

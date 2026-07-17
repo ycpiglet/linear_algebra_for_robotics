@@ -1,0 +1,22 @@
+---
+title: "실험실"
+description: "공식을 움직이고 실패 조건을 관찰하는 재현 가능한 Python 실험"
+toc: true
+---
+
+수학적 증명과 수치실험의 역할은 다릅니다. 증명은 명제가 가정 아래 항상 참임을 보이고,
+실험은 크기·노이즈·수치오차가 실제 결과에 미치는 영향을 눈으로 확인하게 합니다.
+
+| 실험 | 확인할 질문 | 핵심 패키지 |
+|---|---|---|
+| [PID 응답](pid-lab.qmd) | P·I·D 항이 시간응답을 어떻게 바꾸는가? | NumPy, Matplotlib |
+| [최소제곱 기하](least-squares-lab.qmd) | 잔차의 직교성과 조건수는 어떻게 보이는가? | NumPy, Matplotlib |
+| [Kalman Filter](kalman-lab.qmd) | 예측과 측정의 불확실성이 gain을 어떻게 정하는가? | NumPy, Matplotlib |
+| [Particle Filter](particle-filter-lab.qmd) | 가중치 퇴화와 재표본화가 언제 일어나는가? | NumPy, Matplotlib |
+| [MCMC](mcmc-lab.qmd) | proposal scale이 수락률과 mixing에 어떤 영향을 주는가? | NumPy, Matplotlib |
+
+::: {.callout-warning title="그래프가 증명을 대신하지는 않습니다"}
+유한 개 난수 seed에서 잘 작동했다는 사실은 불편성, 일관성, 불변분포를 증명하지 않습니다.
+각 실험은 해당 증명 페이지와 쌍으로 읽도록 구성합니다.
+:::
+

@@ -1,0 +1,204 @@
+---
+title: "Sequential Importance Sampling (SIS)"
+id: estimation.sequential-importance-sampling
+kind: concept
+domain: estimation
+aliases:
+  - SIS
+  - 순차 중요도 표본추출
+  - sequential importance weights
+one-line: "시간이 한 단계 늘어날 때 path weight도 새 전이·likelihood·proposal의 비율만 곱해 재귀적으로 갱신한다."
+difficulty: 4
+prerequisites:
+  intuition:
+    required:
+      - concept: probability.importance-sampling
+        competency: calculate
+        reason: 목표/proposal 밀도비와 normalized weight를 알아야 한다.
+      - concept: estimation.bayes-filtering
+        competency: explain
+        reason: 상태공간모형과 filtering 목표를 알아야 한다.
+    helpful: []
+  proof:
+    required:
+      - concept: probability.measure-foundations
+        competency: explain
+        reason: path density와 support 조건을 정확히 읽는다.
+      - concept: probability.importance-sampling
+        competency: derive
+        reason: path-space IS ratio를 재귀식으로 변형한다.
+      - concept: estimation.bayes-filtering
+        competency: derive
+        reason: unnormalized filtering target factorization을 사용한다.
+    helpful: []
+relations:
+  requires:
+    - probability.importance-sampling
+    - estimation.bayes-filtering
+  used-in:
+    - estimation.bootstrap-particle-filter
+---
+
+::: {.callout-note title="30초 핵심"}
+상태 path $x_{0:t}$의 unnormalized target을 $\gamma_t$, sequential proposal을 $q_{0:t}$라 하면
+
+$$
+\widetilde w_t(x_{0:t})
+=\frac{\gamma_t(x_{0:t})}{q_{0:t}(x_{0:t})}
+=\widetilde w_{t-1}(x_{0:t-1})
+\frac{f_t(x_t\mid x_{t-1})g_t(y_t\mid x_t)}
+{q_t(x_t\mid x_{0:t-1},y_{1:t})}.
+$$
+
+과거 weight를 처음부터 다시 계산할 필요 없이 새 항만 곱한다.
+:::
+
+::: {.depth-intuition}
+
+## SIS가 해결하는 문제
+
+Bayes filtering target은 측정이 들어올 때마다 바뀐다. 매 시각 path 전체를 새로 표본화하는 대신, 기존 path 뒤에 새 상태를 하나 붙이고 importance weight를 재귀적으로 갱신하는 것이 SIS다.
+
+::: {.callout-important title="SIS와 Particle Filter의 구분"}
+이 페이지의 SIS에는 **resampling이 없다**. 보통 Particle Filter라고 부르는 SIR/SISR 알고리즘은 SIS에 [resampling](resampling.qmd)을 결합한다.
+:::
+
+:::
+
+::: {.depth-derivation}
+
+## 대상과 proposal
+
+관측 $y_{1:t}$를 고정하자. 상태공간모형의 unnormalized path target은
+
+$$
+\gamma_t(x_{0:t})
+=\mu_0(x_0)\prod_{s=1}^t
+f_s(x_s\mid x_{s-1})g_s(y_s\mid x_s).
+$$
+
+그 정규화 상수는 $p(y_{1:t})$이고, 정규화하면 smoothing path posterior $p(x_{0:t}\mid y_{1:t})$가 된다.
+
+Sequential proposal은
+
+$$
+q_{0:t}(x_{0:t}\mid y_{1:t})
+=q_0(x_0)\prod_{s=1}^t
+q_s(x_s\mid x_{0:s-1},y_{1:s})
+$$
+
+로 factorization한다고 정한다. 더 많은 관측을 proposal에 넣을 수도 있지만, 여기서는 online filtering에 맞는 형태를 사용한다.
+
+## 한 입자의 갱신
+
+입자 $i$마다 다음을 수행한다.
+
+1. $X_t^{(i)}\sim q_t(\cdot\mid X_{0:t-1}^{(i)},y_{1:t})$
+2. incremental weight
+
+   $$
+   \alpha_t^{(i)}=
+   \frac{f_t(X_t^{(i)}\mid X_{t-1}^{(i)})g_t(y_t\mid X_t^{(i)})}
+   {q_t(X_t^{(i)}\mid X_{0:t-1}^{(i)},y_{1:t})}
+   $$
+
+3. $\widetilde w_t^{(i)}=\widetilde w_{t-1}^{(i)}\alpha_t^{(i)}$
+4. $W_t^{(i)}=\widetilde w_t^{(i)}/\sum_j\widetilde w_t^{(j)}$
+
+초기 weight는
+
+$$
+\widetilde w_0^{(i)}=\frac{\mu_0(X_0^{(i)})}{q_0(X_0^{(i)})}
+$$
+
+이다. 만약 시각 0의 측정 $y_0$를 모델에 포함하면 분자에 $g_0(y_0\mid X_0^{(i)})$도 들어간다. convention을 섞지 않는다.
+
+전체 비율에서 공통항을 약분하는 완전한 유도는 [SIS weight 재귀 증명](../../proofs/sis-weight-recursion.qmd)에 있다.
+
+## filtering expectation
+
+path 입자의 마지막 좌표만 사용하여
+
+$$
+\mathbb E[\varphi(X_t)\mid y_{1:t}]
+\approx\sum_{i=1}^N W_t^{(i)}\varphi(X_t^{(i)})
+$$
+
+로 filtering expectation을 근사한다. path target을 사용했다고 해서 과거 상태의 smoothing 근사가 자동으로 좋은 것은 아니다. 긴 시간에는 path degeneracy가 발생한다.
+
+## proposal 선택
+
+### Prior/transition proposal
+
+$$
+q_t(x_t\mid\cdots)=f_t(x_t\mid x_{t-1})
+$$
+
+이면 전이항이 약분되어
+
+$$
+\alpha_t=g_t(y_t\mid x_t).
+$$
+
+구현은 쉽지만 likelihood가 날카로우면 대부분의 새 입자가 측정과 맞지 않는다.
+
+### 현재 측정을 반영한 proposal
+
+이상적인 locally optimal proposal은 조건이 맞을 때
+
+$$
+q_t^*(x_t\mid x_{t-1},y_t)=p(x_t\mid x_{t-1},y_t)
+$$
+
+이며, 주어진 ancestor에서 incremental weight의 조건부분산을 최소화한다. 다만 이 조건부분포에서 표본을 뽑고 정규화 상수를 계산할 수 있어야 한다.
+
+## 핵심 가정
+
+| 가정 | 의미 |
+|---|---|
+| path support | $\gamma_t(x_{0:t})>0$인 관심 영역에서 $q_{0:t}(x_{0:t})>0$ |
+| 계산 가능성 | unnormalized target와 proposal density를 표본점에서 평가 가능 |
+| sequential factorization | proposal이 명시한 $q_0\prod q_s$ 꼴이며 실제 샘플링 절차와 동일 |
+| 유한 정규화 | $0<p(y_{1:t})<\infty$ |
+
+:::
+
+::: {.depth-application}
+
+## 언제 실패하는가
+
+### Weight degeneracy
+
+시간이 흐르면 weight가 계속 곱해져 소수 입자만 살아남는다. 큰 $N$도 시간을 무한히 늘릴 때 자동 해결책이 아니다.
+
+### Path degeneracy
+
+resampling을 넣어도 오래된 ancestor는 몇 개로 합쳐진다. filtering이 양호해도 초기상태 smoothing은 나쁠 수 있다.
+
+### 수치 underflow
+
+작은 likelihood를 계속 곱하면 float가 0이 된다. log-weight를 더하고, 매 시각 최대 log-weight를 빼 `log-sum-exp` 방식으로 정규화한다.
+
+### 잘못된 분모
+
+실제로는 $q_t(x_t\mid x_{t-1},y_t)$에서 뽑았는데 분모를 $f_t$로 쓰면 다른 proposal에 대한 weight가 되어 target을 근사하지 않는다.
+
+## 다음 연결
+
+- weight 집중을 완화하는 [Resampling](resampling.qmd)
+- transition proposal과 매-step resampling을 결합한 [Bootstrap Particle Filter](bootstrap-particle-filter.qmd)
+- 목표별 전체 지도인 [Particle Filter 학습 경로](../../paths/particle-filter.qmd)
+
+:::
+
+## 회상 점검
+
+1. SIS의 target은 현재 상태만이 아니라 어떤 공간 위에 정의되는가?
+2. incremental weight의 분자와 분모를 각각 말로 설명하라.
+3. transition proposal을 쓰면 왜 likelihood만 남는가?
+4. weight degeneracy와 path degeneracy는 어떻게 다른가?
+
+## 참고문헌
+
+- Arnaud Doucet and Adam M. Johansen, “A Tutorial on Particle Filtering and Smoothing.”
+- Pierre Del Moral, *Feynman-Kac Formulae*.

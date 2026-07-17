@@ -1,0 +1,61 @@
+project:
+  type: book
+  output-dir: _proof
+
+book:
+  title: "Robotics Math Atlas — 증명 해설서(Proof Companion)"
+  subtitle: "입자 필터·순차몬테카를로(SMC)·마르코프연쇄 몬테카를로(MCMC)의 가정, 정리, 유도와 증명"
+  author: "Robotics Math Atlas contributors"
+  search: true
+  chapters:
+    - index.qmd
+    - proofs.qmd
+    - part: "입자 필터·순차몬테카를로(SMC) 개념"
+      chapters:
+        - content/concepts/probability/measure-probability-foundations.qmd
+        - content/concepts/probability/monte-carlo.qmd
+        - content/concepts/probability/bayes-filtering.qmd
+        - content/concepts/probability/importance-sampling.qmd
+        - content/concepts/probability/sequential-importance-sampling.qmd
+        - content/concepts/probability/resampling.qmd
+        - content/concepts/probability/bootstrap-particle-filter.qmd
+        - content/paths/particle-filter.qmd
+    - part: "입자 필터·순차몬테카를로(SMC) 증명"
+      chapters:
+        - content/proofs/elementary-finite-probability-lemmas.qmd
+        - content/proofs/importance-sampling-identity.qmd
+        - content/proofs/self-normalized-importance-sampling-consistency.qmd
+        - content/proofs/sis-weight-recursion.qmd
+        - content/proofs/resampling-unbiasedness.qmd
+        - content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.qmd
+    - part: "마르코프연쇄 몬테카를로(MCMC) 개념"
+      chapters:
+        - content/concepts/probability/markov-chain.qmd
+        - content/concepts/probability/detailed-balance.qmd
+        - content/concepts/probability/metropolis-hastings.qmd
+        - content/paths/mcmc.qmd
+    - part: "마르코프연쇄 몬테카를로(MCMC) 증명"
+      chapters:
+        - content/proofs/detailed-balance-implies-invariance.qmd
+        - content/proofs/metropolis-hastings-invariance.qmd
+        - content/proofs/finite-state-mh-convergence-ergodic-average.qmd
+    - part: "재현 실험"
+      chapters:
+        - courseware/labs/particle-filter-lab.qmd
+        - courseware/labs/mcmc-lab.qmd
+
+format:
+  html:
+    theme:
+      light:
+        - cosmo
+        - assets/styles/theme.scss
+      dark:
+        - darkly
+        - assets/styles/theme.scss
+    toc-depth: 4
+    include-after-body: assets/includes/atlas-scripts.html
+  typst:
+    toc: true
+    section-numbering: "1.1.1"
+    mainfont: "Noto Sans CJK KR"

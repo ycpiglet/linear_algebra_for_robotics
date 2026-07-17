@@ -1,0 +1,187 @@
+---
+title: "증명: Metropolis–Hastings Kernel의 Invariance"
+id: proof.metropolis-hastings-invariance
+kind: proof
+domain: probability
+one-line: "유한상태에서 MH accept/reject flow가 detailed balance를 만족하고 따라서 목표분포를 보존함을 증명한다."
+difficulty: 4
+level: finite
+dependencies:
+  - proof.detailed-balance-implies-invariance
+assumptions:
+  - "상태공간은 유한하고 proposal matrix는 row-stochastic이다."
+  - "목표 확률질량함수는 정규화 가능하며 acceptance와 rejection self-loop를 명시한 대로 구성한다."
+proves:
+  - probability.metropolis-hastings
+prerequisites:
+  proof:
+    required:
+      - concept: probability.detailed-balance
+        competency: prove
+        reason: MH flow의 대칭성에서 invariance를 결론낸다.
+      - concept: probability.markov-chain
+        competency: calculate
+        reason: 유한 transition kernel과 self-loop를 구성한다.
+---
+
+::: {.depth-proof}
+
+## Proof Contract
+
+### 범위
+
+유한 상태공간 $\mathsf X$. 이 범위를 선택하면 0-probability 상태와 rejection mass를 합으로 명확히 처리할 수 있다. 일반상태 density/kernel 증명은 같은 flow identity를 product measure 위에서 사용하지만 측도론 선수가 추가된다.
+
+### 가정과 표기
+
+1. $\pi_x\ge0$, $\sum_x\pi_x=1$: 목표 확률질량함수.
+2. $Q_{xy}\ge0$, $\sum_yQ_{xy}=1$: proposal transition matrix.
+3. $a_{xy}=\pi_xQ_{xy}$, $b_{xy}=\pi_yQ_{yx}=a_{yx}$.
+4. Acceptance probability를 다음처럼 정의한다.
+
+   $$
+   \alpha_{xy}=
+   \begin{cases}
+   \min(1,b_{xy}/a_{xy}),&a_{xy}>0,\\
+   1,&a_{xy}=0.
+   \end{cases}
+   $$
+
+   $a_{xy}=0$인 경우의 값은 전방 proposal flow가 0이므로 실제 이동 flow에 영향을 주지 않는다. 1은 편의상 택한 convention이다.
+
+5. MH transition matrix를 $y\ne x$에서
+
+   $$
+   P_{xy}=Q_{xy}\alpha_{xy}
+   $$
+
+   로 두고, 대각항을
+
+   $$
+   P_{xx}=1-\sum_{y\ne x}Q_{xy}\alpha_{xy}
+   $$
+
+   로 둔다. 이는 self-proposal과 모든 rejection probability를 현재 상태에 모은 값이다.
+
+### 결론
+
+1. $P$는 유효한 transition matrix다.
+2. $P$는 $\pi$에 대해 detailed balance를 만족한다.
+3. 따라서 $\pi P=\pi$.
+
+## 1단계: $P$가 transition matrix임
+
+$0\le\alpha_{xy}\le1$이므로 off-diagonal $P_{xy}\ge0$이고
+
+$$
+0\le\sum_{y\ne x}Q_{xy}\alpha_{xy}
+\le\sum_{y\ne x}Q_{xy}\le1.
+$$
+
+따라서 $P_{xx}\ge0$이다. 정의에서 바로
+
+$$
+\sum_yP_{xy}
+=P_{xx}+\sum_{y\ne x}P_{xy}=1
+$$
+
+이므로 각 행 합이 1이다.
+
+## 2단계: Off-diagonal flow가 대칭임
+
+$x\ne y$를 고정한다. 두 경우를 나눈다.
+
+### 경우 A: $a_{xy}>0$
+
+Acceptance 정의로
+
+$$
+\pi_xP_{xy}
+=\pi_xQ_{xy}\min(1,b_{xy}/a_{xy})
+=a_{xy}\min(1,b_{xy}/a_{xy})
+=\min(a_{xy},b_{xy}).
+$$
+
+### 경우 B: $a_{xy}=0$
+
+이때
+
+$$
+\pi_xP_{xy}=a_{xy}\alpha_{xy}=0
+=\min(a_{xy},b_{xy}).
+$$
+
+따라서 모든 경우에
+
+$$
+\pi_xP_{xy}
+=\min\{\pi_xQ_{xy},\pi_yQ_{yx}\}.
+$$
+
+오른쪽은 $x,y$를 바꾸어도 같으므로
+
+$$
+\pi_xP_{xy}=\pi_yP_{yx}
+\qquad(x\ne y).
+$$
+
+## 3단계: 대각항과 invariance
+
+$x=y$에서는 detailed balance 식이
+
+$$
+\pi_xP_{xx}=\pi_xP_{xx}
+$$
+
+로 자명하다. 따라서 모든 상태쌍에서 detailed balance가 성립한다. [Detailed balance $\Rightarrow$ invariance](detailed-balance-implies-invariance.qmd)를 적용하면
+
+$$
+\pi P=\pi.
+$$
+
+$\square$
+
+## Unnormalized target을 써도 되는 이유
+
+$\pi_x=\widetilde\pi_x/Z$, $0<Z<\infty$라면 $a_{xy}>0$인 acceptance ratio는
+
+$$
+\frac{\pi_yQ_{yx}}{\pi_xQ_{xy}}
+=\frac{(\widetilde\pi_y/Z)Q_{yx}}
+{(\widetilde\pi_x/Z)Q_{xy}}
+=\frac{\widetilde\pi_yQ_{yx}}
+{\widetilde\pi_xQ_{xy}}.
+$$
+
+따라서 계산하기 어려운 정규화 상수 $Z$가 소거된다. 단, $0<Z<\infty$여서 실제 확률분포 $\pi$가 존재해야 목표분포 불변성을 말할 수 있다.
+
+## 이 증명이 보장하지 않는 것
+
+### Irreducibility
+
+Proposal graph가 두 component로 끊겨 있으면 MH도 그 사이를 이동하지 못할 수 있다. Detailed balance는 각 component 안에서만 성립해도 전체 invariance와 양립한다.
+
+### Aperiodicity
+
+Rejection self-loop가 양의 확률이면 흔히 periodicity를 깨는 데 도움이 되지만, 모든 상태에서 rejection이 반드시 발생하는 것은 아니다. 별도 확인이 필요하다.
+
+### Mixing speed와 CLT
+
+Invariance는 autocorrelation이 작거나 Monte Carlo standard error가 유한하다는 뜻이 아니다. 유한상태 irreducible·aperiodic이면 convergence가 따르지만, 일반 상태공간에서는 recurrence와 drift/minorization 등의 추가 조건이 필요할 수 있다.
+
+## Density 기반 일반형의 경계
+
+공통 기준측도에 대한 $\pi(x)$와 proposal density $q(y\mid x)$가 있으면 off-diagonal accepted flow density는
+
+$$
+\min\{\pi(x)q(y\mid x),\pi(y)q(x\mid y)\}
+$$
+
+로 대칭이다. Rejection은 $x$의 원자 $\delta_x(dy)$에 놓인다. 이 식을 일반 kernel equality로 완결하려면 product measure와 kernel의 측정 가능성을 다루어야 하며, [확률·측도 기반](../concepts/probability/measure-probability-foundations.qmd)의 심화 범위에 둔다.
+
+## 사용처
+
+- [Metropolis–Hastings](../concepts/probability/metropolis-hastings.qmd)
+- [MCMC 학습 경로](../paths/mcmc.qmd)
+
+:::

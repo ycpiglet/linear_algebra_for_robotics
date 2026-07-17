@@ -1,0 +1,90 @@
+---
+id: linalg.linear_system
+title: "선형 시스템 Ax=b: 여러 식을 한 번에 푸는 언어"
+aliases: ["linear system", "연립일차방정식", "Ax=b"]
+domain: linear_algebra
+one_line: "Ax=b는 미지수 x를 선형 결합해 관측 또는 목표 b를 만드는 모델이다."
+difficulty: 1
+summary: "행렬–벡터 곱을 열벡터의 조합으로 읽고 해의 존재·유일성, shape, rank와 inverse의 적용 조건을 소개한다."
+reading_time: {quick: "5분", core: "25분", full: "50분"}
+prerequisites:
+  intuition: {required: [], helpful: [], not_required: []}
+  application: {required: [], helpful: [], not_required: []}
+  derivation: {required: [], helpful: [], not_required: []}
+  proof: {required: [], helpful: [], not_required: []}
+  teaching: {required: [], helpful: [], not_required: []}
+relations:
+  requires: []
+  helpful: []
+  derived_from: []
+  deepens: [linalg.orthogonal_projection, linalg.least_squares]
+  contrasts_with: [systems.state_space]
+  same_structure_as: [statistics.linear_measurement]
+  used_in: [linalg.least_squares, probability.gaussian_conditioning, estimation.kalman_filter]
+review:
+  prompts:
+    - "행렬–벡터 곱을 열벡터의 선형결합으로 설명할 수 있는가?"
+    - "해의 존재·유일성과 정사각 inverse의 조건을 구분할 수 있는가?"
+tags: [matrix, vector, linear-system, rank]
+---
+
+::: {.concept-hero}
+## 30초 핵심
+
+$Ax=b$에서 **행은 하나의 식**, **열은 한 미지수가 출력 전체에 미치는 패턴**이다. 정확한 해가 없거나 여러 개일 수 있으며, 그때 최소제곱과 minimum-norm 해가 등장한다.
+:::
+
+:::: {.depth-intuition}
+## 먼저 떠올릴 이미지
+
+$A=[a_1\;a_2]$라면 $Ax=x_1a_1+x_2a_2$다. 즉, 행렬–벡터 곱은 $A$의 열벡터를 계수 $x_i$만큼 섞어 $b$를 만드는 일이다. “$b$를 만들 조합비 $x$를 찾는다”가 핵심 이미지다.
+
+## 가장 작은 예
+
+$$
+\begin{bmatrix}1&1\\1&-1\end{bmatrix}
+\begin{bmatrix}x_1\\x_2\end{bmatrix}
+=
+\begin{bmatrix}4\\2\end{bmatrix}
+$$
+은 $x_1+x_2=4$, $x_1-x_2=2$와 같다. 두 식을 더하면 $2x_1=6$이므로 $x=(3,1)^\top$이다.
+
+## 작동하는 정의와 shape
+
+$$A\in\mathbb R^{m\times n},\quad x\in\mathbb R^n,\quad b\in\mathbb R^m.$$
+
+- $m$: 식 또는 관측의 수
+- $n$: 미지수 또는 parameter의 수
+- $Ax$: $A$가 $x$를 출력 공간으로 보내는 선형사상
+
+해가 존재하려면 $b$가 $A$의 column space에 있어야 한다. 열이 독립이고 $m\ge n$이면 해가 존재할 때 유일하지만, 관측 잡음이 있으면 보통 정확한 해가 없다.
+::::
+
+:::: {.depth-application}
+## 전제 장부
+
+| 구분 | 내용 |
+|---|---|
+| 정확한 사실 | $A^{-1}$은 $A$가 정사각이고 가역일 때만 존재한다. |
+| 공학 관례 | 계산에서는 명시적 inverse보다 factorization과 `solve`를 쓴다. |
+| 가정 | 예에서는 모든 수를 정확하게 표현할 수 있다고 보았다. |
+| 실패 조건 | rank deficiency와 큰 condition number는 해를 모호하거나 민감하게 만든다. |
+::::
+
+:::: {.depth-proof}
+## 엄밀히 말하면
+
+행렬이 정사각이라고 해서 역행렬이 항상 있는 것은 아니다. 또한 $m\ne n$인 문제를 억지로 $A^{-1}b$로 쓰면 안 된다. 관측이 식보다 많아 exact solution이 없을 때 [최소제곱](least-squares.qmd)이 가장 가까운 $Ax$를 찾는다.
+::::
+
+## 다음과 복귀
+
+- 기하학적 다음 단계: [직교투영](orthogonal-projection.qmd)
+- 데이터 fitting: [최소제곱](least-squares.qmd)
+- 시간에 따라 상태가 변하는 모델과 혼동했다면: [상태공간](../systems/state-space.qmd)
+
+## 회상 점검
+
+1. $A\in\mathbb R^{5\times3}$이면 $x,b$의 shape는 무엇인가?
+2. $Ax$를 $A$의 열벡터 조합으로 써 보라.
+3. $A^{-1}b$라는 표현을 사용할 수 없는 두 경우를 말하라.

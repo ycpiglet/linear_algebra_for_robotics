@@ -1,0 +1,108 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Robotics Math Atlas"
+  subtitle: "제어·추정·확률추론을 위한 연결형 수학"
+  author: "Robotics Math Atlas contributors"
+  date: last-modified
+  search: true
+  downloads: [pdf, epub]
+  chapters:
+    - index.qmd
+    - curriculum.qmd
+    - paths.qmd
+    - atlas.qmd
+    - part: "공통 언어"
+      chapters:
+        - content/concepts/foundations/change-and-accumulation.qmd
+        - content/concepts/linalg/linear-systems.qmd
+        - content/concepts/linalg/orthogonal-projection.qmd
+        - content/concepts/probability/mean-covariance.qmd
+        - content/concepts/probability/gaussian-conditioning.qmd
+        - content/concepts/systems/state-space.qmd
+    - part: "로봇 미분기구학"
+      chapters:
+        - content/concepts/robotics/jacobian.qmd
+        - content/references/jacobian-references.qmd
+    - part: "제어에서 시작하기"
+      chapters:
+        - content/concepts/control/feedback.qmd
+        - content/concepts/control/pid.qmd
+        - content/paths/pid.qmd
+    - part: "최소제곱과 상태추정"
+      chapters:
+        - content/concepts/linalg/least-squares.qmd
+        - content/concepts/statistics/maximum-likelihood-estimation.qmd
+        - content/references/maximum-likelihood-estimation-references.qmd
+        - content/paths/least-squares.qmd
+        - content/concepts/estimation/kalman-filter.qmd
+        - content/references/kalman-filter-references.qmd
+        - content/paths/kalman-filter.qmd
+    - part: "입자 필터(Particle filter)와 순차몬테카를로(SMC)"
+      chapters:
+        - content/concepts/probability/measure-probability-foundations.qmd
+        - content/concepts/probability/monte-carlo.qmd
+        - content/concepts/probability/bayes-filtering.qmd
+        - content/concepts/probability/importance-sampling.qmd
+        - content/concepts/probability/sequential-importance-sampling.qmd
+        - content/concepts/probability/resampling.qmd
+        - content/concepts/probability/bootstrap-particle-filter.qmd
+        - content/paths/particle-filter.qmd
+    - part: "마르코프연쇄 몬테카를로(MCMC)"
+      chapters:
+        - content/concepts/probability/markov-chain.qmd
+        - content/concepts/probability/detailed-balance.qmd
+        - content/concepts/probability/metropolis-hastings.qmd
+        - content/paths/mcmc.qmd
+    - part: "부록"
+      chapters:
+        - proofs.qmd
+        - stories.qmd
+        - content/stories/minorsky-steering.qmd
+        - content/stories/gauss-legendre-least-squares.qmd
+        - glossary.qmd
+        - design-system.qmd
+        - ui-ux-research.qmd
+        - software.qmd
+        - future-scope.qmd
+        - about.qmd
+    - part: "파이썬(Python) 실험실"
+      chapters:
+        - courseware/labs/index.qmd
+        - courseware/labs/pid-lab.qmd
+        - courseware/labs/least-squares-lab.qmd
+        - courseware/labs/kalman-lab.qmd
+        - courseware/labs/particle-filter-lab.qmd
+        - courseware/labs/mcmc-lab.qmd
+  appendices:
+    - content/proofs/elementary-finite-probability-lemmas.qmd
+    - content/proofs/importance-sampling-identity.qmd
+    - content/proofs/self-normalized-importance-sampling-consistency.qmd
+    - content/proofs/sis-weight-recursion.qmd
+    - content/proofs/resampling-unbiasedness.qmd
+    - content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.qmd
+    - content/proofs/detailed-balance-implies-invariance.qmd
+    - content/proofs/metropolis-hastings-invariance.qmd
+    - content/proofs/finite-state-mh-convergence-ergodic-average.qmd
+
+format:
+  html:
+    theme:
+      light:
+        - cosmo
+        - assets/styles/theme.scss
+      dark:
+        - darkly
+        - assets/styles/theme.scss
+    toc-depth: 3
+    include-after-body: assets/includes/atlas-scripts.html
+  typst:
+    toc: true
+    section-numbering: "1.1"
+    mainfont: "Noto Sans CJK KR"
+  epub:
+    toc: true
+    epub-cover-image: assets/cover.svg
+    css: assets/styles/epub.css

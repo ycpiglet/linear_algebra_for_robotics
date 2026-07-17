@@ -1,0 +1,179 @@
+---
+title: "Monte Carlo 적분"
+id: probability.monte-carlo
+kind: concept
+domain: probability
+aliases:
+  - Monte Carlo integration
+  - 몬테카를로 적분
+  - 표본평균 추정
+one-line: "계산하기 어려운 기댓값을 해당 분포에서 뽑은 표본의 평균으로 근사한다."
+difficulty: 2
+prerequisites:
+  intuition:
+    required: []
+    helpful:
+      - concept: probability.measure-foundations
+        competency: explain
+        reason: 확률분포와 적분의 범위를 구분하기 위해서다.
+  proof:
+    required:
+      - concept: probability.measure-foundations
+        competency: explain
+        reason: SLLN의 가정과 거의 확실한 수렴을 정확히 읽기 위해서다.
+    helpful: []
+relations:
+  requires:
+    - probability.measure-foundations
+  used-in:
+    - probability.importance-sampling
+    - estimation.resampling
+    - estimation.bootstrap-particle-filter
+---
+
+::: {.callout-note title="30초 핵심"}
+$$
+I=\mathbb E_\pi[\varphi(X)]
+\qquad\Longrightarrow\qquad
+\widehat I_N=\frac1N\sum_{i=1}^N\varphi(X^{(i)}),
+\quad X^{(i)}\overset{iid}{\sim}\pi.
+$$
+
+표본을 독립적으로 뽑을 수 있고 $\varphi(X)$가 적분 가능하면, 표본평균은 표본 수가 늘수록 참 기댓값으로 수렴한다. 분산이 유한하면 전형적인 오차 크기는 $O(N^{-1/2})$다.
+:::
+
+::: {.depth-intuition}
+
+## 무엇을 해결하는가
+
+상태 $x$의 차원이 높거나 함수가 복잡하면
+
+$$
+\int_{\mathsf X}\varphi(x)\pi(x)\,dx
+$$
+
+를 격자로 계산하기 어렵다. Monte Carlo는 전체 공간을 고르게 채우는 대신, 확률이 큰 곳을 분포 $\pi$가 스스로 더 자주 방문하게 한다.
+
+로봇공학에서는 다음 계산의 기본 부품이다.
+
+- 위치 posterior의 평균과 신뢰영역 근사
+- 센서 잡음 모델을 통한 위험확률 계산
+- Particle Filter의 입자 평균
+- MCMC posterior 표본의 함수 평균
+
+## 먼저 떠올릴 이미지
+
+넓이를 재기 위해 아주 촘촘한 자를 만드는 대신, 무작위로 점을 던져 특정 영역에 들어간 비율을 센다. 표본은 흔들리지만 반복할수록 비율이 안정된다.
+
+::: {.callout-warning title="비유의 한계"}
+표본점 그림은 수렴을 **관찰**하게 해 줄 뿐 증명하지 않는다. 독립성, 동일분포, 적분 가능성 같은 조건이 없으면 표본평균이 안정되지 않을 수 있다.
+:::
+
+## 가장 작은 예제
+
+$X\sim\operatorname{Bernoulli}(p)$, $\varphi(X)=X$라 하자. 그러면
+
+$$
+\mathbb E[X]=p,
+\qquad
+\widehat p_N=\frac{\text{성공 횟수}}{N}.
+$$
+
+Monte Carlo 평균은 이 익숙한 성공 비율을 임의의 분포와 함수로 일반화한 것이다.
+
+:::
+
+::: {.depth-derivation}
+
+## 작동하는 정의
+
+분포 $\pi$에서 i.i.d. 표본 $X^{(1:N)}$을 얻을 수 있을 때 함수 $\varphi$의 기댓값을
+
+$$
+\widehat I_N=\frac1N\sum_{i=1}^N\varphi(X^{(i)})
+$$
+
+로 추정하는 것을 여기서는 i.i.d. Monte Carlo 적분이라 부른다.
+
+### 정확한 성질
+
+$\mathbb E_\pi|\varphi(X)|<\infty$이면 SLLN에 의해
+
+$$
+\widehat I_N\xrightarrow{a.s.}I.
+$$
+
+또한 $\sigma_\varphi^2=\operatorname{Var}_\pi[\varphi(X)]<\infty$이면
+
+$$
+\mathbb E[\widehat I_N]=I,
+\qquad
+\operatorname{Var}(\widehat I_N)=\frac{\sigma_\varphi^2}{N},
+$$
+
+이고 중심극한정리 아래
+
+$$
+\sqrt N(\widehat I_N-I)\Rightarrow
+\mathcal N(0,\sigma_\varphi^2).
+$$
+
+표준편차를 절반으로 줄이려면 표본을 약 네 배 써야 한다.
+
+## 전제 장부
+
+| 구분 | 내용 |
+|---|---|
+| 표본 가정 | 이 페이지의 기본 estimator는 i.i.d. 표본을 가정한다. MCMC 표본에는 같은 분산식을 쓰지 않는다. |
+| 일관성 조건 | $\mathbb E|\varphi(X)|<\infty$ |
+| 유한 분산·CLT 조건 | $\mathbb E[\varphi(X)^2]<\infty$ 및 표준 i.i.d. CLT 조건 |
+| 계산 가정 | 표본 생성과 $\varphi$ 평가가 가능하다. |
+| 수치 주의 | 매우 큰 값의 합은 pairwise/Kahan summation 또는 log-domain 계산이 필요할 수 있다. |
+
+:::
+
+::: {.depth-application}
+
+## 언제 실패하는가
+
+### 평균 자체가 존재하지 않는 경우
+
+표준 Cauchy 분포에서 $\varphi(x)=x$이면 절대적분 가능한 평균이 없다. 표본평균의 흔들림이 줄어들 것이라는 결론도 없다.
+
+### 독립성으로 착각한 경우
+
+MCMC 표본은 일반적으로 상관되어 있다. 평균이 일관될 수는 있지만 분산은 $\sigma^2/N$이 아니며 integrated autocorrelation time을 반영해야 한다.
+
+### 희귀사건을 거의 보지 못한 경우
+
+확률 $10^{-9}$인 사건을 단순 Monte Carlo로 관찰하려면 막대한 표본이 필요하다. 이때 [Importance Sampling](importance-sampling.qmd)처럼 표본분포를 바꾸는 방법이 필요하다.
+
+## 관점 연결
+
+| 관점 | 같은 계산의 의미 |
+|---|---|
+| 확률 | 기댓값의 표본 근사 |
+| 수치해석 | 고차원 적분법 |
+| 통계 | 표본평균 estimator |
+| Particle Filter | 가중 empirical measure로 posterior 적분 근사 |
+| MCMC | 상관된 Markov-chain 표본으로 stationary expectation 근사 |
+
+## 다음 연결
+
+- 목표분포에서 직접 표본을 못 뽑는다면 [Importance Sampling](importance-sampling.qmd)
+- 시간에 따라 posterior가 변한다면 [Bayes filtering](bayes-filtering.qmd)
+- MCMC 표본을 사용한다면 [Markov chain](markov-chain.qmd)
+
+:::
+
+## 회상 점검
+
+1. Monte Carlo estimator가 unbiased인 것과 consistent인 것은 어떻게 다른가?
+2. 표준오차를 10배 줄이려면 표본 수를 몇 배 늘려야 하는가?
+3. Cauchy 표본평균을 보통 평균 추정처럼 해석하면 안 되는 이유는 무엇인가?
+4. MCMC 표본에 i.i.d. 분산식을 그대로 쓰면 어떤 양을 놓치는가?
+
+## 참고문헌
+
+- Art B. Owen, *Monte Carlo Theory, Methods and Examples*.
+- Christian P. Robert and George Casella, *Monte Carlo Statistical Methods*.

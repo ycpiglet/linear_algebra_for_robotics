@@ -1,0 +1,95 @@
+---
+id: path.pid
+title: "목표 경로: PID를 내가 원하는 깊이까지"
+one_line: "선형대수나 확률과정을 강제하지 않고 PID의 직관, 구현, 유도, 안정성 분석으로 단계적으로 들어간다."
+goal: "PID의 세 항을 설명하고, 단위와 sampling을 보존해 구현하며, 안정성 명제의 조건을 구분한다."
+estimated_time:
+  intuition: "25분"
+  application: "90분"
+  derivation: "2시간 30분"
+  proof: "4시간 이상"
+entry_points:
+  intuition: control.feedback
+  application: foundations.change_accumulation
+  derivation: systems.state_space
+  proof: systems.state_space
+steps:
+  - concept: control.feedback
+    depth: intuition
+    optional: false
+    note: "목표–출력–오차의 닫힌 고리를 먼저 잡는다."
+  - concept: foundations.change_accumulation
+    depth: application
+    optional: false
+    note: "sampling 간격을 포함한 적분과 차분을 계산한다."
+  - concept: control.pid
+    depth: application
+    optional: false
+    note: "P/I/D, derivative filter, saturation과 anti-windup을 익힌다."
+  - concept: systems.state_space
+    depth: application
+    optional: true
+    note: "폐루프 안정성까지 분석할 때만 먼저 학습한다."
+  - concept: control.pid
+    depth: proof
+    optional: true
+    note: "평형 오차와 안정성이 서로 다른 명제임을 확인한다."
+---
+
+# PID는 필요한 깊이부터 들어간다
+
+PID를 이해하기 위해 선형대수·확률·확률과정을 모두 끝낼 필요는 없다. 아래에서 현재 목표에 맞는 길 하나만 고른다. 우회한 개념을 본 뒤에는 표시된 anchor로 돌아온다.
+
+## 1. 직관만 먼저 — 약 25분
+
+```text
+피드백의 뜻 → PID 30초 핵심 → P/I/D 이미지 → 가장 작은 예
+```
+
+1. [피드백](../concepts/control/feedback.qmd)의 30초 핵심과 일상 예를 읽는다.
+2. [PID의 30초 핵심](../concepts/control/pid.qmd)으로 이동한다.
+3. `먼저 떠올릴 이미지`와 `가장 작은 작동 예`까지만 읽는다.
+4. P/I/D가 보는 시간 정보를 자기 말로 설명하면 여기서 멈춰도 된다.
+
+**이 길에 필요하지 않은 것:** 벡터공간, 고유값, 확률과정, Laplace transform.
+
+## 2. 실제 구현 — 약 90분
+
+```text
+변화율·누적 → 단위 → discrete PID → derivative filter → anti-windup
+```
+
+1. [변화율과 누적량](../concepts/foundations/change-and-accumulation.qmd)에서 $\Delta t$와 단위를 확인한다.
+2. [PID의 이산 구현](../concepts/control/pid.qmd#sec-pid-discrete)으로 돌아간다.
+3. derivative-on-measurement와 actuator saturation을 포함해 식을 손으로 한 step 계산한다.
+4. sampling rate를 절반으로 바꾸어도 같은 물리 시간 동안 I항이 비슷한지 확인한다.
+
+## 3. 왜 그런가 유도 — 약 2시간 30분
+
+```text
+상태와 평형 → 1차 대상 → P의 정상상태 오차 → PI의 조건부 오차 제거
+```
+
+1. [상태공간](../concepts/systems/state-space.qmd)에서 상태·평형·연속/이산 모델을 구분한다.
+2. [PID의 유도 절](../concepts/control/pid.qmd#왜-i항이-constant-error를-제거하는가)을 읽는다.
+3. “적분기가 있으면 오차가 0”이라는 문장 앞에 필요한 조건을 모두 붙여 다시 쓴다.
+
+## 4. 엄밀 분석으로 확장
+
+현재 pilot에서 완결하는 것은 평형 오차의 조건부 논증까지다. 다음 atlas 확장에서는 다음 순서로 이어진다.
+
+```text
+ODE → Laplace transform → pole/zero → closed-loop stability
+→ frequency response → Bode plot → delay·robustness
+```
+
+이 항목들이 아직 없다는 이유로 PID 직관·구현을 미루지 않는다.
+
+## 이 경로의 완료 기준
+
+- [ ] P/I/D의 역할과 대표 부작용을 하나씩 말한다.
+- [ ] gain의 물리 단위를 계산한다.
+- [ ] discrete PID에서 $\Delta t$를 올바르게 사용한다.
+- [ ] derivative kick과 windup의 원인을 구분한다.
+- [ ] steady-state error 0과 안정성을 같은 주장으로 말하지 않는다.
+

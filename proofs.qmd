@@ -1,0 +1,48 @@
+---
+title: "증명 지도"
+description: "가정과 의존 정리를 추적하는 별도 proof graph"
+page-layout: full
+toc: false
+---
+
+## 증명은 별도의 의존 그래프를 가집니다
+
+개념의 직관을 이해하는 데 필요한 지식과 일반 상태공간 수렴정리를 증명하는 데 필요한
+지식은 다릅니다. 증명 모드를 선택했을 때만 측도·적분·Markov kernel 등의 proof
+선수지식이 추가됩니다.
+
+<div id="proof-graph" class="atlas-graph" role="img" aria-label="정리와 증명의 의존 그래프"></div>
+<div id="proof-graph-list" class="atlas-graph-list" aria-label="증명 의존관계 목록"></div>
+
+## Proof contract
+
+모든 정리는 다음을 명시합니다.
+
+- 정확한 명제와 상태공간
+- 가정과 결론
+- 사용하는 이전 정리
+- 단계가 생략되지 않은 증명
+- 가정이 깨질 때의 반례
+- 공학적 의미
+- finite, density, general-measure 중 증명 수준
+
+수치실험은 구현을 검산하지만 증명을 대신하지 않습니다.
+
+## 현재 완결된 증명 경로
+
+| 경로 | 정확히 증명한 범위 | 문서 |
+|---|---|---|
+| IS 항등식 | 공통 기준측도에 대한 density, support·적분가능성 명시 | [증명](content/proofs/importance-sampling-identity.qmd) |
+| self-normalized IS | density 범위, SLLN을 사용한 거의확실 일관성 | [증명](content/proofs/self-normalized-importance-sampling-consistency.qmd) |
+| SIS weight 재귀 | path density와 proposal factorization 아래 단계별 약분 | [증명](content/proofs/sis-weight-recursion.qmd) |
+| resampling | 유한 입자, 네 방식의 조건부 불편성과 반례 | [증명](content/proofs/resampling-unbiasedness.qmd) |
+| Bootstrap PF | 유한 상태·고정 horizon·매 단계 multinomial resampling에서 확률수렴 | [증명](content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.qmd) |
+| detailed balance | 유한 상태에서 invariance를 함의 | [증명](content/proofs/detailed-balance-implies-invariance.qmd) |
+| MH invariance | 0 확률과 rejection mass를 포함한 유한 상태 | [증명](content/proofs/metropolis-hastings-invariance.qmd) |
+| MH/MCMC 수렴 | 유한 target support, irreducible·aperiodic 조건 아래 TV 수렴과 ergodic average | [증명](content/proofs/finite-state-mh-convergence-ergodic-average.qmd) |
+
+위 PF 정리는 $N\to\infty$이되 $T<\infty$를 고정합니다. 위 MCMC 정리는 유한 상태
+정리입니다. 일반 상태공간의 Feynman–Kac 안정성, Harris recurrence, 일반 kernel의
+ergodic theorem을 증명한 것처럼 표현하지 않으며, 필요한 측도론 선수는
+[확률·측도 기반](content/concepts/probability/measure-probability-foundations.qmd)에 경계를
+표시합니다.

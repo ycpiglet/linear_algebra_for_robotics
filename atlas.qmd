@@ -1,0 +1,49 @@
+---
+title: "지식 아틀라스"
+description: "분야, 관계, 숙달 깊이로 탐색하는 로봇공학 개념 지도"
+page-layout: full
+toc: false
+---
+
+## 전체 그래프보다 지금 필요한 주변부터
+
+거대한 전역 그래프는 전체 위치를 확인할 때만 사용합니다. 기본 화면은 선택한 개념의
+필수 선수, 관련 개념, 사용처를 1–2단계만 표시하여 시각적 과부하를 줄입니다.
+
+<div id="atlas-controls" class="atlas-controls" aria-label="지식 그래프 필터"></div>
+
+<ul class="graph-legend" aria-label="관계선 범례">
+  <li><span class="graph-legend__line graph-legend__line--required"></span>필수 선수</li>
+  <li><span class="graph-legend__line graph-legend__line--helpful"></span>도움 선수</li>
+  <li><span class="graph-legend__line"></span>관련·응용 관계</li>
+</ul>
+
+<div id="atlas-graph" class="atlas-graph" role="img" aria-label="개념 관계 그래프"></div>
+<div id="atlas-graph-list" class="atlas-graph-list" aria-label="개념 관계 목록"></div>
+
+:::: {.content-visible unless-format="html"}
+### 정적 출력용 핵심 개념 목록
+
+- [PID 제어](content/concepts/control/pid.qmd)
+- [자코비안(Jacobian)](content/concepts/robotics/jacobian.qmd)
+- [최소제곱](content/concepts/linalg/least-squares.qmd)
+- [최대우도추정(Maximum Likelihood Estimation, MLE)](content/concepts/statistics/maximum-likelihood-estimation.qmd)
+- [칼만 필터(Kalman filter)](content/concepts/estimation/kalman-filter.qmd)
+- [입자 필터(Particle filter)](content/concepts/probability/bootstrap-particle-filter.qmd)
+- [메트로폴리스–헤이스팅스(Metropolis–Hastings)](content/concepts/probability/metropolis-hastings.qmd)
+- [중앙 용어집](glossary.qmd)
+
+전체 선수관계와 역링크는 각 개념 장의 front matter 및 선수 체크 절에 정적으로도 남아 있습니다.
+::::
+
+::: {.callout-note title="그래프를 사용하지 않아도 됩니다"}
+모든 그래프 관계는 키보드로 탐색 가능한 목록으로도 제공됩니다. 검색이나 분야별 목록만
+사용해도 동일한 문서에 접근할 수 있습니다.
+
+`not_required`로 명시된 개념과 아직 작성되지 않은 미래 노드는 선수 화살표에 포함하지
+않습니다. 상단의 깊이를 바꾸면 그 단계에서 새로 필요한 관계만 추가됩니다.
+:::
+
+## 분야별 허브
+
+<div id="domain-hubs" class="domain-hubs"></div>

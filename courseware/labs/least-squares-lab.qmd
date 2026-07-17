@@ -1,0 +1,66 @@
+---
+title: "실험: 최소제곱의 투영과 조건수"
+description: "잔차 직교성과 거의 종속인 열이 계산에 미치는 영향을 시각화한다"
+jupyter: python3
+execute:
+  echo: true
+  warning: false
+---
+
+## 데이터 공간에서 보는 직교 잔차
+
+최소제곱 해 $\hat\beta$에서는 잔차 $r=y-A\hat\beta$가 $A$의 모든 열과 직교하므로
+$A^Tr\approx0$이어야 합니다.
+
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+from robotics_math_atlas import least_squares_line
+
+rng = np.random.default_rng(5)
+x = np.linspace(-2, 3, 32)
+y = 1.4 + 0.75 * x + rng.normal(0, 0.55, x.size)
+fit = least_squares_line(x, y)
+
+print("[intercept, slope] =", fit["coefficients"])
+print("A.T @ residual     =", fit["design"].T @ fit["residual"])
+print("condition number   =", fit["condition"])
+
+plt.figure(figsize=(8, 4.5))
+plt.scatter(x, y, label="measurements")
+plt.plot(x, fit["fitted"], color="#1459b8", label="least-squares line")
+plt.vlines(x, fit["fitted"], y, color="#b43c52", alpha=0.35, label="residuals")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid(alpha=0.25)
+plt.legend()
+plt.tight_layout()
+```
+
+## 정상방정식을 그대로 풀면 왜 위험한가
+
+```{python}
+epsilons = np.logspace(-1, -12, 12)
+condition_a = []
+condition_normal = []
+for epsilon in epsilons:
+    column = np.linspace(0, 1, 60)
+    matrix = np.column_stack([column, column + epsilon * np.sin(7 * column)])
+    condition_a.append(np.linalg.cond(matrix))
+    condition_normal.append(np.linalg.cond(matrix.T @ matrix))
+
+plt.figure(figsize=(8, 4.5))
+plt.loglog(epsilons, condition_a, "o-", label=r"$\kappa(A)$")
+plt.loglog(epsilons, condition_normal, "s-", label=r"$\kappa(A^TA)$")
+plt.gca().invert_xaxis()
+plt.xlabel("두 열의 차이 ε")
+plt.ylabel("condition number")
+plt.grid(which="both", alpha=0.25)
+plt.legend()
+plt.tight_layout()
+```
+
+정상방정식은 조건수를 대략 제곱합니다. 유도에는 유용하지만 실제 계산에서는 QR 또는
+SVD를 기본 선택으로 삼는 이유입니다.
+

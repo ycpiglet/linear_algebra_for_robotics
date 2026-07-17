@@ -1,0 +1,151 @@
+---
+id: domain.stable_id
+title: "한글 개념명: English Name (ABBR)"
+aliases: ["English Name", "한글 개념명", "ABBR"]
+domain: domain
+one_line: "한 문장으로 작동하는 정의를 쓴다."
+difficulty: 3
+importance: 4
+importance_note: "이 개념이 뒤의 어떤 판단·계산을 가능하게 하는지 한 문장으로 쓴다."
+practice_frequency: 4
+practice_frequency_note: "공개 구현·공식 문서·로그 분석에서 실제로 얼마나 자주 만나는지 근거를 쓴다."
+application_areas: ["로봇공학", "제어", "상태추정"]
+summary: "독자가 무엇을 직관·계산·유도하고 어떤 가정과 실패 조건을 구분할지 쓴다."
+reading_time: {quick: "5분", core: "45분", full: "100분"}
+prerequisites:
+  intuition: {required: [], helpful: [], not_required: []}
+  application: {required: [], helpful: [], not_required: []}
+  derivation: {required: [], helpful: [], not_required: []}
+  proof: {required: [], helpful: [], not_required: []}
+relations:
+  requires: []
+  helpful: []
+  derived_from: []
+  deepens: []
+  contrasts_with: []
+  same_structure_as: []
+  used_in: []
+review:
+  prompts: []
+tags: []
+---
+
+::: {.concept-hero}
+## 30초 핵심
+
+**결론을 먼저 쓴다.**
+:::
+
+::: {.learning-objectives}
+### 이 장을 마치면
+
+- 설명한다.
+- 계산한다.
+- 조건과 한계를 구분한다.
+:::
+
+::: {.concept-scorecard}
+### 이 장의 위치
+
+- **중요도 4/5** · 뒤에서 다시 쓰이는 정도
+- **난이도 3/5** · 유도까지 읽을 때 필요한 사고량
+- **실무 빈도 4/5** · 구현·로그·문서에서 직접 만나는 정도
+- **쓰임** · 로봇공학 · 제어 · 상태추정
+:::
+
+:::: {.depth-intuition}
+## 먼저 떠올릴 이미지
+
+직관과 물리·공학적 의미를 쓴다.
+
+::: {.term-card}
+### 용어 · Terminology
+
+[한글 용어]{.atlas-term data-en="English term" data-definition="짧고 독립적인 정의"}를 첫 등장에 병기한다.
+:::
+::::
+
+:::: {.depth-application}
+## 계산과 구현
+
+::: {.formula-card data-importance="5" data-difficulty="2"}
+### 핵심 식
+
+::: {.block-metrics}
+`중요도 5/5`{.metric-badge .metric-badge--importance} `난이도 2/5`{.metric-badge .metric-badge--difficulty}
+:::
+
+$$f(x)=0$$
+:::
+
+::: {.engineering-meaning}
+### 공학적 의미
+
+기호, shape, 단위, 실제 시스템을 연결한다.
+:::
+::::
+
+:::: {.depth-derivation}
+## 유도
+
+출발점부터 중간 단계를 생략하지 않는다.
+
+::: {.derivation-step}
+### 1단계 · 무엇을 바꾸는가
+
+$$a=b\;\Longrightarrow\;a+c=b+c$$
+
+**변경:** 양변에 같은 $c$를 더했다.  
+**이유:** 등식의 양변에 같은 연산을 적용하면 등식이 유지된다.  
+**사용 조건:** 덧셈이 정의된 같은 공간의 원소여야 한다.
+:::
+::::
+
+:::: {.depth-proof}
+## 엄밀히 말하면
+
+::: {.assumption-box}
+### 가정
+
+정의역과 조건을 명시한다.
+:::
+
+::: {.mistake-card}
+### 흔한 오해
+
+반례나 실패 조건을 쓴다.
+:::
+::::
+
+::: {.history-card}
+### 숨 고르기
+
+검증 가능한 역사·어원·사례를 짧게 쓴다.
+:::
+
+::: {.simulation-placeholder}
+### 정적 실험 미리보기 · 추후 상호작용 예정
+
+현재 판에서는 대표 입력 세 가지의 결과를 표·그림으로 비교한다. 웹 실험판에서는 아래
+조절 막대와 실행 버튼을 활성화한다.
+
+`입력`{.simulation-placeholder__label} `[────●────]`{.simulation-placeholder__control}
+
+| 입력 | 예상 출력 | 관찰할 점 |
+|---:|---:|---|
+| 0 | 0 | 기준 상태 |
+| 1 | 1 | 선형 응답 |
+| 2 | 2 | 비례 관계 |
+:::
+
+## 이 장의 참고문헌과 근거
+
+- 정의·유도·사례를 직접 뒷받침하는 1차 자료 또는 공식 문서를 쓴다.
+- 제품 수치에는 조회일, 모델/버전, 단위, 공개 여부를 적는다.
+- 본문 주장 옆에는 이 절 또는 별도 장별 참고문헌 페이지 링크를 둔다.
+
+## 회상 점검
+
+1. 정의를 자기 말로 설명하라.
+2. 계산에 필요한 조건을 쓰라.
+3. 실패 사례를 하나 구성하라.

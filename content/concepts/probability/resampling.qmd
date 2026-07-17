@@ -1,0 +1,174 @@
+---
+title: "Particle Resampling"
+id: estimation.resampling
+kind: concept
+domain: estimation
+aliases:
+  - resampling
+  - 재표본추출
+  - multinomial resampling
+  - systematic resampling
+one-line: "가중 입자집합을 같은 기대 empirical measure를 갖는 균등가중 입자집합으로 무작위 복제·제거한다."
+difficulty: 3
+prerequisites:
+  intuition:
+    required:
+      - concept: probability.monte-carlo
+        competency: explain
+        reason: 입자집합이 분포의 적분을 근사한다는 뜻을 알아야 한다.
+    helpful:
+      - concept: probability.importance-sampling
+        competency: explain
+        reason: normalized weight가 어디서 생기는지 알 수 있다.
+  proof:
+    required:
+      - concept: probability.monte-carlo
+        competency: calculate
+        reason: empirical average의 조건부기댓값을 계산한다.
+    helpful: []
+relations:
+  requires:
+    - probability.monte-carlo
+  used-in:
+    - estimation.bootstrap-particle-filter
+---
+
+::: {.callout-note title="30초 핵심"}
+가중 입자 $\{(x^{(i)},W^{(i)})\}_{i=1}^N$를 ancestor index $A^{(1:N)}$로 다시 뽑아
+
+$$
+\bar x^{(j)}=x^{(A^{(j)})},\qquad \bar W^{(j)}=1/N
+$$
+
+로 만든다. 좋은 resampling scheme은 각 원래 입자의 offspring count $N_i$에 대해
+
+$$
+\mathbb E[N_i\mid\mathcal F]=NW^{(i)}
+$$
+
+를 만족한다. 그러면 resampling 직후 empirical integral은 조건부로 unbiased다.
+:::
+
+::: {.depth-intuition}
+
+## 왜 필요한가
+
+[Sequential Importance Sampling](sequential-importance-sampling.qmd)에서는 weight가 시간마다 곱해져 몇 개 입자만 거의 모든 질량을 차지한다. 작은 weight 입자 계산은 거의 기여하지 않으면서 비용만 쓴다. Resampling은 큰 weight 입자를 복제하고 작은 weight 입자를 제거하여 계산 자원을 재배치한다.
+
+::: {.callout-warning title="Resampling은 새 정보를 만들지 않는다"}
+입자를 복제한다고 상태 다양성이 늘어나는 것은 아니다. 오히려 서로 같은 복사본이 생긴다. 다음 transition이나 MCMC move가 다양성을 다시 만들어야 한다.
+:::
+
+:::
+
+::: {.depth-derivation}
+
+## 정확한 입력과 출력
+
+입력 sigma-field $\mathcal F$가 입자 $x^{(1:N)}$와 normalized weights $W^{(1:N)}$를 포함한다고 하자.
+
+$$
+W^{(i)}\ge0,\qquad \sum_{i=1}^N W^{(i)}=1.
+$$
+
+원래 입자 $i$가 선택된 횟수를
+
+$$
+N_i=\sum_{j=1}^N\mathbf 1\{A^{(j)}=i\},
+\qquad \sum_iN_i=N
+$$
+
+라 한다. 출력 empirical average는
+
+$$
+\frac1N\sum_{j=1}^N\varphi(\bar x^{(j)})
+=\frac1N\sum_{i=1}^NN_i\varphi(x^{(i)}).
+$$
+
+조건 $\mathbb E[N_i\mid\mathcal F]=NW^{(i)}$에서 이것의 조건부기댓값이 resampling 전 가중평균과 같다는 증명은 [resampling unbiasedness](../../proofs/resampling-unbiasedness.qmd)에 있다.
+
+## 대표 알고리즘
+
+누적 weight를 $C_i=\sum_{k=1}^iW^{(k)}$, $C_0=0$으로 두고 구간 $I_i=[C_{i-1},C_i)$를 만든다. 균등 난수점이 어느 구간에 들어가는지가 ancestor를 결정한다.
+
+### Multinomial resampling
+
+각 $A^{(j)}$를 독립적으로 categorical$(W^{(1:N)})$에서 뽑는다.
+
+- 구현이 가장 단순하다.
+- $(N_1,\ldots,N_N)\sim\operatorname{Multinomial}(N,W)$
+- 조건부로 $\operatorname{Var}(N_i)=NW_i(1-W_i)$
+
+### Residual resampling
+
+먼저 $\lfloor NW_i\rfloor$개를 확정 배정한다. 남은
+
+$$
+R=N-\sum_i\lfloor NW_i\rfloor
+$$
+
+개만 fractional residual에 비례해 multinomial로 뽑는다. 이미 확실한 복제 수에 난수를 쓰지 않아 multinomial보다 변동을 줄인다.
+
+### Stratified resampling
+
+각 층 $[(j-1)/N,j/N)$에서 난수 하나를 뽑고 해당 누적 weight 구간을 찾는다. 난수점이 전체 $[0,1)$에 더 고르게 퍼진다.
+
+### Systematic resampling
+
+$U\sim\operatorname{Uniform}(0,1/N)$ 하나를 뽑고
+
+$$
+U_j=U+(j-1)/N
+$$
+
+을 사용한다. 빠르고 흔하지만 offspring들이 강하게 의존하며, 모든 함수에 대해 stratified보다 작은 분산을 보장하는 단순한 전순서는 없다.
+
+네 방식 모두 위 조건부 평균 조건을 만족한다. 세부 계산은 [증명 페이지](../../proofs/resampling-unbiasedness.qmd)에 포함한다.
+
+:::
+
+::: {.depth-application}
+
+## 언제 resampling할까
+
+매 시각 resampling하면 weight collapse는 즉시 완화하지만 Monte Carlo noise와 ancestor collapse가 늘 수 있다. 흔한 heuristic은
+
+$$
+\widehat{\mathrm{ESS}}=\frac{1}{\sum_iW_i^2}
+$$
+
+가 임계값 $\tau N$ 아래일 때만 resampling하는 것이다.
+
+::: {.callout-warning title="엄밀히 말하면"}
+ESS threshold는 실용적 정책이며 만능 최적성 정리가 아니다. Adaptive resampling이 들어간 likelihood unbiasedness나 입자 수렴정리는 stopping-time 조건을 별도로 확인해야 한다. 고정 매-step resampling 결과를 자동으로 가져다 쓰지 않는다.
+:::
+
+## 반례: 결정론적 반올림
+
+$N=2$, weights가 $(0.6,0.4)$라고 하자. $NW=(1.2,0.8)$을 매번 $(1,1)$로 반올림하면 offspring 기대값도 $(1,1)$이다. 원하는 값 $(1.2,0.8)$과 다르므로 조건부 unbiasedness가 깨진다. 합이 $N$이라는 사실만으로 올바른 resampling이 아니다.
+
+## 실패 모드
+
+- **Sample impoverishment:** 저잡음 transition에서 같은 ancestor의 복사본들이 계속 함께 움직인다.
+- **Path degeneracy:** 오래된 시각으로 갈수록 고유 ancestor 수가 급감한다.
+- **Index bug:** 누적합 마지막 값의 floating-point 오차로 index가 범위를 벗어난다. 마지막 $C_N$을 명시적으로 1로 고정하거나 안전한 search를 사용한다.
+- **In-place overwrite:** ancestor를 뽑으면서 원본 배열을 덮어쓰면 뒤 index가 이미 복제된 값을 가리킨다. 새 배열에 쓴다.
+
+## 다음 연결
+
+- transition proposal과 결합한 [Bootstrap Particle Filter](bootstrap-particle-filter.qmd)
+- 전체 선수 체크리스트인 [Particle Filter 학습 경로](../../paths/particle-filter.qmd)
+
+:::
+
+## 회상 점검
+
+1. Resampling 전후 empirical average가 sample-by-sample 같아야 하는가, 조건부기댓값만 같아야 하는가?
+2. `offspring count unbiasedness` 식을 써라.
+3. Multinomial과 systematic resampling에서 난수 개수와 의존구조는 어떻게 다른가?
+4. 매번 resampling할 때 생기는 비용은 계산량 외에 무엇인가?
+
+## 참고문헌
+
+- Randal Douc, Olivier Cappé, and Eric Moulines, “Comparison of Resampling Schemes for Particle Filtering.”
+- Arnaud Doucet and Adam M. Johansen, “A Tutorial on Particle Filtering and Smoothing.”

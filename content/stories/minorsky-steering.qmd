@@ -1,0 +1,41 @@
+---
+id: story.minorsky_steering
+title: "자동조타선에서 태어난 PID의 시간 감각"
+one_line: "1922년 Minorsky의 자동조타 연구는 현재 오차뿐 아니라 오차의 변화와 누적을 함께 보려는 제어 아이디어의 역사적 장면을 보여 준다."
+kind: history
+reading_time: "4분"
+related_concepts: [control.feedback, control.pid]
+sources:
+  - title: "Directional Stability of Automatically Steered Bodies"
+    author: "N. Minorsky"
+    year: 1922
+    url: "https://doi.org/10.1111/j.1559-3584.1922.tb04958.x"
+---
+
+# 자동조타선에서 태어난 PID의 시간 감각
+
+오늘날 PID는 짧은 식 하나로 소개되지만, 그 배경에는 바다 위의 느리고 지연이 큰 선박을 일정한 방향으로 유지하려는 문제가 있었다. 조타수가 지금 방향 오차만 보고 키를 돌리면, 거대한 선체의 관성과 반응 지연 때문에 목표 방향을 지나치기 쉽다. 오차가 **얼마나 빠르게 변하는지**, 작은 오차가 **얼마나 오래 남았는지**까지 봐야 한다.
+
+Nicolas Minorsky는 1922년 *Directional Stability of Automatically Steered Bodies*에서 자동조타 시스템의 방향 안정성을 분석했다. 논문은 *Journal of the American Society for Naval Engineers* 34권에 280–309쪽으로 출판되었다. [원 논문 서지와 DOI](https://doi.org/10.1111/j.1559-3584.1922.tb04958.x)
+
+## 역사를 현재 용어로 덮어쓰지 않기
+
+이 논문을 “현대 digital PID 코드를 그대로 발명한 논문”이라고 말하면 시대 차이를 지워 버린다. 당시의 표기, 장치, 구현은 오늘날 microcontroller의 parallel-form PID와 같지 않다. 더 정확한 기억법은 다음과 같다.
+
+> 자동조타라는 실제 동역학 문제에서 현재 오차, 변화 추세, 누적 효과를 함께 다루는 사고가 체계적으로 분석되었고, 이것이 PID 역사에서 중요한 선행 장면이 되었다.
+
+## 공학적 기억 단서
+
+선박 이야기는 PID의 세 현실 문제를 한 번에 기억하게 한다.
+
+- 큰 관성: P를 높이는 것만으로 빠른 정착을 얻기 어렵다.
+- 반응 지연: 이미 충분히 회전 중인데 계속 명령하면 overshoot가 커진다.
+- 지속 외란: 바람과 해류가 한쪽으로 밀면 누적 보정이 필요하다.
+
+그러나 이것은 tuning 공식이나 안정성 증명이 아니다. 실제 안정성은 대상 모델, delay, actuator 제한과 함께 분석해야 한다.
+
+## 돌아가기
+
+- [PID의 직관](../concepts/control/pid.qmd#왜-중요한가)
+- [PID 학습 경로](../paths/pid.qmd)
+

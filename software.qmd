@@ -1,0 +1,108 @@
+---
+title: "시각화·시뮬레이션 도구"
+description: "벡터와 행렬부터 제어·센서융합·Monte Carlo까지 파트별 프로그램 선택"
+toc: true
+---
+
+## 결론: 순수 수학도 충분히 시각화할 수 있다
+
+벡터는 화살표, 행렬은 공간을 찌그러뜨리는 변환, determinant는 면적·부피 배율,
+eigenvector는 방향이 보존되는 축, SVD는 회전–축척–회전, least squares는 부분공간으로의
+수직 투영으로 그릴 수 있습니다. 고차원은 전체를 그리는 대신 2D/3D slice, singular
+value spectrum, covariance ellipse, loss landscape, residual diagnostic을 봅니다.
+
+시각화는 이해와 디버깅을 돕지만 고차원 명제의 증명은 아닙니다.
+
+## 기본 설치
+
+이 저장소는 다음 명령 하나로 로컬 도구와 Python 3.12 환경을 준비합니다.
+
+```bash
+make sync
+```
+
+- 문서·웹·책: Quarto 1.9.38
+- PDF 엔진: Typst 0.15.0
+- Python 환경·lockfile: uv 0.11.28
+- 기본 계산: NumPy, SciPy, SymPy, mpmath, pandas
+- 정적 그림: Matplotlib
+- 상호작용 그림: Plotly, ipywidgets
+
+버전은 `scripts/bootstrap-tools.sh`와 `uv.lock`에 고정됩니다.
+
+자동미분·최적화 예제에서 JAX와 CVXPY까지 실행하려면 선택 묶음을 추가합니다.
+
+```bash
+.tools/uv/uv sync --extra ad-opt
+```
+
+기본 원고와 NumPy 예제를 읽는 데 이 선택 묶음은 필요하지 않습니다.
+
+## EPUB은 전용 뷰어에서 확인한다
+
+EPUB은 일반 웹페이지가 아니라 뷰어가 글꼴·수식·페이지 나눔을 다시 계산하는 전자책
+묶음입니다. 브라우저 확장 기능은 자체 CSS를 덮어쓰거나 넓은 창에서 여러 단으로
+나누기도 하므로, 최종 검수에는 [Calibre 전자책 뷰어](https://calibre-ebook.com/)처럼
+EPUB 3와 MathML을 지원하는 전용 프로그램을 사용합니다. 이 개발 환경의 전용 뷰어는
+Calibre 9.11이며 다음 명령으로 빌드한 책을 엽니다.
+
+```bash
+.tools/calibre/calibre/ebook-viewer _book/Robotics-Math-Atlas.epub
+```
+
+이 교재 EPUB에는 한국어 정규·굵은 글꼴을 직접 포함합니다. 그래도 뷰어가 “출판사
+글꼴 무시”나 사용자 글꼴 강제를 켜면 모양이 달라질 수 있습니다. 넓은 화면에서 문단이
+지나치게 여러 단으로 갈라지면 뷰어의 한 페이지 보기 또는 연속 스크롤 보기를 선택합니다.
+
+## 파트별 권장 도구
+
+| 파트 | 반드시 필요한 도구 | 선택 도구 | 대표 시각화·실험 |
+|---|---|---|---|
+| 학부 선형대수 | NumPy, Matplotlib | SymPy, Plotly | basis, projection, matrix transform, eigen/SVD |
+| 수치선형대수 | NumPy, SciPy | mpmath | condition number, rounding error, convergence curve |
+| 행렬미적분 | SymPy, NumPy | JAX | symbolic/finite-difference/AD gradient 비교 |
+| $SO(3),SE(3)$ | NumPy, SciPy | pytransform3d, spatialmath-python | frame, rotation, screw trajectory |
+| 최적화 | SciPy | CVXPY, JAX | contour, feasible set, gradient/Newton path |
+| 확률·통계 | NumPy, SciPy, Matplotlib | seaborn, ArviZ | density, covariance ellipse, estimator sampling distribution |
+| 확률과정 | NumPy, SciPy | statsmodels | sample path, ACF, PSD, stationarity 비교 |
+| 신호·시스템 | SciPy | python-control | convolution, spectrum, Bode, pole–zero, filter delay |
+| 제어 | NumPy, SciPy | python-control, MuJoCo | step response, PID 항, phase margin, actuator saturation |
+| Kalman·센서융합 | NumPy, SciPy | FilterPy(비교용), Stone Soup | covariance ellipse, innovation, NIS/NEES |
+| 로컬라이제이션 | NumPy, SciPy | OpenCV, GTSAM, ROS 2 | frame graph, landmark posterior, pose graph |
+| Particle Filter·SMC | NumPy, SciPy | Numba/JAX | particles, weights, ESS, genealogy, resampling variance |
+| MCMC | NumPy, SciPy | ArviZ, PyMC/NumPyro | trace, ACF, ESS, $hat R$, acceptance, mixing |
+| 머신러닝 | scikit-learn | PyTorch/JAX | decision boundary, loss, calibration curve |
+| 강화학습 | Gymnasium | PyTorch, MuJoCo | return curve, value/policy, state visitation |
+
+선택 도구는 개념을 이해한 뒤 생산성을 높이기 위한 것입니다. Particle Filter나
+Metropolis–Hastings의 첫 구현은 NumPy만 사용하여 배열과 확률식이 그대로 보이게 합니다.
+
+## 웹에서 가능한 상호작용
+
+- slider로 matrix entry를 바꾸며 unit circle의 변형 관찰
+- basis vector를 끌어 projection/residual 변화 관찰
+- noise covariance를 바꾸며 Kalman gain·ellipse 관찰
+- PID gain과 saturation을 바꾸며 step response 관찰
+- particle 수와 ESS threshold를 바꾸며 퇴화·재표본화 관찰
+- MCMC proposal scale을 바꾸며 acceptance와 autocorrelation 관찰
+
+정적인 PDF/EPUB에는 대표 snapshot과 QR 링크를 두고, HTML에는 Plotly/ipywidgets 또는
+가벼운 JavaScript widget을 포함하는 구조가 적합합니다.
+
+## 컴퓨터 성능별 운영
+
+| 환경 | 권장 범위 |
+|---|---|
+| 브라우저만 | 원고, SVG 관계 그래프, 이미 계산된 실험 결과 |
+| 일반 노트북 CPU | 모든 기본 lab, 수천 입자의 1D/2D PF, 작은 MCMC |
+| GPU 선택 | 대규모 autodiff, neural network, 병렬 particle, RL |
+| ROS 2/MuJoCo workstation | 센서 timestamp·frame·actuator를 포함한 통합 로봇 실험 |
+
+GPU, ROS 2, MuJoCo는 기초 수학 교재를 읽는 데 필수가 아닙니다. 해당 응용 트랙에 진입할
+때 별도 environment로 추가하여 core 문서 빌드를 무겁게 만들지 않습니다.
+
+## 현재 재현 가능한 실험
+
+[Python 실험실](courseware/labs/index.qmd)에 PID, 최소제곱, Kalman Filter, Particle
+Filter, MCMC의 첫 실험이 있습니다. 각 실험은 고정 seed, 명시적 단위·가정, 테스트 가능한
+함수를 사용합니다.

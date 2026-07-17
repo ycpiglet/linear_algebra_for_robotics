@@ -1,0 +1,177 @@
+---
+title: "학습 경로: MCMC와 Metropolis–Hastings"
+id: path.mcmc
+kind: path
+domain: probability
+aliases:
+  - MCMC path
+  - Markov chain Monte Carlo
+  - 메트로폴리스 헤이스팅스 학습 경로
+one-line: "직관·구현·유한상태 완전증명을 분리해 MCMC의 불변성, 수렴, Monte Carlo 오차를 혼동하지 않게 한다."
+difficulty: 4
+entry-concepts:
+  - probability.markov-chain
+exit-concept: probability.metropolis-hastings
+entry-points:
+  intuition: probability.markov-chain
+  implementation: probability.metropolis-hastings
+  proof: probability.markov-chain
+stages:
+  - id: mcmc.chain
+    title: "Markov chain과 평형"
+    steps:
+      - concept: probability.markov-chain
+        depth: derivation
+      - concept: probability.detailed-balance
+        depth: proof
+  - id: mcmc.mh
+    title: "Metropolis–Hastings"
+    steps:
+      - concept: probability.metropolis-hastings
+        depth: proof
+---
+
+::: {.depth-intuition}
+
+## 30초 지도
+
+직접 표본을 뽑기 어려운 목표분포를 그대로 보존하는 무작위 이동규칙을 만든다.
+
+$$
+\text{Markov chain}
+\longrightarrow
+\text{stationary distribution}
+\longrightarrow
+\text{detailed balance}
+\longrightarrow
+\text{Metropolis–Hastings}
+$$
+
+MH acceptance ratio가 맞다는 사실은 목표분포의 **invariance**를 보장한다. Chain이 모든 mode를 탐색하고 시간평균이 빠르게 안정된다는 것은 별도의 irreducibility·aperiodicity·ergodicity·mixing 문제다.
+
+:::
+
+## 목표별 선수 체크
+
+### 직관 진입
+
+- [ ] [Markov chain](../concepts/probability/markov-chain.qmd): 현재를 조건으로 한 기억 없음의 의미를 설명한다.
+- [ ] stationary distribution과 “임의 초기값에서 수렴”을 구분한다.
+- [ ] MCMC 표본이 i.i.d.가 아니라 상관된 chain state임을 안다.
+
+### 구현 진입
+
+- [ ] unnormalized log target을 finite 값 또는 $-\infty$로 평가할 수 있다.
+- [ ] proposal에서 표본을 뽑고 양방향 $q(y\mid x),q(x\mid y)$를 평가할 수 있다.
+- [ ] rejection된 현재 상태도 기록해야 함을 안다.
+- [ ] 여러 chain, autocorrelation, ESS, Monte Carlo standard error를 acceptance rate와 구분한다.
+
+### 증명 진입
+
+- [ ] 유한 transition matrix의 row sum과 stationary equation $\pi P=\pi$를 계산한다.
+- [ ] [Detailed balance](../concepts/probability/detailed-balance.qmd)가 충분조건이지 필요조건이 아님을 반례로 설명한다.
+- [ ] invariance와 convergence theorem의 가정을 구분한다.
+
+::: {.depth-application}
+
+## 빠른 직관 경로
+
+1. [Markov chain](../concepts/probability/markov-chain.qmd)의 두 반례
+2. [Detailed balance](../concepts/probability/detailed-balance.qmd)의 쌍별 흐름 이미지
+3. [Metropolis–Hastings](../concepts/probability/metropolis-hastings.qmd)의 대칭 flow와 accept/reject
+
+이 경로를 마치면 다음을 설명해야 한다.
+
+- 목표밀도가 높은 방향만 이동하면 sampler가 아니라 optimizer에 가까워진다.
+- 낮은 밀도 방향도 확률적으로 accept해야 올바른 stationary distribution을 유지한다.
+- 정규화 상수는 비율에서 소거되지만 target이 proper하다는 가정까지 사라지는 것은 아니다.
+- acceptance rate가 높아도 proposal이 거의 움직이지 않으면 mixing이 나쁘다.
+
+## 구현 경로
+
+1. 3–5개 상태의 목표 $\pi$와 proposal $Q$를 만든다.
+2. MH transition matrix $P$를 정확히 계산한다.
+3. row sum, nonnegativity, $\pi P=\pi$를 수치 검산한다.
+4. disconnected proposal과 periodic proposal의 실패를 재현한다.
+5. 1차원 Gaussian mixture에 random-walk MH를 적용한다.
+6. proposal scale을 작게/크게 바꿔 acceptance와 autocorrelation을 비교한다.
+7. log-domain acceptance를 구현하고 rejection state를 포함한다.
+8. 여러 초기 chain에서 mode 탐색과 Monte Carlo standard error를 보고한다.
+
+직접 실행할 때는 [MCMC 실습](../../courseware/labs/mcmc-lab.qmd)으로 이동하고, 완료 후 이 경로의 검증 체크리스트로 돌아온다.
+
+### 최소 검증
+
+- finite-state $P$의 모든 행 합이 1
+- off-diagonal accepted flow가 양방향에서 동일
+- exact $\pi P=\pi$
+- unnormalized target의 상수 배율을 바꿔도 같은 accept/reject 결정
+- reject된 state를 반복 기록
+- 서로 다른 초기값과 seed 사용
+
+:::
+
+::: {.depth-proof}
+
+## 현재 묶음의 유한상태 완전증명 경로
+
+1. [Markov chain](../concepts/probability/markov-chain.qmd)
+   - transition matrix, stationary, irreducible, aperiodic을 정의한다.
+2. [Detailed balance](../concepts/probability/detailed-balance.qmd)
+   - 쌍별 flow와 nonreversible 3-cycle 반례를 확인한다.
+3. [Detailed balance $\Rightarrow$ invariance 증명](../proofs/detailed-balance-implies-invariance.qmd)
+   - index 합을 생략하지 않고 stationary equation을 얻는다.
+4. [Metropolis–Hastings](../concepts/probability/metropolis-hastings.qmd)
+   - proposal flow의 작은 쪽을 선택하는 acceptance ratio를 유도한다.
+5. [MH invariance 증명](../proofs/metropolis-hastings-invariance.qmd)
+   - 0-flow case, rejection self-loop, transition row sum을 포함한다.
+6. [유한상태 MH convergence와 ergodic average 증명](../proofs/finite-state-mh-convergence-ergodic-average.qmd)
+   - irreducible·aperiodic 조건에서 양의 matrix power와 Doeblin contraction을 구성한다.
+   - mean-square bound와 Borel–Cantelli를 통해 시간평균의 거의 확실한 수렴을 증명한다.
+
+### 여기서 완결되는 명제
+
+- 유한상태 detailed balance가 invariance를 함의함
+- invariance가 detailed balance를 함의하지 않는 반례
+- 유한상태 MH kernel이 유효한 transition matrix임
+- MH accepted flow의 detailed balance
+- MH target invariance
+- unnormalized target의 정규화 상수가 acceptance ratio에서 소거됨
+- 유한 target support의 irreducible·aperiodic MH가 목표분포로 uniform geometric convergence
+- 같은 조건에서 모든 함수의 ergodic average가 목표기댓값으로 거의 확실히 수렴
+
+### 아직 별도 심화 증명이 필요한 명제
+
+- Markov-chain CLT와 asymptotic variance
+- general-state $\psi$-irreducibility와 Harris recurrence
+- drift/minorization과 geometric ergodicity
+- Gibbs, Slice, MALA, HMC의 invariance
+- adaptive MCMC의 diminishing-adaptation 조건
+- pseudo-marginal MH, PMMH, Particle Gibbs extended-target 증명
+
+따라서 현재 MH 페이지에서 “충분히 오래 돌리면 무조건 정확하다”라고 결론내리지 않는다.
+
+:::
+
+## Particle Filter와 MCMC 비교
+
+| 질문 | Particle Filter/SMC | MCMC |
+|---|---|---|
+| 기본 객체 | 동시에 움직이는 weighted particle population | 시간에 따라 움직이는 Markov chain |
+| 목표 변화 | 보통 $t$마다 filtering target 변화 | 보통 하나의 고정 target |
+| 주요 보정 | importance weight와 resampling | accept/reject 또는 invariant transition |
+| 표본 의존 | resampling genealogy와 mutation 의존 | chain autocorrelation |
+| 대표 실패 | weight/path degeneracy | non-irreducibility, slow mixing |
+| 결합 | resample–move, PMCMC | PF likelihood estimator를 PMMH에서 사용 |
+
+## 완료 기준
+
+- [ ] stationary와 convergence를 서로 다른 문장으로 정의한다.
+- [ ] detailed balance가 invariance를 함의하는 합을 직접 쓴다.
+- [ ] invariance지만 nonreversible인 chain을 제시한다.
+- [ ] MH ratio를 대칭 accepted flow에서 유도한다.
+- [ ] rejection mass를 포함한 transition matrix를 구성한다.
+- [ ] unnormalized target 사용의 조건을 말한다.
+- [ ] disconnected proposal과 100% acceptance 반례를 설명한다.
+- [ ] i.i.d. 표준오차 대신 autocorrelation을 확인해야 하는 이유를 말한다.
+- [ ] 유한상태 irreducible·aperiodic 증명의 범위와 일반상태 Harris-ergodic proof의 경계를 구분한다.

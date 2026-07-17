@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linear-algebra-for-robotics.local/schemas/glossary.schema.json",
+  "title": "Robotics Math Atlas glossary",
+  "type": "object",
+  "required": ["schema_version", "terms"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "terms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "ko", "en", "short"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$" },
+          "ko": { "type": "string", "minLength": 1 },
+          "en": { "type": "string", "minLength": 1 },
+          "abbr": { "type": "string", "minLength": 1 },
+          "short": { "type": "string", "minLength": 1 },
+          "notation": { "type": "string", "minLength": 1 },
+          "aliases": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "uniqueItems": true
+          },
+          "related": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$" },
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,214 @@
+---
+title: "증명: Resampling의 조건부 Unbiasedness"
+id: proof.resampling-unbiasedness
+kind: proof
+domain: estimation
+one-line: "Offspring count의 조건부 평균 조건에서 resampled empirical integral의 unbiasedness를 증명하고 주요 scheme을 확인한다."
+difficulty: 4
+level: finite
+dependencies: []
+assumptions:
+  - "입자 수는 유한하고 입력 weights는 비음수이며 합이 1이다."
+  - "각 offspring count의 조건부기댓값은 N배의 입력 weight다."
+proves:
+  - estimation.resampling
+prerequisites:
+  proof:
+    required:
+      - concept: probability.monte-carlo
+        competency: calculate
+        reason: empirical average와 조건부기댓값의 선형성을 사용한다.
+---
+
+::: {.depth-proof}
+
+## Proof Contract
+
+### 조건부 설정
+
+입자와 normalized weights
+
+$$
+\mathcal F=\sigma\{x^{(1:N)},W^{(1:N)}\},
+\qquad W_i\ge0,\quad\sum_iW_i=1
+$$
+
+를 고정한 뒤 resampling 난수에 대해서만 조건부기댓값을 취한다. 원래 입자 $i$의 offspring count를 $N_i$라 하고
+
+$$
+N_i\in\{0,1,\ldots,N\},
+\qquad \sum_iN_i=N
+$$
+
+라 한다.
+
+### 가정
+
+각 $i$에 대해
+
+$$
+\mathbb E[N_i\mid\mathcal F]=NW_i.
+$$
+
+관심 함수 $\varphi$는 현재의 유한 입자점에서 finite value를 갖는다.
+
+### 결론
+
+Resampled particles $\bar x^{(j)}$에 대해
+
+$$
+\mathbb E\left[
+\frac1N\sum_{j=1}^N\varphi(\bar x^{(j)})
+\middle|\mathcal F\right]
+=\sum_{i=1}^NW_i\varphi(x^{(i)}).
+$$
+
+## 일반 증명
+
+원래 입자 $i$가 정확히 $N_i$번 등장하므로
+
+$$
+\frac1N\sum_{j=1}^N\varphi(\bar x^{(j)})
+=\frac1N\sum_{i=1}^NN_i\varphi(x^{(i)}).
+$$
+
+$\mathcal F$로 조건을 주면 $x^{(i)}$와 $W_i$는 상수다. 조건부기댓값의 선형성을 적용하면
+
+$$
+\begin{aligned}
+\mathbb E\left[
+\frac1N\sum_iN_i\varphi(x^{(i)})\middle|\mathcal F
+\right]
+&=\frac1N\sum_i
+\mathbb E[N_i\mid\mathcal F]\varphi(x^{(i)})\\
+&=\frac1N\sum_iNW_i\varphi(x^{(i)})\\
+&=\sum_iW_i\varphi(x^{(i)}).
+\end{aligned}
+$$
+
+$\square$
+
+## Multinomial resampling이 가정을 만족함
+
+각 출력 ancestor를 독립적으로
+
+$$
+P(A^{(j)}=i\mid\mathcal F)=W_i
+$$
+
+에서 뽑으면
+
+$$
+N_i=\sum_{j=1}^N\mathbf1\{A^{(j)}=i\}.
+$$
+
+따라서
+
+$$
+\mathbb E[N_i\mid\mathcal F]
+=\sum_{j=1}^NP(A^{(j)}=i\mid\mathcal F)
+=NW_i.
+$$
+
+독립성은 마지막 평균 계산에는 필요하지 않지만 multinomial 분포와 분산식을 얻는 데 사용된다.
+
+## Residual resampling이 가정을 만족함
+
+$$
+d_i=\lfloor NW_i\rfloor,
+\qquad R=N-\sum_id_i.
+$$
+
+$R=0$이면 $N_i=d_i=NW_i$로 결정론적으로 정확하다. $R>0$이면
+
+$$
+r_i=\frac{NW_i-d_i}{R},
+\qquad \sum_ir_i=1
+$$
+
+로 두고 $(M_1,\ldots,M_N)\sim\operatorname{Multinomial}(R,r)$, $N_i=d_i+M_i$로 둔다. 그러면
+
+$$
+\mathbb E[N_i\mid\mathcal F]
+=d_i+Rr_i=d_i+(NW_i-d_i)=NW_i.
+$$
+
+## Stratified resampling이 가정을 만족함
+
+누적 weight 구간을
+
+$$
+I_i=[C_{i-1},C_i),\qquad |I_i|=W_i
+$$
+
+라 하고, 층 $S_j=[(j-1)/N,j/N)$마다 $U_j\sim\operatorname{Uniform}(S_j)$를 하나씩 뽑는다. $U_j\in I_i$이면 ancestor $i$를 선택한다.
+
+층의 길이가 $1/N$이므로
+
+$$
+P(U_j\in I_i\mid\mathcal F)=N|S_j\cap I_i|.
+$$
+
+따라서
+
+$$
+\mathbb E[N_i\mid\mathcal F]
+=\sum_{j=1}^NN|S_j\cap I_i|
+=N|I_i|=NW_i,
+$$
+
+여기서 층들이 $[0,1)$을 분할한다는 사실을 사용했다.
+
+## Systematic resampling이 가정을 만족함
+
+$U\sim\operatorname{Uniform}(0,1/N)$ 하나와
+
+$$
+U_j=U+(j-1)/N
+$$
+
+를 사용한다. Half-open interval convention으로 경계의 영확률 모호성을 없앤다. 그러면
+
+$$
+N_i(U)=\sum_{j=1}^N\mathbf1\{U+(j-1)/N\in I_i\}.
+$$
+
+$U$의 density가 $[0,1/N)$에서 $N$이므로
+
+$$
+\begin{aligned}
+\mathbb E[N_i\mid\mathcal F]
+&=N\int_0^{1/N}\sum_{j=1}^N
+\mathbf1\{u+(j-1)/N\in I_i\}\,du\\
+&=N\sum_{j=1}^N\int_{(j-1)/N}^{j/N}
+\mathbf1\{v\in I_i\}\,dv\\
+&=N\int_0^1\mathbf1\{v\in I_i\}\,dv\\
+&=N|I_i|=NW_i.
+\end{aligned}
+$$
+
+두 번째 줄에서는 $v=u+(j-1)/N$로 치환했다.
+
+## 이 정리가 말하지 않는 것
+
+1. **출력 입자가 i.i.d.라는 뜻이 아니다.** Stratified/systematic/residual 출력은 의존되어 있다.
+2. **Resampling이 분산을 줄인다는 뜻이 아니다.** 현재 test function의 조건부 분산을 새로 추가한다. Scheme 사이 분산 비교에는 별도 분석이 필요하다.
+3. **여러 시간 뒤 path estimator가 unbiased라는 뜻이 아니다.** 반복 selection과 nonlinear normalization이 들어간 전체 SMC estimator는 별도 정리가 필요하다.
+4. **SNIS의 finite-N bias가 사라진다는 뜻이 아니다.** 이 정리는 현재 가중 empirical measure를 조건부 평균에서 보존할 뿐이다.
+
+## 반례: biased rounding
+
+$N=2,W=(0.6,0.4)$에서 항상 $N_1=N_2=1$로 반올림하면
+
+$$
+\mathbb E[N\mid\mathcal F]=(1,1)\ne(1.2,0.8)=NW.
+$$
+
+$\varphi(x^{(1)})=1,\varphi(x^{(2)})=0$이면 resampling 후 평균은 항상 $1/2$지만 원래 가중평균은 $0.6$이다.
+
+## 사용처
+
+- [Resampling](../concepts/probability/resampling.qmd)
+- [Bootstrap Particle Filter](../concepts/probability/bootstrap-particle-filter.qmd)
+
+:::

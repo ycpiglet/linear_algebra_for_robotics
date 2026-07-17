@@ -1,0 +1,21 @@
+# Build products from other profiles must never become resources of this build.
+_site/
+_book/
+_proof/
+
+# Local caches and toolchains are not publication resources.
+.quarto/
+_freeze/
+.tools/
+.venv/
+.pytest_cache/
+.ruff_cache/
+**/__pycache__/
+
+# Authoring sources are repository documentation, not reader-facing pages.
+README.md
+AUTHORING_MANUAL.md
+platform/templates/
+
+# Included by glossary.qmd, but must not become a second standalone page.
+platform/generated/glossary.qmd

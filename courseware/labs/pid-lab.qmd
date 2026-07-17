@@ -1,0 +1,48 @@
+---
+title: "실험: PID의 세 항을 시간축에서 보기"
+description: "동일한 1차 플랜트에서 P, PI, PID 응답과 포화를 비교한다"
+jupyter: python3
+execute:
+  echo: true
+  warning: false
+---
+
+## 질문과 가정
+
+플랜트는 $\tau\dot x+x=Ku$인 1차 시스템이고 센서 지연은 없다고 가정합니다. 이 단순한
+환경에서 비례항은 즉각 반응하고, 적분항은 누적 오차를 없애며, 미분항은 빠른 변화를
+제동한다는 말을 시간응답으로 확인합니다.
+
+```{python}
+import matplotlib.pyplot as plt
+
+from robotics_math_atlas import simulate_pid
+
+cases = {
+    "P": dict(kp=2.0, ki=0.0, kd=0.0),
+    "PI": dict(kp=2.0, ki=1.2, kd=0.0),
+    "PID": dict(kp=2.0, ki=1.2, kd=0.25),
+}
+
+fig, axes = plt.subplots(2, 1, figsize=(9, 6), sharex=True)
+for label, gains in cases.items():
+    result = simulate_pid(**gains)
+    axes[0].plot(result["time"], result["output"], label=label)
+    axes[1].plot(result["time"], result["control"], label=label)
+
+axes[0].plot(result["time"], result["setpoint"], "k--", label="setpoint")
+axes[0].set_ylabel("output")
+axes[1].set_ylabel("control input")
+axes[1].set_xlabel("time [s]")
+for axis in axes:
+    axis.grid(alpha=0.25)
+    axis.legend()
+plt.tight_layout()
+```
+
+## 바꾸어 볼 값
+
+- `output_limit=0.5`로 액추에이터 포화를 강하게 만들기
+- `measurement_noise=0.05`에서 미분항의 노이즈 증폭 보기
+- `derivative_filter=1.0`과 `0.05`를 비교해 필터의 역할 확인하기
+

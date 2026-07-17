@@ -1,0 +1,305 @@
+---
+title: "UI/UX 디자인 시스템"
+subtitle: "Robotics Math Atlas의 타이포그래피·블록·용어·수식·모션 계약"
+description: "새 장을 같은 시각 언어로 작성하고 Web·PDF·EPUB에서 검증하기 위한 살아 있는 기준 문서"
+toc: true
+toc-depth: 3
+---
+
+::: {.concept-hero}
+## 한 문장 원칙
+
+**긴 글은 편안하게, 핵심은 빠르게 스캔되게, 수식과 용어는 맥락을 잃지 않게** 만든다.
+
+이 문서는 설명서인 동시에 실제 렌더링 표본이다. 여기서 보이는 블록을 복사해 새 장에 사용한다.
+:::
+
+## 기준 파일
+
+```text
+assets/
+├── README.md                    # asset 책임과 변경 규칙
+├── styles/
+│   ├── _tokens.scss             # 색·타입·간격·radius·shadow·motion
+│   ├── _content-blocks.scss     # 본문·학습 블록·glossary·수식
+│   ├── theme.scss               # Quarto web entry point
+│   └── epub.css                 # EPUB-safe subset
+├── js/atlas.js                  # progressive enhancement
+├── icons/README.md              # icon 규격
+└── includes/atlas-scripts.html  # runtime loader
+
+platform/templates/
+└── concept-template.qmd         # 새 개념 장의 표준 골격
+```
+
+임의의 hex 색상이나 `margin: 17px` 같은 값을 장 안에 넣지 않는다. 먼저 token 또는 기존 semantic block을 찾는다.
+
+## 타이포그래피
+
+| 항목 | 기본값 | 이유 |
+|---|---:|---|
+| 본문 크기 | `1rem–1.075rem` 반응형 | 확대하지 않아도 읽히되 브라우저 기본 크기를 존중 |
+| 본문 행간 | `1.90` | 한글과 인라인 수식이 섞인 긴 문단의 시선 복귀 지원 |
+| 본문 자간 | `0.016em` | 기존 음수 자간을 제거하고 한글 획 사이 여유 확보 |
+| 제목 자간 | `-0.016em` | 큰 글자에서만 약하게 응집 |
+| 권장 행 길이 | 최대 `76ch` | 긴 문장의 좌우 탐색 부담 제한 |
+| 문단 하단 | `1.55rem` 토큰 | 문단 경계를 빈 줄처럼 인식 |
+| 수식 전후 | `2rem` 토큰 | 평문과 계산 단계를 시각적으로 분리 |
+| 표·그림 전후 | `2.75rem` 토큰 | 설명–시각화–해석의 세 단위를 분리 |
+
+평문은 중립색을 유지한다. **굵게(bold)**는 결론·조건·금지 사항에, *기울임(italic)*은 처음 등장하는 기술 용어와 대비에만 사용한다. <mark>형광 강조는 한 문단에서 한두 곳</mark>으로 제한한다.
+
+::: {.annotation-note}
+### 저자 노트 · Author note
+
+WCAG 1.4.12의 큰 spacing 수치는 사이트의 기본값을 강제하는 규칙이 아니라, 사용자가 그만큼 재정의해도 콘텐츠가 잘리거나 겹치지 않아야 한다는 검사 기준이다.
+:::
+
+## 의미 기반 학습 블록(Semantic learning blocks)
+
+::: {.concept-scorecard}
+### 장 지표 · 독자가 깊이를 선택하는 기준
+
+- **중요도 5/5** · 뒤의 여러 장에서 다시 쓰이는 정도
+- **난이도 3/5** · 유도까지 읽을 때 필요한 사고량
+- **실무 빈도 4/5** · 공개 코드·문서·로그에서 직접 만나는 정도
+- **쓰임** · 센서 융합 · 제어 · 위치추정
+:::
+
+::: {.key-takeaway}
+### 핵심 결론(key takeaway)
+
+독자가 이 페이지에서 하나만 가져간다면 여기에 쓴다. 결론을 먼저 말하고, 뒤의 본문이 그 결론을 보강한다.
+:::
+
+::: {.learning-objectives}
+### 학습 목표(learning objectives)
+
+- 개념을 자기 말로 설명한다.
+- 계산과 구현에 필요한 가정을 확인한다.
+- 실패 조건과 다음 연결을 구분한다.
+:::
+
+::: {.term-card}
+### 용어(terminology)
+
+<abbr title="Maximum Likelihood Estimation — 최대우도추정">MLE</abbr>처럼 첫 등장에 **한글명(English name, ABBR)**을 함께 제시한다. 이후에는 문맥에 맞춰 한글명이나 약어를 쓴다.
+:::
+
+::: {.formula-card data-importance="5" data-difficulty="3"}
+### 수식 카드(formula)
+
+::: {.block-metrics}
+`중요도 5/5`{.metric-badge .metric-badge--importance} `난이도 3/5`{.metric-badge .metric-badge--difficulty}
+:::
+
+평문 속 inline 수식 $p(y\mid x)$는 행간을 찢거나 낱글자로 줄바꿈되지 않아야 한다. 핵심 식은 별도 카드에서
+
+$$
+\hat\theta_{\mathrm{MLE}}=\arg\max_\theta p(\mathcal D\mid\theta)
+$$
+
+처럼 기호의 역할과 함께 설명한다.
+:::
+
+::: {.engineering-meaning}
+### 공학적 의미(engineering meaning)
+
+수식이 센서, 구동기(actuator), 상태(state), 잔차(residual) 중 무엇을 나타내는지 단위와 모양(shape)까지 연결한다.
+:::
+
+::: {.assumption-box}
+### 가정(assumptions)
+
+정리나 계산이 성립하는 조건을 결과와 같은 눈에 띄는 수준으로 표시한다.
+:::
+
+::: {.mistake-card}
+### 흔한 오해(common mistake)
+
+색만 보고 위험을 판단하지 않도록 heading에 오해의 내용을 직접 쓴다.
+:::
+
+::: {.history-card}
+### 숨 고르기(history)
+
+역사, 어원, 연구자의 일화는 핵심 흐름 사이에서 인지적 휴식을 제공하되 사실과 전설을 구분한다.
+:::
+
+::: {.derivation-step}
+### 유도 단계 · 한 번에 하나만 바꾼다
+
+$$
+a=b\quad\Longrightarrow\quad a+c=b+c
+$$
+
+**바뀐 부분:** 양변에 같은 $c$를 더했다.  
+**근거:** 등식의 양변에 같은 연산을 적용하면 등식이 유지된다.  
+**조건:** $a,b,c$의 덧셈이 같은 공간에서 정의되어야 한다.
+:::
+
+::: {.case-card}
+### 실제 사례 · 사실과 교재 모형을 분리한다
+
+**공식 확인:** 제조사 문서가 직접 밝힌 사양·API.  
+**교재 모형:** 공개된 데이터에 우리가 적용한 수학 모형.  
+**공개되지 않음:** 회사 내부 구현을 확인할 수 없어 단정하지 않는 부분.
+:::
+
+::: {.failure-mode}
+### 재현 가능한 실패 · 증상에서 재검증까지 닫는다
+
+1. **상황:** 측정분산을 실제보다 100배 작게 둔다.
+2. **잘못된 구현:** 이상치도 정상 측정처럼 갱신한다.
+3. **증상:** 추정값이 측정점을 따라 크게 튄다.
+4. **원인:** 센서를 과신해 칼만 이득이 지나치게 커졌다.
+5. **최소 재현:** 같은 입력에서 기준 $R$과 $0.01R$을 비교한다.
+6. **진단:** 단위 → 시간표시 → 혁신 → 정규화 혁신제곱 순서로 본다.
+7. **수정:** 반복 측정으로 $R$을 다시 추정하고 이상치 문턱을 둔다.
+8. **재검증:** 위치 평균제곱근오차와 혁신 포함률을 다시 기록한다.
+9. **남는 한계:** 시간상관과 비가우스 꼬리는 별도 모형이 필요하다.
+:::
+
+::: {.algorithm-card}
+### 알고리즘 · 입력·출력·가정이 먼저 보이는 표본
+
+**입력:** 상태 $x\in\mathbb R^n$, 공분산 $P\in\mathbb R^{n\times n}$, 측정 $z$  
+**출력:** 갱신 상태 $x^+$와 공분산 $P^+$  
+**가정:** 단위·좌표계·시간표시가 같고 $P\succeq0$, $R\succ0$
+
+```text
+1  혁신 ν ← z - Hx를 계산한다.
+2  S y = ν를 선형계 풀이로 계산한다.
+3  문턱을 넘는 이상치는 기록하고 갱신하지 않는다.
+4  조지프 형식으로 x⁺와 P⁺를 갱신한다.
+```
+
+**병목:** 측정 차원의 선형계 풀이.  
+**실패 조건:** 명시적 역행렬, 섞인 좌표계, 양의 정부호가 아닌 $R$.
+:::
+
+::: {.tradeoff-card}
+### 장단점·선택 기준 · 한쪽만 홍보하지 않는다
+
+**장점:** 재귀 계산이라 전체 로그를 저장하지 않고도 현재 상태와 불확실성을 갱신한다.  
+**한계:** 모형과 공분산이 틀리면 자신감 있게 틀릴 수 있다.  
+**선택:** 단순 잡음 완화만 필요하면 저역통과필터를, 상태·동역학·센서 모형이 있으면 칼만 필터를 검토한다.
+:::
+
+::: {.simulation-placeholder}
+### 정적 실험 · 상호작용 기능 준비 중
+
+현재는 기준 입력과 정적 결과를 표·그림으로 보여 준다. 미래 조절값의 이름·범위와 계산 함수의 입력·출력만 계약으로 남기며, 작동하지 않는 단추를 작동하는 것처럼 보이지 않게 한다.
+
+<div class="simulation-placeholder__controls" aria-label="비활성화된 정적 시뮬레이션 표본">
+  <label>
+    <span>측정 잡음 배율: <strong>1.0</strong></span>
+    <input type="range" min="0.1" max="10" step="0.1" value="1" disabled="disabled" aria-label="측정 잡음 배율, 현재 1.0, 상호작용 준비 중" />
+  </label>
+  <button type="button" disabled="disabled">기준 결과 다시 계산 — 준비 중</button>
+</div>
+
+**현재 정적 결과:** 기준 입력에서 추정 오차는 0.12 m다. 이 숫자는 UI 구조를 보이는 합성 표본이다.
+:::
+
+::: {.reference-note}
+### 자료 주석 · 바로 확인할 근거
+
+본문의 제품 수치와 역사적 주장 옆에는 장별 참고문헌 페이지 또는 공식 문서 링크를 둔다.
+:::
+
+## 읽기 도구 계약
+
+웹의 하단 읽기 도구는 다음을 로컬 저장소에 보존한다.
+
+- 페이지 즐겨찾기
+- 현재 절의 책갈피
+- 마지막 읽은 비율과 절
+- 현재 절/전체 절과 0–100% 위치 조절 막대
+- 현재 페이지 미니 목차
+
+화면 크기에 따라 페이지 수가 달라지는 웹에서는 가짜 고정 페이지 번호를 만들지 않는다. `절 3/18 · 42%`처럼 리플로우에도 의미가 유지되는 위치를 표시한다. 단축키는 `Alt+F` 즐겨찾기, `Alt+B` 책갈피, `Alt+T` 목차다. EPUB의 책갈피와 페이지 위치는 읽기 프로그램이 관리한다.
+
+### 책갈피·위치 조절 막대의 정적 표본
+
+아래 표본은 실제 클래스와 접근성 상태를 렌더링하되, 디자인 문서 안에서는 저장 동작을 수행하지 않는다. 실제 장에서는 자바스크립트가 같은 요소를 생성하고 키보드 단축키와 로컬 저장소를 연결한다.
+
+<aside class="reader-tools reader-tools--specimen" aria-label="읽기 도구 디자인 표본">
+  <div class="reader-tools__actions">
+    <button type="button" class="reader-tool" aria-pressed="true" aria-disabled="true" title="현재 절 책갈피 디자인 표본">
+      <span aria-hidden="true">◆</span><span>책갈피 저장됨</span>
+    </button>
+  </div>
+  <label class="reader-tools__position">
+    <span>절 3/18 · 유도</span>
+    <input type="range" min="0" max="100" value="42" disabled="disabled" aria-label="읽기 위치 디자인 표본" aria-valuetext="42%, 절 3/18, 유도" />
+    <output>42%</output>
+  </label>
+</aside>
+
+## 한글·영어·약어 계약
+
+첫 등장은 다음 순서를 사용한다.
+
+> 최대우도추정(Maximum Likelihood Estimation, MLE)
+
+- 잘못된 풀어쓰기 `Minimum Likelihood Estimation`을 사용하지 않는다.
+- `noise`만 단독으로 두지 않고 첫 등장에는 `잡음(noise)`으로 쓴다.
+- 번역이 여러 개인 경우 대표 번역 뒤에 원어를 유지한다: `우도(likelihood)`.
+- 약어만으로 새 절을 시작하지 않는다. heading에는 가능하면 한글과 약어를 병기한다.
+- 짧은 정의는 아래와 같이 작성하면 빌드 시점의 장별 용어집과 웹의 초점/가리키기(focus/hover) 설명이 자동 생성된다.
+
+```markdown
+[우도]{.atlas-term data-en="likelihood"
+  data-definition="모수가 주어졌을 때 관측된 데이터가 나타날 정도를 모수의 함수로 읽은 것"}
+```
+
+실제 예: [우도]{.atlas-term data-en="likelihood" data-definition="모수가 주어졌을 때 관측된 데이터가 나타날 정도를 모수의 함수로 읽은 것"}.
+
+장별 용어집은 자바스크립트가 만드는 임시 UI가 아니라 Pandoc 문서 구조에 들어간다. 따라서 자바스크립트를 끈 웹, PDF, EPUB에서도 정의가 남고, 웹 스크립트는 이미 생성된 용어집을 중복해서 만들지 않는다.
+
+### 정적 페이지 용어집 표본
+
+::: {.page-glossary .page-glossary--static}
+**이 페이지의 용어 · Glossary (2)**
+
+[상태(state)]{.atlas-term data-en="state" data-definition="현재값으로 미래 거동을 기술할 수 있도록 고른 변수 묶음"}
+: 현재값으로 미래 거동을 기술할 수 있도록 고른 변수 묶음이다.
+
+[혁신]{.atlas-term data-en="innovation" data-definition="실제 측정에서 사전 예측 측정을 뺀 값"}
+: 실제 측정에서 사전 예측 측정을 뺀 값이다.
+:::
+
+## 모션 계약
+
+카드의 진입과 버튼 feedback은 **정보 구조를 보여주는 짧은 보조 신호**다. 장식용 반복 animation은 사용하지 않는다.
+
+- 기본 duration: 140 ms 또는 240 ms
+- 이동 거리: 약 10 px 이하
+- `prefers-reduced-motion: reduce`에서는 사실상 제거
+- JavaScript가 없을 때도 콘텐츠는 처음부터 전부 보임
+- hover에만 핵심 정보를 숨기지 않음
+
+## 출력별 허용 범위
+
+| 기능 | Web | PDF | EPUB |
+|---|---|---|---|
+| 색·카드 | 전체 | 정적·인쇄 친화 | 단순 border/background |
+| 용어 가리키기/초점(hover/focus) | 지원 | 정적 장별 용어집 | 정적 장별 용어집 |
+| 깊이 선택 | 지원 | 전체 깊이 출력 | 전체 깊이 출력 |
+| 즐겨찾기·마지막 위치 | 로컬 저장 | 목차·페이지 번호 | 읽기 프로그램 기능 |
+| 위치 조절 막대 | 현재 절·읽은 비율 | 없음 | 없음 |
+| animation | reduced-motion 대응 | 없음 | 없음 |
+| 수식 | MathJax + overflow | Typst | MathML + reflow CSS |
+
+## 장 완료 체크리스트
+
+- [ ] 첫 화면에 30초 핵심과 이 장의 질문이 있는가?
+- [ ] 첫 등장 용어가 `한글(English, ABBR)` 순서인가?
+- [ ] 각 핵심 수식 뒤에 기호·단위·shape 설명이 있는가?
+- [ ] 가정, 실패 조건, 흔한 오해가 시각적으로 구분되는가?
+- [ ] bold·italic·highlight가 의미 있게 절제되어 있는가?
+- [ ] 320 px에서 평문은 가로 스크롤 없이 읽히는가?
+- [ ] 표와 display 수식만 필요할 때 국소 스크롤하는가?
+- [ ] light/dark와 reduced-motion에서 의미 손실이 없는가?
+- [ ] EPUB에서 inline MathML이 겹치거나 낱글자로 깨지지 않는가?

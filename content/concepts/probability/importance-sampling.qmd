@@ -1,0 +1,171 @@
+---
+title: "Importance Sampling"
+id: probability.importance-sampling
+kind: concept
+domain: probability
+aliases:
+  - 중요도 표본추출
+  - IS
+  - self-normalized importance sampling
+  - SNIS
+one-line: "목표분포 대신 표본을 뽑기 쉬운 proposal에서 뽑고 밀도비로 차이를 보정한다."
+difficulty: 3
+prerequisites:
+  intuition:
+    required:
+      - concept: probability.monte-carlo
+        competency: explain
+        reason: 기댓값을 표본평균으로 근사하는 목적을 알아야 한다.
+    helpful: []
+  proof:
+    required:
+      - concept: probability.measure-foundations
+        competency: explain
+        reason: 절대연속성과 SLLN 조건을 읽어야 한다.
+      - concept: probability.monte-carlo
+        competency: calculate
+        reason: 가중 표본평균과 보통 표본평균을 비교해야 한다.
+    helpful: []
+relations:
+  requires:
+    - probability.monte-carlo
+    - probability.measure-foundations
+  used-in:
+    - estimation.sequential-importance-sampling
+    - estimation.bootstrap-particle-filter
+---
+
+::: {.callout-note title="30초 핵심"}
+$$
+\mathbb E_\pi[\varphi(X)]
+=\mathbb E_q\!\left[\varphi(X)\frac{\pi(X)}{q(X)}\right].
+$$
+
+목표 $\pi$에서 직접 표본을 뽑지 못해도 proposal $q$에서 표본을 뽑은 뒤 $w(x)=\pi(x)/q(x)$로 보정할 수 있다. 단, 목표가 기여하는 모든 영역을 proposal이 덮어야 한다.
+:::
+
+::: {.depth-intuition}
+
+## 왜 중요한가
+
+센서 posterior는 계산할 수 있어도 직접 표본추출하기 어려운 경우가 많다. Importance Sampling(IS)은 쉬운 proposal에서 후보를 만들고 “목표분포에서는 이 후보가 얼마나 더 중요했어야 하는가?”를 weight로 되묻는다.
+
+이는 [Sequential Importance Sampling](sequential-importance-sampling.qmd), Particle Filter, rare-event estimation, off-policy 평가의 핵심 부품이다.
+
+## 먼저 떠올릴 이미지
+
+도시 전체를 같은 비율로 조사하는 대신 사람이 많이 사는 구역을 더 자주 조사하고, 구역별 표본추출 확률의 차이를 weight로 보정한다. 표본을 편향되게 **뽑되**, 계산에서는 그 편향을 **되돌린다**.
+
+:::
+
+::: {.depth-derivation}
+
+## 정규화된 목표분포
+
+공통 기준측도 $\lambda$에 대한 밀도 $\pi,q$를 생각하자. $X^{(i)}\overset{iid}{\sim}q$이고
+
+$$
+w(x)=\frac{\pi(x)}{q(x)},
+\qquad
+\widehat I_N^{\mathrm{IS}}
+=\frac1N\sum_{i=1}^N w(X^{(i)})\varphi(X^{(i)}).
+$$
+
+적절한 support와 적분 가능성 아래 이 estimator는 unbiased다. 정확한 조건과 한 줄도 생략하지 않은 적분 변환은 [IS 항등식 증명](../../proofs/importance-sampling-identity.qmd)에 있다.
+
+## 정규화 상수를 모르는 목표분포
+
+Bayesian posterior는 흔히
+
+$$
+\pi(x)=\frac{\gamma(x)}{Z},
+\qquad
+Z=\int\gamma(x)\lambda(dx)
+$$
+
+에서 $\gamma$만 계산할 수 있다. 이때
+
+$$
+\widetilde w_i=\frac{\gamma(X^{(i)})}{q(X^{(i)})},
+\qquad
+W_i=\frac{\widetilde w_i}{\sum_{j=1}^N\widetilde w_j}
+$$
+
+를 만들고
+
+$$
+\widehat I_N^{\mathrm{SNIS}}=\sum_{i=1}^N W_i\varphi(X^{(i)})
+$$
+
+를 사용한다. 분자와 분모의 표본평균이 각각 수렴하므로 비율도 수렴한다. 정확한 논증은 [SNIS 일관성 증명](../../proofs/self-normalized-importance-sampling-consistency.qmd)에 있다.
+
+::: {.callout-warning title="중요: SNIS는 보통 finite-N unbiased가 아니다"}
+SNIS는 일관되지만 일반적으로 유한한 $N$에서는 편향되어 있다. `정규화했으니 정확하다`는 결론은 틀리다.
+:::
+
+## 가장 작은 예제
+
+목표가 $\pi(1)=0.9,\pi(0)=0.1$, proposal이 $q(1)=q(0)=0.5$라고 하자. 그러면
+
+$$
+w(1)=1.8,\qquad w(0)=0.2.
+$$
+
+proposal은 0과 1을 반씩 뽑지만, 목표에서 더 흔한 1에 9배 큰 상대적 weight를 준다.
+
+## 전제 장부
+
+| 가정 | 왜 필요한가 | 위반 시 |
+|---|---|---|
+| $q(x)>0$ wherever $|\varphi(x)|\pi(x)>0$ | 필요한 밀도비가 정의되고 목표 적분을 잃지 않게 한다. | 보지 못하는 영역의 기여는 어떤 weight로도 복구할 수 없다. |
+| $\mathbb E_q[|w\varphi|]<\infty$ | IS 평균과 SLLN을 적용한다. | 평균이 불안정하거나 존재하지 않을 수 있다. |
+| SNIS에서 $0<Z<\infty$ | 목표분포를 정상화하고 분모 극한을 0과 분리한다. | 목표 자체가 확률분포가 아닐 수 있다. |
+| i.i.d. proposal 표본 | 이 페이지의 단순 LLN·분산식을 쓴다. | 의존 표본은 다른 ergodic theorem이 필요하다. |
+
+:::
+
+::: {.depth-application}
+
+## 언제 실패하는가
+
+### support mismatch
+
+목표가 $[0,1]$ 전체에서 양수인데 proposal이 $[0,1/2]$에서만 양수라면, $(1/2,1]$의 목표 질량은 절대 관측되지 않는다. 표본 수를 늘려도 해결되지 않는다.
+
+### weight collapse
+
+proposal이 목표보다 너무 좁거나 고차원에서 중심을 놓치면 대부분 weight가 거의 0이고 몇 개만 지배한다. 이때 추정량은 형식상 정의되어도 유효 표본 수가 매우 작다.
+
+### ESS의 과해석
+
+자주 쓰는
+
+$$
+\widehat{\mathrm{ESS}}=\frac{1}{\sum_i W_i^2}
+$$
+
+는 weight 집중도를 나타내는 진단 heuristic이다. 모든 함수 $\varphi$에 대한 실제 분산과 동일하지 않으며, 정확한 독립표본 개수를 보장하지 않는다.
+
+## 엄밀히 말하면
+
+일반 측도 표기에서는 밀도비 $\pi/q$ 대신 Radon–Nikodym derivative $d\Pi/dQ$를 쓴다. 이 페이지의 증명은 공통 기준측도에 대한 밀도가 존재하는 범위이며, 일반화의 경계는 [확률·측도 기반](measure-probability-foundations.qmd)에 적혀 있다.
+
+## 연결
+
+- 시간순서에 맞게 IS weight를 재귀적으로 갱신: [Sequential Importance Sampling](sequential-importance-sampling.qmd)
+- weight가 한 입자에 몰릴 때 표본을 재배치: [Resampling](resampling.qmd)
+- proposal을 상태전이로 선택: [Bootstrap Particle Filter](bootstrap-particle-filter.qmd)
+
+:::
+
+## 회상 점검
+
+1. proposal support 조건은 왜 단순한 수치 안정성 문제가 아닌가?
+2. 정규화된 IS와 SNIS의 weight 식을 각각 써라.
+3. SNIS가 consistent이지만 finite-N unbiased일 필요가 없는 이유는 무엇인가?
+4. ESS가 100이라는 사실만으로 모든 관심 함수의 Monte Carlo 오차를 알 수 있는가?
+
+## 참고문헌
+
+- Art B. Owen, *Monte Carlo Theory, Methods and Examples*.
+- Christian P. Robert and George Casella, *Monte Carlo Statistical Methods*.

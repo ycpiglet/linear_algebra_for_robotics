@@ -1,0 +1,372 @@
+/* EPUB-safe subset of the Robotics Math Atlas design system.
+ * Avoids JavaScript, CSS color-mix, fixed positioning and web-only effects.
+ */
+@font-face {
+  font-family: "Atlas Sans KR";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/AtlasSansKR-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Atlas Sans KR";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../fonts/AtlasSansKR-Bold.woff2") format("woff2");
+}
+
+html {
+  font-size: 100%;
+}
+
+body {
+  margin: 0 auto;
+  padding: 0 0.35em;
+  color: #172033;
+  font-family: "Atlas Sans KR", "Noto Sans KR", "Noto Sans CJK KR", "Apple SD Gothic Neo", sans-serif;
+  font-size: 1em;
+  line-height: 1.86;
+  letter-spacing: 0.016em;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+p {
+  margin: 0 0 1.45em;
+}
+
+li {
+  margin-bottom: 0.35em;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: #172033;
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+  page-break-after: avoid;
+}
+
+h2 { margin: 2.8em 0 0.9em; }
+h3 { margin: 2.1em 0 0.8em; }
+
+strong {
+  color: #103f82;
+  font-weight: 700;
+}
+
+em {
+  color: #6340a5;
+}
+
+mark,
+.atlas-highlight {
+  padding: 0 0.12em;
+  background: #ffe58f;
+}
+
+code,
+kbd,
+samp {
+  font-family: monospace;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+blockquote {
+  margin: 1.2em 0;
+  padding: 0.8em 1em;
+  background: #f3f6fb;
+  border-left: 0.25em solid #b9c6d8;
+}
+
+.concept-hero {
+  margin: 1em 0 1.8em;
+  padding: 1.2em 1.3em;
+  background: #e8f1ff;
+  border: 1px solid #b9cce8;
+  border-radius: 0.65em;
+  page-break-inside: avoid;
+}
+
+.concept-hero > :first-child,
+.key-takeaway > :first-child,
+.term-card > :first-child,
+.annotation-note > :first-child,
+.formula-card > :first-child,
+.mistake-card > :first-child,
+.history-card > :first-child,
+.learning-objectives > :first-child,
+.proof-contract > :first-child,
+.assumption-box > :first-child,
+.engineering-meaning > :first-child,
+.failure-mode > :first-child {
+  margin-top: 0;
+}
+
+.key-takeaway,
+.term-card,
+.annotation-note,
+.formula-card,
+.mistake-card,
+.history-card,
+.learning-objectives,
+.proof-contract,
+.assumption-box,
+.engineering-meaning,
+.failure-mode {
+  margin: 1.8em 0;
+  padding: 1em 1.1em;
+  border: 1px solid #d7dfeb;
+  border-left: 0.3em solid #1459b8;
+  border-radius: 0.55em;
+  page-break-inside: avoid;
+}
+
+.key-takeaway { background: #e8f1ff; border-left-color: #1459b8; }
+.term-card,
+.proof-contract,
+.assumption-box { background: #f1eaff; border-left-color: #6740ad; }
+.annotation-note,
+.history-card { background: #fff2d6; border-left-color: #955000; }
+.formula-card,
+.engineering-meaning { background: #dcf7f2; border-left-color: #087f78; }
+.mistake-card,
+.failure-mode { background: #ffe8ed; border-left-color: #a92f49; }
+.learning-objectives { background: #e1f5e9; border-left-color: #217a4c; }
+
+.concept-scorecard,
+.derivation-step,
+.simulation-placeholder,
+.case-card,
+.origin-card,
+.interview-card,
+.news-card,
+.fun-fact-card,
+.reference-note,
+.algorithm-card,
+.tradeoff-card {
+  margin: 1.8em 0;
+  padding: 1em 1.1em;
+  border: 1px solid #d7dfeb;
+  border-top: 0.3em solid #1459b8;
+  border-radius: 0.55em;
+  page-break-inside: avoid;
+}
+
+.derivation-step { background: #f1eaff; border-top-color: #6740ad; }
+.simulation-placeholder { background: #dcf7f2; border-top-color: #087f78; }
+.case-card { border-top-color: #217a4c; }
+.origin-card,
+.fun-fact-card { background: #fff2d6; border-top-color: #955000; }
+.interview-card { border-top-color: #6740ad; }
+.news-card,
+.tradeoff-card { border-top-color: #a92f49; }
+.reference-note { background: #e8f1ff; }
+.algorithm-card { border-top-color: #087f78; }
+
+.simulation-placeholder__controls {
+  display: block;
+  margin: 1em 0;
+  padding: 0.8em;
+  background: #fff;
+  border: 1px dashed #087f78;
+  border-radius: 0.45em;
+}
+
+.simulation-placeholder__controls label { display: block; margin-bottom: 0.7em; }
+.simulation-placeholder__controls input { width: 100%; }
+.simulation-placeholder__controls :is(input, button):disabled { opacity: 0.68; }
+
+.block-metrics { margin: 0 0 0.8em; }
+.metric-badge {
+  display: inline-block;
+  margin: 0 0.25em 0.25em 0;
+  padding: 0.2em 0.55em;
+  font-family: sans-serif;
+  font-size: 0.78em;
+  font-weight: 700;
+  background: #f3f6fb;
+  border: 1px solid #d7dfeb;
+  border-radius: 1em;
+}
+
+.atlas-term,
+abbr[title] {
+  color: #0d438e;
+  font-weight: 700;
+  text-decoration: underline dotted;
+}
+
+.glossary-grid {
+  display: block;
+}
+
+.glossary-entry {
+  margin: 1em 0;
+  padding: 0.9em 1em;
+  border: 1px solid #d7dfeb;
+  border-top: 0.25em solid #6740ad;
+  border-radius: 0.5em;
+  page-break-inside: avoid;
+}
+
+.page-glossary {
+  margin: 2.4em 0 1.8em;
+  padding: 1em 1.1em;
+  background: #f3f0fb;
+  border: 1px solid #d7dfeb;
+  border-top: 0.3em solid #6740ad;
+  border-radius: 0.55em;
+  page-break-inside: avoid;
+}
+
+.page-glossary > p:first-child {
+  margin-top: 0;
+  color: #563291;
+  font-weight: 700;
+}
+
+.page-glossary dl { margin-bottom: 0; }
+.page-glossary dt { margin-top: 0.75em; font-weight: 700; }
+.page-glossary dd { margin-left: 0; }
+
+math[display="inline"] {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0 0.08em;
+  line-height: 1.2;
+  vertical-align: -0.12em;
+  white-space: nowrap;
+}
+
+math[display="block"] {
+  display: block;
+  max-width: 100%;
+  margin: 1.8em 0;
+  padding: 0.9em 0.55em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: #f3f6fb;
+  border-radius: 0.45em;
+}
+
+table {
+  display: block;
+  max-width: 100%;
+  margin: 2em 0;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.92em;
+}
+
+th,
+td {
+  padding: 0.55em 0.65em;
+  border: 1px solid #d7dfeb;
+}
+
+th {
+  background: #f3f6fb;
+}
+
+figure,
+.quarto-figure {
+  max-width: 100%;
+  margin: 2.1em 0;
+  padding: 0;
+  page-break-inside: avoid;
+}
+
+/* Quarto can nest figure inside .quarto-figure; keep one outer gap. */
+.quarto-figure figure {
+  margin: 0;
+}
+
+figure img,
+.quarto-figure img,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+body > img,
+section > img,
+p > img:only-child {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 2.1em auto;
+}
+
+figure p > img:only-child,
+.quarto-figure p > img:only-child {
+  margin: 0 auto;
+}
+
+figcaption {
+  margin-top: 0.75em;
+  color: #53627a;
+  font-size: 0.9em;
+  line-height: 1.55;
+  text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  body { background: #101621; }
+  body,
+  h1,
+  h2,
+  h3,
+  h4 { color: #edf2fa; }
+  strong,
+  .atlas-term,
+  abbr[title] { color: #a8ceff; }
+  em { color: #d0baff; }
+  blockquote,
+  math[display="block"],
+  th { background: #202a3a; }
+  .concept-hero,
+  .key-takeaway { background: #1d3554; }
+  .term-card,
+  .proof-contract,
+  .assumption-box { background: #382b50; }
+  .annotation-note,
+  .history-card { background: #49371d; }
+  .formula-card,
+  .engineering-meaning { background: #173e3c; }
+  .mistake-card,
+  .failure-mode { background: #4d2530; }
+  .learning-objectives { background: #183d2b; }
+  .concept-scorecard { background: #202a3a; }
+  .page-glossary { background: #382b50; border-color: #53627a; }
+  .page-glossary > p:first-child { color: #d0baff; }
+  .derivation-step,
+  .interview-card { background: #382b50; }
+  .simulation-placeholder,
+  .algorithm-card { background: #173e3c; }
+  .case-card { background: #183d2b; }
+  .origin-card,
+  .fun-fact-card { background: #49371d; }
+  .news-card,
+  .tradeoff-card { background: #4d2530; }
+  .reference-note { background: #1d3554; }
+  .simulation-placeholder__controls,
+  .metric-badge { color: #edf2fa; background: #202a3a; border-color: #53627a; }
+  figcaption { color: #b9c6d8; }
+  .concept-scorecard,
+  .derivation-step,
+  .simulation-placeholder,
+  .case-card,
+  .origin-card,
+  .interview-card,
+  .news-card,
+  .fun-fact-card,
+  .reference-note,
+  .algorithm-card,
+  .tradeoff-card { border-color: #53627a; }
+}

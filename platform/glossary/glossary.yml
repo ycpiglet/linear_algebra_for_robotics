@@ -1,0 +1,313 @@
+schema_version: 1.0.0
+terms:
+  - id: parameter
+    ko: 모수
+    en: parameter
+    short: "확률모형이나 물리모형의 모양을 결정하지만 관측 데이터에서 추정해야 하는 값이다. 통계의 모수와 프로그램 함수에 전달하는 매개변수를 문맥으로 구분한다."
+    aliases: [파라미터]
+    related: [likelihood, mle]
+  - id: likelihood
+    ko: 우도
+    en: likelihood
+    short: "관측된 데이터를 고정하고, 어떤 모수값이 그 데이터를 얼마나 잘 설명하는지를 모수의 함수로 읽은 값이다. 확률과 같은 식을 쓸 수 있지만 무엇을 변수로 보는지가 다르다."
+    notation: '$L(\theta;\mathcal D)=p(\mathcal D\mid\theta)$'
+    aliases: [가능도]
+    related: [probability, mle, log-likelihood]
+  - id: probability
+    ko: 확률
+    en: probability
+    short: "모델과 모수를 고정했을 때 아직 정해지지 않은 사건이나 데이터가 나타날 가능성을 나타내는 수이다."
+    notation: '$p(\mathcal D\mid\theta)$'
+    related: [likelihood]
+  - id: mle
+    ko: 최대우도추정
+    en: Maximum Likelihood Estimation
+    abbr: MLE
+    short: "실제로 관측한 데이터를 가장 잘 설명하도록 우도 또는 로그우도를 최대화하는 모수 추정 원리다. Maximum이지 Minimum이 아니다."
+    notation: '$\hat\theta_{\mathrm{MLE}}=\arg\max_\theta p(\mathcal D\mid\theta)$'
+    aliases: [최대가능도추정]
+    related: [likelihood, log-likelihood, map, least-squares]
+  - id: log-likelihood
+    ko: 로그우도
+    en: log-likelihood
+    short: "우도에 로그를 취한 값이다. 곱을 합으로 바꾸고 작은 확률의 수치적 언더플로(underflow)를 줄이면서 최대점은 보존한다."
+    notation: '$\ell(\theta)=\log L(\theta;\mathcal D)$'
+    related: [likelihood, mle, score]
+  - id: map
+    ko: 최대사후확률추정
+    en: Maximum A Posteriori estimation
+    abbr: MAP
+    short: "데이터의 우도뿐 아니라 모수에 대한 사전분포까지 포함한 사후분포를 최대화하는 점 추정이다."
+    notation: '$\hat\theta_{\mathrm{MAP}}=\arg\max_\theta p(\theta\mid\mathcal D)$'
+    related: [mle, likelihood]
+  - id: score
+    ko: 점수함수
+    en: score function
+    short: "로그우도를 모수로 미분한 기울기(gradient)다. 최대우도추정의 일차 최적조건과 피셔 정보를 연결한다."
+    notation: '$s(\theta)=\nabla_\theta\ell(\theta)$'
+    related: [log-likelihood, fisher-information, hessian]
+  - id: fisher-information
+    ko: 피셔 정보
+    en: Fisher information
+    short: "관측 데이터가 모수에 대해 평균적으로 제공하는 국소 정보를 나타내며, 점수함수의 분산 또는 음의 기대 헤시안으로 표현된다."
+    notation: '$\mathcal I(\theta)=\mathbb E[s(\theta)s(\theta)^\top]$'
+    related: [score, hessian, covariance]
+  - id: hessian
+    ko: 헤시안 행렬
+    en: Hessian matrix
+    short: "스칼라 함수의 모든 이차 편미분을 모은 행렬로, 목적함수의 국소 곡률과 최적화 단계(step)를 설명한다."
+    notation: '$H_{ij}=\partial^2 f/(\partial\theta_i\partial\theta_j)$'
+    related: [score, fisher-information, jacobian]
+  - id: least-squares
+    ko: 최소제곱법
+    en: least squares
+    abbr: LS
+    short: "모형과 관측 사이 잔차(residual)의 제곱합을 최소화하는 추정 방법이다. 독립·동분산 가우스(Gaussian) 잡음 아래에서 가우스 최대우도추정과 연결된다."
+    aliases: [최소자승법]
+    related: [ols, wls, residual, mle]
+  - id: ols
+    ko: 보통최소제곱법
+    en: Ordinary Least Squares
+    abbr: OLS
+    short: "모든 잔차를 같은 유클리드(Euclidean) 척도로 취급하는 기본 최소제곱법이다."
+    related: [least-squares, wls, residual]
+  - id: wls
+    ko: 가중최소제곱법
+    en: Weighted Least Squares
+    abbr: WLS
+    short: "측정별 또는 방향별 신뢰도를 가중치(weight)나 공분산(covariance) 역행렬로 반영하는 최소제곱법이다."
+    related: [least-squares, ols, covariance]
+  - id: weight
+    ko: 가중치
+    en: weight
+    short: "여러 데이터나 항이 결과에 기여하는 상대적 크기다. 통계에서는 신뢰도, 표본 대표성, 우도비 등 무엇을 뜻하는 가중치인지 반드시 구분한다."
+    aliases: [웨이트]
+    related: [wls, likelihood, particle-filter]
+  - id: encoder
+    ko: 엔코더
+    en: encoder
+    short: "축이나 관절의 위치·각도·속도를 전기적 또는 디지털 값으로 바꾸는 센서다. 분해능, 영점, 척도, 양자화와 기구 오차를 함께 확인한다."
+    related: [measurement, noise, bias]
+  - id: bias
+    ko: 편향
+    en: bias
+    short: "측정이나 추정이 기준값에서 한쪽으로 지속적으로 치우치는 성분이다. 센서 영점 편향과 추정량의 통계적 편향을 문맥으로 구분한다."
+    aliases: [바이어스]
+    related: [measurement, residual, mle, kalman-filter]
+  - id: outlier
+    ko: 이상치
+    en: outlier
+    short: "가정한 자료 생성 과정의 대부분과 현저히 맞지 않는 관측값이다. 고장일 수도 있고 정상적인 두꺼운 꼬리일 수도 있으므로 무조건 삭제하지 않는다."
+    aliases: [아웃라이어]
+    related: [residual, likelihood, kalman-filter]
+  - id: noise
+    ko: 잡음
+    en: noise
+    short: "관심 있는 신호나 상태를 직접 설명하지 못하는 불확실한 변동이다. 물리적 교란, 센서 전자 잡음, 양자화, 모델 누락을 구분해야 한다."
+    aliases: [노이즈]
+    related: [covariance, measurement, residual]
+  - id: residual
+    ko: 잔차
+    en: residual
+    short: "관측값과 모형이 예측한 값 사이의 관측 후 차이다. 참값을 알아야 정의할 수 있는 오차(error)와 구분한다."
+    notation: '$r=y-\hat y$'
+    aliases: [레지듀얼]
+    related: [least-squares, innovation, measurement]
+  - id: covariance
+    ko: 공분산
+    en: covariance
+    short: "확률변수의 방향별 퍼짐과 변수 사이 함께 변하는 정도를 나타내는 이차 모멘트 행렬이다. 단위는 원 변수 단위의 곱이다."
+    notation: '$P=\mathbb E[(x-\mu)(x-\mu)^\top]$'
+    related: [noise, kalman-filter, fisher-information]
+  - id: uncertainty
+    ko: 불확실성
+    en: uncertainty
+    short: "참값이나 미래 결과를 하나의 숫자로 확정할 수 없는 정도다. 이 교재에서는 범위·분산·공분산·확률분포처럼 무엇으로 표현했는지 함께 밝힌다."
+    aliases: [언서턴티]
+    related: [covariance, noise, fisher-information]
+  - id: jacobian
+    ko: 자코비안 행렬
+    en: Jacobian matrix
+    short: "벡터값 함수의 일차 편미분을 모은 행렬로, 작은 입력 변화가 출력 변화로 어떻게 전달되는지 국소 선형화한다."
+    notation: '$J_{ij}=\partial f_i/\partial x_j$'
+    aliases: [야코비안]
+    related: [hessian, localization]
+  - id: rank
+    ko: 계수
+    en: rank
+    short: "행렬이 독립적으로 전달할 수 있는 방향의 수다. 자코비안의 계수가 줄면 순간적으로 만들 수 있는 작업공간 속도 방향도 줄어든다."
+    aliases: [랭크, 행렬 계수]
+    related: [jacobian, singularity, svd]
+  - id: singularity
+    ko: 특이점
+    en: singularity
+    short: "로봇 자코비안의 계수(rank)가 줄어 순간적으로 만들 수 있는 작업공간 운동 방향이 감소하는 자세 또는 구성이다."
+    aliases: [특이 자세]
+    related: [jacobian, rank, svd, dls]
+  - id: svd
+    ko: 특잇값분해
+    en: Singular Value Decomposition
+    abbr: SVD
+    short: "행렬을 입력 방향, 방향별 늘림 크기인 특잇값, 출력 방향으로 분해한다. 자코비안의 작은 특잇값은 움직이기 어려운 방향과 수치 민감도를 드러낸다."
+    aliases: [특이값분해]
+    related: [jacobian, rank, singularity, pseudoinverse]
+  - id: pseudoinverse
+    ko: 무어–펜로즈 의사역행렬
+    en: Moore–Penrose pseudoinverse
+    short: "정사각 가역행렬이 아닌 경우에도 최소제곱 또는 최소노름 해를 고르는 일반화된 역행렬이다. 작은 특잇값의 역수를 크게 키울 수 있어 특이점 근처에서는 주의한다."
+    aliases: [의사역행렬, 유사역행렬]
+    related: [svd, least-squares, singularity, dls]
+  - id: dls
+    ko: 감쇠 최소제곱
+    en: Damped Least Squares
+    abbr: DLS
+    short: "의사역행렬 계산에 양의 감쇠를 넣어 특이점 근처의 과도한 관절속도를 제한하는 정규화된 최소제곱 방법이다. 감쇠가 크면 안정성은 좋아지지만 작업공간 추종 오차가 늘어난다."
+    aliases: [댐핑 최소제곱]
+    related: [pseudoinverse, least-squares, singularity]
+  - id: manipulability
+    ko: 조작성
+    en: manipulability
+    short: "주어진 로봇 자세에서 관절속도가 작업공간 속도를 만들 수 있는 방향과 크기를 요약하는 성질이다. 대표 스칼라 지표는 자코비안 특잇값의 곱과 연결되지만 단위·척도에 의존한다."
+    aliases: [매니퓰러빌리티]
+    related: [jacobian, svd, singularity]
+  - id: geometric-jacobian
+    ko: 기하 자코비안
+    en: geometric Jacobian
+    short: "관절속도를 말단의 선속도와 각속도로 보내는 자코비안이다. 각속도는 좌표 매개변수의 시간미분과 일반적으로 같지 않다."
+    related: [jacobian, analytic-jacobian]
+  - id: analytic-jacobian
+    ko: 해석 자코비안
+    en: analytic Jacobian
+    short: "관절속도를 위치와 자세 매개변수의 시간미분으로 보내는 자코비안이다. 자세 매개변수 자체의 특이성 때문에 기하 자코비안이 정상이어도 특이해질 수 있다."
+    related: [jacobian, geometric-jacobian, singularity]
+  - id: measurement
+    ko: 측정
+    en: measurement
+    short: "센서가 내놓는 관측값이다. 로봇의 내부 상태 자체가 아니라 상태와 잡음의 함수로 모델링한다."
+    aliases: [관측, observation]
+    related: [state, noise, sensor-fusion]
+  - id: state
+    ko: 상태
+    en: state
+    short: "현재값을 알면 입력과 모델을 이용해 미래의 시스템 거동을 기술할 수 있도록 선택한 최소 변수 묶음이다."
+    related: [measurement, kalman-filter, localization]
+  - id: innovation
+    ko: 혁신
+    en: innovation
+    short: "상태추정에서 실제 측정과 사전 예측 측정의 차이다. 새 측정이 예측에 더하는 정보라는 뜻으로 잔차(residual)와 유사하지만 시점과 조건이 명확하다."
+    notation: '$\tilde y_k=y_k-H\hat x_k^-$'
+    aliases: [이노베이션]
+    related: [residual, kalman-filter]
+  - id: nis
+    ko: 정규화 혁신제곱
+    en: Normalized Innovation Squared
+    abbr: NIS
+    short: "혁신을 예측된 혁신 공분산으로 정규화한 이차형식이다. 선형–가우스 모형이 맞으면 측정 차원의 카이제곱분포와 비교해 이상치와 필터 일관성을 진단할 수 있다."
+    notation: '$\mathrm{NIS}=\nu^\top S^{-1}\nu$'
+    related: [innovation, covariance, kalman-filter, outlier]
+  - id: kalman-gain
+    ko: 칼만 이득
+    en: Kalman gain
+    short: "혁신을 상태 보정량으로 바꾸는 행렬이다. 사전 공분산과 측정 공분산으로부터 유도되며 방향별로 예측과 측정의 상대 신뢰도를 나타낸다."
+    notation: '$K=P^-H^\top(HP^-H^\top+R)^{-1}$'
+    related: [kalman-filter, covariance, innovation]
+  - id: prior
+    ko: 사전분포
+    en: prior distribution
+    short: "현재 데이터를 반영하기 전에 상태나 모수에 대해 가진 확률분포다. 칼만 필터에서는 현재 측정 전의 예측분포를 뜻하기도 한다."
+    related: [likelihood, posterior, map, kalman-filter]
+  - id: prior-estimate
+    ko: 사전 추정
+    en: prior estimate
+    short: "현재 측정을 반영하기 전, 이전 사후 추정을 동역학으로 예측한 상태 추정이다. 칼만 필터에서는 보통 위첨자 마이너스(−)로 표시한다."
+    related: [prior, posterior-estimate, kalman-filter]
+  - id: posterior
+    ko: 사후분포
+    en: posterior distribution
+    short: "사전분포와 현재 데이터의 우도를 베이즈 법칙으로 결합한 뒤의 조건부 분포다."
+    related: [likelihood, prior, map, kalman-filter]
+  - id: posterior-estimate
+    ko: 사후 추정
+    en: posterior estimate
+    short: "현재 측정을 반영한 뒤의 상태 추정이다. 칼만 필터에서는 보통 위첨자 플러스(+)로 표시하고 다음 시각 예측의 출발점으로 쓴다."
+    related: [posterior, prior-estimate, kalman-filter]
+  - id: process-noise-covariance
+    ko: 과정 잡음 공분산
+    en: process-noise covariance
+    short: "한 상태전이 구간에서 동역학 모형이 설명하지 못한 상태 증가량의 공분산이다. 상태 단위와 표본시간에 맞게 연속 또는 이산 잡음모형에서 구성한다."
+    notation: '$Q=\mathbb E[ww^\top]$'
+    related: [noise, covariance, kalman-filter]
+  - id: measurement-noise-covariance
+    ko: 측정 잡음 공분산
+    en: measurement-noise covariance
+    short: "측정모형이 설명한 값과 센서 측정 사이 잡음의 공분산이다. 센서 단위·대역폭·표본률·전처리 조건을 함께 기록해야 한다."
+    notation: '$R=\mathbb E[vv^\top]$'
+    related: [measurement, noise, covariance, kalman-filter]
+  - id: error-covariance
+    ko: 추정오차 공분산
+    en: estimation-error covariance
+    short: "참상태와 상태 추정의 차이가 방향별로 얼마나 퍼지고 함께 변하는지를 나타내는 행렬이다. 칼만 필터에서는 보통 $P$로 쓴다."
+    notation: '$P=\mathbb E[(x-\hat x)(x-\hat x)^\top]$'
+    related: [covariance, uncertainty, kalman-filter]
+  - id: timestamp
+    ko: 시간표시
+    en: timestamp
+    short: "측정이나 명령이 어느 시각에 해당하는지 기록한 값이다. 수신 시각과 측정 시각을 구분해야 비동기 센서의 지연과 순서를 올바르게 처리할 수 있다."
+    aliases: [타임스탬프]
+    related: [measurement, sensor-fusion, kalman-filter]
+  - id: kalman-filter
+    ko: 칼만 필터
+    en: Kalman filter
+    abbr: KF
+    short: "선형 동역학의 예측과 센서 측정을 평균·공분산으로 재귀 결합하는 가우스(Gaussian) 상태추정기다."
+    related: [state, measurement, covariance, innovation, sensor-fusion]
+  - id: particle-filter
+    ko: 입자 필터
+    en: Particle Filter
+    abbr: PF
+    short: "상태분포를 가중 표본 집합으로 근사하고 예측·가중·재표본화를 반복하는 순차몬테카를로(Sequential Monte Carlo, SMC) 추정 방법이다."
+    aliases: [파티클 필터]
+    related: [smc, sis, ess, localization]
+  - id: sis
+    ko: 순차중요도표집
+    en: Sequential Importance Sampling
+    abbr: SIS
+    short: "시간이 진행될 때 제안분포(proposal)에서 입자를 확장하고 중요도 가중치(importance weight)를 재귀 갱신하는 방법이다. 재표본화는 정의에 포함되지 않는다."
+    aliases: [순차중요도표본추출]
+    related: [smc, particle-filter, ess]
+  - id: smc
+    ko: 순차몬테카를로
+    en: Sequential Monte Carlo
+    abbr: SMC
+    short: "시간에 따라 변하는 분포열을 가중 입자와 선택·이동 단계로 근사하는 방법군이다."
+    related: [sis, particle-filter, ess]
+  - id: ess
+    ko: 유효표본크기
+    en: Effective Sample Size
+    abbr: ESS
+    short: "중요도 가중치(importance weight)가 얼마나 소수 입자에 집중됐는지를 표본 수와 비슷한 척도로 요약하는 진단량이다."
+    notation: '$\mathrm{ESS}=1/\sum_i (W_i)^2$'
+    related: [sis, smc, particle-filter]
+  - id: mcmc
+    ko: 마르코프연쇄 몬테카를로
+    en: Markov Chain Monte Carlo
+    abbr: MCMC
+    short: "목표분포를 불변분포로 갖는 마르코프 연쇄(Markov chain)를 구성하고 그 궤적의 표본평균으로 기대값을 근사하는 방법군이다."
+    related: [likelihood, map]
+  - id: sensor-fusion
+    ko: 센서 융합
+    en: sensor fusion
+    short: "서로 다른 센서와 모델의 정보를 불확실성·시간·좌표계까지 고려해 일관된 상태 또는 판단으로 결합하는 과정이다."
+    related: [measurement, covariance, kalman-filter, localization]
+  - id: localization
+    ko: 위치추정
+    en: localization
+    short: "지도 또는 기준 좌표계에서 로봇의 위치와 자세, 필요하면 그 불확실성을 추정하는 문제다."
+    aliases: [로컬라이제이션]
+    related: [state, measurement, sensor-fusion, particle-filter]
+  - id: pid
+    ko: 비례·적분·미분 제어
+    en: Proportional–Integral–Derivative control
+    abbr: PID
+    short: "현재 오차, 누적 오차, 오차 변화율을 조합하는 피드백(feedback) 제어 구조다."
+    related: [state]

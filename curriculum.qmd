@@ -1,0 +1,400 @@
+---
+title: "전체 커리큘럼 지도"
+description: "선형대수에서 제어·추정·SMC·MCMC까지 이어지는 비선형 학습 설계"
+toc: true
+toc-depth: 3
+---
+
+## 먼저 결론: 순서가 아니라 네트워크다
+
+아래 번호는 종이책을 위한 **권장 참조 순서**이지 수강 허가 조건이 아닙니다. PID처럼
+바로 시작할 수 있는 주제는 먼저 읽고, 페이지의 선수 체크에서 막힌 개념만 되돌아갑니다.
+한 개념도 `직관 → 계산·적용 → 유도 → 증명·가정 → 가르치기`의 숙달 상태를 따로 가집니다.
+
+| 지금 알고 싶은 것 | 직관에 필요한 최소 선수 | 구현·유도에서 추가 | 증명 모드에서 추가 |
+|---|---|---|---|
+| PID | 오차, 음의 피드백 | 변화율·누적, sampling, saturation | 대상 모델, 폐루프 안정성 |
+| 최소제곱 | 벡터, $Ax$의 열 조합 | 직교투영, QR/SVD, 조건수 | 내적공간, convexity, rank |
+| Kalman Filter | 평균·공분산, 상태와 측정 | 선형 시스템, 상태공간, Gaussian 조건부 | LMMSE 직교성, PSD, 확률 가정 |
+| Particle Filter | Bayes 갱신, Monte Carlo | IS, SIS, ESS, resampling | 측도·적분, SLLN, 조건부기댓값 |
+| MCMC | 확률분포와 조건부확률 | Markov chain, 불변분포, detailed balance | kernel, irreducibility, ergodic theorem |
+| 로봇 Jacobian | 벡터미적분, 좌표계 | matrix calculus, 선형화, SVD | 미분사상과 rank theorem(선택) |
+| 센서 융합·로컬라이제이션 | frame, noise, Bayes | SE(3), KF/PF, 관측가능성 | Lie group 확률·수렴론(선택) |
+
+::: {.callout-tip title="권장 사용법"}
+목표 페이지의 30초 핵심을 먼저 읽고, 직관 체크를 통과하면 계속 갑니다. 계산에서 막히면
+필요한 선수 하나만 우회하고 `돌아가기` 버튼으로 원래 문단에 복귀합니다.
+:::
+
+## A. 공학 수학의 공통 언어
+
+### A0. 표기·단위·계산 습관
+
+1. scalar, vector, matrix, tensor와 shape
+2. index, summation, transpose, inverse, pseudoinverse
+3. 물리 단위와 차원 분석
+4. 좌표 frame, active/passive transformation
+5. exact equality, approximation, heuristic, numerical error의 구분
+6. Python/NumPy 배열, broadcasting, 재현 가능한 난수
+
+**통과 기준:** 식을 계산하기 전에 각 항의 shape·단위·frame을 표로 적을 수 있다.
+
+### A1. 미적분의 공학 직관
+
+1. 함수와 변화량
+2. 미분: 국소 선형화와 민감도
+3. 적분: 누적량과 면적
+4. Taylor 전개와 remainder의 의미
+5. 연속시간과 이산시간, sampling과 차분
+6. gradient, directional derivative, Jacobian의 예고편
+
+**바로 연결:** PID의 I/D항, 상태방정식 이산화, optimization gradient.
+
+## B. 선형대수 — Strang 수준을 로봇 언어로
+
+### B1. 벡터와 선형결합
+
+1. 벡터의 기하·데이터·물리량 해석
+2. 선형결합, span, 생성집합
+3. 선형독립과 redundancy
+4. basis, dimension, coordinates
+5. affine combination과 homogeneous coordinates
+
+### B2. 행렬과 선형사상
+
+1. 행렬곱을 열 조합·행별 측정·함수 합성으로 읽기
+2. $Ax=b$의 존재성과 유일성
+3. elimination, LU, pivoting
+4. invertibility와 equivalent conditions
+5. block matrix와 Schur complement의 첫 등장
+
+### B3. 네 기본 부분공간
+
+1. column space와 가능한 출력
+2. null space와 식별 불가능한 방향
+3. row space와 left null space
+4. rank–nullity
+5. 센서 observability와 actuator controllability의 예고편
+
+### B4. 내적·직교·최소제곱
+
+1. inner product, norm, angle
+2. orthogonal complement
+3. projection과 projection matrix
+4. Gram–Schmidt와 QR
+5. least squares, weighted least squares
+6. rank-deficient 해와 Moore–Penrose pseudoinverse
+
+### B5. 고유값과 동역학
+
+1. eigenvector/eigenvalue의 불변 방향
+2. diagonalization과 matrix powers
+3. complex eigenpair와 회전·진동
+4. positive definite matrix와 quadratic form
+5. 안정성과 discrete/continuous eigenvalue 영역
+
+### B6. SVD
+
+1. 회전–축척–회전이라는 기하
+2. singular value, rank, condition number
+3. low-rank approximation
+4. pseudoinverse와 damped least squares
+5. Jacobian singularity와 manipulability
+
+## C. 수치선형대수
+
+### C1. 부동소수점과 민감도
+
+1. rounding, cancellation, overflow/underflow
+2. forward error와 backward error
+3. problem conditioning과 algorithm stability
+4. vector/matrix norm과 condition number
+
+### C2. 안정적인 factorization
+
+1. LU와 partial pivoting
+2. Householder/Givens QR
+3. Cholesky와 SPD 조건
+4. SVD와 rank revealing
+5. explicit inverse를 피해야 하는 이유
+
+### C3. 대규모 문제
+
+1. sparse matrix와 fill-in
+2. stationary/Krylov iterative method
+3. conjugate gradient와 preconditioning
+4. least-squares iterative solver
+5. eigenvalue iteration과 Lanczos/Arnoldi 개요
+
+**로봇 연결:** SLAM sparse normal equation, Jacobian inverse, square-root filtering,
+trajectory optimization.
+
+## D. 행렬미적분과 자동미분
+
+### D1. 미분의 언어
+
+1. differential과 linear approximation
+2. Jacobian, gradient, Hessian의 shape
+3. numerator/denominator layout 관례
+4. chain rule을 함수 합성으로 읽기
+5. vector–Jacobian product와 Jacobian–vector product
+
+### D2. 자주 쓰는 유도
+
+1. linear/quadratic form
+2. trace trick
+3. inverse와 determinant 미분
+4. least-squares gradient/Hessian
+5. covariance propagation의 1차 근사
+6. implicit differentiation
+
+### D3. 구현
+
+1. finite difference 검산
+2. symbolic differentiation
+3. forward/reverse-mode AD
+4. computational graph와 memory trade-off
+5. nonsmooth point와 custom derivative
+
+## E. Lie Group — $SO(3)$와 $SE(3)$
+
+### E1. 3차원 회전 표현
+
+1. rotation matrix의 조건과 자유도
+2. Euler angle과 singularity
+3. axis–angle, exponential coordinates
+4. quaternion, double cover, normalization
+5. 표현 선택과 frame convention
+
+### E2. Lie group/algebra
+
+1. group, tangent space, hat/vee
+2. exponential/logarithm map
+3. adjoint와 frame 변화
+4. BCH의 공학적 범위
+5. left/right perturbation과 Jacobian
+
+### E3. 강체변환과 추정
+
+1. homogeneous transform와 $SE(3)$
+2. twist, screw motion, forward kinematics
+3. pose residual과 manifold optimization
+4. covariance를 tangent space에서 다루기
+5. IMU preintegration과 factor graph의 입구
+
+## F. 최적화
+
+### F1. 문제를 세우는 법
+
+1. decision variable, objective, constraint
+2. feasible set와 local/global optimum
+3. scaling, units, residual design
+4. convex set/function과 왜 중요한가
+
+### F2. unconstrained optimization
+
+1. gradient descent와 line search
+2. Newton, Gauss–Newton, Levenberg–Marquardt
+3. trust region
+4. conditioning과 preconditioning
+5. stopping criterion과 진단
+
+### F3. constrained optimization
+
+1. equality constraint와 Lagrange multiplier
+2. KKT conditions
+3. inequality, active set, barrier/interior point
+4. quadratic programming
+5. trajectory optimization와 model predictive control
+
+### F4. 확률·학습으로 확장
+
+1. least squares와 maximum likelihood
+2. MAP와 regularization
+3. stochastic gradient와 minibatch
+4. policy optimization와 reinforcement learning
+5. sampling과 variational inference의 차이
+
+## G. 확률·통계·확률과정
+
+### G1. 확률의 기본 문법
+
+1. sample space, event, probability
+2. random variable과 distribution
+3. PMF/PDF/CDF와 density의 한계
+4. joint, marginal, conditional probability
+5. Bayes theorem과 likelihood/prior/posterior
+
+### G2. moment와 Gaussian
+
+1. expectation, variance, covariance
+2. independence와 uncorrelated의 차이
+3. covariance matrix, PSD, ellipse
+4. multivariate Gaussian
+5. marginalization과 conditioning
+6. law of total expectation/variance
+
+### G3. 통계적 추정
+
+1. estimator, bias, variance, MSE
+2. LLN과 CLT의 사용 조건
+3. confidence/credible interval 구분
+4. likelihood, MLE, MAP
+5. linear regression과 residual diagnostic
+6. robust statistics와 outlier
+
+### G4. 확률과정
+
+1. random process와 finite-dimensional distribution
+2. stationarity와 ergodicity
+3. autocorrelation, cross-correlation, PSD
+4. white/colored noise
+5. Markov property와 state-space model
+6. Gaussian process의 입구
+
+## H. 신호 및 시스템
+
+### H1. 신호와 LTI 시스템
+
+1. continuous/discrete signal, energy/power
+2. impulse, step, exponential, sinusoid
+3. linearity, time invariance, causality, stability
+4. impulse response와 convolution
+5. difference/differential equation
+
+### H2. 주파수 관점
+
+1. Fourier series/transform
+2. sampling, aliasing, reconstruction
+3. frequency response와 Bode plot
+4. Laplace/Z transform
+5. pole–zero와 stability
+
+### H3. filtering과 smoothing
+
+1. moving average와 exponential moving average
+2. FIR/IIR low-pass filter
+3. phase delay와 group delay
+4. batch smoothing와 causal filtering
+5. Wiener filter와 least squares
+6. Kalman filtering/smoothing과의 차이
+
+## I. 제어공학
+
+### I1. 피드백과 PID
+
+1. open/closed loop와 disturbance rejection
+2. P·PI·PD·PID
+3. discrete implementation, filtering, anti-windup
+4. tuning과 robustness
+5. cascade/feedforward
+
+### I2. 고전제어
+
+1. transfer function
+2. transient/steady-state specification
+3. root locus
+4. Bode/Nyquist와 gain/phase margin
+5. lead/lag compensator
+
+### I3. 상태공간 제어
+
+1. state transition과 discretization
+2. controllability/observability
+3. pole placement
+4. LQR와 Riccati equation
+5. observer와 separation principle
+6. impedance/admittance control
+
+## J. 센서·추정·퓨전·로컬라이제이션
+
+### J1. 센서공학
+
+1. accuracy, precision, resolution, range, bandwidth
+2. bias, scale factor, nonlinearity, hysteresis
+3. quantization, saturation, latency, timestamp
+4. calibration과 uncertainty propagation
+5. IMU, encoder, camera, LiDAR, GNSS의 측정모델
+
+### J2. 상태추정
+
+1. Bayes filter
+2. Kalman/extended/unscented Kalman filter
+3. information/square-root form
+4. RTS smoothing
+5. consistency, NIS/NEES, observability
+
+### J3. 센서 퓨전과 위치추정
+
+1. frame/time synchronization
+2. dead reckoning
+3. landmark measurement와 triangulation
+4. EKF/PF localization
+5. occupancy grid
+6. factor graph, bundle adjustment, graph SLAM
+
+## K. Monte Carlo·SMC·Particle Filter
+
+1. Monte Carlo 적분과 $N^{-1/2}$ 오차
+2. Importance Sampling 항등식·support·weight variance
+3. self-normalized IS와 일관성
+4. Bayes filtering recursion
+5. Sequential Importance Sampling의 path proposal
+6. incremental weight의 완전 유도
+7. weight degeneracy와 ESS
+8. multinomial/residual/stratified/systematic resampling
+9. 조건부 불편성과 sample impoverishment
+10. SIR/SISR, bootstrap Particle Filter
+11. auxiliary/proposal design, Rao–Blackwellization
+12. smoothing, genealogy, PMCMC로 확장
+
+[Particle Filter 전체 경로](content/paths/particle-filter.qmd)는 1–10을 직관·구현·증명
+모드로 나누어 제공합니다.
+
+## L. MCMC
+
+1. Markov chain과 transition kernel
+2. stationary/invariant distribution
+3. irreducibility, aperiodicity, recurrence
+4. detailed balance는 충분조건이지 필요조건이 아님
+5. Metropolis–Hastings accept/reject
+6. 정규화 상수의 소거
+7. Gibbs sampling
+8. burn-in, autocorrelation, ESS, mixing
+9. ergodic average와 Monte Carlo error
+10. HMC/NUTS, Langevin method, PMCMC의 입구
+
+[MCMC 전체 경로](content/paths/mcmc.qmd)는 유한상태 완결 증명에서 시작해 density와
+general-kernel 층의 추가 가정을 분리합니다.
+
+## M. 머신러닝과 강화학습으로의 연결
+
+### M1. 머신러닝
+
+1. empirical risk와 train/validation/test
+2. linear/logistic model
+3. regularization, bias–variance
+4. neural network와 backpropagation
+5. probabilistic model와 uncertainty
+
+### M2. 강화학습
+
+1. MDP, state, action, reward, return
+2. Bellman equation과 dynamic programming
+3. Monte Carlo와 temporal difference
+4. value approximation과 least squares
+5. policy gradient와 importance sampling
+6. model-based RL과 optimal control 연결
+
+## 성취 기준과 평가 방식
+
+각 개념의 “완료”는 한 종류가 아닙니다.
+
+1. **설명:** 핵심을 식 없이 물리적으로 설명한다.
+2. **계산:** 작은 예를 손으로 풀고 shape·단위를 확인한다.
+3. **구현:** Python 실험을 수정하고 예상한 실패를 재현한다.
+4. **유도:** 출발 가정에서 공식을 다시 만든다.
+5. **비판:** 적용 조건, 반례, 수치 실패를 구분한다.
+6. **증명:** 선택한 엄밀성 층에서 모든 의존 정리를 추적한다.
+7. **전이:** 새로운 로봇 문제를 같은 구조로 모델링한다.
+

@@ -1,0 +1,79 @@
+---
+id: path.least_squares
+title: "목표 경로: 최소제곱을 기하·통계·수치로 연결하기"
+one_line: "정확히 맞지 않는 연립식에서 출발해 투영, 정규방정식, Gaussian MLE, QR·SVD 선택까지 이어진다."
+goal: "최소제곱을 유도하고 가정에 따라 기하·통계 해석을 구분하며 안정적인 계산법을 선택한다."
+estimated_time:
+  intuition: "35분"
+  application: "2시간"
+  derivation: "3시간"
+  proof: "4시간 이상"
+entry_points:
+  intuition: linalg.linear_system
+  application: linalg.linear_system
+  derivation: linalg.orthogonal_projection
+  proof: linalg.orthogonal_projection
+steps:
+  - concept: linalg.linear_system
+    depth: application
+    optional: false
+    note: "행·열·shape와 exact solution의 존재를 확인한다."
+  - concept: linalg.orthogonal_projection
+    depth: derivation
+    optional: false
+    note: "가장 가까운 점과 residual orthogonality를 연결한다."
+  - concept: linalg.least_squares
+    depth: application
+    optional: false
+    note: "line fitting, weighted residual, solver 선택을 익힌다."
+  - concept: probability.mean_covariance
+    depth: application
+    optional: true
+    note: "Gaussian MLE와 weighted LS 해석이 목표일 때 추가한다."
+  - concept: linalg.least_squares
+    depth: proof
+    optional: true
+    note: "최소성·유일성과 rank-deficient 반례를 증명한다."
+---
+
+# 최소제곱의 네 문을 따로 연다
+
+최소제곱은 하나의 공식이 아니라 **fitting 문제, 기하학, 확률모델, 수치 알고리즘**이 만나는 지점이다. 목적에 따라 필요한 문까지만 열 수 있다.
+
+## 1. 데이터 fitting 직관 — 약 35분
+
+1. [선형 시스템](../concepts/linalg/linear-systems.qmd)의 열 조합 관점을 읽는다.
+2. [최소제곱의 평균 예](../concepts/linalg/least-squares.qmd#가장-작은-예-평균도-최소제곱이다)를 계산한다.
+3. “정확한 식을 못 푼다”가 아니라 “residual metric을 최소화한다”로 설명한다.
+
+## 2. 기하학과 유도 — 약 2시간
+
+1. [직교투영](../concepts/linalg/orthogonal-projection.qmd)을 읽고 $A^\top r=0$을 확인한다.
+2. [투영 유도](../concepts/linalg/least-squares.qmd#sec-ls-projection)로 복귀한다.
+3. 같은 normal equation을 미분과 기하 두 방식으로 다시 유도한다.
+
+## 3. 통계 해석 — 추가 50분
+
+1. [평균과 공분산](../concepts/probability/mean-covariance.qmd)에서 $R$의 단위와 PSD 성질을 확인한다.
+2. 최소제곱 페이지의 `Gaussian MLE로 얻기`와 weighted least squares를 읽는다.
+3. 다음 문장을 구분한다.
+
+   - OLS objective는 Gaussian 가정 없이 정의된다.
+   - i.i.d. equal-variance Gaussian noise 아래 OLS가 MLE가 된다.
+   - correlated/heteroscedastic Gaussian noise에는 WLS가 대응한다.
+
+## 4. 수치 계산 — 추가 45분
+
+- normal equation은 condition number를 제곱한다.
+- full-rank tall 문제는 QR이 기본값이다.
+- rank가 의심되거나 minimum-norm 해가 필요하면 SVD를 쓴다.
+- explicit inverse를 계산하지 않는다.
+
+## 이 경로의 완료 기준
+
+- [ ] residual과 parameter의 shape를 구분한다.
+- [ ] $A^\top r=0$을 투영으로 설명한다.
+- [ ] 최소성·유일성의 조건을 구분한다.
+- [ ] Gaussian MLE 해석에 필요한 가정을 말한다.
+- [ ] normal equation, QR, SVD 중 하나를 이유와 함께 고른다.
+

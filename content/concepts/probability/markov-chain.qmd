@@ -1,0 +1,192 @@
+---
+title: "Markov Chain"
+id: probability.markov-chain
+kind: concept
+domain: probability
+aliases:
+  - Markov chain
+  - 마르코프 연쇄
+  - transition kernel
+one-line: "현재가 주어지면 다음 상태의 분포가 더 먼 과거에 직접 의존하지 않는 확률적 동역학이다."
+difficulty: 3
+prerequisites:
+  intuition:
+    required: []
+    helpful:
+      - concept: probability.measure-foundations
+        competency: explain
+        reason: 일반 상태공간의 Markov kernel을 이해하는 데 도움이 된다.
+  proof:
+    required:
+      - concept: probability.measure-foundations
+        competency: explain
+        reason: 현재 페이지의 유한상태 범위와 일반 kernel 범위를 구분한다.
+    helpful: []
+relations:
+  requires:
+    - probability.measure-foundations
+  used-in:
+    - probability.detailed-balance
+    - probability.metropolis-hastings
+---
+
+::: {.callout-note title="30초 핵심"}
+$$
+P(X_{n+1}\in A\mid X_{0:n})
+=P(X_{n+1}\in A\mid X_n).
+$$
+
+Markov 성질은 “미래가 과거와 무관하다”가 아니라 **현재를 조건으로 주면** 다음 단계 예측에 더 먼 과거가 추가 정보를 주지 않는다는 뜻이다.
+:::
+
+::: {.depth-intuition}
+
+## 왜 MCMC에 필요한가
+
+MCMC는 목표분포 $\pi$를 stationary distribution으로 갖는 Markov chain을 설계하고, 그 chain을 오래 실행해 얻은 **상관된 표본**으로 기댓값을 근사한다.
+
+이를 이해하려면 다음 질문을 구분해야 한다.
+
+1. $\pi$가 invariant인가?
+2. 임의의 초기분포에서 chain이 $\pi$로 수렴하는가?
+3. 시간평균이 $\mathbb E_\pi$로 수렴하는가?
+
+첫 번째만으로 나머지 둘이 자동으로 따라오지 않는다.
+
+:::
+
+::: {.depth-derivation}
+
+## 유한상태 정의
+
+상태공간 $\mathsf X=\{1,\ldots,K\}$에서 transition matrix $P$는
+
+$$
+P_{ij}=P(X_{n+1}=j\mid X_n=i),
+\qquad P_{ij}\ge0,
+\qquad \sum_jP_{ij}=1
+$$
+
+을 만족한다. 분포를 row vector $\mu_n$로 쓰면
+
+$$
+\mu_{n+1}=\mu_nP,
+\qquad
+\mu_n=\mu_0P^n.
+$$
+
+### Stationary/invariant distribution
+
+확률벡터 $\pi$가
+
+$$
+\pi=\pi P
+$$
+
+를 만족하면 stationary distribution이다. $X_0\sim\pi$이면 모든 $n$에서 $X_n\sim\pi$다.
+
+::: {.callout-important title="Stationary와 수렴은 다르다"}
+$\pi P=\pi$는 $\pi$에서 시작하면 그대로라는 말이다. 임의의 $\mu_0$에서 $\mu_0P^n\to\pi$라는 말은 아니다.
+:::
+
+## 가장 작은 예제
+
+$$
+P=\begin{bmatrix}
+0.8&0.2\\
+0.4&0.6
+\end{bmatrix}.
+$$
+
+$\pi=(\pi_1,\pi_2)$, $\pi_1+\pi_2=1$, $\pi=\pi P$를 풀면
+
+$$
+0.2\pi_1=0.4\pi_2
+\quad\Rightarrow\quad
+\pi=(2/3,1/3).
+$$
+
+두 상태 사이의 장기 확률흐름 $(2/3)0.2=(1/3)0.4$도 균형을 이룬다. 이것은 이 예에서는 detailed balance까지 만족함을 보여준다.
+
+## 수렴에 관련된 성질
+
+### Irreducible
+
+모든 상태쌍 $i,j$에 대해 어떤 $n\ge0$에서 $(P^n)_{ij}>0$이면 irreducible이다. 상태공간이 서로 닿지 않는 여러 communicating class로 갈라지지 않는다.
+
+### Period
+
+상태 $i$의 period는
+
+$$
+d(i)=\gcd\{n\ge1:(P^n)_{ii}>0\}
+$$
+
+다. irreducible chain에서는 모든 상태의 period가 같다. period가 1이면 aperiodic이다.
+
+### 유한상태 ergodic 결론
+
+유한상태에서 $P$가 irreducible이고 aperiodic이면 stationary distribution $\pi$가 유일하며
+
+$$
+\mu_0P^n\to\pi
+$$
+
+가 모든 초기분포에 대해 성립한다. 시간평균의 강대수법칙에는 별도 Markov-chain ergodic theorem을 사용한다.
+
+::: {.callout-warning title="증명 범위"}
+연결된 [유한상태 수렴·ergodic-average 증명](../../proofs/finite-state-mh-convergence-ergodic-average.qmd)은 irreducible·aperiodic chain의 uniform geometric total-variation convergence와 시간평균의 거의 확실한 수렴을 직접 증명한다. 일반상태 Harris recurrence와 Markov-chain CLT는 그 결론에 포함하지 않는다.
+:::
+
+:::
+
+::: {.depth-application}
+
+## 두 반례
+
+### Invariant지만 수렴하지 않는 주기 chain
+
+$$
+P=\begin{bmatrix}0&1\\1&0\end{bmatrix}
+$$
+
+는 uniform $\pi=(1/2,1/2)$를 invariant하게 보존하지만, 상태 1에서 시작하면 분포가 $(1,0),(0,1),(1,0),\ldots$로 진동한다.
+
+### 여러 stationary distribution
+
+$$
+P=I
+$$
+
+이면 모든 분포가 stationary다. 그러나 초기상태에서 영원히 움직이지 않으므로 하나의 목표분포를 탐색하지 않는다.
+
+## 일반 상태공간
+
+행렬 대신 Markov kernel $P(x,A)$를 쓰고 invariant condition은
+
+$$
+\pi(A)=\int_{\mathsf X}P(x,A)\pi(dx)
+$$
+
+가 된다. irreducibility도 단순한 graph connectivity가 아니라 기준측도에 대한 $\psi$-irreducibility로 일반화된다. 이 범위는 [확률·측도 기반](measure-probability-foundations.qmd)에 경계를 표시한다.
+
+## 다음 연결
+
+- 쉽게 invariance를 보장하는 충분조건: [Detailed Balance](detailed-balance.qmd)
+- 목표분포를 보존하는 accept/reject chain: [Metropolis–Hastings](metropolis-hastings.qmd)
+- 유한상태의 수렴 완결: [MH/MCMC 수렴과 ergodic average 증명](../../proofs/finite-state-mh-convergence-ergodic-average.qmd)
+- 목표별 순서: [MCMC 학습 경로](../../paths/mcmc.qmd)
+
+:::
+
+## 회상 점검
+
+1. Markov 성질에서 조건으로 주어지는 정보는 무엇인가?
+2. `invariant`, `convergent`, `ergodic average`를 구분하라.
+3. irreducible이지만 periodic인 2-state chain을 써라.
+4. 일반 상태공간에서는 transition matrix를 무엇으로 바꾸는가?
+
+## 참고문헌
+
+- J. R. Norris, *Markov Chains*.
+- Sean P. Meyn and Richard L. Tweedie, *Markov Chains and Stochastic Stability*.

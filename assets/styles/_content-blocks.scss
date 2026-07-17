@@ -1,0 +1,861 @@
+/* Long-form learning typography and reusable authoring blocks.
+ * Authoring contract: see design-system.qmd.
+ */
+
+#quarto-document-content {
+  color: var(--atlas-ink);
+}
+
+#quarto-document-content p {
+  max-width: var(--atlas-measure);
+  margin-block: 0 var(--atlas-paragraph-gap);
+  text-wrap: pretty;
+}
+
+#quarto-document-content li + li {
+  margin-top: var(--atlas-space-2);
+}
+
+#quarto-document-content h2 {
+  margin-top: var(--atlas-space-16);
+  margin-bottom: var(--atlas-space-6);
+}
+
+#quarto-document-content h3 {
+  margin-top: var(--atlas-space-10);
+  margin-bottom: var(--atlas-space-5);
+}
+
+#quarto-document-content h4 {
+  margin-top: var(--atlas-space-6);
+  margin-bottom: var(--atlas-space-3);
+}
+
+#quarto-document-content strong {
+  color: var(--atlas-strong);
+  font-weight: 780;
+}
+
+#quarto-document-content em {
+  color: var(--atlas-emphasis);
+  font-style: italic;
+  text-decoration: underline color-mix(in srgb, var(--atlas-violet) 32%, transparent) 0.1em;
+  text-underline-offset: 0.18em;
+}
+
+mark,
+.atlas-highlight {
+  padding-inline: 0.16em;
+  color: inherit;
+  background: linear-gradient(transparent 24%, color-mix(in srgb, var(--atlas-highlight) 78%, transparent) 24% 91%, transparent 91%);
+  border-radius: 0.18em;
+  box-decoration-break: clone;
+}
+
+::selection {
+  color: var(--atlas-ink);
+  background: color-mix(in srgb, var(--atlas-teal) 28%, transparent);
+}
+
+code,
+kbd,
+samp {
+  font-family: var(--atlas-font-mono);
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+blockquote {
+  margin: var(--atlas-block-gap) 0;
+  padding: var(--atlas-space-4) var(--atlas-space-5);
+  color: var(--atlas-ink-soft);
+  background: var(--atlas-surface-2);
+  border-left: 4px solid var(--atlas-line-strong);
+  border-radius: 0 var(--atlas-radius-sm) var(--atlas-radius-sm) 0;
+}
+
+/* Every concept opens with a visual executive summary. */
+.concept-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: var(--atlas-space-5) 0 var(--atlas-space-10);
+  padding: clamp(1.4rem, 3.5vw, 2.6rem);
+  background:
+    linear-gradient(130deg, color-mix(in srgb, var(--atlas-blue-soft) 94%, var(--atlas-surface)), color-mix(in srgb, var(--atlas-teal-soft) 82%, var(--atlas-surface)));
+  border: 1px solid color-mix(in srgb, var(--atlas-blue) 24%, var(--atlas-line));
+  border-radius: var(--atlas-radius-lg);
+  box-shadow: var(--atlas-shadow);
+}
+
+.concept-hero::after {
+  position: absolute;
+  right: -0.3rem;
+  bottom: -1.35rem;
+  z-index: -1;
+  color: color-mix(in srgb, var(--atlas-blue) 10%, transparent);
+  font: 800 clamp(4.3rem, 13vw, 9rem) / 1 var(--atlas-font-mono);
+  content: "∇ · Σ · P";
+  letter-spacing: -0.13em;
+  transform: rotate(-4deg);
+}
+
+.concept-hero > :first-child {
+  margin-top: 0 !important;
+}
+
+.concept-hero > :last-child {
+  margin-bottom: 0 !important;
+}
+
+.concept-hero h2,
+.concept-hero h3 {
+  color: var(--atlas-blue-strong);
+}
+
+/* Progressive-disclosure chapters need breathing room between depth layers. */
+:is(.depth-intuition, .depth-application, .depth-derivation, .depth-proof) {
+  margin-block: var(--atlas-space-16);
+}
+
+/* Notion-like semantic learning blocks. Color always accompanies a text label. */
+:is(
+  .key-takeaway,
+  .term-card,
+  .annotation-note,
+  .formula-card,
+  .mistake-card,
+  .history-card,
+  .learning-objectives,
+  .proof-contract,
+  .assumption-box,
+  .engineering-meaning,
+  .failure-mode
+) {
+  --block-accent: var(--atlas-blue);
+  --block-bg: var(--atlas-blue-soft);
+  --block-icon: "✓";
+  position: relative;
+  margin: var(--atlas-block-gap) 0;
+  padding: var(--atlas-space-5) var(--atlas-space-5) var(--atlas-space-5) 4.2rem;
+  background: color-mix(in srgb, var(--block-bg) 72%, var(--atlas-surface));
+  border: 1px solid color-mix(in srgb, var(--block-accent) 28%, var(--atlas-line));
+  border-left: 4px solid var(--block-accent);
+  border-radius: var(--atlas-radius);
+  box-shadow: var(--atlas-shadow-sm);
+}
+
+:is(
+  .key-takeaway,
+  .term-card,
+  .annotation-note,
+  .formula-card,
+  .mistake-card,
+  .history-card,
+  .learning-objectives,
+  .proof-contract,
+  .assumption-box,
+  .engineering-meaning,
+  .failure-mode
+)::before {
+  position: absolute;
+  top: var(--atlas-space-5);
+  left: var(--atlas-space-4);
+  display: grid;
+  width: 2.15rem;
+  height: 2.15rem;
+  color: var(--atlas-surface);
+  font: 780 0.82rem / 1 var(--atlas-font-body);
+  content: var(--block-icon);
+  background: var(--block-accent);
+  border-radius: 0.72rem;
+  place-items: center;
+  transform: rotate(-3deg);
+}
+
+:is(
+  .key-takeaway,
+  .term-card,
+  .annotation-note,
+  .formula-card,
+  .mistake-card,
+  .history-card,
+  .learning-objectives,
+  .proof-contract,
+  .assumption-box,
+  .engineering-meaning,
+  .failure-mode
+) > :is(h2, h3, h4):first-child {
+  margin: 0 0 var(--atlas-space-3) !important;
+  color: var(--block-accent);
+  font-size: 1.06rem;
+}
+
+:is(
+  .key-takeaway,
+  .term-card,
+  .annotation-note,
+  .formula-card,
+  .mistake-card,
+  .history-card,
+  .learning-objectives,
+  .proof-contract,
+  .assumption-box,
+  .engineering-meaning,
+  .failure-mode
+) > :last-child {
+  margin-bottom: 0 !important;
+}
+
+.key-takeaway { --block-accent: var(--atlas-blue); --block-bg: var(--atlas-blue-soft); --block-icon: "KEY"; }
+.term-card { --block-accent: var(--atlas-violet); --block-bg: var(--atlas-violet-soft); --block-icon: "Aa"; }
+.annotation-note { --block-accent: var(--atlas-amber); --block-bg: var(--atlas-amber-soft); --block-icon: "✎"; }
+.formula-card { --block-accent: var(--atlas-teal); --block-bg: var(--atlas-teal-soft); --block-icon: "ƒx"; }
+.mistake-card,
+.failure-mode { --block-accent: var(--atlas-coral); --block-bg: var(--atlas-coral-soft); --block-icon: "!"; }
+.history-card { --block-accent: var(--atlas-amber); --block-bg: var(--atlas-amber-soft); --block-icon: "↺"; }
+.learning-objectives { --block-accent: var(--atlas-green); --block-bg: var(--atlas-green-soft); --block-icon: "GO"; }
+.proof-contract,
+.assumption-box { --block-accent: var(--atlas-violet); --block-bg: var(--atlas-violet-soft); --block-icon: "IF"; }
+.engineering-meaning { --block-accent: var(--atlas-teal); --block-bg: var(--atlas-teal-soft); --block-icon: "⚙"; }
+
+/* Chapter-level scores, derivation narration, evidence cards and static labs. */
+.concept-scorecard {
+  margin: var(--atlas-block-gap) 0;
+  padding: var(--atlas-space-5) var(--atlas-space-6);
+  background: linear-gradient(135deg, var(--atlas-surface-2), color-mix(in srgb, var(--atlas-blue-soft) 55%, var(--atlas-surface)));
+  border: 1px solid var(--atlas-line);
+  border-radius: var(--atlas-radius);
+  box-shadow: var(--atlas-shadow-sm);
+}
+
+.concept-scorecard > :first-child { margin-top: 0 !important; }
+.concept-scorecard > :last-child { margin-bottom: 0 !important; }
+
+.concept-toolbar__reading-time {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--atlas-space-3);
+  padding: var(--atlas-space-3) var(--atlas-space-4);
+  background: color-mix(in srgb, var(--atlas-violet-soft) 45%, var(--atlas-surface));
+  border: 1px solid color-mix(in srgb, var(--atlas-violet) 24%, var(--atlas-line));
+  border-radius: var(--atlas-radius-sm);
+}
+
+#quarto-document-content .concept-toolbar__reading-time-title {
+  margin: 0;
+  color: var(--atlas-violet);
+  font-size: 0.82rem;
+  font-weight: 760;
+}
+
+.concept-toolbar__reading-time-list {
+  display: flex;
+  flex: 1 1 20rem;
+  flex-wrap: wrap;
+  gap: var(--atlas-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.concept-toolbar__reading-time-list li {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: 0.38rem;
+  padding: 0.3rem 0.62rem;
+  color: var(--atlas-ink-soft);
+  font-size: 0.8rem;
+  background: var(--atlas-surface);
+  border: 1px solid var(--atlas-line);
+  border-radius: 999px;
+}
+
+.concept-toolbar__reading-time-list li + li { margin-top: 0 !important; }
+.concept-toolbar__reading-time-list strong { color: var(--atlas-violet); }
+
+.prerequisite-groups {
+  display: grid;
+  gap: var(--atlas-space-4);
+  margin-top: var(--atlas-space-4);
+}
+
+.prerequisite-group {
+  padding: var(--atlas-space-4);
+  background: var(--atlas-surface-2);
+  border: 1px solid var(--atlas-line);
+  border-radius: var(--atlas-radius-sm);
+}
+
+.prerequisite-group__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--atlas-space-4);
+}
+
+#quarto-document-content .prerequisite-group__heading h3 {
+  margin: 0 !important;
+  color: var(--atlas-strong);
+  font-size: 0.9rem;
+}
+
+.prerequisite-group__heading h3 span {
+  color: var(--atlas-muted);
+  font-size: 0.75rem;
+  font-weight: 620;
+}
+
+#quarto-document-content .prerequisite-group__heading p {
+  margin: 0;
+  color: var(--atlas-muted);
+  font-size: 0.78rem;
+  line-height: var(--atlas-leading-compact);
+  text-align: right;
+}
+
+.prerequisite-group .prerequisite-list { margin-top: var(--atlas-space-3); }
+
+.prerequisite-item[data-prerequisite-category="required"] {
+  border-inline-start: 3px solid var(--atlas-blue);
+}
+
+.prerequisite-item[data-prerequisite-category="helpful"] {
+  border-inline-start: 3px solid var(--atlas-teal);
+}
+
+.prerequisite-item[data-prerequisite-category="not_required"] {
+  border-inline-start: 3px solid var(--atlas-line-strong);
+}
+
+.prerequisite-item__marker {
+  display: inline-grid;
+  inline-size: 1.15rem;
+  block-size: 1.15rem;
+  color: var(--atlas-muted);
+  font-weight: 780;
+  place-items: center;
+}
+
+.block-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--atlas-space-2);
+  margin: 0 0 var(--atlas-space-4);
+}
+
+.metric-badge {
+  display: inline-flex;
+  min-height: 1.9rem;
+  align-items: center;
+  padding: 0.25rem 0.62rem;
+  color: var(--atlas-ink);
+  font: 700 0.78rem / 1.2 var(--atlas-font-body);
+  letter-spacing: 0.01em;
+  background: var(--atlas-surface);
+  border: 1px solid var(--atlas-line);
+  border-radius: 999px;
+}
+
+.metric-badge--importance { color: var(--atlas-blue-strong); background: var(--atlas-blue-soft); }
+.metric-badge--difficulty { color: var(--atlas-amber); background: var(--atlas-amber-soft); }
+
+.derivation-step,
+.simulation-placeholder,
+.case-card,
+.origin-card,
+.interview-card,
+.news-card,
+.fun-fact-card,
+.reference-note,
+.algorithm-card,
+.tradeoff-card {
+  --card-accent: var(--atlas-blue);
+  margin: var(--atlas-block-gap) 0;
+  padding: var(--atlas-space-6);
+  background: var(--atlas-surface);
+  border: 1px solid var(--atlas-line);
+  border-top: 5px solid var(--card-accent);
+  border-radius: var(--atlas-radius);
+  box-shadow: var(--atlas-shadow-sm);
+}
+
+.derivation-step { --card-accent: var(--atlas-violet); background: color-mix(in srgb, var(--atlas-violet-soft) 38%, var(--atlas-surface)); }
+.simulation-placeholder { --card-accent: var(--atlas-teal); background: color-mix(in srgb, var(--atlas-teal-soft) 40%, var(--atlas-surface)); }
+.case-card { --card-accent: var(--atlas-green); }
+.origin-card,
+.fun-fact-card { --card-accent: var(--atlas-amber); background: color-mix(in srgb, var(--atlas-amber-soft) 34%, var(--atlas-surface)); }
+.interview-card { --card-accent: var(--atlas-violet); }
+.news-card { --card-accent: var(--atlas-coral); }
+.reference-note { --card-accent: var(--atlas-blue); background: color-mix(in srgb, var(--atlas-blue-soft) 34%, var(--atlas-surface)); }
+.algorithm-card { --card-accent: var(--atlas-teal); }
+.tradeoff-card { --card-accent: var(--atlas-coral); }
+
+:is(.derivation-step, .simulation-placeholder, .case-card, .origin-card, .interview-card, .news-card, .fun-fact-card, .reference-note, .algorithm-card, .tradeoff-card) > :first-child {
+  margin-top: 0 !important;
+}
+
+:is(.derivation-step, .simulation-placeholder, .case-card, .origin-card, .interview-card, .news-card, .fun-fact-card, .reference-note, .algorithm-card, .tradeoff-card) > :last-child {
+  margin-bottom: 0 !important;
+}
+
+.derivation-step strong:first-of-type { color: var(--atlas-violet); }
+.simulation-placeholder__label { font-weight: 750; }
+.simulation-placeholder__control {
+  display: inline-block;
+  min-width: 12rem;
+  margin-inline: var(--atlas-space-2);
+  color: var(--atlas-teal);
+  font-family: var(--atlas-font-mono);
+  letter-spacing: -0.08em;
+}
+
+.simulation-placeholder__controls {
+  display: grid;
+  gap: var(--atlas-space-3);
+  margin: var(--atlas-space-5) 0;
+  padding: var(--atlas-space-4);
+  background: var(--atlas-surface);
+  border: 1px dashed color-mix(in srgb, var(--atlas-teal) 48%, var(--atlas-line));
+  border-radius: var(--atlas-radius-sm);
+}
+
+.simulation-placeholder__controls label {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) minmax(9rem, 2fr);
+  align-items: center;
+  gap: var(--atlas-space-3);
+}
+
+.simulation-placeholder__controls :is(input, button):disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
+.simulation-placeholder__controls button {
+  min-height: 2.75rem;
+  padding: 0.55rem 0.9rem;
+  color: var(--atlas-muted);
+  background: var(--atlas-surface-2);
+  border: 1px solid var(--atlas-line);
+  border-radius: 999px;
+}
+
+#quarto-document-content :is(figure, .quarto-figure, .cell-output-display, .mermaid) {
+  margin-block: var(--atlas-media-gap);
+}
+
+/* Quarto nests figure and img inside .quarto-figure. Keep one outer gap only. */
+#quarto-document-content :is(.quarto-figure, .cell-output-display) :is(figure, img, .mermaid),
+#quarto-document-content figure img {
+  margin-block: 0;
+}
+
+#quarto-document-content img:not(figure img, .quarto-figure img, .cell-output-display img) {
+  margin-block: var(--atlas-media-gap);
+}
+
+#quarto-document-content :is(figure, .quarto-figure) img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+  border-radius: var(--atlas-radius-sm);
+}
+
+#quarto-document-content figcaption {
+  margin-top: var(--atlas-space-3);
+  color: var(--atlas-muted);
+  font-size: 0.9rem;
+  line-height: var(--atlas-leading-compact);
+  text-align: center;
+}
+
+.formula-card :is(.math.display, mjx-container[display="true"], math[display="block"]) {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+/* Bilingual terms and automatically generated page glossary. */
+.atlas-term,
+abbr[title] {
+  padding-inline: 0.12em;
+  color: var(--atlas-blue-strong);
+  font-weight: 680;
+  text-decoration: underline dotted color-mix(in srgb, var(--atlas-blue) 68%, transparent) 0.1em;
+  text-underline-offset: 0.2em;
+  background: color-mix(in srgb, var(--atlas-blue-soft) 58%, transparent);
+  border-radius: 0.22em;
+  cursor: help;
+}
+
+.atlas-term:hover,
+.atlas-term:focus-visible,
+abbr[title]:hover,
+abbr[title]:focus-visible {
+  color: var(--atlas-surface);
+  text-decoration-color: transparent;
+  background: var(--atlas-blue);
+}
+
+.glossary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: var(--atlas-space-4);
+  margin-block: var(--atlas-space-6);
+}
+
+.glossary-entry {
+  padding: var(--atlas-space-5);
+  background: var(--atlas-surface);
+  border: 1px solid var(--atlas-line);
+  border-top: 4px solid var(--atlas-violet);
+  border-radius: var(--atlas-radius);
+  box-shadow: var(--atlas-shadow-sm);
+}
+
+.glossary-entry > :first-child {
+  margin-top: 0 !important;
+}
+
+.glossary-entry > :last-child {
+  margin-bottom: 0 !important;
+}
+
+.page-glossary {
+  margin: var(--atlas-space-12) 0 var(--atlas-space-8);
+  padding: var(--atlas-space-5);
+  background: var(--atlas-surface-2);
+  border: 1px solid var(--atlas-line);
+  border-radius: var(--atlas-radius);
+}
+
+.page-glossary summary {
+  color: var(--atlas-violet);
+  font-weight: 760;
+  cursor: pointer;
+}
+
+.page-glossary--static > p:first-child {
+  margin: 0;
+  color: var(--atlas-violet);
+  font-weight: 760;
+}
+
+.page-glossary dl {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.35fr) minmax(0, 1fr);
+  gap: var(--atlas-space-3) var(--atlas-space-5);
+  margin: var(--atlas-space-5) 0 0;
+}
+
+.page-glossary dt { font-weight: 760; }
+.page-glossary dd { margin: 0; color: var(--atlas-ink-soft); }
+
+/* Inline and display math must remain readable in prose and reflow at 320 px. */
+:is(.math.inline, math[display="inline"], mjx-container:not([display="true"])) {
+  display: inline-block;
+  max-width: 100%;
+  margin-inline: 0.08em;
+  line-height: 1.2;
+  vertical-align: -0.12em;
+  white-space: nowrap;
+}
+
+:is(.math.display, math[display="block"], mjx-container[display="true"]) {
+  display: block;
+  max-width: 100%;
+  margin-block: var(--atlas-math-gap);
+  padding: var(--atlas-space-5);
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: color-mix(in srgb, var(--atlas-blue-soft) 42%, var(--atlas-surface));
+  border: 1px solid color-mix(in srgb, var(--atlas-blue) 16%, var(--atlas-line));
+  border-radius: var(--atlas-radius-sm);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* MathJax nests a display container inside Pandoc's .math.display wrapper.
+ * Only the outer wrapper owns padding, border, and scrolling; decorating both
+ * wastes width and creates a misleading double-card effect on small screens. */
+.math.display > mjx-container[display="true"] {
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+/* Motion communicates hierarchy; content remains visible without JavaScript. */
+@keyframes atlas-rise {
+  from { opacity: 0; transform: translateY(0.65rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes atlas-soft-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .atlas-enhanced .atlas-reveal {
+    opacity: 0;
+    transform: translateY(0.65rem);
+    transition: opacity var(--atlas-duration-standard) var(--atlas-ease), transform var(--atlas-duration-standard) var(--atlas-ease);
+  }
+
+  .atlas-enhanced .atlas-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  details[open] > :not(summary) {
+    animation: atlas-soft-in var(--atlas-duration-standard) var(--atlas-ease);
+  }
+}
+
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1100;
+  width: 100%;
+  height: 3px;
+  pointer-events: none;
+}
+
+.reading-progress > span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--atlas-blue), var(--atlas-teal), var(--atlas-violet));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--atlas-blue) 45%, transparent);
+  transform-origin: left center;
+}
+
+.reader-tools {
+  position: fixed;
+  right: max(0.75rem, env(safe-area-inset-right));
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  z-index: 1040;
+  display: grid;
+  width: min(42rem, calc(100vw - 1.5rem));
+  gap: var(--atlas-space-2);
+  padding: var(--atlas-space-2);
+  background: color-mix(in srgb, var(--atlas-surface) 93%, transparent);
+  border: 1px solid var(--atlas-line);
+  border-radius: var(--atlas-radius);
+  box-shadow: var(--atlas-shadow-float);
+  backdrop-filter: blur(16px);
+}
+
+body.atlas-reader-active { padding-bottom: 8rem; }
+
+.reader-tools__actions,
+.reader-tools__position {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--atlas-space-2);
+}
+
+.reader-tool,
+.reader-tools__toc > summary {
+  display: inline-flex;
+  min-height: 2.65rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.7rem;
+  color: var(--atlas-ink);
+  font: 680 0.82rem / 1.2 var(--atlas-font-body);
+  background: var(--atlas-surface-2);
+  border: 1px solid var(--atlas-line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.reader-tool[aria-pressed="true"] {
+  color: var(--atlas-blue-strong);
+  background: var(--atlas-blue-soft);
+  border-color: color-mix(in srgb, var(--atlas-blue) 42%, var(--atlas-line));
+}
+
+.reader-tool[hidden] { display: none; }
+
+:is(.reader-tools__toc, .reader-tools__saved) { position: relative; }
+:is(.reader-tools__toc, .reader-tools__saved) > summary { list-style: none; }
+:is(.reader-tools__toc, .reader-tools__saved) > summary::-webkit-details-marker { display: none; }
+:is(.reader-tools__toc, .reader-tools__saved) nav {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--atlas-space-3));
+  width: min(26rem, calc(100vw - 2rem));
+  max-height: min(65vh, 34rem);
+  padding: var(--atlas-space-4);
+  overflow-y: auto;
+  background: var(--atlas-surface);
+  border: 1px solid var(--atlas-line);
+  border-radius: var(--atlas-radius);
+  box-shadow: var(--atlas-shadow-float);
+}
+
+.reader-tools__toc ol { margin: 0; padding-left: 1.3rem; }
+.reader-tools__toc li + li { margin-top: var(--atlas-space-2); }
+.reader-tools__toc-h3 { margin-left: var(--atlas-space-4); font-size: 0.9em; }
+.reader-tools__saved h3 { margin: 0 0 var(--atlas-space-2); font-size: 0.9rem; }
+.reader-tools__saved h3:not(:first-child) { margin-top: var(--atlas-space-4); }
+.reader-tools__saved :is(ul, p) { margin: 0; padding-left: 1.2rem; }
+.reader-tools__saved p { padding-left: 0; color: var(--atlas-muted); font-size: 0.82rem; }
+.reader-tools__saved li + li { margin-top: var(--atlas-space-2); }
+.reader-tools__saved a { display: grid; text-decoration: none; }
+.reader-tools__saved small { color: var(--atlas-muted); }
+
+.reader-tools__position {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) minmax(8rem, 2.5fr) 3.2rem;
+  padding-inline: var(--atlas-space-2);
+  color: var(--atlas-muted);
+  font-size: 0.78rem;
+}
+
+.reader-tools__position > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reader-tools__position input[type="range"] {
+  width: 100%;
+  min-height: 2.75rem;
+  accent-color: var(--atlas-blue);
+  cursor: ew-resize;
+}
+
+.reader-tools__position output { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* A non-fixed specimen lets the design-system page render the real controls
+ * without pretending that the example itself stores bookmarks. */
+.reader-tools.reader-tools--specimen {
+  position: static;
+  width: 100%;
+  max-width: 42rem;
+  margin: var(--atlas-space-5) 0;
+  background: var(--atlas-surface);
+  backdrop-filter: none;
+}
+
+.reader-tools--specimen .reader-tool[aria-disabled="true"] {
+  cursor: default;
+}
+
+@media (max-width: 36rem) {
+  :is(
+    .key-takeaway,
+    .term-card,
+    .annotation-note,
+    .formula-card,
+    .mistake-card,
+    .history-card,
+    .learning-objectives,
+    .proof-contract,
+    .assumption-box,
+    .engineering-meaning,
+    .failure-mode
+  ) {
+    padding: 3.8rem var(--atlas-space-4) var(--atlas-space-4);
+  }
+
+  .page-glossary dl { grid-template-columns: 1fr; }
+
+  .concept-toolbar__reading-time {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .concept-toolbar__reading-time-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+    width: 100%;
+  }
+
+  .concept-toolbar__reading-time-list li { justify-content: space-between; }
+
+  .prerequisite-group__heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--atlas-space-1);
+  }
+
+  #quarto-document-content .prerequisite-group__heading p { text-align: left; }
+
+  .reader-tools {
+    right: 0.5rem;
+    left: 0.5rem;
+    bottom: max(0.5rem, env(safe-area-inset-bottom));
+    width: auto;
+  }
+
+  .reader-tool > span:last-child { display: none; }
+  .reader-tools__actions {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .reader-tools__actions > :is(.reader-tool, details),
+  .reader-tools__actions > details > summary { width: 100%; }
+  .reader-tool--resume { grid-column: 1 / -1; }
+  :is(.reader-tools__toc, .reader-tools__saved) nav {
+    position: fixed;
+    top: max(4.5rem, env(safe-area-inset-top));
+    right: 0.5rem;
+    bottom: auto;
+    left: 0.5rem;
+    width: auto;
+    max-height: calc(100dvh - 11rem);
+  }
+  .reader-tools__position { grid-template-columns: minmax(5rem, 1fr) minmax(7rem, 2fr) 2.7rem; }
+
+  .simulation-placeholder__controls label { grid-template-columns: 1fr; }
+
+  .derivation-step,
+  .simulation-placeholder,
+  .case-card,
+  .origin-card,
+  .interview-card,
+  .news-card,
+  .fun-fact-card,
+  .reference-note,
+  .algorithm-card,
+  .tradeoff-card {
+    padding: var(--atlas-space-5) var(--atlas-space-4);
+  }
+}
+
+@media print {
+  .reading-progress,
+  .reader-tools { display: none !important; }
+
+  body.atlas-reader-active { padding-bottom: 0; }
+
+  :is(
+    .key-takeaway,
+    .term-card,
+    .annotation-note,
+    .formula-card,
+    .mistake-card,
+    .history-card,
+    .learning-objectives,
+    .proof-contract,
+    .assumption-box,
+    .engineering-meaning,
+    .failure-mode
+  ) {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}

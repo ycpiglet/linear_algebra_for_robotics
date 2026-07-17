@@ -1,0 +1,162 @@
+---
+title: "UI/UX 레퍼런스 조사"
+subtitle: "읽기 중심 기술 교재를 위한 접근성·디자인 시스템·EPUB 근거"
+description: "Robotics Math Atlas 디자인 시스템에 반영한 공식 표준과 제품 문서 조사"
+date: 2026-07-15
+toc: true
+toc-depth: 3
+---
+
+::: {.concept-hero}
+## 조사 결론
+
+이 교재에 필요한 것은 장식의 양이 아니라 **읽기 폭과 간격을 먼저 안정화하고, 의미가 반복되는 내용을 같은 블록으로 보이며, Web의 상호작용을 EPUB에서는 정적인 의미 구조로 보존하는 것**이다.
+:::
+
+## 조사 범위와 채택 원칙
+
+공식 접근성 표준, 공공 디자인 시스템, 대규모 제품 디자인 시스템, Quarto·MathJax·EPUB의 공식 문서를 우선 조사했다. Notion은 접근성 표준이 아니라 “문서를 작은 의미 블록으로 조립하는 방식”의 참고 사례로만 사용했다.
+
+::: {.key-takeaway}
+### 우선순위
+
+1. 음수 한글 자간 제거와 본문 측정폭 제한
+2. 모바일 수식·표 reflow
+3. semantic block과 한영 용어 계약
+4. light/dark/EPUB 출력별 정적 fallback
+5. 의미를 보조하는 짧은 motion
+:::
+
+## 타이포그래피와 가독성
+
+| 레퍼런스 | 확인한 원칙 | Atlas 결정 |
+|---|---|---|
+| [대한민국 디지털 정부서비스 UI/UX 가이드라인(KRDS)](https://www.krds.go.kr/html/site/style/style_03.html) | 한글 공공 서비스의 본문 크기·행간·자간 체계 | 시스템 한글 글꼴, 양의 본문 tracking, 충분한 행간 |
+| [U.S. Web Design System Typography](https://designsystem.digital.gov/components/typography/) | 장문에는 넓은 leading과 제한된 measure 사용 | 본문 `1.90`, 별도 `76ch` measure token |
+| [GOV.UK Layout](https://design-system.service.gov.uk/styles/layout/) | 지나치게 긴 행을 피하고 좁은 화면에서 단일 열로 reflow | 본문과 wide data 영역을 분리 |
+| [GitHub Primer Typography](https://primer.style/product/getting-started/foundations/typography/) | `rem`, unitless line-height, 약 80자 이하, semantic heading | responsive `rem`, heading 순서와 시각 크기 분리 |
+| [IBM Carbon Typography](https://carbondesignsystem.com/elements/typography/overview/) | task UI와 장문 editorial type을 구분하고 본문에는 중립색 사용 | 학습 도구는 compact, 본문은 expressive spacing |
+| [Quarto Page Layout](https://quarto.org/docs/output-formats/page-layout.html) | 본문·margin·wide·screen column을 별도로 운용 | 평문은 measure 제한, 표·그래프만 wide 허용 |
+
+[WCAG 2.2 Text Spacing](https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html)은 기본 CSS에 `0.12em` 자간을 강제하라는 뜻이 아니다. 사용자가 line-height 1.5배, 문단 뒤 2배, 자간 0.12배, 단어 간격 0.16배로 덮어써도 잘림·겹침·기능 손실이 없어야 한다는 적응성 기준이다. 따라서 고정 높이와 `overflow:hidden`을 평문에서 피한다.
+
+[WCAG Reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html)는 320 CSS px 상당 폭에서 평문을 읽기 위해 양방향 스크롤을 요구하지 않도록 한다. 표·지도·수학 도식처럼 2차원 관계가 의미인 영역만 국소 가로 스크롤을 허용한다.
+
+### 적용값
+
+- 본문: `clamp(1rem, …, 1.075rem)`
+- 행간: `1.90`
+- 한글 중심 본문 자간: `0.016em`
+- 제목 자간: `-0.016em`
+- 평문 최대 폭: `76ch`
+- spacing: 4 px에서 출발하는 4·8·12·16·20·24·32·40·48·64 px scale
+
+## Design token과 자산 구조
+
+[Carbon Spacing](https://carbondesignsystem.com/elements/spacing/overview/)과 [Primer Color Usage](https://primer.style/product/getting-started/foundations/color-usage/)는 원시값을 페이지마다 복사하지 않고 의미와 컴포넌트 단계의 token으로 좁혀 사용하는 사례다. [Design Tokens Community Group Format](https://www.w3.org/community/reports/design-tokens/CG-FINAL-format-20251028/)도 도구 사이에서 token을 교환하기 위한 이름·그룹·타입 구조를 제공한다.
+
+Atlas는 현재 한 단계의 CSS custom property를 authoritative token으로 사용한다.
+
+```text
+primitive 성격: space-1 … space-16, duration-fast, radius-sm
+semantic 성격: ink, muted, canvas, surface, line, blue-soft, coral-soft
+component 성격: 각 block의 --block-accent, --block-bg, --block-icon
+```
+
+규모가 커지면 primitive/semantic/component 파일로 세분하되, 지금은 작은 파일 수와 추적 가능성을 우선한다.
+
+## Block 문서와 progressive disclosure
+
+[Notion의 공식 writing 안내](https://www.notion.com/help/writing-and-editing-basics)는 text, heading, to-do, toggle, quote, divider, callout, code, equation을 모두 이동·변환 가능한 block으로 다룬다. Atlas는 편집 UI를 복제하지 않고 다음 두 원칙만 채택한다.
+
+1. 같은 교육적 역할은 항상 같은 semantic class를 사용한다.
+2. 색상뿐 아니라 heading label, icon, border를 함께 사용한다.
+
+[Quarto Callout](https://quarto.org/docs/authoring/callouts.html)은 note·tip·warning·important·caution의 portable authoring 문법을 제공한다. 일반 경고는 Quarto callout을 유지하고, 교재 고유 역할은 `key-takeaway`, `formula-card`, `engineering-meaning`, `assumption-box`, `mistake-card`, `history-card`로 제한한다.
+
+[GOV.UK Details](https://design-system.service.gov.uk/components/details/)와 [Carbon Accordion](https://carbondesignsystem.com/components/accordion/usage/)을 따라 핵심 정의·가정·실패 조건은 접지 않는다. 추가 유도와 부가 사례만 disclosure 후보이며, PDF·EPUB·JavaScript 비활성 상태에서는 펼쳐진 본문으로 남아야 한다.
+
+## 강조 문법
+
+[Carbon Typography](https://carbondesignsystem.com/elements/typography/overview/)는 긴 본문에 중립색을 두고 weight와 size로 계층을 만들며, italic을 짧은 용어·제목 등에 제한한다.
+
+- `strong`: 결론, 조건, 금지 사항
+- `em`: 첫 등장 영문 용어, 책·논문명, 문장 안의 짧은 강세
+- `mark`: 기억 포인트 한두 곳
+- inline `code`: 코드, shape, 파일명, 명령
+- 링크 외 일반 밑줄은 사용하지 않음
+- 한 문장 전체를 bold 처리할 상황이면 `key-takeaway`로 분리
+
+한글 글꼴에 실제 italic face가 없으면 합성 기울임이 획을 흐릴 수 있다. [Pretendard 공식 저장소](https://github.com/orioncactus/pretendard)의 배포 face를 확인하고, 한글 강조는 우선 weight·배경·label로 처리한다.
+
+## 한글·영문·약어와 glossary
+
+[WCAG G97](https://www.w3.org/WAI/WCAG22/Techniques/general/G97)은 약어의 첫 등장 확장을, [G62](https://www.w3.org/WAI/WCAG22/Techniques/general/G62)는 glossary mechanism을, [H40](https://www.w3.org/WAI/WCAG22/Techniques/html/H40)은 `<dl><dt><dd>` 설명 목록을 다룬다. [Language of Parts](https://www.w3.org/WAI/WCAG22/Understanding/language-of-parts.html)에 따라 영어 구절은 `lang="en"`으로 구별한다.
+
+채택 표기:
+
+> 최대우도추정(Maximum Likelihood Estimation, MLE)
+
+첫 등장 후에는 `MLE` 또는 `최대우도추정` 하나로 쓴다. 모든 문장에서 한영 병기를 반복하지 않는다. `noise`는 처음에 `잡음(noise)`, `likelihood`는 `우도(likelihood)`로 고정한다.
+
+`title` 속성과 hover만으로 정의를 제공하지 않는다. [WAI-ARIA Tooltip Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/)과 [Primer Tooltip Accessibility](https://primer.style/product/components/tooltip/accessibility/)에 따라 focus·touch 대안과 본문/페이지 glossary를 둔다. Atlas의 inline 설명은 보조 기능이며 동일 정의가 자동 생성되는 페이지 glossary에 남는다.
+
+## 수식과 기술 표기
+
+[SIAM Style Manual](https://www.siam.org/media/qkofkadc/stylemanual.pdf)은 display 수식도 문장의 일부로 다루고, 관계 연산자 중심으로 여러 줄을 정렬하며, 주변 간격을 일관되게 둘 것을 권한다. [MathJax Line Breaking](https://docs.mathjax.org/en/stable/output/linebreaks.html)은 출력 엔진의 자동·수동 line break를 설명한다.
+
+Atlas 결정:
+
+- inline 수식은 `inline-block`, nowrap, 본문 baseline 보정
+- display 수식은 block, `max-width:100%`, 국소 overflow
+- 긴 식은 자동 스크롤 전에 `aligned`/`split`으로 의미 단위 개행
+- 한국어 문장을 TeX `\text{}` 안에 넣지 않음
+- shape·단위·기호 표는 수식 바로 뒤에 둠
+- EPUB에서는 TeX 문자열이 아닌 MathML을 보존하고 `math[display]`를 직접 style
+
+## Motion
+
+[Carbon Motion](https://carbondesignsystem.com/elements/motion/overview/)은 duration과 easing을 token화하고 microinteraction을 짧게 유지한다. [WCAG Animation from Interactions](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html)은 기능에 필수적이지 않은 상호작용 motion을 끌 수 있어야 한다고 설명한다.
+
+- hover/focus: 140 ms
+- reveal/disclosure: 240 ms 이하
+- 이동: 약 10 px 이하, 반복 pulse·parallax·bounce 금지
+- `prefers-reduced-motion`에서 animation과 smooth scroll 제거
+- JavaScript가 없어도 본문을 숨기지 않음
+- EPUB/PDF에는 정적 최종 상태만 출력
+
+## EPUB
+
+[EPUB 3.3](https://www.w3.org/TR/epub-33/), [EPUB Reading Systems 3.3](https://www.w3.org/TR/epub-rs-33/), [EPUB Accessibility Techniques](https://www.w3.org/TR/epub-a11y-tech-11/)를 기준으로 EPUB을 웹 페이지 캡처가 아닌 별도 reflow 출력으로 본다.
+
+| 계층 | Web | EPUB |
+|---|---|---|
+| 제목·본문·semantic block·MathML | 필수 | 필수 |
+| tooltip·sticky UI·reading progress | progressive enhancement | 제외하고 glossary/본문으로 대체 |
+| runtime manifest graph | interactive | 정적 목록 제공 |
+| motion | reduced-motion 대응 | 없음 |
+
+리더는 저자 CSS를 사용자 설정으로 덮어쓸 수 있다. 따라서 custom font·색·간격이 사라져도 heading 순서와 block label만으로 의미가 남아야 한다.
+
+## 검증 matrix
+
+- viewport: 320, 375, 390, 768, 1280 px
+- zoom: 200% text, 400% browser
+- spacing override: WCAG 1.4.12 값
+- theme: light, dark, forced colors
+- input: keyboard, focus-visible, touch target
+- motion: normal, reduced
+- content: 긴 한영 혼합 문단, 긴 inline/display 수식, 표, 코드
+- runtime: JavaScript on/off, manifest fetch success/failure
+- output: Quarto HTML, Typst PDF, EPUB/Calibre
+- EPUB: 사용자 글꼴·크기·행간 변경, 내부 link와 MathML 확인
+- contrast: 일반 글자 4.5:1, 큰 글자·UI 경계 3:1을 기본 gate로 사용
+
+## 구현에 반영된 파일
+
+- [디자인 시스템 실물 표본](design-system.qmd)
+- `assets/styles/_tokens.scss`
+- `assets/styles/_content-blocks.scss`
+- `assets/styles/epub.css`
+- `assets/js/atlas.js`
+- `platform/templates/concept-template.qmd`

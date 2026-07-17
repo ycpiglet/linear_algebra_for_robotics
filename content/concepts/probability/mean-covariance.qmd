@@ -1,0 +1,179 @@
+---
+id: probability.mean_covariance
+title: "평균과 공분산: 추정값과 불확실성을 함께 표현하기"
+aliases: ["mean and covariance", "평균과 공분산", "covariance matrix"]
+domain: probability
+one_line: "평균은 분포의 중심을, 공분산은 오차가 어느 방향으로 얼마나 함께 퍼지는지를 나타낸다."
+difficulty: 2
+summary: "랜덤벡터의 평균·분산·공분산을 단위와 기하학 관점에서 정의하고, 공분산 행렬이 대칭 양의 준정부호인 이유를 설명한다."
+reading_time: {quick: "6분", core: "35분", full: "70분"}
+prerequisites:
+  intuition:
+    required: []
+    helpful:
+      - concept: linalg.linear_system
+        competency: recognize
+        reason: "벡터와 행렬의 shape를 읽는 데 도움이 된다."
+    not_required: [probability.stochastic_process]
+  application:
+    required:
+      - concept: linalg.linear_system
+        competency: calculate
+        reason: "벡터 외적과 행렬 곱을 계산한다."
+    helpful: []
+    not_required: [probability.stochastic_process]
+  derivation:
+    required:
+      - concept: linalg.linear_system
+        competency: calculate
+        reason: "이차형식과 선형변환의 shape를 추적한다."
+    helpful: []
+    not_required: []
+  proof:
+    required:
+      - concept: linalg.linear_system
+        competency: apply
+        reason: "공분산의 PSD 성질을 이차형식으로 증명한다."
+    helpful: []
+    not_required: []
+  teaching:
+    required:
+      - concept: linalg.linear_system
+        competency: apply
+        reason: "기하·단위·PSD 성질을 행렬 관점으로 설명한다."
+    helpful: []
+    not_required: []
+relations:
+  requires: []
+  helpful: [linalg.linear_system]
+  derived_from: []
+  deepens: [probability.gaussian_conditioning, estimation.kalman_filter]
+  contrasts_with: []
+  same_structure_as: [linalg.orthogonal_projection]
+  used_in: [probability.gaussian_conditioning, estimation.kalman_filter]
+review:
+  prompts:
+    - "공분산과 상관계수의 차이를 단위까지 포함해 설명할 수 있는가?"
+    - "공분산 행렬이 PSD인 이유를 이차형식으로 증명할 수 있는가?"
+tags: [mean, variance, covariance, uncertainty, random-vector]
+---
+
+::: {.concept-hero}
+## 30초 핵심
+
+상태 추정에는 숫자 하나만으로 부족하다. **평균 $\mu$** 는 가장 중심적인 추정값을, **공분산 $\Sigma$** 는 그 추정을 얼마나 믿을 수 있고 어떤 오차 성분들이 함께 움직이는지를 표현한다.
+
+- 대각성분: 각 성분의 분산
+- 비대각성분: 두 성분이 함께 증가·감소하는 경향
+- 공분산은 Gaussian 분포에서만 쓰는 개념이 아니다.
+:::
+
+:::: {.depth-intuition}
+## 먼저 떠올릴 이미지
+
+2차원 위치 추정값을 여러 번 찍었을 때 점들이 길쭉한 구름을 만든다고 상상하자. 구름의 중심이 평균이고, 구름의 크기와 기울어진 방향이 공분산이다. x와 y 오차가 함께 증가하면 타원은 대각선으로 기울어진다.
+
+## 작동하는 정의
+
+랜덤벡터 $X\in\mathbb R^n$의 평균과 공분산은
+
+$$
+\mu=\mathbb E[X],\qquad
+\Sigma=\operatorname{Cov}(X)
+=\mathbb E[(X-\mu)(X-\mu)^\top]
+$$
+이다. 성분으로 쓰면
+
+$$
+\Sigma_{ij}=\mathbb E[(X_i-\mu_i)(X_j-\mu_j)].
+$$
+
+::: {.callout-note title="shape와 단위"}
+- $X,\mu$: `(n,)`
+- $\Sigma$: `(n,n)`
+- $X_i$의 단위가 m이면 $\Sigma_{ii}$의 단위는 m²이다.
+- 위치(m)와 속도(m/s)의 공분산 단위는 m²/s이다.
+:::
+
+## 가장 작은 예
+
+두 개의 동일 확률 표본 $x^{(1)}=(0,0)^\top$, $x^{(2)}=(2,4)^\top$를 갖는 이산분포를 생각하자. 평균은 $\mu=(1,2)^\top$이고,
+
+$$
+\Sigma=\frac12
+\left(
+\begin{bmatrix}-1\\-2\end{bmatrix}
+\begin{bmatrix}-1&-2\end{bmatrix}
++
+\begin{bmatrix}1\\2\end{bmatrix}
+\begin{bmatrix}1&2\end{bmatrix}
+\right)
+=\begin{bmatrix}1&2\\2&4\end{bmatrix}.
+$$
+두 성분은 항상 같은 방향으로 움직이므로 양의 공분산을 갖는다. 또한 두 번째 성분이 첫 번째의 정확히 두 배라 독립적인 불확실성 방향은 하나뿐이고 $\Sigma$는 singular하다.
+::::
+
+:::: {.depth-application}
+## 전제 장부
+
+| 구분 | 내용 |
+|---|---|
+| 정확한 사실 | covariance 0은 일반적으로 independence를 뜻하지 않는다. |
+| 추가 조건 | jointly Gaussian이면 covariance 0이 independence를 뜻한다. |
+| 가정 | 평균과 2차 moment가 유한해야 위 정의가 유한하다. |
+| 관례 | 표본 공분산의 분모 $N$과 $N-1$은 목적이 다르다. 여기서는 모집단 분포를 계산했다. |
+| 근사 | 실제 센서에서는 유한한 표본으로 $\Sigma$를 추정한다. |
+
+## 선형변환을 하면
+
+$Y=AX+b$이면
+
+$$
+\mathbb E[Y]=A\mu+b,
+\qquad
+\operatorname{Cov}(Y)=A\Sigma A^\top.
+$$
+상수 $b$는 구름의 중심만 옮기고 퍼짐은 바꾸지 않는다. $A$는 구름을 회전·늘림·눌림시킨다. 센서 frame을 바꿀 때 covariance도 함께 변환해야 하는 이유다.
+::::
+
+:::: {.depth-proof}
+## 엄밀히 말하면: 왜 항상 PSD인가 {#sec-cov-psd}
+
+아무 벡터 $a\in\mathbb R^n$에 대해서
+
+$$
+a^\top\Sigma a
+=\mathbb E\!\left[a^\top(X-\mu)(X-\mu)^\top a\right]
+=\mathbb E\!\left[(a^\top(X-\mu))^2\right]\ge0.
+$$
+따라서 공분산은 대칭 양의 준정부호(positive semidefinite, PSD)다. 이차형식 $a^\top\Sigma a$는 방향 $a$로 본 scalar projection의 분산이다. 값이 0인 방향은 그 방향의 불확실성이 전혀 없거나 성분 사이에 정확한 선형 제약이 있음을 뜻한다.
+::::
+
+:::: {.depth-application}
+## 언제 실패하거나 오해하는가
+
+- 표본 수가 상태 차원보다 작아 표본 공분산이 singular함
+- m와 mm, degree와 radian을 섞어 수치 크기를 잘못 해석함
+- 좌표를 회전시키고 평균만 바꾸며 covariance를 그대로 둠
+- covariance가 작다는 이유만으로 estimator가 정확하다고 믿음: bias가 있으면 자신 있게 틀릴 수 있다.
+::::
+
+## 관점 전환
+
+- **기하:** uncertainty ellipse/ellipsoid
+- **통계:** 오차의 2차 중심 moment
+- **선형대수:** PSD 행렬과 principal direction
+- **Kalman:** prediction과 measurement의 상대적 신뢰도
+- **최적화:** $r^\top\Sigma^{-1}r$는 whitened residual의 제곱 크기
+
+## 다음과 복귀
+
+- Gaussian에서 조건부 추정을 하려면: [Gaussian 조건부 분포](gaussian-conditioning.qmd)
+- 시간에 따른 추정으로 가려면: [Kalman filter](../estimation/kalman-filter.qmd)
+- Kalman에서 왔다면: [$Q,R,P$의 의미](../estimation/kalman-filter.qmd#sec-kf-covariances)로 돌아간다.
+
+## 회상 점검
+
+1. covariance의 대각·비대각 성분을 단위와 함께 설명하라.
+2. covariance가 singular하다는 말이 반드시 오류를 뜻하지 않는 이유는?
+3. $Y=2X+3$이면 $\operatorname{Var}(Y)$는 $\operatorname{Var}(X)$의 몇 배인가?

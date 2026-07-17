@@ -1,0 +1,297 @@
+---
+id: control.pid
+title: "PID 제어: 현재·누적·변화 추세로 오차를 고치기"
+aliases: ["PID", "PID controller", "비례 적분 미분 제어", "PI 제어", "PD 제어"]
+domain: control
+one_line: "PID는 현재 오차(P), 누적 오차(I), 오차 변화 추세(D)를 조합해 제어입력을 만드는 피드백 제어기다."
+difficulty: 2
+summary: "PID의 세 항을 물리적으로 이해하고, 연속·이산 구현, 단위, derivative filtering, saturation과 anti-windup, 안정성 조건을 단계적으로 다룬다."
+reading_time: {quick: "8분", core: "55분", full: "120분"}
+prerequisites:
+  intuition:
+    required:
+      - concept: control.feedback
+        competency: explain
+        reason: "목표·출력·오차가 닫힌 고리에서 어떻게 연결되는지 이해한다."
+        diagnostic: "open loop와 feedback의 차이를 한 문장으로 말할 수 있는가?"
+    helpful:
+      - concept: foundations.change_accumulation
+        competency: recognize
+        reason: "I와 D라는 이름의 감각을 빠르게 잡는다."
+    not_required: [linalg.linear_system, probability.mean_covariance]
+  application:
+    required:
+      - concept: control.feedback
+        competency: apply
+        reason: "오차 부호와 actuator 방향을 확인한다."
+      - concept: foundations.change_accumulation
+        competency: calculate
+        reason: "sampling 간격이 포함된 적분·차분을 계산한다."
+    helpful: []
+    not_required: [probability.stochastic_process]
+  derivation:
+    required:
+      - concept: control.feedback
+        competency: apply
+        reason: "폐루프 평형을 구성한다."
+      - concept: foundations.change_accumulation
+        competency: apply
+        reason: "연속식에서 이산식을 유도한다."
+    helpful:
+      - concept: systems.state_space
+        competency: explain
+        reason: "대상 동역학과 내부 적분 상태를 함께 표현한다."
+    not_required: []
+  proof:
+    required:
+      - concept: systems.state_space
+        competency: apply
+        reason: "평형과 폐루프 안정성의 조건을 분리한다."
+      - concept: foundations.change_accumulation
+        competency: derive
+        reason: "상수 오차와 적분 상태의 관계를 논증한다."
+    helpful: []
+    not_required: []
+  teaching:
+    required:
+      - concept: control.feedback
+        competency: teach
+        reason: "세 항이 닫힌 고리에서 수행하는 역할을 설명한다."
+      - concept: foundations.change_accumulation
+        competency: derive
+        reason: "연속·이산 구현과 단위 차이를 설명한다."
+    helpful: []
+    not_required: []
+relations:
+  requires: [control.feedback]
+  helpful: [foundations.change_accumulation, systems.state_space]
+  derived_from: [control.feedback]
+  deepens: [control.frequency_response, control.anti_windup]
+  contrasts_with: [control.feedforward, control.state_feedback]
+  same_structure_as: []
+  used_in: [robot.joint_control, robot.mobile_velocity_control]
+review:
+  prompts:
+    - "P·I·D 각 항이 무엇을 보고 어떤 문제를 해결하며 어떤 부작용을 만드는지 설명할 수 있는가?"
+    - "sampling time과 물리 단위를 보존한 discrete PID를 쓸 수 있는가?"
+    - "anti-windup과 derivative-on-measurement가 필요한 상황을 구분할 수 있는가?"
+tags: [PID, feedback, proportional, integral, derivative, anti-windup]
+---
+
+::: {.concept-hero}
+## 30초 핵심
+
+PID의 요지는 복잡한 공식이 아니라 **오차를 보는 세 시간 관점**이다.
+
+| 항 | 보는 것 | 직관 | 대표 부작용 |
+|---|---|---|---|
+| P | 지금 오차 | 멀수록 세게 민다 | 너무 크면 진동·잡음 증폭 |
+| I | 지금까지 누적 오차 | 오래 남은 편향을 끝까지 없앤다 | 포화에서 windup·overshoot |
+| D | 오차 변화 추세 | 너무 빨리 접근하면 미리 제동한다 | 측정 잡음 증폭 |
+
+**PID 입문에 선형대수나 확률과정은 필요하지 않다.** 정밀한 안정성·잡음 분석 단계에서 상태공간과 신호이론을 추가하면 된다.
+:::
+
+:::: {.depth-intuition}
+## 왜 중요한가
+
+PID는 모터 속도, 로봇 관절, 온도, 압력, 드론 자세 등 수많은 feedback loop의 첫 실용 도구다. 모델이 완벽하지 않아도 오차를 직접 줄일 수 있고, 세 항의 역할이 물리적으로 읽힌다. 반면 “세 gain을 아무렇게나 올리는 공식”으로 배우면 sampling, saturation, delay에서 쉽게 실패한다.
+
+### 먼저 떠올릴 이미지
+
+차를 정지선에 세운다고 생각하자.
+
+- **P:** 정지선에서 멀면 가속하고 가까우면 약하게 조작한다.
+- **I:** 작은 오르막 때문에 계속 20 cm 모자라면, 남아 있던 오차를 누적해 추가 힘을 낸다.
+- **D:** 빠른 속도로 정지선에 접근하면 현재 거리가 남아 있어도 미리 브레이크를 건다.
+
+비유의 한계도 있다. 실제 D항은 미래를 “예언”하지 않고, 최근 기울기를 이용해 국소 추세에 반응한다.
+
+## 지금 필요한 선수 체크
+
+- [ ] $e=r-y$에서 목표 $r$, 출력 $y$, 오차 $e$를 구분한다.
+- [ ] feedback이 측정 결과로 다음 입력을 수정하는 구조임을 설명한다.
+- [ ] 구현까지 할 경우 $\Delta t$가 시간 단위라는 것을 안다.
+
+부족하면 [피드백](feedback.qmd)과 [변화율·누적량](../foundations/change-and-accumulation.qmd)을 짧게 보고 이 위치로 돌아오면 된다.
+
+## 가장 작은 작동 예
+
+목표 각도 $r=10^\circ$, 현재 각도 $y=8^\circ$라면 $e=2^\circ$다. $K_p=0.4\,\mathrm{N\,m/deg}$일 때 P 제어만 쓰면
+
+$$u=K_pe=0.8\,\mathrm{N\,m}.$$
+
+이 오차가 0.5 s 동안 계속되면 $\int e\,dt$는 약 $1\,\mathrm{deg\,s}$ 증가한다. 오차가 0.1 s 사이 $3^\circ$에서 $2^\circ$로 줄었다면 $de/dt\approx-10\,\mathrm{deg/s}$다. 음의 D항은 접근 중임을 나타내 P의 밀어붙임을 줄인다.
+::::
+
+:::: {.depth-application}
+## 작동하는 정의
+
+parallel form의 연속시간 PID는
+
+$$
+u(t)=K_pe(t)+K_i\int_0^t e(\tau)d\tau+K_d\frac{de(t)}{dt},
+\qquad e(t)=r(t)-y(t)
+$$
+이다.
+
+::: {.callout-note title="단위부터 맞춘다"}
+$e$의 단위가 rad, $u$의 단위가 N·m이면
+
+- $K_p$: N·m/rad
+- $K_i$: N·m/(rad·s)
+- $K_d$: N·m·s/rad
+
+이다. 다른 장비의 gain 숫자를 그대로 옮길 수 없는 이유다.
+:::
+
+### PI·PD·PID는 목적에 따라 고른다
+
+- **P:** 빠르고 단순하지만 constant disturbance 아래 steady-state error가 남을 수 있다.
+- **PI:** 남은 steady-state error를 제거하는 데 강하지만 느린 mode와 windup을 추가한다.
+- **PD:** damping과 transient shaping에 유용하지만 constant bias를 스스로 제거하지 않는다.
+- **PID:** 세 장점을 조합하지만 항상 세 항이 모두 필요한 것은 아니다.
+
+### 실전 이산 구현 {#sec-pid-discrete}
+
+sample $k$, 간격 $\Delta t$에서 한 가지 안전한 출발 형태는 다음과 같다.
+
+$$
+e_k=r_k-y_k,
+$$
+$$
+I_k=I_{k-1}+K_i\Delta t\,e_k,
+$$
+$$
+D_k^{\mathrm{raw}}=-K_d\frac{y_k-y_{k-1}}{\Delta t},
+$$
+$$
+D_k=\alpha D_{k-1}+(1-\alpha)D_k^{\mathrm{raw}},
+\qquad 0\le\alpha<1,
+$$
+$$
+u_k^{\mathrm{raw}}=K_pe_k+I_k+D_k,
+\qquad
+u_k=\operatorname{clip}(u_k^{\mathrm{raw}},u_{\min},u_{\max}).
+$$
+D를 $de/dt$가 아니라 $-dy/dt$에 적용한 것은 목표 $r$이 갑자기 바뀔 때 생기는 **derivative kick**을 줄이기 위해서다. 둘은 $r$이 일정할 때 같지만 setpoint가 움직일 때 다르다.
+
+### derivative filter
+
+이상적 미분은 고주파 잡음을 매우 크게 증폭한다. 실제 D항에는 low-pass filter를 둔다. 위 $\alpha$는 “얼마나 오래 기억할지”를 정하며, 특정 연속시간 filter와 discretization을 택하면 $\alpha$를 time constant와 $\Delta t$로 유도할 수 있다. $\alpha$를 바꾸면 noise뿐 아니라 phase와 damping도 달라진다.
+
+### saturation과 anti-windup
+
+모터가 최대 $2\,\mathrm{N\,m}$만 낼 수 있는데 $u^{\mathrm{raw}}=10$이라면 실제 입력은 2다. 이때 I항이 계속 커지면 오차의 부호가 바뀐 뒤에도 한동안 큰 명령이 남는다. 이것이 **integrator windup**이다.
+
+두 대표 대응은 다음과 같다.
+
+- conditional integration: 포화가 더 심해지는 방향이면 I 적분을 멈춘다.
+- back-calculation: $u-u^{\mathrm{raw}}$를 이용해 I상태를 실제 actuator와 다시 맞춘다.
+
+anti-windup은 “있으면 좋은 option”이 아니라 saturation이 가능한 장치의 모델 일부다.
+
+## 전제 장부
+
+| 라벨 | 내용 |
+|---|---|
+| 정확한 사실 | PID는 오차와 그 적분·미분으로 입력을 만든다. |
+| 관례 | parallel form을 썼다. ideal/series form의 parameter는 숫자가 다를 수 있다. |
+| 모델 가정 | sensor와 actuator 방향, 단위, timestamp가 올바르다고 가정한다. |
+| 근사 | 이산 적분·미분은 연속식을 유한 $\Delta t$로 근사한다. |
+| heuristic | gain tuning rule은 안정성을 자동 보장하는 증명이 아니다. |
+| 필수 조건 | 포화, delay, sampling, noise를 실제 loop와 함께 검토해야 한다. |
+
+## 언제 실패하는가
+
+1. **부호 오류:** negative feedback이라 생각했지만 actuator 방향 때문에 positive feedback이 됨
+2. **sampling 오류:** $\Delta t$ 누락 또는 실제 jitter 무시
+3. **D noise:** encoder quantization을 차분해 큰 spike 생성
+4. **windup:** 포화 중에도 I가 계속 누적
+5. **setpoint kick:** D를 error에 직접 적용하고 목표가 불연속적으로 바뀜
+6. **mode 전환 bump:** manual/automatic 전환 때 I상태를 맞추지 않음
+7. **MIMO coupling:** 축별 독립 PID가 강한 동역학 결합을 무시
+8. **delay:** gain을 높였지만 통신·filter 지연으로 phase margin 소실
+
+## 공학 적용
+
+- 로봇 관절 position loop: P/PD + gravity/feedforward 조합
+- 모터 cascade: current loop 안에 velocity loop, 그 밖에 position loop
+- 이동로봇 wheel speed 제어
+- 온도·공정 제어의 PI
+- 드론 rate/attitude cascade
+
+PID는 feedforward, friction compensation, trajectory shaping과 경쟁하는 단일 해법이 아니라 함께 조립되는 feedback 부품이다.
+
+이론 관문 뒤에는 [PID Python 실습](../../../courseware/labs/pid-lab.qmd)에서 step response, saturation, anti-windup을 직접 비교한다.
+::::
+
+:::: {.depth-derivation}
+## 왜 I항이 constant error를 제거하는가
+
+모든 항의 단위가 맞도록 정규화된 1차 대상을
+
+$$\tau\dot y+y=u+d$$
+
+라 하자. $d$는 출력에 더해지는 constant disturbance이고, plant의 정적 gain은 1로 두었다. 일반 plant에서는 gain과 단위를 식에 명시해야 한다.
+
+P 제어 $u=K_p(r-y)$에서 안정된 평형은
+
+$$
+y_\infty=\frac{K_pr+d}{1+K_p},
+\qquad
+e_\infty=r-y_\infty=\frac{r-d}{1+K_p}.
+$$
+일반적으로 유한한 $K_p$에서는 오차가 남는다. PI 제어에 적분 상태 $\dot I=K_i e$, $u=K_pe+I$를 추가하자. **폐루프가 안정되고, actuator가 포화되지 않으며, 유한한 평형이 존재하고, $K_i\ne0$** 라면 평형에서 $\dot I=0$이어야 하므로
+
+$$K_i e_\infty=0\quad\Rightarrow\quad e_\infty=0.$$
+
+이 결론은 “적분기를 넣으면 무조건 잘 된다”가 아니다. 안정성·포화·상수 입력이라는 조건 아래 평형 오차가 0이어야 한다는 뜻이다.
+
+## D항은 왜 damping처럼 느껴지는가
+
+목표 $r$이 일정하면 $\dot e=-\dot y$다. 따라서 $K_d\dot e=-K_d\dot y$는 출력 속도와 반대 방향의 입력을 만든다. 기계계에서는 viscous damping과 닮은 작용을 한다. 하지만 sensor filtering과 delay가 있으면 실제 phase 효과가 달라지므로 “D는 언제나 damping”이라고 일반화할 수 없다.
+
+## PID를 유일하게 도출할 수 있는가
+
+아니다. PID는 하나의 보편적 최적성 원리에서 유일하게 나오는 제어기가 아니다. error의 현재·누적·변화율이라는 세 feature를 쓰는 구조이며, 특정 대상과 cost·근사를 택하면 PID와 연결되는 최적화 해석을 만들 수 있다. 그때도 가정과 parameter 대응을 명시해야 한다.
+::::
+
+:::: {.depth-proof}
+## 엄밀히 말하면: 평형 오차와 안정성은 다른 명제다
+
+위 PI 논증은 다음의 조건부 명제다.
+
+> 폐루프 해가 유한한 평형으로 수렴하고, 적분 상태가 $\dot I=K_i e$를 따르며, $K_i\ne0$이면 그 평형의 오차는 0이다.
+
+이는 수렴 자체를 증명하지 않는다. 안정성을 보이려면 대상과 controller를 합친 state equation의 eigenvalue, Lyapunov 함수, 또는 전달함수의 pole을 분석해야 한다. integral action을 추가하면 상태 차원이 늘고 불안정해질 수도 있다.
+
+## 구현 불변량 체크
+
+- $r=y$, $I=D=0$이면 $u=0$인가?
+- $\Delta t$를 절반으로 바꾸고 같은 물리 신호를 넣었을 때 적분량이 비슷한가?
+- constant $y$에서 D가 0으로 수렴하는가?
+- 포화 중 I상태가 무한히 증가하지 않는가?
+- degree↔radian 변환 시 gain 단위도 함께 변환했는가?
+::::
+
+::: {.story-card}
+## 숨 고르기: 자동조타에서 PID 언어로
+
+Nicolas Minorsky의 1922년 논문은 자동조타하는 선박의 방향 안정성을 분석했다. 오늘날의 표준 block-diagram 표기와 완전히 같다고 단순화해서는 안 되지만, 오차·오차율·오차 누적을 조타에 연결한 역사적 맥락 때문에 PID 역사에서 중요한 자료다. [이야기 카드 읽기](../../stories/minorsky-steering.qmd)
+:::
+
+## 연결과 복귀
+
+- 목표별 짧은 길: [PID 학습 경로](../../paths/pid.qmd)
+- 변화율이나 누적이 흐릿하면: [변화율과 누적량](../foundations/change-and-accumulation.qmd) 후 [이산 구현](#sec-pid-discrete)으로 복귀
+- 안정성을 깊게 보려면: [상태공간](../systems/state-space.qmd)
+- 다음 후보: frequency response, Bode plot, state feedback, impedance control
+
+## 회상 점검
+
+1. P·I·D가 각각 보는 시간 정보를 말하고 부작용 하나씩을 연결하라.
+2. $e$가 rad, $u$가 N·m일 때 $K_i,K_d$의 단위를 적어라.
+3. derivative-on-measurement가 setpoint kick을 줄이는 이유는?
+4. I항이 constant error를 제거한다는 설명에 필요한 네 조건은?
+5. sampling 주기를 바꿨는데 $\Delta t$를 쓰지 않은 구현은 어떤 항에서 특히 달라지는가?

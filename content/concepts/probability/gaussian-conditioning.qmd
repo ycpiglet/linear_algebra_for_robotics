@@ -1,0 +1,195 @@
+---
+id: probability.gaussian_conditioning
+title: "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식"
+aliases: ["Gaussian conditioning", "조건부 가우시안", "multivariate normal conditional"]
+domain: probability
+one_line: "공동 Gaussian에서 한 변수를 관측하면 다른 변수의 조건부 평균은 선형으로 이동하고 공분산은 줄어든다."
+difficulty: 3
+summary: "공동 Gaussian의 block mean/covariance에서 조건부 평균과 공분산을 유도하고, innovation과 Schur complement의 의미를 Kalman update에 연결한다."
+reading_time: {quick: "7분", core: "45분", full: "90분"}
+prerequisites:
+  intuition:
+    required:
+      - concept: probability.mean_covariance
+        competency: explain
+        reason: "평균, 분산, 공분산을 신뢰도와 타원으로 해석한다."
+    helpful: []
+    not_required: [probability.stochastic_process]
+  application:
+    required:
+      - concept: probability.mean_covariance
+        competency: calculate
+        reason: "block covariance와 선형변환을 계산한다."
+      - concept: linalg.linear_system
+        competency: calculate
+        reason: "inverse 대신 선형 시스템으로 gain을 계산한다."
+    helpful: []
+    not_required: []
+  derivation:
+    required:
+      - concept: probability.mean_covariance
+        competency: derive
+        reason: "innovation과 residual covariance를 유도한다."
+      - concept: linalg.linear_system
+        competency: apply
+        reason: "block matrix 식을 다룬다."
+    helpful: []
+    not_required: []
+  proof:
+    required:
+      - concept: probability.mean_covariance
+        competency: prove
+        reason: "조건부 covariance의 PSD 성질과 직교성을 논증한다."
+    helpful: []
+    not_required: []
+  teaching:
+    required:
+      - concept: probability.mean_covariance
+        competency: prove
+        reason: "scalar·기하·block covariance 관점을 연결한다."
+      - concept: linalg.linear_system
+        competency: apply
+        reason: "gain과 Schur complement의 shape를 설명한다."
+    helpful: []
+    not_required: []
+relations:
+  requires: [probability.mean_covariance, linalg.linear_system]
+  helpful: [linalg.orthogonal_projection]
+  derived_from: [probability.mean_covariance]
+  deepens: [estimation.kalman_filter]
+  contrasts_with: []
+  same_structure_as: [linalg.least_squares]
+  used_in: [estimation.kalman_filter]
+review:
+  prompts:
+    - "innovation이 0이면 조건부 평균은 어떻게 되는가?"
+    - "조건부 covariance가 실제 관측값에 의존하지 않는 이유와 그 한계를 설명할 수 있는가?"
+tags: [gaussian, conditioning, schur-complement, innovation, bayes]
+---
+
+::: {.concept-hero}
+## 30초 핵심
+
+두 변수가 함께 움직이는 정도를 알고 있을 때 하나를 관측하면 다른 하나를 더 잘 추정할 수 있다. 공동 Gaussian에서는 이 갱신이 정확히
+
+$$
+\text{새 평균}=\text{기존 평균}+\text{gain}\times\text{관측의 놀라움}
+$$
+형태가 된다. 이것이 Kalman correction의 수학적 핵심이다.
+:::
+
+:::: {.depth-intuition}
+## 먼저 떠올릴 이미지
+
+기울어진 2차원 Gaussian 타원에서 $Y=y$라는 가로 또는 세로 절단면을 취한다고 상상하자. 절단면의 중심이 조건부 평균이고 폭이 조건부 분산이다. $X,Y$의 상관이 강할수록 $Y$ 관측이 $X$의 범위를 더 많이 좁힌다.
+::::
+
+:::: {.depth-application}
+## 작동하는 정의
+
+공동 Gaussian을 block으로 쓰자.
+
+$$
+\begin{bmatrix}X\\Y\end{bmatrix}
+\sim\mathcal N\!\left(
+\begin{bmatrix}\mu_X\\\mu_Y\end{bmatrix},
+\begin{bmatrix}
+\Sigma_{XX}&\Sigma_{XY}\\
+\Sigma_{YX}&\Sigma_{YY}
+\end{bmatrix}
+\right).
+$$
+$\Sigma_{YY}$가 가역이면
+
+$$
+X\mid Y=y\sim\mathcal N(\mu_{X\mid y},\Sigma_{X\mid y}),
+$$
+$$
+\mu_{X\mid y}
+=\mu_X+\Sigma_{XY}\Sigma_{YY}^{-1}(y-\mu_Y),
+$$
+$$
+\Sigma_{X\mid y}
+=\Sigma_{XX}-\Sigma_{XY}\Sigma_{YY}^{-1}\Sigma_{YX}.
+$$
+$y-\mu_Y$는 **innovation**, $\Sigma_{XY}\Sigma_{YY}^{-1}$는 이를 $X$의 수정량으로 바꾸는 gain이다.
+
+## scalar 최소 예
+
+$X,Y$가 평균 0, 분산 1, 상관계수 $\rho=0.8$인 공동 Gaussian이라고 하자. $Y=2$를 관측하면
+
+$$
+\mathbb E[X\mid Y=2]=0.8\times2=1.6,
+\qquad
+\operatorname{Var}(X\mid Y)=1-0.8^2=0.36.
+$$
+관측 전 표준편차 1이 관측 뒤 0.6으로 줄었다. $\rho=0$이면 관측은 $X$에 아무 정보도 주지 않는다.
+::::
+
+:::: {.depth-derivation}
+## 유도: innovation과 독립인 잔차 만들기
+
+$\widehat X=\mu_X+K(Y-\mu_Y)$ 형태를 가정하고 오차
+
+$$E=X-\widehat X$$
+
+가 $Y-\mu_Y$와 무상관이 되게 하자.
+
+$$
+\operatorname{Cov}(E,Y)
+=\Sigma_{XY}-K\Sigma_{YY}=0.
+$$
+따라서
+
+$$K=\Sigma_{XY}\Sigma_{YY}^{-1}.$$
+
+이를 $\operatorname{Cov}(E)$에 대입하면 위 조건부 공분산을 얻는다. 공동 Gaussian에서는 무상관이 독립을 뜻하므로 $E$가 관측과 독립이고, 이 선형 추정식이 정확한 조건부 평균이 된다.
+
+::: {.callout-important title="inverse를 쓰지 않는 계산"}
+수식은 $\Sigma_{YY}^{-1}$로 보이지만 코드에서는 inverse를 만들지 않는다. $K\Sigma_{YY}=\Sigma_{XY}$를 Cholesky 또는 linear solve로 푼다.
+:::
+
+::::
+
+:::: {.depth-proof}
+## 전제 장부
+
+| 구분 | 내용 |
+|---|---|
+| 정확한 사실 | 위 조건부 평균·공분산 공식은 jointly Gaussian일 때 exact하다. |
+| 핵심 가정 | $\Sigma_{YY}$가 가역이라고 가정했다. |
+| 일반화 | singular Gaussian에는 support 위의 조건부 분포와 pseudoinverse가 필요하다. |
+| 구분 | 비-Gaussian에서도 같은 식은 best linear estimator일 수 있지만 전체 조건부 평균과 같지는 않다. |
+| 관례 | covariance는 random variable의 순서에 맞춰 block을 배치한다. |
+
+## 엄밀히 말하면: Schur complement
+
+$\Sigma_{X\mid y}$는 공동 공분산에서 $\Sigma_{YY}$에 대한 Schur complement다. 공동 covariance가 PSD이고 $\Sigma_{YY}\succ0$이면 이 Schur complement도 PSD다. 관측이 정보를 추가하므로
+
+$$
+\Sigma_{XX}-\Sigma_{X\mid y}
+=\Sigma_{XY}\Sigma_{YY}^{-1}\Sigma_{YX}\succeq0.
+$$
+단, 이것은 모델이 맞을 때의 문장이다. 잘못된 covariance나 unmodeled bias가 있으면 계산된 불확실성은 줄어도 실제 오차는 줄지 않을 수 있다.
+::::
+
+:::: {.depth-application}
+## 언제 실패하는가
+
+- covariance block의 순서나 transpose를 바꿈
+- 거의 singular한 $\Sigma_{YY}$에 explicit inverse 사용
+- outlier가 많은 데이터를 Gaussian으로 과신
+- 공통 원인으로 상관된 두 센서를 독립이라고 가정해 정보를 중복 계산
+::::
+
+## 다음과 복귀
+
+- 반복되는 시간 갱신으로: [Kalman filter](../estimation/kalman-filter.qmd)
+- 기하학적 원형으로: [직교투영](../linalg/orthogonal-projection.qmd)
+- Kalman에서 왔다면: [measurement correction 유도](../estimation/kalman-filter.qmd#sec-kf-correction)로 돌아간다.
+
+## 회상 점검
+
+1. innovation과 gain의 역할을 한 문장씩 설명하라.
+2. $\Sigma_{XY}=0$이면 조건부 평균·공분산은 어떻게 되는가?
+3. 비-Gaussian에서 같은 선형식이 exact conditional mean이 아닐 수 있는 이유는?

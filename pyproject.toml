@@ -1,0 +1,68 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "robotics-math-atlas"
+version = "0.1.0"
+description = "A Korean, concept-graph textbook for robotics mathematics, estimation, and control"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "CC-BY-NC-SA-4.0" }
+authors = [{ name = "Robotics Math Atlas contributors" }]
+dependencies = [
+  "numpy>=2.0",
+  "scipy>=1.14",
+  "matplotlib>=3.9",
+  "sympy>=1.13",
+  "mpmath>=1.3",
+  "pandas>=2.2",
+  "pyyaml>=6.0",
+  "jsonschema>=4.23",
+  "jupyterlab>=4.3",
+  "jupyter-cache>=1.0",
+  "ipywidgets>=8.1",
+  "plotly>=6.0",
+]
+
+[project.optional-dependencies]
+ad-opt = [
+  "jax>=0.5",
+  "cvxpy>=1.6",
+]
+signals-control = [
+  "control>=0.10",
+]
+learning = [
+  "scikit-learn>=1.6",
+  "torch>=2.6",
+  "gymnasium>=1.1",
+]
+
+[dependency-groups]
+dev = [
+  "hatchling>=1.27",
+  "pytest>=8.3",
+  "nbmake>=1.5",
+  "ruff>=0.11",
+  "fonttools[woff]>=4.63",
+  "pypdf>=5.9",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["courseware/src/robotics_math_atlas"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["platform/tests", "courseware/tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = [".jupyter_cache"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["robotics_math_atlas"]

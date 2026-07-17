@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linear-algebra-for-robotics.local/schemas/progress.schema.json",
+  "title": "Knowledge Atlas local progress export",
+  "type": "object",
+  "required": ["schema_version", "exported_at", "items"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "exported_at": { "type": "string", "format": "date-time" },
+    "items": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/stableId" },
+      "additionalProperties": { "$ref": "#/$defs/progressItem" }
+    },
+    "learning_stack": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/returnLocation" },
+      "default": []
+    },
+    "ui_state": {
+      "type": "object",
+      "properties": {
+        "depth": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/stableId" },
+          "additionalProperties": {
+            "type": "string",
+            "enum": ["intuition", "application", "derivation", "proof"]
+          },
+          "default": {}
+        },
+        "bookmarks": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/bookmark" },
+          "default": {}
+        },
+        "favorites": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/favorite" },
+          "default": {}
+        },
+        "last_read": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/lastRead" },
+          "default": {}
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"
+    },
+    "mastery": {
+      "type": "string",
+      "enum": ["not_started", "learning", "review", "mastered"]
+    },
+    "returnLocation": {
+      "type": "object",
+      "required": ["concept"],
+      "properties": {
+        "concept": { "$ref": "#/$defs/stableId" },
+        "path": { "$ref": "#/$defs/stableId" },
+        "anchor": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "bookmark": {
+      "type": "object",
+      "required": ["url", "pageTitle", "sectionId", "sectionTitle", "updatedAt"],
+      "properties": {
+        "url": { "type": "string", "minLength": 1 },
+        "pageTitle": { "type": "string" },
+        "sectionId": { "type": "string" },
+        "sectionTitle": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "favorite": {
+      "type": "object",
+      "required": ["url", "title", "updatedAt"],
+      "properties": {
+        "url": { "type": "string", "minLength": 1 },
+        "title": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "lastRead": {
+      "type": "object",
+      "required": ["url", "title", "sectionId", "sectionTitle", "ratio", "updatedAt"],
+      "properties": {
+        "url": { "type": "string", "minLength": 1 },
+        "title": { "type": "string" },
+        "sectionId": { "type": "string" },
+        "sectionTitle": { "type": "string" },
+        "ratio": { "type": "number", "minimum": 0, "maximum": 1 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "progressItem": {
+      "type": "object",
+      "properties": {
+        "seen": { "type": "boolean", "default": false },
+        "mastery": {
+          "type": "object",
+          "properties": {
+            "intuition": { "$ref": "#/$defs/mastery" },
+            "application": { "$ref": "#/$defs/mastery" },
+            "analysis": { "$ref": "#/$defs/mastery" },
+            "implementation": { "$ref": "#/$defs/mastery" },
+            "derivation": { "$ref": "#/$defs/mastery" },
+            "proof": { "$ref": "#/$defs/mastery" },
+            "teaching": { "$ref": "#/$defs/mastery" }
+          },
+          "additionalProperties": false
+        },
+        "confused": { "type": "boolean", "default": false },
+        "bookmarked": { "type": "boolean", "default": false },
+        "next_review": { "type": ["string", "null"], "format": "date-time" },
+        "last_reviewed": { "type": ["string", "null"], "format": "date-time" },
+        "return_to": {
+          "oneOf": [
+            { "$ref": "#/$defs/returnLocation" },
+            { "type": "null" }
+          ]
+        },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linear-algebra-for-robotics.local/schemas/proof.schema.json",
+  "title": "Knowledge Atlas proof metadata",
+  "type": "object",
+  "required": ["id", "title"],
+  "properties": {
+    "id": { "$ref": "#/$defs/stableId" },
+    "title": { "type": "string", "minLength": 1 },
+    "domain": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$" },
+    "one_line": { "type": "string", "minLength": 1 },
+    "statement": { "type": "string" },
+    "theorem": { "type": ["string", "object"] },
+    "difficulty": { "type": "integer", "minimum": 1, "maximum": 5 },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "published", "planned", "deprecated"]
+    },
+    "dependencies": { "$ref": "#/$defs/idList" },
+    "concepts": { "$ref": "#/$defs/idList" },
+    "prerequisites": {
+      "type": "object",
+      "propertyNames": {
+        "enum": ["intuition", "application", "analysis", "implementation", "derivation", "proof", "teaching"]
+      },
+      "additionalProperties": { "$ref": "#/$defs/prerequisiteGroup" },
+      "default": {}
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "level": {
+      "type": "string",
+      "enum": ["finite", "density", "general_measure"]
+    },
+    "page_url": { "type": "string", "minLength": 1 },
+    "output-file": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"
+    },
+    "idList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/stableId" },
+      "uniqueItems": true
+    },
+    "prerequisiteReference": {
+      "oneOf": [
+        { "$ref": "#/$defs/stableId" },
+        {
+          "type": "object",
+          "required": ["concept"],
+          "properties": {
+            "concept": { "$ref": "#/$defs/stableId" },
+            "competency": {
+              "type": "string",
+              "enum": ["recognize", "explain", "calculate", "apply", "derive", "prove", "teach"]
+            },
+            "reason": { "type": "string" },
+            "diagnostic": { "type": "string" },
+            "anchor": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "prerequisiteGroup": {
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/prerequisiteReference" }
+        },
+        "helpful": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/prerequisiteReference" }
+        },
+        "not_required": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/prerequisiteReference" }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

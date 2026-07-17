@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linear-algebra-for-robotics.local/schemas/path.schema.json",
+  "title": "Knowledge Atlas learning path metadata",
+  "type": "object",
+  "required": ["id", "title"],
+  "properties": {
+    "id": { "$ref": "#/$defs/stableId" },
+    "title": { "type": "string", "minLength": 1 },
+    "aliases": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "domain": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$" },
+    "difficulty": { "type": "integer", "minimum": 1, "maximum": 5 },
+    "one_line": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string" },
+    "goal": { "type": "string" },
+    "audience": { "type": "string" },
+    "estimated_time": {
+      "oneOf": [
+        { "type": "integer", "minimum": 1 },
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/depth" },
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "integer", "minimum": 1 },
+              { "type": "string", "minLength": 1 }
+            ]
+          }
+        }
+      ]
+    },
+    "entry_points": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/depth" },
+      "additionalProperties": { "$ref": "#/$defs/stableId" }
+    },
+    "entry_concepts": { "$ref": "#/$defs/idList" },
+    "exit_concept": { "$ref": "#/$defs/stableId" },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "published", "planned", "deprecated"]
+    },
+    "steps": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/pathStep" },
+      "minItems": 1
+    },
+    "stages": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/pathStage" },
+      "minItems": 1
+    },
+    "page_url": { "type": "string", "minLength": 1 },
+    "output-file": { "type": "string", "minLength": 1 }
+  },
+  "oneOf": [
+    { "required": ["steps"], "not": { "required": ["stages"] } },
+    { "required": ["stages"], "not": { "required": ["steps"] } }
+  ],
+  "additionalProperties": true,
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"
+    },
+    "idList": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/stableId" },
+      "uniqueItems": true
+    },
+    "depth": {
+      "type": "string",
+      "enum": ["intuition", "application", "analysis", "implementation", "derivation", "proof", "teaching"]
+    },
+    "pathStep": {
+      "oneOf": [
+        { "$ref": "#/$defs/stableId" },
+        {
+          "type": "object",
+          "required": ["concept"],
+          "properties": {
+            "concept": { "$ref": "#/$defs/stableId" },
+            "depth": { "$ref": "#/$defs/depth" },
+            "optional": { "type": "boolean" },
+            "note": { "type": "string" },
+            "anchor": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "pathStage": {
+      "type": "object",
+      "required": ["title", "steps"],
+      "properties": {
+        "id": { "$ref": "#/$defs/stableId" },
+        "title": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string" },
+        "steps": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/pathStep" },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

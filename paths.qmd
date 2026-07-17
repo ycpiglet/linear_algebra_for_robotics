@@ -1,0 +1,39 @@
+---
+title: "목표별 학습 경로"
+description: "필요한 깊이에 맞춘 최소 선수경로"
+toc: true
+---
+
+학습 경로는 내용을 복제하지 않습니다. 여러 개념 페이지를 목표와 깊이에 맞는 순서로
+연결하고, 우회 학습 뒤에는 원래 문단으로 돌아오게 합니다.
+
+## 파일럿 경로
+
+<div id="learning-paths" class="learning-paths"></div>
+
+:::: {.content-visible unless-format="html"}
+### 정적 출력용 경로
+
+1. [PID를 먼저 이해하기](content/paths/pid.qmd)
+2. [최소제곱에서 추정으로](content/paths/least-squares.qmd)
+3. [칼만 필터(Kalman filter)](content/paths/kalman-filter.qmd)
+4. [입자 필터(Particle filter)·순차중요도표집(SIS)·순차몬테카를로(SMC)](content/paths/particle-filter.qmd)
+5. [마르코프연쇄 몬테카를로(MCMC)·메트로폴리스–헤이스팅스](content/paths/mcmc.qmd)
+::::
+
+::: {.callout-tip title="경로는 언제든 바꿀 수 있습니다"}
+직관 경로에서 시작한 뒤 계산이나 증명이 필요해지면 깊이를 높이십시오. 새 깊이에 필요한
+선수개념만 추가됩니다.
+:::
+
+## 분야별 참조 경로
+
+1. 수학 언어와 선형대수
+2. 확률·통계·확률과정
+3. 신호 및 시스템·제어
+4. 행렬미적분·리 이론(Lie theory)·최적화
+5. 추정·센서융합·로컬라이제이션
+6. 입자 필터·순차몬테카를로(SMC)·마르코프연쇄 몬테카를로(MCMC)
+7. 기계학습(machine learning)·강화학습
+
+이 순서는 PDF를 위한 참조 순서이며 웹에서는 강제하지 않습니다.

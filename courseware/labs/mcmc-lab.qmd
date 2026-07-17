@@ -1,0 +1,42 @@
+---
+title: "실험: Metropolis proposal과 mixing"
+description: "같은 표적분포에서 proposal scale별 수락률과 자기상관을 비교한다"
+jupyter: python3
+execute:
+  echo: true
+  warning: false
+---
+
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+from robotics_math_atlas import random_walk_metropolis
+
+def log_standard_normal(x):
+    return -0.5 * x**2
+
+scales = [0.08, 1.0, 6.0]
+results = {
+    scale: random_walk_metropolis(log_standard_normal, proposal_std=scale, seed=31)
+    for scale in scales
+}
+
+fig, axes = plt.subplots(len(scales), 1, figsize=(9, 7), sharex=True)
+for axis, scale in zip(axes, scales):
+    result = results[scale]
+    axis.plot(result["samples"][:800], linewidth=0.8)
+    axis.set_ylabel(f"σ={scale}\naccept={result['acceptance_rate']:.2f}")
+    axis.grid(alpha=0.2)
+axes[-1].set_xlabel("retained draw")
+plt.tight_layout()
+```
+
+- 너무 작은 proposal은 거의 모두 수락되지만 조금씩만 움직입니다.
+- 너무 큰 proposal은 멀리 제안하지만 대부분 거절되어 같은 값에 오래 머뭅니다.
+- 적당한 수락률은 목표가 아니라 mixing을 개선하기 위한 진단 중 하나입니다.
+
+상세균형 증명은 proposal scale과 무관하게 표적분포의 불변성을 보이지만, 유한 시간에
+좋은 근사를 얻는 속도까지 보장하지는 않습니다. **정확성(invariance)**과
+**효율(mixing)**을 분리해서 보아야 합니다.
+

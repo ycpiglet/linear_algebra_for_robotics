@@ -1,0 +1,214 @@
+---
+title: "학습 경로: Particle Filter"
+id: path.particle-filter
+kind: path
+domain: estimation
+aliases:
+  - Particle Filter path
+  - 입자필터 학습 경로
+one-line: "직관·구현·완전증명 목표에 따라 필요한 선수개념만 선택하는 Particle Filter 경로다."
+difficulty: 4
+entry-concepts:
+  - estimation.bayes-filtering
+  - probability.monte-carlo
+exit-concept: estimation.bootstrap-particle-filter
+entry-points:
+  intuition: estimation.bayes-filtering
+  implementation: estimation.bayes-filtering
+  proof: probability.measure-foundations
+stages:
+  - id: pf.foundation
+    title: "확률 적분과 Bayes 재귀"
+    steps:
+      - concept: probability.measure-foundations
+        depth: proof
+        optional: true
+        note: "증명 모드에서만 필수다."
+      - concept: probability.monte-carlo
+        depth: application
+      - concept: estimation.bayes-filtering
+        depth: derivation
+  - id: pf.weighting
+    title: "Proposal과 순차 weight"
+    steps:
+      - concept: probability.importance-sampling
+        depth: derivation
+      - concept: estimation.sequential-importance-sampling
+        depth: proof
+  - id: pf.selection
+    title: "Selection과 Particle Filter"
+    steps:
+      - concept: estimation.resampling
+        depth: proof
+      - concept: estimation.bootstrap-particle-filter
+        depth: implementation
+---
+
+::: {.depth-intuition}
+
+## 30초 지도
+
+Particle Filter는 “가능한 상태 가설 여러 개를 유지하고, 측정과 잘 맞는 가설을 남긴다”는 생각이다.
+
+$$
+\text{Bayes filter}
+\longrightarrow
+\text{Importance Sampling}
+\longrightarrow
+\text{SIS}
+\longrightarrow
+\text{Resampling}
+\longrightarrow
+\text{Bootstrap Particle Filter}
+$$
+
+측도론은 직관이나 첫 구현의 필수 선수가 아니다. 다만 consistency와 일반상태 정리를 **증명**하려면 별도 proof 경로가 열린다.
+
+:::
+
+## 먼저 목표를 고른다
+
+| 목표 | 시작 전 체크 | 지금 필요 없는 것 |
+|---|---|---|
+| 직관 설명 | 조건부확률, 평균의 뜻 | Radon–Nikodym, Feynman–Kac CLT |
+| 작은 구현 | 확률밀도 평가, 난수표본, 배열·log 계산 | Harris recurrence |
+| 식 유도 | Bayes factorization, target/proposal ratio | 일반상태 kernel 증명 |
+| 현재 묶음의 완전증명 | SLLN을 정확한 가정 아래 사용, 유한상태·밀도 범위 구분 | time-uniform particle CLT |
+| 일반 SMC 연구 수준 | 측도·적분, kernel, conditional expectation, martingale | 없음: 별도 심화 트랙 필요 |
+
+## 선수 체크리스트
+
+체크가 안 된 항목은 링크의 해당 절만 보고 돌아오면 된다.
+
+### 직관 진입
+
+- [ ] [Monte Carlo](../concepts/probability/monte-carlo.qmd): 표본평균이 분포의 기댓값을 근사한다.
+- [ ] [Bayes filtering](../concepts/probability/bayes-filtering.qmd): prediction과 update를 말로 구분한다.
+- [ ] [Importance Sampling](../concepts/probability/importance-sampling.qmd): proposal과 weight의 역할을 설명한다.
+- [ ] [Resampling](../concepts/probability/resampling.qmd): 큰 weight 입자를 복제하는 이유와 다양성 손실을 함께 설명한다.
+
+### 구현 진입
+
+- [ ] normalized weight와 log-sum-exp를 계산할 수 있다.
+- [ ] transition density $f_t$에서 표본을 뽑고 likelihood $g_t(y_t\mid x_t)$를 평가할 수 있다.
+- [ ] [SIS](../concepts/probability/sequential-importance-sampling.qmd) incremental weight의 분자·분모를 식으로 쓸 수 있다.
+- [ ] [Resampling](../concepts/probability/resampling.qmd)에서 ancestor index를 새 배열에 저장하는 이유를 안다.
+- [ ] 모든 weight가 0/NaN일 때 이를 실패로 보고할 수 있다.
+
+### 증명 진입
+
+- [ ] [확률·측도 기반](../concepts/probability/measure-probability-foundations.qmd): 유한상태 합, 밀도 적분, 일반 kernel의 경계를 구분한다.
+- [ ] Support/absolute-continuity 가정이 없으면 IS가 실패하는 반례를 설명한다.
+- [ ] 강대수의 법칙의 정확한 적분 가능성 가정을 말할 수 있다.
+- [ ] 조건부기댓값의 선형성을 사용할 수 있다.
+
+::: {.depth-application}
+
+## 빠른 직관 경로
+
+1. [Bayes filtering](../concepts/probability/bayes-filtering.qmd)의 “30초 핵심”과 유한상태 예제
+2. [Monte Carlo](../concepts/probability/monte-carlo.qmd)의 표본평균 이미지
+3. [Importance Sampling](../concepts/probability/importance-sampling.qmd)의 조사구역 비유와 support 실패
+4. [Resampling](../concepts/probability/resampling.qmd)의 복제·제거와 sample impoverishment
+5. [Bootstrap Particle Filter](../concepts/probability/bootstrap-particle-filter.qmd)의 3단계 알고리즘
+
+이 경로를 마치면 다음을 자신의 말로 설명할 수 있어야 한다.
+
+- 입자는 로봇 여러 대가 아니라 상태 가설이다.
+- weight는 확률 그 자체라기보다 현재 empirical support 위의 상대적 질량이다.
+- resampling은 정보를 만들지 않고 계산 자원을 재배치한다.
+- 날카로운 likelihood와 고차원에서는 prior proposal이 무너질 수 있다.
+
+## 구현 경로
+
+1. [Bayes filter 재귀](../concepts/probability/bayes-filtering.qmd)를 작은 finite HMM에서 exact sum으로 구현한다.
+2. [Importance Sampling](../concepts/probability/importance-sampling.qmd)을 1차원 target/proposal에서 구현한다.
+3. [SIS](../concepts/probability/sequential-importance-sampling.qmd)를 resampling 없이 구현하고 weight collapse를 관찰한다.
+4. [네 resampling scheme](../concepts/probability/resampling.qmd)을 구현하고 offspring mean을 반복실험으로 검산한다.
+5. [Bootstrap Particle Filter](../concepts/probability/bootstrap-particle-filter.qmd)를 finite HMM에 적용해 exact filtering distribution과 비교한다.
+6. 비선형 1차원 tracking에서 log-weight, ESS, 고유 ancestor 수를 기록한다.
+7. outlier, sensor dropout, 너무 작은 measurement noise에서 실패를 재현한다.
+
+직접 실행할 때는 [Particle Filter 실습](../../courseware/labs/particle-filter-lab.qmd)으로 이동하고, 완료 후 이 경로의 검증 체크리스트로 돌아온다.
+
+### 최소 검증
+
+- 각 시각 weight 합이 1
+- weight는 finite이며 음수가 아님
+- finite HMM에서 입자 수 증가에 따라 bounded test function 오차가 감소
+- resampling 반복평균이 입력 weighted average와 일치
+- 같은 seed에서 재현 가능
+- RMSE만이 아니라 ESS와 ancestor diversity를 함께 보고
+
+:::
+
+::: {.depth-proof}
+
+## 현재 묶음의 증명 경로
+
+다음 순서는 논리적 의존관계이며 자유탐색 중에도 proof mode에서만 필수로 표시한다.
+
+1. [확률·측도 기반](../concepts/probability/measure-probability-foundations.qmd)
+   - 공통 기준측도, support, SLLN을 사용하는 범위를 고정한다.
+2. [IS 항등식 증명](../proofs/importance-sampling-identity.qmd)
+   - 목표 적분을 proposal 적분으로 바꾸는 support 조건을 증명한다.
+3. [SNIS 일관성 증명](../proofs/self-normalized-importance-sampling-consistency.qmd)
+   - 분자·분모 SLLN과 ratio limit를 증명한다.
+   - finite-$N$ bias 반례를 확인한다.
+4. [Bayes filter](../concepts/probability/bayes-filtering.qmd)
+   - 상태공간 joint factorization에서 prediction/update를 유도한다.
+5. [SIS weight 재귀 증명](../proofs/sis-weight-recursion.qmd)
+   - path target/proposal factorization의 비율을 약분한다.
+6. [Resampling unbiasedness 증명](../proofs/resampling-unbiasedness.qmd)
+   - generic offspring 조건과 multinomial/residual/stratified/systematic을 증명한다.
+7. [Bootstrap Particle Filter](../concepts/probability/bootstrap-particle-filter.qmd)
+   - transition proposal이라는 특수화를 확인한다.
+8. [유한상태 고정-horizon consistency 증명](../proofs/bootstrap-particle-filter-fixed-horizon-consistency.qmd)
+   - resampling, prediction, weighting의 조건부 집중을 induction으로 연결한다.
+   - 조건부 unbiasedness만으로 consistency가 나오지 않는 반례를 확인한다.
+
+### 여기서 완결되는 명제
+
+- 정규화된 IS identity와 unbiased estimator
+- SNIS의 almost-sure consistency
+- SIS incremental-weight recursion
+- 네 resampling scheme의 조건부 empirical-measure unbiasedness
+- transition proposal에서 incremental weight가 likelihood로 줄어듦
+- 유한상태·매-step multinomial resampling에서 고정된 모든 $T<\infty$의 empirical filtering vector가 확률수렴
+
+### 아직 별도 심화 증명이 필요한 명제
+
+- 일반 상태공간 Feynman–Kac particle LLN와 CLT
+- normalizing-constant estimator의 일반 unbiasedness
+- adaptive resampling의 stopping-time 분석
+- propagation of chaos와 concentration bound
+- time-uniform stability
+- particle smoothing, PMMH, Particle Gibbs의 extended-target invariance
+
+이 항목들은 현재 페이지에서 사실인 것처럼 증명 없이 사용하지 않는다.
+
+:::
+
+## 혼동 방지
+
+| 용어 | 뜻 |
+|---|---|
+| SIS | sequential importance weights; resampling 없음 |
+| SIR/SISR | SIS에 resampling을 결합 |
+| Bootstrap Particle Filter | transition prior proposal을 쓰는 대표 SIR |
+| SMC | 시간모형뿐 아니라 tempering 등 target sequence 전체를 포괄하는 상위 틀 |
+| Particle smoothing | 미래 관측까지 사용해 과거 상태를 추정 |
+| MCMC | 한 chain의 invariant target을 이용; 입자 population과 목적·의존구조가 다름 |
+
+## 완료 기준
+
+- [ ] Bayes prediction/update를 조건부독립 가정에서 유도한다.
+- [ ] SIS weight recursion을 암기 없이 factorization에서 재구성한다.
+- [ ] IS support mismatch 반례를 만든다.
+- [ ] SNIS consistency와 finite-$N$ unbiasedness를 구분한다.
+- [ ] 네 resampling scheme의 offspring expectation을 계산한다.
+- [ ] Bootstrap PF의 convention을 선언하고 그 convention에 맞는 weight를 쓴다.
+- [ ] finite HMM exact filter와 구현 결과를 비교한다.
+- [ ] 조건부 unbiasedness와 $O(1/N)$ 조건부분산이 consistency 증명에서 맡는 역할을 구분한다.
+- [ ] weight degeneracy, sample impoverishment, path degeneracy를 구분한다.
+- [ ] 현재 증명 범위와 일반상태 SMC 심화 범위를 설명한다.

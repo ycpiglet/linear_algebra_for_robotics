@@ -1,0 +1,172 @@
+---
+title: "자코비안 장의 참고문헌과 근거"
+toc: true
+---
+
+이 페이지는 [자코비안 본문](../concepts/robotics/jacobian.qmd)에 쓰인 **제품 사실**, **수학적 근거**, **공식 코드 문서**, **교육적 해석**을 서로 다른 층으로 분리한다. 웹 자료의 마지막 확인일은 **2026-07-16**이다.
+
+## 근거 등급
+
+| 등급 | 뜻 | 이 교재에서 허용하는 표현 |
+|---|---|---|
+| 1차·공식 확인 | 원 논문, 제조사 사양·매뉴얼, 프로젝트 공식 응용 프로그래밍 인터페이스(Application Programming Interface, API)가 직접 명시 | “공식 문서가 명시한다”, “API가 반환한다” |
+| 수학적 표준 모형 | 교과서·원 논문에서 정립된 정의와 유도 | 가정과 좌표계 관례를 밝힌 뒤 정의·정리로 사용 |
+| 교육적 계산 | 공개 사실이나 가상 수치에 본문의 모형을 적용 | “이 장에서는 …로 계산한다”, “예제에서는 …로 둔다” |
+| 공개되지 않음 | 내부 보정값·필터·제어 구조·가격을 1차 자료로 확인할 수 없음 | 사실로 단정하지 않고 “공개 자료로 확인할 수 없다” |
+
+아래 여섯 분류는 **읽을 목적**을 기준으로 나눈 색인이다. 각 항목의 “본문 위치”는 자료가 실제로 뒷받침하는 절로 바로 연결된다. 제품표와 API 계약은 3절, 합성 자료와 재현 체크리스트는 4절에서 한 번씩만 감사한다.
+
+## 1. 원전
+
+1. Carl Gustav Jacob Jacobi, [“De Determinantibus functionalibus”](https://eudml.org/doc/147138), `Journal für die reine und angewandte Mathematik` 22, 1841, pp. 319–352. 함수행렬식의 역사적 원자료다.  
+   **본문 위치:** [이름의 역사](../concepts/robotics/jacobian.qmd#sec-jacobian-history), [작동하는 정의](../concepts/robotics/jacobian.qmd#sec-jacobian-definition).
+2. Daniel E. Whitney, [“Resolved Motion Rate Control of Manipulators and Human Prostheses”](https://doi.org/10.1109/TMMS.1969.299896), `IEEE Transactions on Man-Machine Systems` 10(2), 1969, pp. 47–53. 말단의 원하는 운동을 관절속도로 푸는 분해속도제어의 고전적 출발점이다.  
+   **본문 위치:** [의사역행렬 역속도 알고리즘](../concepts/robotics/jacobian.qmd#sec-jacobian-inverse-velocity).
+3. Charles W. Wampler, [“Manipulator Inverse Kinematic Solutions Based on Vector Formulations and Damped Least-Squares Methods”](https://doi.org/10.1109/TSMC.1986.289285), `IEEE Transactions on Systems, Man, and Cybernetics` 16(1), 1986, pp. 93–101. 특이점에 강한 감쇠 최소제곱 역기구학의 원 논문이다.  
+   **본문 위치:** [DLS 알고리즘](../concepts/robotics/jacobian.qmd#sec-jacobian-inverse-velocity), [DLS 목적함수 유도](../concepts/robotics/jacobian.qmd#sec-jacobian-dls-derivation), [속도 폭주 재현](../concepts/robotics/jacobian.qmd#sec-jacobian-singularity-failure).
+4. Tsuneo Yoshikawa, [“Manipulability of Robotic Mechanisms”](https://doi.org/10.1177/027836498500400201), `The International Journal of Robotics Research` 4(2), 1985, pp. 3–9. 조작성 지표와 타원의 고전적 출처다.  
+   **본문 위치:** [특이점과 조작성](../concepts/robotics/jacobian.qmd#sec-jacobian-singularity).
+5. Oussama Khatib, [“A Unified Approach for Motion and Force Control of Robot Manipulators: The Operational Space Formulation”](https://doi.org/10.1109/JRA.1987.1087068), `IEEE Journal on Robotics and Automation` 3(1), 1987, pp. 43–53. 작업공간 운동·힘 제어를 연결한 고전 논문이다.  
+   **본문 위치:** [속도–힘 쌍대성](../concepts/robotics/jacobian.qmd#sec-jacobian-duality).
+
+## 2. 교과서
+
+1. Kevin M. Lynch and Frank C. Park, `Modern Robotics: Mechanics, Planning, and Control`, Cambridge University Press, 2017. [공개 Space Jacobian 절](https://modernrobotics.northwestern.edu/nu-gm-book-resource/5-1-1-space-jacobian/). 공간·몸체 자코비안과 직렬 나사축 구성을 함께 읽기 좋다.  
+   **본문 위치:** [연쇄법칙과 직렬 연결](../concepts/robotics/jacobian.qmd#sec-jacobian-chain-rule), [좌표계 변환](../concepts/robotics/jacobian.qmd#sec-jacobian-frame-change).
+2. Bruno Siciliano, Lorenzo Sciavicco, Luigi Villani, Giuseppe Oriolo, [`Robotics: Modelling, Planning and Control`](https://doi.org/10.1007/978-1-84628-642-1), Springer, 2009. 미분기구학, 기하/해석 자코비안, 특이점, 역기구학의 표준 교재다.  
+   **본문 위치:** [기하/해석 자코비안 비교](../concepts/robotics/jacobian.qmd#sec-jacobian-geometric-analytic), [특이점](../concepts/robotics/jacobian.qmd#sec-jacobian-singularity).
+3. John J. Craig, `Introduction to Robotics: Mechanics and Control`, Pearson. 전진·미분기구학과 정역학의 고전적 입문서다.  
+   **본문 위치:** [2R 속도 계산](../concepts/robotics/jacobian.qmd#sec-jacobian-forward-velocity), [가상일과 전치](../concepts/robotics/jacobian.qmd#sec-jacobian-duality).
+4. Yoshihiko Nakamura, `Advanced Robotics: Redundancy and Optimization`, Addison-Wesley, 1991. 여유자유도, 영공간, 특이점과 최적화를 심화한다.  
+   **본문 위치:** [계수와 영공간](../concepts/robotics/jacobian.qmd#sec-jacobian-rank), [의사역행렬 역속도](../concepts/robotics/jacobian.qmd#sec-jacobian-inverse-velocity).
+
+### 본문 수학의 적용 조건 {#수학-정의유도원전}
+
+- $x=f(q)$가 관심 자세 근처에서 미분 가능하다.
+- $\dot x=J(q)\dot q$의 입력·출력 성분과 기준좌표계가 고정되어 있다.
+- $\tau=J^\top F$는 같은 순간의 가상일/전력 쌍을 보존하고 $J$와 $F$가 호환되는 좌표계·기준점을 사용한다.
+- 의사역행렬·감쇠 최소제곱은 관절한계, 충돌, 토크·속도 제한을 자동으로 해결하지 않는다.
+
+## 3. 공식 문서
+
+### 공식 제품 자료 {#공식-제품-자료}
+
+#### Universal Robots UR5e
+
+출처: Universal Robots, [UR5e Technical Specifications, SW10.9](https://www.universal-robots.com/manuals/EN/HTML/SW10_9/Content/prod-usr-man/complianceUR5e/H_g5_sections/appendix_g5/tech_spec_sheet.htm).  
+**본문 위치:** [협동로봇 공식 사양 표](../concepts/robotics/jacobian.qmd#sec-jacobian-product-case).
+
+| 본문에 쓴 항목 | 공식 페이지의 값 | 해석 한계 |
+|---|---:|---|
+| 관절 구성 | 6개 회전관절 | 이것만으로 모든 자세에서 자코비안 행렬의 계수(rank)가 6임을 보장하지 않음 |
+| 도달거리 | 850 mm | 개별 링크 길이·보정 파라미터와 같지 않음 |
+| 최대 가반하중 | 5 kg | 자코비안만으로 허용 관절토크·안전 하중을 결정할 수 없음 |
+| 자세 반복정밀도 | ±0.03 mm, ISO 9283 | 절대 위치정확도나 자코비안 오차와 같은 지표가 아님 |
+| 힘·토크 센서 정확도 | 4 N | 원시 표본의 필터·지연·편향 전체를 설명하지 않음 |
+| 시스템 갱신 주기 | 500 Hz | 사용자가 작성한 계산의 완료 주기나 종단간 지연을 보장하지 않음 |
+| 가격 | 인용 페이지에 고정 판매가 없음 | 국가·옵션·통합 범위를 포함한 공식 견적 필요 |
+
+본문의 2R 링크 길이와 관절각은 **교육용 가상 예제**이며 UR5e의 기하 파라미터가 아니다. 실제 장비 계산에는 해당 로봇의 보정 모형, 도구중심점(Tool Center Point, TCP), 베이스 설치 변환, 관절 순서를 사용해야 한다.
+
+#### Franka 제어 인터페이스(Franka Control Interface, FCI)와 `libfranka::Model`
+
+1. Franka Robotics, [`libfranka` Overview](https://frankarobotics.github.io/docs/doc/libfranka/docs/overview.html): FCI의 C++ 클라이언트, 사용자의 1 kHz 실시간 제어 루프, 1 kHz 로봇 상태 자료, 로봇 모형 접근을 설명한다.
+2. Franka Robotics, [`franka::Model` Class Reference, libfranka 0.15.3](https://frankarobotics.github.io/libfranka/0.15.3/classfranka_1_1Model.html): `bodyJacobian`과 `zeroJacobian`의 반환 형식과 표현 프레임을 정의한다.
+
+**본문 위치:** [Franka 한 장 재현 카드](../concepts/robotics/jacobian.qmd#sec-jacobian-product-case).
+
+| 응용 프로그래밍 인터페이스(API)·항목 | 공식적으로 확인되는 계약 | 구현 시 확인할 점 |
+|---|---|---|
+| `bodyJacobian` | 선택 프레임에 상대적인 6×7 자코비안 | 물체/몸체 기준 표현이라는 뜻을 보존 |
+| `zeroJacobian` | 베이스 프레임에 상대적인 6×7 자코비안 | 몸체 자코비안(body Jacobian)과 숫자만 비교하지 말고 프레임을 먼저 일치 |
+| 반환 형식 | `std::array<double, 42>`, 열 우선 | Eigen/NumPy로 옮길 때 저장 순서 확인 |
+| 공개 실시간 인터페이스 | 1 kHz 제어 루프와 1 kHz 상태 자료 | 패킷 손실, 사용자 계산시간, 종단간 지연은 별도 측정 |
+| 가격 | 인용한 개요·API 문서에 고정 판매가 없음 | 최신 공식 견적 필요 |
+
+이 두 문서는 **공개 API의 입출력 계약**을 뒷받침한다. 로봇 내부 전체 제어기, 비공개 보정 절차, 필터 구조를 공개 API만으로 역추론하는 근거는 아니다. API 버전이 바뀌면 반환 형식과 프레임 설명을 해당 버전 문서에서 다시 확인한다.
+
+### 공식 코드·데이터 계약 {#공식-코드데이터-계약}
+
+#### 로봇 소프트웨어
+
+- MuJoCo, [Simulation Programming Guide — Jacobians](https://mujoco.readthedocs.io/en/stable/programming/simulation.html#jacobians). `mj_jac` 계열 함수, 위치/회전 자코비안, `nq`/`nv`, 속도와 힘의 전치 관계를 정의한다.  
+  **본문 위치:** [MuJoCo 구현 주의](../concepts/robotics/jacobian.qmd#sec-jacobian-implementation).
+- ROS 2 `sensor_msgs`, [`JointState` 메시지 정의](https://docs.ros.org/en/ros2_packages/rolling/api/sensor_msgs/msg/JointState.html). 관절 이름, 위치·속도·`effort`(관절 작용력) 배열, 단위와 기록 시각을 정의한다.  
+  **본문 위치:** [현실적인 로봇 데이터 흐름](../concepts/robotics/jacobian.qmd#sec-jacobian-data-flow).
+
+#### 자동미분
+
+- JAX, [`jax.jacfwd`](https://docs.jax.dev/en/latest/_autosummary/jax.jacfwd.html)와 [`jax.jacrev`](https://docs.jax.dev/en/latest/_autosummary/jax.jacrev.html). 전진형·역전파형 자동미분으로 자코비안을 구성하는 공식 API다.  
+  **본문 위치:** [해석·수치·자동미분 구현](../concepts/robotics/jacobian.qmd#sec-jacobian-implementation).
+
+### 사실과 추론의 경계 {#사실과-추론의-경계}
+
+| 문장 | 분류 | 판정 |
+|---|---|---|
+| “UR5e 공식 사양은 시스템 갱신 주기 500 Hz를 적는다.” | 공식 제품 사실 | 허용 |
+| “그러므로 사용자 자코비안 계산이 항상 2 ms 안에 끝난다.” | 근거 없는 확장 | 금지 |
+| “`bodyJacobian`은 42개 원소의 6×7 열 우선 배열을 반환한다.” | 공식 API 사실 | 허용 |
+| “Franka 내부 제어기는 이 배열을 본문과 똑같은 방식으로 필터링한다.” | 비공개 내부 구현 추측 | 금지 |
+| “2R 예제에서 $\det J=l_1l_2\sin q_2$이다.” | 명시한 모형에서의 수학적 도출 | 허용 |
+| “실제 6축 로봇도 같은 행렬식 식을 쓴다.” | 모형 범위를 벗어난 일반화 | 금지 |
+| “$\tau=J^\top F$는 가상일 보존에서 유도된다.” | 좌표계·부호 가정 아래의 수학적 결과 | 허용 |
+| “이 식만으로 충돌 안전이 보장된다.” | 안전·동역학 조건 생략 | 금지 |
+
+## 4. 데이터·재현
+
+이 장은 외부 실측 데이터세트를 사용하지 않는다. 따라서 “Franka 숫자”와 “2R 숫자”를 섞지 않고 다음 세 고정 자료 계약을 별도로 둔다.
+
+1. **2R 정적 표본 `jacobian-2r-static-v1`:** 링크 길이, 관절각·속도, 자료형, 허용오차, 출력 키와 기준값을 모두 고정한다.  
+   **본문 위치:** [정적 시뮬레이션 재현 계약](../concepts/robotics/jacobian.qmd#sec-jacobian-static-sim).
+2. **Franka API 배열 표본:** 42개 합성 원소를 열 우선 6×7로 복원하고 고정 관절속도와 곱한다. 실제 원격측정이 아니라 API 배열 계약을 시험하는 자료다.  
+   **본문 위치:** [Franka 한 장 재현 카드](../concepts/robotics/jacobian.qmd#sec-jacobian-product-case).
+3. **준특이 실패 표본:** $q_2=0.5^\circ$의 고정 행렬로 의사역행렬 폭주와 DLS 절충을 재현한다.  
+   **본문 위치:** [9필드 실패 카드](../concepts/robotics/jacobian.qmd#sec-jacobian-singularity-failure).
+4. NumPy, [`numpy.linalg.svd`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.svd.html)와 [`numpy.linalg.solve`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html). 특이값과 선형계 풀이의 실행 API다.  
+   **본문 위치:** [구현 코드](../concepts/robotics/jacobian.qmd#sec-jacobian-implementation), [세 역속도 알고리즘](../concepts/robotics/jacobian.qmd#sec-jacobian-inverse-velocity).
+
+본문의 NumPy·JAX 코드는 공식 API를 이용한 **재현 가능한 교육 구현**이다. 특정 제조사 제어기의 내부 코드와 동일하다고 주장하지 않는다. 실제 로봇에 명령을 보내기 전에는 합성 자세, 중앙차분, 특이점 근처, 관절 순서·단위·프레임을 먼저 검증한다.
+
+### 재현성과 버전 기록 {#sec-jacobian-reference-repro}
+
+실험 보고서에는 최소한 다음을 함께 저장한다.
+
+- Python·NumPy·JAX 버전, `float64` 여부와 원고 커밋
+- 로봇·통합 로봇 서술 형식(Unified Robot Description Format, URDF)·MuJoCo XML 모형 형식(MJCF)·보정 모형 버전
+- $q$, 관절 이름과 열 순서, 단위, 기록 시각과 고정 입력
+- 자코비안의 출력 프레임·기준점·행 순서·배열 저장 순서
+- 수치미분 간격, 특이값 분해(SVD) 허용오차, 감쇠값, 상대/절대 검증 허용오차
+- 원시 측정과 전처리·필터링된 측정의 구분
+- 제품 로그를 썼다면 원시 자료의 저장소 또는 접근 위치·해시·라이선스
+
+제품 페이지와 rolling 문서는 바뀔 수 있다. 장기간 재현해야 하는 결과에는 확인일뿐 아니라 사용한 매뉴얼·API 버전과 로컬 보관본의 해시를 남긴다.
+
+## 5. 역사·뉴스
+
+1. MacTutor History of Mathematics Archive, [Carl Gustav Jacob Jacobi 전기](https://mathshistory.st-andrews.ac.uk/Biographies/Jacobi/). 이름·시대·연구 배경을 확인하는 역사 자료다.  
+   **본문 위치:** [야코비 이름의 역사](../concepts/robotics/jacobian.qmd#sec-jacobian-history).
+2. Franka Robotics, [Software Versions Compatibility](https://frankarobotics.github.io/docs/compatibility.html)와 [`libfranka` ChangeLog](https://frankarobotics.github.io/docs/doc/libfranka/docs/index.html#changelog). API는 시간에 따라 바뀌므로 제품 뉴스처럼 최신 문서만 인용하지 않고 본문에서 사용한 0.15.3 계약을 고정하는 데 쓴다.  
+   **본문 위치:** [Franka 제품 사례](../concepts/robotics/jacobian.qmd#sec-jacobian-product-case), [재현성과 버전 기록](#sec-jacobian-reference-repro).
+
+Jacobi 1841의 서지·원문은 1절에만 기록한다. 역사 자료는 개념의 기원을 설명할 뿐 현대 API 계약을 보증하지 않고, 변경기록은 현재 버전 차이를 알려 줄 뿐 과거 0.15.3의 반환값을 대신 정의하지 않는다.
+
+## 6. 심화
+
+1. Richard M. Murray, Zexiang Li, S. Shankar Sastry, [`A Mathematical Introduction to Robotic Manipulation`](https://doi.org/10.1201/9781315136370), CRC Press, 초판 1994. 리 군, 트위스트, 수반변환으로 공간·몸체 자코비안을 전개한다.  
+   **본문 위치:** [좌표·기준점 변환](../concepts/robotics/jacobian.qmd#sec-jacobian-frame-change), [기하/해석 비교](../concepts/robotics/jacobian.qmd#sec-jacobian-geometric-analytic).
+2. Andreas Griewank and Andrea Walther, [`Evaluating Derivatives`](https://doi.org/10.1137/1.9780898717761), SIAM, 2판, 2008. 연쇄법칙의 계산 그래프와 자동미분 복잡도를 심화한다.  
+   **본문 위치:** [행렬 연쇄법칙](../concepts/robotics/jacobian.qmd#sec-jacobian-chain-rule), [자동미분 구현](../concepts/robotics/jacobian.qmd#sec-jacobian-implementation).
+3. Gene H. Golub and Charles F. Van Loan, `Matrix Computations`, Johns Hopkins University Press, 4판, 2013. 특이값 분해, 의사역행렬, 최소제곱 선형계의 수치 안정성을 심화한다.  
+   **본문 위치:** [공식 실행 계약](../concepts/robotics/jacobian.qmd#sec-jacobian-formula-contracts), [계수 해석](../concepts/robotics/jacobian.qmd#sec-jacobian-rank).
+4. Steven M. LaValle, [`Planning Algorithms`](https://lavalle.pl/planning/), Cambridge University Press, 2006. 자코비안 국소계획을 전역 경로·제약·충돌 회피와 구분해 연결한다.  
+   **본문 위치:** [속도 폭주 완화와 경로 재계획](../concepts/robotics/jacobian.qmd#sec-jacobian-singularity-failure).
+
+## 읽는 순서
+
+1. 본문의 2R 유도로 $J=\partial f/\partial q$와 열의 물리적 뜻을 확인한다.
+2. 가상일 유도로 $\tau=J^\top F$를 확인한다.
+3. 특이값 분해(SVD)와 감쇠 최소제곱으로 특이점 근처의 수치 문제를 확인한다.
+4. ROS·MuJoCo·Franka 문서에서 단위, 프레임, 배열 배치가 실제 API에 어떻게 드러나는지 비교한다.
+5. 제품 수치가 필요할 때만 해당 버전의 제조사 사양을 다시 확인한다.
+
+본문으로 돌아가기: [자코비안 — 움직임·속도·힘을 잇는 국소 지도](../concepts/robotics/jacobian.qmd)

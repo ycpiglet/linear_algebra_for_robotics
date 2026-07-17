@@ -1,0 +1,49 @@
+---
+title: "실험: Kalman Filter의 예측–보정 순환"
+description: "위치 센서와 운동모델을 결합하고 공분산과 gain의 변화를 관찰한다"
+jupyter: python3
+execute:
+  echo: true
+  warning: false
+---
+
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+from robotics_math_atlas import constant_velocity_kalman
+
+result = constant_velocity_kalman()
+time = result["time"]
+sigma = np.sqrt(result["covariances"][:, 0, 0])
+
+print(f"raw measurement RMSE: {result['measurement_rmse']:.3f}")
+print(f"Kalman estimate RMSE:  {result['estimate_rmse']:.3f}")
+
+fig, axes = plt.subplots(2, 1, figsize=(9, 6.5), sharex=True)
+axes[0].scatter(time, result["measurements"], s=10, alpha=0.35, label="position sensor")
+axes[0].plot(time, result["truth"][:, 0], color="black", label="true position")
+axes[0].plot(time, result["estimates"][:, 0], color="#1459b8", label="Kalman estimate")
+axes[0].fill_between(
+    time,
+    result["estimates"][:, 0] - 2 * sigma,
+    result["estimates"][:, 0] + 2 * sigma,
+    color="#1459b8",
+    alpha=0.15,
+    label="±2σ",
+)
+axes[1].plot(time, result["gains"][:, 0], label="position gain")
+axes[1].plot(time, result["gains"][:, 1], label="velocity gain")
+axes[0].set_ylabel("position")
+axes[1].set_ylabel("Kalman gain")
+axes[1].set_xlabel("time [s]")
+for axis in axes:
+    axis.grid(alpha=0.25)
+    axis.legend()
+plt.tight_layout()
+```
+
+`measurement_std`를 키우면 필터는 센서를 덜 신뢰하고, `acceleration_std`를 키우면 모델을
+덜 신뢰합니다. 두 값은 단순한 튜닝 손잡이가 아니라 각각 측정·과정 잡음에 관한 확률
+가정입니다.
+

@@ -1,0 +1,115 @@
+---
+title: "증명: Detailed Balance는 Invariance를 함의한다"
+id: proof.detailed-balance-implies-invariance
+kind: proof
+domain: probability
+one-line: "유한상태에서 쌍별 확률흐름 균형을 합해 전체 stationary equation을 얻는다."
+difficulty: 3
+level: finite
+dependencies: []
+assumptions:
+  - "상태공간은 유한하고 transition matrix는 row-stochastic이다."
+  - "목표 확률벡터와 transition matrix가 모든 상태쌍에서 detailed balance를 만족한다."
+proves:
+  - probability.detailed-balance
+prerequisites:
+  proof:
+    required:
+      - concept: probability.markov-chain
+        competency: calculate
+        reason: row-stochastic matrix와 stationary equation을 사용한다.
+      - concept: probability.detailed-balance
+        competency: explain
+        reason: 쌍별 flow equality가 가정이다.
+---
+
+::: {.depth-proof}
+
+## Proof Contract
+
+### 범위
+
+유한 상태공간 $\mathsf X=\{1,\ldots,K\}$.
+
+### 가정
+
+1. $P$는 row-stochastic transition matrix다:
+
+   $$
+   P_{ij}\ge0,\qquad\sum_{j=1}^KP_{ij}=1
+   \quad\text{for every }i.
+   $$
+
+2. $\pi$는 확률벡터다:
+
+   $$
+   \pi_i\ge0,\qquad\sum_i\pi_i=1.
+   $$
+
+3. 모든 $i,j$에 대해 detailed balance가 성립한다:
+
+   $$
+   \pi_iP_{ij}=\pi_jP_{ji}.
+   $$
+
+### 결론
+
+$$
+\pi P=\pi.
+$$
+
+즉 $\pi$는 $P$의 invariant distribution이다.
+
+## 전체 증명
+
+임의의 도착상태 $j$를 고정한다. 행렬곱의 $j$번째 성분은
+
+$$
+(\pi P)_j=\sum_{i=1}^K\pi_iP_{ij}.
+$$
+
+각 항에 detailed balance를 적용하면
+
+$$
+\sum_i\pi_iP_{ij}
+=\sum_i\pi_jP_{ji}
+=\pi_j\sum_iP_{ji}.
+$$
+
+여기서 $P_{ji}$에서 첫 index $j$는 고정되어 있고 두 번째 index $i$를 모두 합하므로, 이것은 $P$의 **j번째 행 합**이다. Row-stochastic 조건에 의해
+
+$$
+\sum_iP_{ji}=1.
+$$
+
+따라서
+
+$$
+(\pi P)_j=\pi_j.
+$$
+
+$j$가 임의였으므로 모든 성분에서 같아 $\pi P=\pi$다. $\square$
+
+## 흔한 index 오류
+
+$\sum_iP_{ji}$를 j번째 열 합이라고 부르면 안 된다. 첫 index가 row, 두 번째가 column이므로 j번째 **행**을 column index $i$에 대해 합한 것이다. Transition matrix는 행 합이 1이지 일반적으로 열 합이 1인 것은 아니다.
+
+## 역은 거짓이다
+
+[Detailed Balance](../concepts/probability/detailed-balance.qmd)의 방향성 3-cycle은 uniform $\pi$에 대해 invariant지만 detailed balance를 만족하지 않는다. 따라서 이 정리는 충분조건이지 필요조건이 아니다.
+
+## 이 정리가 말하지 않는 것
+
+- $P$가 irreducible이라는 결론은 없다.
+- $P$가 aperiodic이라는 결론은 없다.
+- 임의 초기분포에서 $\pi$로 수렴한다는 결론은 없다.
+- 시간평균 SLLN 또는 CLT의 결론은 없다.
+
+이 네 성질을 invariance와 합쳐 쓰려면 각각의 추가 가정을 확인해야 한다.
+
+## 사용처
+
+- [Metropolis–Hastings invariance 증명](metropolis-hastings-invariance.qmd)
+- [MCMC 학습 경로](../paths/mcmc.qmd)
+
+:::

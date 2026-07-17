@@ -1,0 +1,139 @@
+---
+id: control.feedback
+title: "피드백: 결과를 보고 다음 행동을 고치는 구조"
+aliases: ["feedback", "피드백 제어", "closed-loop feedback"]
+domain: control
+one_line: "피드백은 실제 결과를 목표와 비교하고, 그 오차로 다음 입력을 수정하는 구조다."
+difficulty: 1
+summary: "목표와 출력의 오차로 다음 입력을 수정하는 닫힌 고리를 일상적 비유, 최소 식, 단위와 실패 조건으로 설명한다."
+reading_time:
+  quick: "3분"
+  core: "18분"
+  full: "35분"
+prerequisites:
+  intuition:
+    required: []
+    helpful: []
+    not_required: [linalg.vector_space, probability.stochastic_process]
+  application:
+    required: []
+    helpful:
+      - concept: foundations.change_accumulation
+        competency: explain
+        reason: "시간에 따라 오차가 변하는 모습을 읽는 데 도움이 된다."
+  derivation:
+    required: []
+    helpful: []
+  proof:
+    required: []
+    helpful: []
+    not_required: []
+  teaching:
+    required: []
+    helpful: []
+    not_required: []
+relations:
+  requires: []
+  helpful: [foundations.change_accumulation]
+  derived_from: []
+  deepens: [control.pid, systems.state_space]
+  contrasts_with: [control.feedforward]
+  same_structure_as: [estimation.kalman_filter]
+  used_in: [control.pid, robot.joint_control, estimation.kalman_filter]
+review:
+  prompts:
+    - "목표·출력·오차·입력을 포함해 feedback loop를 설명할 수 있는가?"
+    - "negative feedback이 자동으로 안정성을 보장하지 않는 이유를 말할 수 있는가?"
+tags: [feedback, closed-loop, error, control]
+---
+
+::: {.concept-hero}
+## 30초 핵심
+
+**피드백(feedback)은 “해 보고, 결과를 재고, 다음 행동을 고치는” 닫힌 고리다.**
+
+- 목표 $r$와 실제 출력 $y$를 비교해 오차 $e=r-y$를 만든다.
+- 제어기(controller)는 오차를 보고 입력 $u$를 고친다.
+- 피드백은 모델 오차와 외란을 줄일 수 있지만, 지연·과도한 이득·잘못된 부호가 있으면 오히려 진동하거나 불안정해질 수 있다.
+:::
+
+:::: {.depth-intuition}
+## 먼저 떠올릴 이미지
+
+샤워기의 물이 차갑다면 온수 손잡이를 조금 돌리고, 결과를 느낀 뒤 다시 조정한다. 손잡이의 정확한 물리 모델을 몰라도 결과를 보면서 목표 온도에 접근할 수 있다. 다만 물이 늦게 반응하는데 계속 크게 돌리면 뜨거움과 차가움 사이를 왕복한다. **보정 능력과 진동 위험이 같은 고리에서 나온다.**
+
+```text
+목표 r ──▶ [비교] ──e──▶ [제어기] ──u──▶ [대상] ──▶ 출력 y
+           ▲                                      │
+           └──────────────── 측정 ────────────────┘
+```
+
+## 작동하는 정의
+
+음의 피드백(negative feedback)의 기본 오차는
+
+$$
+e(t)=r(t)-y(t)
+$$
+이다. 제어 법칙 $u=C(e)$가 입력을 만들고, 대상 $P$가 $y=P(u,d)$를 만든다. 여기서 $d$는 외란(disturbance)이다.
+
+::: {.callout-note title="기호·단위"}
+- $r,y,e$는 서로 비교하므로 같은 물리 단위를 가져야 한다.
+- $u$는 전압, 토크, 힘처럼 다른 단위일 수 있다.
+- $r-y$의 부호와 actuator의 작동 방향을 함께 확인해야 한다.
+:::
+
+## 가장 작은 예
+
+현재 각도가 $y=8^\circ$, 목표가 $r=10^\circ$라면 $e=2^\circ$다. 단순 제어기 $u=K_pe$, $K_p=0.5\,\mathrm{N\,m/deg}$를 쓰면
+
+$$u=1\,\mathrm{N\,m}$$
+
+의 토크 명령을 만든다. 이것은 “오차를 토크로 변환하는 비례 규칙”이다.
+
+## 전제 장부
+
+| 구분 | 내용 |
+|---|---|
+| 정확한 사실 | 피드백 고리에는 측정과 비교가 포함된다. |
+| 모델 가정 | 위 예에서는 양의 토크가 각도를 증가시킨다고 가정했다. |
+| 근사 | 센서 지연, 마찰, 포화, 양자화를 무시했다. |
+| 관례 | 음의 피드백에서 $e=r-y$로 썼다. 다른 부호 관례도 가능하다. |
+| 비유 | 샤워기 비유는 지연을 보여 주지만 로봇의 다축 결합은 표현하지 못한다. |
+::::
+
+:::: {.depth-proof}
+## 엄밀히 말하면
+
+“음의 피드백이면 안정하다”는 명제는 거짓이다. 고리의 부호뿐 아니라 대상 동역학, 제어기 이득, 시간 지연, sampling이 함께 폐루프 극점 또는 동역학을 결정한다. 안정성을 판정하려면 [상태공간](../systems/state-space.qmd)이나 전달함수·주파수응답 같은 추가 도구가 필요하다.
+::::
+
+:::: {.depth-application}
+## 어디에 쓰이는가
+
+- 모터의 각도·속도·전류 제어
+- 드론의 자세 유지
+- 로봇팔의 관절 제어와 impedance control
+- 온도·압력·유량 제어
+- 추정에서도 예측과 측정의 차이인 **innovation**으로 상태를 보정한다. 이 구조는 [Kalman filter](../estimation/kalman-filter.qmd)와 닮았다.
+
+## 언제 실패하는가
+
+- 센서 또는 actuator 방향이 뒤집혀 양의 피드백이 됨
+- 지연을 무시하고 이득을 과도하게 높임
+- actuator 포화로 명령을 실현하지 못함
+- 센서 잡음까지 과하게 따라감
+- 목표와 출력의 단위·좌표계를 섞음
+::::
+
+## 다음과 복귀
+
+- 가장 짧은 다음 단계: [PID 제어](pid.qmd)
+- 동역학 분석을 원하면: [상태공간](../systems/state-space.qmd)
+- Kalman을 보다가 왔다면: [Kalman filter의 “보정 단계”](../estimation/kalman-filter.qmd#sec-kf-correction)로 돌아간다.
+
+## 회상 점검
+
+1. 피드백을 “측정”이라는 단어를 포함해 한 문장으로 설명해 보라.
+2. $r=3\,\mathrm{m}$, $y=3.4\,\mathrm{m}$일 때 $e=r-y$는 얼마인가?
+3. 음의 피드백이 언제나 안정하지 않은 이유를 두 가지 들어 보라.

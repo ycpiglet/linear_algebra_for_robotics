@@ -1,0 +1,60 @@
+---
+title: "실험: Particle Filter의 가중치 퇴화와 재표본화"
+description: "비선형 관측에서 ESS가 줄고 systematic resampling이 실행되는 순간을 본다"
+jupyter: python3
+execute:
+  echo: true
+  warning: false
+---
+
+## 같은 모델로 진실과 관측 만들기
+
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+from robotics_math_atlas import bootstrap_particle_filter
+
+rng = np.random.default_rng(19)
+steps = 55
+truth = np.zeros(steps)
+observations = np.zeros(steps)
+for index in range(1, steps):
+    truth[index] = (
+        0.5 * truth[index - 1]
+        + 25 * truth[index - 1] / (1 + truth[index - 1] ** 2)
+        + 8 * np.cos(1.2 * (index + 1))
+        + rng.normal(0, 1)
+    )
+    observations[index] = truth[index] ** 2 / 20 + rng.normal(0, 1)
+
+result = bootstrap_particle_filter(observations, particles=2_000, seed=29)
+
+fig, axes = plt.subplots(2, 1, figsize=(9, 6.5), sharex=True)
+axes[0].plot(truth, color="black", label="true state")
+axes[0].plot(result["estimates"], color="#1459b8", label="particle mean")
+axes[0].set_ylabel("state")
+axes[0].legend()
+
+axes[1].plot(result["effective_sample_size"], color="#087f78", label="ESS")
+resampled_at = np.flatnonzero(result["resampled"])
+axes[1].scatter(
+    resampled_at,
+    result["effective_sample_size"][resampled_at],
+    color="#b43c52",
+    s=22,
+    label="resampled",
+)
+axes[1].axhline(1_000, color="gray", linestyle="--", label="threshold")
+axes[1].set_xlabel("time step")
+axes[1].set_ylabel("effective sample size")
+axes[1].legend()
+for axis in axes:
+    axis.grid(alpha=0.25)
+plt.tight_layout()
+```
+
+재표본화는 낮은 가중치 입자를 제거해 현재 퇴화를 완화하지만 조상 다양성을 잃게 합니다.
+이것이 “매 단계 무조건 재표본화”와 “절대 재표본화하지 않기” 사이에 ESS 기준을 두는
+이유입니다.
+

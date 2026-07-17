@@ -1,0 +1,146 @@
+---
+title: "확률·측도 기반: 이 트랙에서 어디까지 가정하는가"
+id: probability.measure-foundations
+kind: concept
+domain: probability
+aliases:
+  - measure-theoretic probability
+  - 측도론적 확률
+  - probability density foundations
+one-line: "밀도식이 성립하는 범위와 일반 상태공간으로 넘어갈 때 필요한 정리를 구분하는 경계 지도다."
+difficulty: 4
+prerequisites:
+  intuition:
+    required: []
+    helpful: []
+  proof:
+    required: []
+    helpful: []
+relations:
+  used-in:
+    - probability.monte-carlo
+    - probability.importance-sampling
+    - estimation.bayes-filtering
+    - estimation.sequential-importance-sampling
+    - probability.markov-chain
+---
+
+::: {.callout-note title="30초 핵심"}
+이 지식 묶음의 계산과 초급 증명은 두 범위에서 진행한다.
+
+1. **유한·가산 상태공간:** 적분은 합으로 읽는다.
+2. **밀도 모델:** 모든 분포가 명시한 공통 기준측도에 대해 밀도를 갖는다고 가정한다.
+
+일반 상태공간의 조건부분포, Radon–Nikodym 미분, Harris recurrence가 필요한 결과는 별도의 심화 증명으로 표시한다. 밀도식을 아무 분포에나 적용하지 않는다.
+:::
+
+::: {.depth-intuition}
+
+## 왜 이 페이지가 필요한가
+
+Particle Filter와 MCMC 교재에는 흔히
+
+$$
+p(x\mid y)=\frac{p(y\mid x)p(x)}{p(y)}
+$$
+
+같은 식이 바로 등장한다. 유한상태에서는 이것이 확률질량함수의 식이고, 연속상태에서는 적절한 기준측도에 대한 밀도의 식이다. 그러나 이산질량과 연속밀도가 섞였거나 분포가 어떤 저차원 곡면에 집중되어 있으면 하나의 Lebesgue 밀도로 쓸 수 없다.
+
+이 페이지는 쉬운 설명을 부정하기 위한 것이 아니라 **그 설명의 유효 범위를 표시하는 안전판**이다.
+
+:::
+
+::: {.depth-derivation}
+
+## 최소 용어
+
+### 측도와 확률측도
+
+측정 가능한 공간 $(\mathsf X,\mathcal X)$에서 측도 $\mu$는 측정 가능한 집합에 비음수 크기를 부여한다. $\mu(\mathsf X)=1$이면 확률측도다.
+
+- 유한상태 $\mathsf X=\{1,\ldots,K\}$: counting measure를 기준으로 쓰면 밀도는 확률질량함수다.
+- $\mathsf X=\mathbb R^d$: Lebesgue measure를 기준으로 쓰면 익숙한 연속 확률밀도를 얻는다.
+
+### 공통 기준측도와 밀도
+
+분포 $P$가 기준측도 $\lambda$에 대해 절대연속이면 $P\ll\lambda$라고 쓰며, 적절한 조건에서
+
+$$
+P(A)=\int_A p(x)\,\lambda(dx)
+$$
+
+를 만족하는 밀도 $p=dP/d\lambda$가 존재한다. 이것이 Radon–Nikodym 정리의 역할이다.
+
+::: {.callout-warning title="엄밀히 말하면"}
+이 페이지에서는 Radon–Nikodym 정리를 **진술하고 올바르게 사용하지만 증명하지 않는다**. 완전한 증명에는 측도론, Lebesgue 적분, 절대연속성에 대한 별도 과정이 필요하다. 현재 밀도 기반 증명에서는 공통 기준측도와 필요한 밀도의 존재를 명시적 가정으로 둔다.
+:::
+
+### 거의 모든 곳
+
+밀도 두 개가 기준측도 $\lambda$에 대해 영측집합에서만 다르면 같은 분포를 나타낸다. 따라서 밀도 등식은 보통 $\lambda$-거의 모든 곳에서 성립한다.
+
+### Markov kernel
+
+Markov kernel $K(x,A)$는 현재 상태 $x$마다 다음 상태의 확률분포를 지정하며, 고정된 사건 $A$에 대해서는 $x\mapsto K(x,A)$가 측정 가능해야 한다.
+
+- 유한상태에서는 row-stochastic matrix $K_{ij}$다.
+- 밀도가 있으면 $K(x,dx')=k(x'\mid x)\lambda(dx')$처럼 쓸 수 있다.
+
+### 조건부기댓값과 정규 조건부분포
+
+조건부기댓값 $\mathbb E[X\mid\mathcal G]$은 $\mathcal G$로 알 수 있는 정보만 사용한 적분 가능한 확률변수다. 일반 상태공간에서 $P(dx\mid y)$라는 조건부분포를 실제 kernel로 선택하려면 정규 조건부분포의 존재 조건이 필요하다. 표준 Borel 공간에서는 우리가 사용하는 대부분의 로봇 상태공간에 적합한 존재 결과가 있다.
+
+## 이 트랙에서 가져다 쓰는 기초 정리
+
+### 강대수의 법칙(SLLN)
+
+$X_1,X_2,\ldots$가 i.i.d.이고 $\mathbb E|X_1|<\infty$이면
+
+$$
+\frac1N\sum_{i=1}^N X_i\xrightarrow{a.s.}\mathbb E[X_1].
+$$
+
+[SNIS 일관성 증명](../../proofs/self-normalized-importance-sampling-consistency.qmd)은 이 정리를 정확한 가정 아래 사용한다. SLLN 자체의 완전증명은 이 초기 콘텐츠 묶음의 경계 밖이며, 추후 실해석·측도확률 증명 트랙에서 Borel–Cantelli와 함께 제공한다.
+
+### 지배수렴정리(DCT)
+
+점별 수렴과 적분 교환에는 단순히 “극한을 적분 안으로 넣는다”가 아니라 지배함수 조건이 필요하다. 현재의 핵심 유한상태 증명에는 DCT가 필요하지 않으며, 일반상태 수렴 증명에서 필요할 때 별도 선수조건으로 표시한다.
+
+:::
+
+::: {.depth-application}
+
+## 범위를 넘는 대표 사례
+
+### 이산·연속 혼합분포
+
+$X$가 확률 $1/2$로 정확히 0이고, 나머지 확률로 정규분포를 따른다면 Lebesgue 밀도 하나만으로 전체 분포를 나타낼 수 없다. 원자 $\delta_0$와 연속부분을 함께 다루는 기준측도를 선택하거나 측도 자체로 계산해야 한다.
+
+### 다양체 위의 분포
+
+단위 quaternion이나 $SO(3)$ 위의 분포는 $\mathbb R^4$ 또는 $\mathbb R^9$의 보통 Lebesgue 밀도로 곧바로 다루면 제약면의 측도가 0이 되는 문제가 생긴다. 군의 Haar measure 또는 좌표 chart의 Jacobian을 명시해야 한다.
+
+## 전제 장부
+
+| 구분 | 이 묶음의 선택 |
+|---|---|
+| 정확한 사실 | 유한상태 합과 공통 기준측도에 대한 밀도 적분은 같은 측도 표기의 특수형이다. |
+| 모델 가정 | 밀도 기반 페이지에서는 필요한 분포가 명시한 기준측도에 대해 밀도를 가진다. |
+| 가져오는 정리 | SLLN, 필요 시 Radon–Nikodym 정리의 존재 결론 |
+| 아직 증명하지 않음 | 일반상태 조건부분포 존재, Harris recurrence, 일반 Feynman–Kac 입자 CLT |
+| 금지하는 생략 | Dirac delta를 보통 함수처럼 조작하거나, proposal support 조건 없이 밀도비를 쓰는 것 |
+
+:::
+
+## 회상 점검
+
+1. 확률질량함수와 연속밀도는 각각 어떤 기준측도에 대한 밀도인가?
+2. $P\ll Q$가 Importance Sampling에서 필요한 이유는 무엇인가?
+3. 밀도 기반 Bayes 식을 그대로 쓸 수 없는 혼합분포 예를 하나 들어라.
+4. 시뮬레이션에서 표본평균이 안정되는 모습은 왜 SLLN의 증명이 아닌가?
+
+## 참고문헌
+
+- Olav Kallenberg, *Foundations of Modern Probability*.
+- Achim Klenke, *Probability Theory: A Comprehensive Course*.
+- Christian P. Robert and George Casella, *Monte Carlo Statistical Methods*.

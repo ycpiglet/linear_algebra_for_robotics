@@ -1,0 +1,127 @@
+---
+title: "증명: Importance Sampling 항등식"
+id: proof.importance-sampling-identity
+kind: proof
+domain: probability
+one-line: "목표 적분을 proposal 적분으로 바꾸는 정확한 support·적분 가능성 조건을 증명한다."
+difficulty: 3
+level: density
+dependencies: []
+assumptions:
+  - "목표와 proposal은 공통 기준측도에 대한 확률밀도를 갖는다."
+  - "관심 목표 질량은 proposal support 안에 있고 절대적분 가능하다."
+proves:
+  - probability.importance-sampling
+prerequisites:
+  proof:
+    required:
+      - concept: probability.measure-foundations
+        competency: explain
+        reason: 공통 기준측도와 거의 모든 곳이라는 표현을 사용한다.
+      - concept: probability.monte-carlo
+        competency: calculate
+        reason: 증명한 항등식을 표본평균 estimator로 옮긴다.
+---
+
+::: {.depth-proof}
+
+## Proof Contract
+
+### 상태공간과 표기
+
+- $(\mathsf X,\mathcal X)$: 측정 가능한 공간
+- $\lambda$: 공통 기준측도
+- $\pi,q$: $\lambda$에 대한 확률밀도
+- $\varphi:\mathsf X\to\mathbb R$: 측정 가능한 관심 함수
+
+### 가정
+
+1. $\int \pi\,d\lambda=\int q\,d\lambda=1$.
+2. $q(x)>0$ for $\lambda$-almost every $x$ such that $|\varphi(x)|\pi(x)>0$.
+3. $\int |\varphi(x)|\pi(x)\lambda(dx)<\infty$.
+
+가정 2는 관심 적분에 기여하는 목표 질량이 proposal에 대해 절대연속이어야 한다는 support 조건이다. $\varphi=0$인 영역까지 proposal이 덮을 필요는 이 항등식 하나만 놓고 보면 없다.
+
+### 결론
+
+$$
+\int \varphi(x)\pi(x)\lambda(dx)
+=\int \varphi(x)\frac{\pi(x)}{q(x)}q(x)\lambda(dx).
+$$
+
+우변의 비율은 $q(x)>0$인 곳에서 정의하고, $q(x)=0$인 곳에서는 임의로 0이라 둔다. 가정 2 때문에 그 선택은 목표 적분값에 영향을 주지 않는다.
+
+## 전체 증명
+
+집합
+
+$$
+A=\{x:q(x)>0\},\qquad A^c=\{x:q(x)=0\}
+$$
+
+로 공간을 나눈다. 가정 2에 의해 $A^c$에서는 $|\varphi(x)|\pi(x)=0$가 $\lambda$-거의 모든 곳에서 성립한다. 따라서
+
+$$
+\int_{A^c}\varphi(x)\pi(x)\lambda(dx)=0.
+$$
+
+그러므로
+
+$$
+\begin{aligned}
+\int_{\mathsf X}\varphi(x)\pi(x)\lambda(dx)
+&=\int_A\varphi(x)\pi(x)\lambda(dx)\\
+&=\int_A\varphi(x)\frac{\pi(x)}{q(x)}q(x)\lambda(dx)\\
+&=\int_{\mathsf X}\varphi(x)\frac{\pi(x)}{q(x)}q(x)\lambda(dx).
+\end{aligned}
+$$
+
+두 번째 줄에서는 $A$ 위에서 $q(x)>0$이므로 $q(x)/q(x)=1$을 곱했다. 마지막 줄에서 $A^c$의 integrand는 앞서 정한 convention으로 0이다. 절대적분 가능성은
+
+$$
+\int\left|\varphi(x)\frac{\pi(x)}{q(x)}\right|q(x)\lambda(dx)
+=\int|\varphi(x)|\pi(x)\lambda(dx)<\infty
+$$
+
+로 보장된다. $\square$
+
+## Monte Carlo estimator에 대한 따름정리
+
+$X^{(i)}\overset{iid}{\sim}q$이고
+
+$$
+\widehat I_N=\frac1N\sum_{i=1}^N
+\varphi(X^{(i)})\frac{\pi(X^{(i)})}{q(X^{(i)})}
+$$
+
+라 하면, 선형성과 방금 증명한 항등식으로
+
+$$
+\mathbb E_q[\widehat I_N]
+=\mathbb E_\pi[\varphi(X)].
+$$
+
+따라서 정규화된 목표밀도를 쓰는 보통 IS estimator는 각 유한 $N$에서 unbiased다.
+
+## 가정이 깨지는 반례
+
+$\mathsf X=\{0,1\}$, counting measure를 쓰자.
+
+$$
+\pi(0)=\pi(1)=1/2,
+\qquad q(0)=1,\quad q(1)=0,
+\qquad \varphi(x)=x.
+$$
+
+참값은 $\mathbb E_\pi[X]=1/2$다. 그러나 $q$에서 뽑은 모든 표본은 0이고 어떤 유한 weight 계산도 상태 1의 기여를 복원하지 못한다. proposal support 조건은 단순 편의를 위한 것이 아니라 식의 동일성에 필요하다.
+
+## 일반 측도형
+
+$\Pi_\varphi(A)=\int_A|\varphi|d\Pi$가 $Q$에 대해 절대연속이면 적절한 signed-integral 버전에서 Radon–Nikodym derivative를 사용한다. $\varphi\equiv1$을 포함한 모든 bounded test function을 동시에 다루려면 보통 $\Pi\ll Q$를 가정하고 $d\Pi/dQ$를 weight로 쓴다. 이 일반화의 존재 증명은 [확률·측도 기반](../concepts/probability/measure-probability-foundations.qmd)의 심화 범위다.
+
+## 사용처
+
+- [Importance Sampling](../concepts/probability/importance-sampling.qmd)
+- [Sequential Importance Sampling](../concepts/probability/sequential-importance-sampling.qmd)
+
+:::

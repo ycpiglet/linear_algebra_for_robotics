@@ -1,0 +1,100 @@
+project:
+  type: website
+  output-dir: _site
+  # The website is exploratory, but authoring manuals, templates and generated
+  # include fragments are implementation inputs rather than reader pages.
+  render:
+    - "*.qmd"
+    - "content/**/*.qmd"
+    - "courseware/labs/*.qmd"
+    - "!platform/**"
+
+website:
+  title: "Robotics Math Atlas"
+  description: "로봇공학 수학·신호·제어·확률추론을 연결하는 탐색형 한국어 교재"
+  favicon: assets/favicon.svg
+  repo-url: "https://github.com/ycpiglet/linear_algebra_for_robotics"
+  repo-actions: [source, issue]
+  reader-mode: true
+  search:
+    location: navbar
+    type: overlay
+    copy-button: true
+  navbar:
+    pinned: true
+    logo-alt: "Robotics Math Atlas"
+    left:
+      - href: index.qmd
+        text: 홈
+      - href: atlas.qmd
+        text: 아틀라스
+      - href: paths.qmd
+        text: 학습 경로
+      - href: curriculum.qmd
+        text: 전체 커리큘럼
+      - href: proofs.qmd
+        text: 증명 지도
+      - href: stories.qmd
+        text: 이야기
+      - href: glossary.qmd
+        text: 용어집
+    right:
+      - href: about.qmd
+        text: 사용법
+      - icon: github
+        href: "https://github.com/ycpiglet/linear_algebra_for_robotics"
+        aria-label: GitHub 저장소
+  sidebar:
+    style: floating
+    collapse-level: 1
+    contents:
+      - section: "빠른 시작"
+        contents:
+          - index.qmd
+          - paths.qmd
+          - atlas.qmd
+          - curriculum.qmd
+          - software.qmd
+          - glossary.qmd
+      - section: "수학 언어"
+        contents:
+          - auto: content/concepts/foundations
+          - auto: content/concepts/linalg
+          - auto: content/concepts/systems
+      - section: "제어"
+        contents:
+          - auto: content/concepts/control
+      - section: "로봇공학"
+        contents:
+          - auto: content/concepts/robotics
+      - section: "확률·추정·몬테카를로(Monte Carlo)"
+        contents:
+          - auto: content/concepts/probability
+          - auto: content/concepts/statistics
+          - auto: content/concepts/estimation
+      - section: "엄밀한 증명"
+        contents:
+          - proofs.qmd
+          - auto: content/proofs
+      - section: "파이썬(Python) 실험실"
+        contents:
+          - courseware/labs/index.qmd
+          - courseware/labs/pid-lab.qmd
+          - courseware/labs/least-squares-lab.qmd
+          - courseware/labs/kalman-lab.qmd
+          - courseware/labs/particle-filter-lab.qmd
+          - courseware/labs/mcmc-lab.qmd
+      - section: "읽을거리"
+        contents:
+          - stories.qmd
+          - auto: content/stories
+          - future-scope.qmd
+          - auto: content/references
+          - design-system.qmd
+          - ui-ux-research.qmd
+          - about.qmd
+  page-footer:
+    left: "© Robotics Math Atlas contributors · CC BY-NC-SA 4.0"
+    right:
+      - text: "학습 기록 관리"
+        href: "about.qmd#progress-center"
