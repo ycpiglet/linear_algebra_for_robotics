@@ -105,7 +105,7 @@ Hypothesis는 R1(형광펜·코멘트·작성자 구분)을 개발 없이 즉시
 
 **구현 노트 (2026-07-18, 최초 구현 커밋):**
 
-- 구현됨: `_quarto-review.yml`(리뷰 프로필 — `--profile web,review`로 웹 설정 위에 델타만 얹음, Hypothesis 활성), `assets/includes/review-scripts.html`(드래그 → "이 문장 링크 복사" 텍스트 프래그먼트 버튼), `make review` 타깃, `.github/workflows/publish-web.yml`(main → gh-pages 루트 + `/review/`, PR → `/preview/pr-N/`).
+- 구현됨: `_quarto-review.yml`(리뷰 프로필 — `--profile review,web`으로 웹 설정 위에 델타만 얹음, Hypothesis 활성. 순서 주의: Quarto는 먼저 나열된 프로필의 스칼라가 우선하므로 review가 앞이어야 `output-dir: _review`가 적용된다 — 첫 배포에서 `web,review` 순서로 실패한 것을 정정), `assets/includes/review-scripts.html`(드래그 → "이 문장 링크 복사" 텍스트 프래그먼트 버튼), `make review` 타깃, `.github/workflows/publish-web.yml`(main → gh-pages 루트 + `/review/`, PR → `/preview/pr-N/`).
 - 배포 구조: 독자용(주석 없음)은 루트, 교정용(Hypothesis)은 `/review/`. PR 미리보기는 일회성 — 다음 main 배포가 지울 수 있으므로 지속 교정은 `/review/`에서 한다.
 - **최초 1회 수동 설정(감독자):** ① 저장소 Settings → Pages → Source "Deploy from a branch" → `gh-pages` / root (첫 CI 실행이 브랜치를 만든 뒤). ② hypothes.is 계정 생성 후 편집팀 비공개 그룹 만들기 → 편집자 초대. 주석 작성 시 그룹 선택을 확인할 것(공개/비공개 선택 UX가 혼동되기 쉽다는 보고 있음 — `EDITING_UX_RESEARCH.md` §1.8).
 - 첫 배포 후 확인할 것: `/review/`에서 Hypothesis 사이드바가 뜨는지(프로필 병합으로 `website.comments`가 적용되는지), 문장 드래그 시 링크 복사 버튼 동작, 독자용 루트에는 둘 다 없어야 함.
