@@ -1,8 +1,13 @@
 <style>
-  /* 리뷰 빌드 전용: 문장 링크 복사 버튼. 독자 배포판(_site)에는 포함되지 않는다. */
-  .review-quote-link {
+  /* 리뷰 빌드 전용 UI. 독자 배포판(_site)에는 포함되지 않는다. */
+  .review-toolbar {
     position: absolute;
     z-index: 1090;
+    display: flex;
+    gap: 0.35rem;
+  }
+  .review-toolbar button,
+  .review-dialog button {
     padding: 0.25rem 0.6rem;
     border: 1px solid var(--bs-border-color, #adb5bd);
     border-radius: 999px;
@@ -13,91 +18,320 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     cursor: pointer;
   }
-  .review-quote-link:focus-visible {
+  .review-toolbar button:focus-visible,
+  .review-dialog button:focus-visible,
+  .review-dialog textarea:focus-visible {
     outline: 2px solid var(--bs-primary, #0d6efd);
     outline-offset: 2px;
   }
+  .review-dialog {
+    position: fixed;
+    z-index: 1100;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(34rem, calc(100vw - 2rem));
+    max-height: min(80vh, 40rem);
+    overflow-y: auto;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--bs-border-color, #adb5bd);
+    border-radius: 0.5rem;
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  .review-dialog h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+  }
+  .review-dialog label {
+    display: block;
+    margin: 0.6rem 0 0.2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .review-dialog blockquote {
+    margin: 0;
+    padding: 0.4rem 0.6rem;
+    border-left: 3px solid var(--bs-border-color, #adb5bd);
+    font-size: 0.85rem;
+    max-height: 8rem;
+    overflow-y: auto;
+  }
+  .review-dialog textarea {
+    width: 100%;
+    min-height: 4.5rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--bs-border-color, #adb5bd);
+    border-radius: 0.3rem;
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    font-size: 0.85rem;
+  }
+  .review-dialog .review-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.9rem;
+  }
+  .review-dialog .review-anchor-note {
+    margin-top: 0.6rem;
+    font-size: 0.72rem;
+    opacity: 0.7;
+  }
+  .review-dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1095;
+    background: rgba(0, 0, 0, 0.35);
+  }
 </style>
 <script>
-(function reviewQuoteLink() {
+(function reviewTools() {
   'use strict';
   if (window.__REVIEW_SCRIPTS_LOADED__) return;
   window.__REVIEW_SCRIPTS_LOADED__ = true;
 
-  const LABEL_IDLE = '이 문장 링크 복사';
-  const LABEL_DONE = '복사됨 ✓';
-  const LABEL_FAIL = '복사 실패 — 수동 복사 필요';
-  let button = null;
+  // 수정 제안 이슈가 생성될 저장소 (Phase 1-3 브리지가 이 이슈를 수거한다).
+  const REPO = 'ycpiglet/linear_algebra_for_robotics';
+  const ISSUE_LABEL = 'editorial';
+
+  let toolbar = null;
   let hideTimer = null;
+  let selectionInfo = null;
+
+  // ---------- 앵커·문맥 추출 ----------
+
+  function blockOf(node) {
+    const el = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+    return el ? el.closest('p, li, blockquote, div.sourceCode, table') : null;
+  }
+
+  function anchorIdOf(block) {
+    if (!block) return null;
+    if (/^p-[0-9a-f]{8}/.test(block.id)) return block.id;
+    const span = block.querySelector(':scope > span.paragraph-anchor');
+    if (span && span.id) return span.id;
+    const inherited = block.closest('[id^="p-"]');
+    return inherited ? inherited.id : null;
+  }
+
+  function contextOf(block, quote) {
+    if (!block) return { prefix: '', suffix: '' };
+    const full = block.textContent.replace(/\s+/g, ' ');
+    const clean = quote.replace(/\s+/g, ' ').trim();
+    const index = full.indexOf(clean);
+    if (index < 0) return { prefix: '', suffix: '' };
+    return {
+      prefix: full.slice(Math.max(0, index - 30), index).trim(),
+      suffix: full.slice(index + clean.length, index + clean.length + 30).trim(),
+    };
+  }
 
   // 텍스트 프래그먼트(#:~:text=)용 인코딩: 구분자로 쓰이는 '-'까지 이스케이프한다.
   const enc = (s) => encodeURIComponent(s).replace(/-/g, '%2D');
 
   function fragmentFor(text) {
     const clean = text.replace(/\s+/g, ' ').trim();
-    if (!clean) return null;
-    if (clean.length <= 120) return '#:~:text=' + enc(clean);
-    // 긴 선택은 시작·끝 조각(textStart,textEnd)으로 지정한다.
+    if (!clean) return '';
+    if (clean.length <= 120) return ':~:text=' + enc(clean);
     const head = clean.slice(0, 60).replace(/\s+\S*$/, '');
     const tail = clean.slice(-60).replace(/^\S*\s+/, '');
-    return '#:~:text=' + enc(head) + ',' + enc(tail);
+    return ':~:text=' + enc(head) + ',' + enc(tail);
   }
 
-  function currentUrlWithFragment(fragment) {
+  function quoteLink(info) {
+    // 문단 앵커가 있으면 요소 ID + 텍스트 프래그먼트를 겹쳐 쓴다 —
+    // 본문이 바뀌어 텍스트 매칭이 실패해도 문단 위치로는 도달한다.
     const base = window.location.href.split('#')[0];
-    return base + fragment;
+    return base + '#' + (info.anchorId || '') + fragmentFor(info.quote);
   }
 
-  function removeButton() {
+  // ---------- 선택 툴바 ----------
+
+  function removeToolbar() {
     if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
-    if (button) { button.remove(); button = null; }
+    if (toolbar) { toolbar.remove(); toolbar = null; }
   }
 
-  function showButton(rect, text) {
-    removeButton();
-    const fragment = fragmentFor(text);
-    if (!fragment) return;
-    button = document.createElement('button');
+  function makeButton(label, onClick) {
+    const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'review-quote-link';
-    button.textContent = LABEL_IDLE;
-    button.style.left = window.scrollX + rect.left + 'px';
-    button.style.top = window.scrollY + rect.bottom + 6 + 'px';
-    button.addEventListener('click', async () => {
-      const url = currentUrlWithFragment(fragment);
+    button.textContent = label;
+    button.addEventListener('click', onClick);
+    return button;
+  }
+
+  function showToolbar(rect, info) {
+    removeToolbar();
+    toolbar = document.createElement('div');
+    toolbar.className = 'review-toolbar';
+    toolbar.style.left = window.scrollX + rect.left + 'px';
+    toolbar.style.top = window.scrollY + rect.bottom + 6 + 'px';
+
+    const copyButton = makeButton('이 문장 링크 복사', async () => {
+      const url = quoteLink(info);
       try {
         await navigator.clipboard.writeText(url);
-        button.textContent = LABEL_DONE;
+        copyButton.textContent = '복사됨 ✓';
       } catch (error) {
-        button.textContent = LABEL_FAIL;
+        copyButton.textContent = '복사 실패';
         window.prompt('아래 링크를 복사하세요:', url);
       }
-      hideTimer = setTimeout(removeButton, 1500);
+      hideTimer = setTimeout(removeToolbar, 1500);
     });
-    document.body.appendChild(button);
+
+    toolbar.appendChild(copyButton);
+    toolbar.appendChild(makeButton('수정 제안', () => {
+      removeToolbar();
+      openDialog(info);
+    }));
+    document.body.appendChild(toolbar);
   }
 
   function onSelectionSettled() {
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
-      removeButton();
+      removeToolbar();
       return;
     }
-    const text = selection.toString();
-    if (!text || !text.trim()) { removeButton(); return; }
+    const quote = selection.toString();
+    if (!quote || !quote.trim()) { removeToolbar(); return; }
     const range = selection.getRangeAt(0);
-    // 본문 영역의 선택만 대상으로 한다(내비게이션·사이드바 제외).
     const container = range.commonAncestorContainer;
     const host = container.nodeType === Node.ELEMENT_NODE ? container : container.parentElement;
-    if (!host || !host.closest('main')) { removeButton(); return; }
-    showButton(range.getBoundingClientRect(), text);
+    if (!host || !host.closest('main')) { removeToolbar(); return; }
+
+    const block = blockOf(range.startContainer);
+    const context = contextOf(block, quote);
+    selectionInfo = {
+      quote: quote.replace(/\s+/g, ' ').trim(),
+      anchorId: anchorIdOf(block),
+      prefix: context.prefix,
+      suffix: context.suffix,
+    };
+    showToolbar(range.getBoundingClientRect(), selectionInfo);
   }
 
-  document.addEventListener('mouseup', () => setTimeout(onSelectionSettled, 0));
+  // ---------- 수정 제안 다이얼로그 ----------
+
+  let dialog = null;
+  let backdrop = null;
+  let lastFocused = null;
+
+  function closeDialog() {
+    if (dialog) { dialog.remove(); dialog = null; }
+    if (backdrop) { backdrop.remove(); backdrop = null; }
+    if (lastFocused && lastFocused.focus) lastFocused.focus();
+    lastFocused = null;
+  }
+
+  function issueUrl(info, suggestion, comment) {
+    const clip = (s, n) => (s.length > n ? s.slice(0, n) + '…' : s);
+    const quote = clip(info.quote, 600);
+    const pageUrl = window.location.href.split('#')[0];
+    const pageTitle = document.title.replace(/\s*[–—-]\s*[^–—-]*$/, '').trim() || document.title;
+
+    const sections = [];
+    if (comment.trim()) sections.push('## 사유·코멘트\n\n' + comment.trim());
+    if (suggestion.trim() && suggestion.trim() !== info.quote) {
+      sections.push('## 수정안\n\n~~~\n' + suggestion.trim() + '\n~~~');
+    }
+    sections.push('## 원문\n\n> ' + quote);
+    sections.push([
+      '## 위치',
+      '',
+      '- 페이지: ' + pageUrl,
+      '- 문단: `' + (info.anchorId || '(앵커 없음)') + '`',
+    ].join('\n'));
+    const anchorPayload = JSON.stringify({
+      v: 1,
+      page: pageUrl,
+      paragraph: info.anchorId || null,
+      quote: quote,
+      prefix: clip(info.prefix, 60),
+      suffix: clip(info.suffix, 60),
+    });
+    sections.push('<!-- editorial-anchor ' + anchorPayload + ' -->');
+
+    const title = '[교정] ' + clip(info.quote, 40) + ' (' + clip(pageTitle, 30) + ')';
+    return 'https://github.com/' + REPO + '/issues/new'
+      + '?title=' + encodeURIComponent(title)
+      + '&labels=' + encodeURIComponent(ISSUE_LABEL)
+      + '&body=' + encodeURIComponent(sections.join('\n\n'));
+  }
+
+  function openDialog(info) {
+    closeDialog();
+    lastFocused = document.activeElement;
+
+    backdrop = document.createElement('div');
+    backdrop.className = 'review-dialog-backdrop';
+    backdrop.addEventListener('click', closeDialog);
+
+    dialog = document.createElement('div');
+    dialog.className = 'review-dialog';
+    dialog.setAttribute('role', 'dialog');
+    dialog.setAttribute('aria-modal', 'true');
+    dialog.setAttribute('aria-labelledby', 'review-dialog-title');
+
+    const heading = document.createElement('h2');
+    heading.id = 'review-dialog-title';
+    heading.textContent = '수정 제안';
+
+    const quoteLabel = document.createElement('label');
+    quoteLabel.textContent = '원문';
+    const quoteView = document.createElement('blockquote');
+    quoteView.textContent = info.quote;
+
+    const suggestionLabel = document.createElement('label');
+    suggestionLabel.textContent = '수정안 (그대로 두면 코멘트만 제출)';
+    suggestionLabel.htmlFor = 'review-suggestion';
+    const suggestionInput = document.createElement('textarea');
+    suggestionInput.id = 'review-suggestion';
+    suggestionInput.value = info.quote;
+
+    const commentLabel = document.createElement('label');
+    commentLabel.textContent = '사유·코멘트';
+    commentLabel.htmlFor = 'review-comment';
+    const commentInput = document.createElement('textarea');
+    commentInput.id = 'review-comment';
+
+    const note = document.createElement('p');
+    note.className = 'review-anchor-note';
+    note.textContent = 'GitHub 이슈 작성 화면이 미리 채워져 열립니다. 내용 확인 후 제출하세요. 문단 앵커: '
+      + (info.anchorId || '없음(텍스트 인용으로만 추적)');
+
+    const actions = document.createElement('div');
+    actions.className = 'review-dialog-actions';
+    actions.appendChild(makeButton('취소', closeDialog));
+    actions.appendChild(makeButton('GitHub 이슈로 제출', () => {
+      window.open(issueUrl(info, suggestionInput.value, commentInput.value), '_blank', 'noopener');
+      closeDialog();
+    }));
+
+    dialog.append(heading, quoteLabel, quoteView, suggestionLabel, suggestionInput,
+      commentLabel, commentInput, note, actions);
+    document.body.appendChild(backdrop);
+    document.body.appendChild(dialog);
+    suggestionInput.focus();
+  }
+
+  // ---------- 이벤트 배선 ----------
+
+  document.addEventListener('mouseup', (event) => {
+    if (dialog || (toolbar && toolbar.contains(event.target))) return;
+    setTimeout(onSelectionSettled, 0);
+  });
   document.addEventListener('keyup', (event) => {
-    if (event.key === 'Escape') { removeButton(); return; }
+    if (event.key === 'Escape') {
+      if (dialog) { closeDialog(); return; }
+      removeToolbar();
+      return;
+    }
+    if (dialog) return;
     if (event.shiftKey || event.key === 'Shift') setTimeout(onSelectionSettled, 0);
   });
-  window.addEventListener('scroll', removeButton, { passive: true });
+  window.addEventListener('scroll', () => { if (!dialog) removeToolbar(); }, { passive: true });
 })();
 </script>

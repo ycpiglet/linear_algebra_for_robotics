@@ -51,3 +51,4 @@ filters:
   - platform/extension/atlas-metadata.lua
   - platform/extension/static-page-glossary.lua
   - platform/extension/epub-links.lua
+  - platform/extension/paragraph-anchor.lua
