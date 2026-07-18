@@ -304,7 +304,8 @@ def apply_issues(
         relative = str(source.relative_to(root))
         if not spans:
             outcomes.append(Outcome(proposal.number, "not-found", file=relative,
-                                    detail="원문 인용을 소스에서 찾지 못함(수식·링크 구간이거나 이미 수정됨)"))
+                                    detail="원문 인용을 소스에서 찾지 못함"
+                                           "(수식·링크 구간이거나 이미 수정됨)"))
             continue
         if len(spans) > 1:
             lines = ", ".join(str(line_of(text, s)) for s, _ in spans)
@@ -331,7 +332,8 @@ def apply_issues(
             events_file = append_event(record, root)
             outcome.event_id = record["id"]
             if git:
-                summary = proposal.comment.splitlines()[0][:50] if proposal.comment else proposal.quote[:30]
+                summary = (proposal.comment.splitlines()[0][:50]
+                           if proposal.comment else proposal.quote[:30])
                 sha = _git_commit(
                     root,
                     [source, events_file],
@@ -343,6 +345,76 @@ def apply_issues(
                 outcome.extra["commit"] = sha
         outcomes.append(outcome)
     return outcomes
+
+
+# ---------------------------------------------------------------------------
+# Style lint (Phase 3-5) — machine-checkable rules promoted through §7
+
+STYLE_RULES = Path("platform/editorial/style-rules.yml")
+LINT_GLOBS = ("*.qmd", "content/**/*.qmd", "courseware/labs/*.qmd")
+
+
+@dataclass
+class Violation:
+    file: str
+    line: int
+    rule: str
+    severity: str
+    message: str
+    excerpt: str
+
+
+def load_rules(root: Path = ROOT) -> list[dict[str, Any]]:
+    import yaml
+
+    data = yaml.safe_load((root / STYLE_RULES).read_text(encoding="utf-8")) or {}
+    rules = data.get("rules") or []
+    for rule in rules:
+        missing = {"id", "pattern", "message", "severity"} - rule.keys()
+        if missing:
+            raise ValueError(f"style rule missing fields {sorted(missing)}: {rule}")
+        if rule["severity"] not in ("error", "warning"):
+            raise ValueError(f"style rule severity must be error|warning: {rule['id']}")
+        rule["_compiled"] = re.compile(rule["pattern"])
+    return rules
+
+
+def lint_text(text: str, rules: list[dict[str, Any]], file: str) -> list[Violation]:
+    violations: list[Violation] = []
+    in_code = False
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        stripped = line.lstrip()
+        if stripped.startswith("```") or stripped.startswith("~~~"):
+            in_code = not in_code
+            continue
+        if in_code:
+            continue
+        for rule in rules:
+            match = rule["_compiled"].search(line)
+            if match:
+                violations.append(Violation(
+                    file=file, line=line_number, rule=rule["id"],
+                    severity=rule["severity"], message=rule["message"],
+                    excerpt=line.strip()[:80],
+                ))
+    return violations
+
+
+def lint_sources(root: Path = ROOT) -> list[Violation]:
+    rules = load_rules(root)
+    if not rules:
+        return []
+    violations: list[Violation] = []
+    seen: set[Path] = set()
+    for pattern in LINT_GLOBS:
+        seen.update(root.glob(pattern))
+    for path in sorted(seen):
+        if path.is_file():
+            violations.extend(
+                lint_text(path.read_text(encoding="utf-8"), rules,
+                          str(path.relative_to(root)))
+            )
+    return violations
 
 
 # ---------------------------------------------------------------------------
@@ -366,7 +438,8 @@ def _github(path: str, token: str, method: str = "GET", payload: dict | None = N
 
 
 def count_pending(repo: str, token: str, label: str = DEFAULT_LABEL) -> int:
-    query = urllib.parse.quote(f"repo:{repo} is:issue state:open label:{label} -label:{PROCESSED_LABEL}")
+    query = urllib.parse.quote(
+        f"repo:{repo} is:issue state:open label:{label} -label:{PROCESSED_LABEL}")
     return _github(f"/search/issues?q={query}&per_page=1", token)["total_count"]
 
 
@@ -405,11 +478,15 @@ def setup_labels(repo: str, token: str) -> None:
 
 def mark_processed(repo: str, token: str, outcome: Outcome) -> None:
     comments = {
-        "applied": "🤖 자동 반영했습니다 — `{file}` {line}행, 커밋 `{commit}`. 배치 PR 병합 시 확정되며, 배치 리뷰에서 이 커밋만 revert로 기각할 수 있습니다.",
-        "needs-review": "🤖 위치는 찾았지만(`{file}` {line}행) 인용 구간이 서식·문단 경계를 걸쳐 자동 반영하지 않았습니다. 사람 검토가 필요합니다.",
-        "comment-only": "🤖 소스 위치: `{file}` {line}행. 수정안이 없는 코멘트라 협의 경로로 넘깁니다.",
+        "applied": "🤖 자동 반영했습니다 — `{file}` {line}행, 커밋 `{commit}`. "
+                   "배치 PR 병합 시 확정되며, 배치 리뷰에서 이 커밋만 revert로 기각할 수 있습니다.",
+        "needs-review": "🤖 위치는 찾았지만(`{file}` {line}행) 인용 구간이 서식·문단 경계를 "
+                        "걸쳐 자동 반영하지 않았습니다. 사람 검토가 필요합니다.",
+        "comment-only": "🤖 소스 위치: `{file}` {line}행. "
+                        "수정안이 없는 코멘트라 협의 경로로 넘깁니다.",
         "ambiguous": "🤖 같은 문구가 여러 곳에 있어 자동 반영하지 않았습니다. {detail} (`{file}`)",
-        "not-found": "🤖 원문 인용을 소스(`{file}`)에서 찾지 못했습니다 — 이미 수정되었거나 수식·링크 구간일 수 있습니다.",
+        "not-found": "🤖 원문 인용을 소스(`{file}`)에서 찾지 못했습니다 — "
+                     "이미 수정되었거나 수식·링크 구간일 수 있습니다.",
         "unmapped": "🤖 페이지 URL을 소스 파일로 해석하지 못했습니다: {detail}",
     }
     template = comments.get(outcome.action)
@@ -454,6 +531,8 @@ def main(argv: list[str] | None = None) -> int:
     labels.add_argument("--repo", required=True)
     labels.add_argument("--token", default=None)
 
+    commands.add_parser("lint", help="check manuscripts against promoted style rules")
+
     args = parser.parse_args(argv)
     import os
 
@@ -469,7 +548,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "apply":
-        raw = sys.stdin.read() if args.issues == "-" else Path(args.issues).read_text(encoding="utf-8")
+        raw = (sys.stdin.read() if args.issues == "-"
+               else Path(args.issues).read_text(encoding="utf-8"))
         issues = json.loads(raw)
         outcomes = apply_issues(issues, git=not args.no_git, dry_run=args.dry_run)
         token = args.token or os.environ.get("GITHUB_TOKEN", "")
@@ -484,7 +564,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "ingest":
-        raw = sys.stdin.read() if args.record == "-" else Path(args.record).read_text(encoding="utf-8")
+        raw = (sys.stdin.read() if args.record == "-"
+               else Path(args.record).read_text(encoding="utf-8"))
         target = append_event(json.loads(raw))
         print(f"appended to {target}", file=sys.stderr)
         return 0
@@ -496,6 +577,15 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         setup_labels(args.repo, token)
         return 0
+
+    if args.command == "lint":
+        violations = lint_sources()
+        for violation in violations:
+            print(f"{violation.file}:{violation.line} [{violation.severity}] "
+                  f"{violation.rule}: {violation.message}\n    {violation.excerpt}")
+        errors = sum(1 for v in violations if v.severity == "error")
+        print(f"문체 규칙 위반 {len(violations)}건 (차단 {errors}건)", file=sys.stderr)
+        return 1 if errors else 0
 
     return 2
 

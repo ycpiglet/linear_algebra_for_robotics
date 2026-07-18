@@ -1,0 +1,16 @@
+# 기계 판정 가능한 문체 규칙 (EDITING_SYSTEM_PLAN.md Phase 3-5, §7)
+#
+# 이 파일의 규칙은 `make validate`의 `editorial.py lint`가 원고 전체에
+# 강제한다. 규칙은 반드시 승격 파이프라인(§7.2)을 거쳐 들어온다:
+# 편집 이벤트에서 반복 패턴 발견 → style-profile.md 규칙 후보 →
+# 감독자 승인 → AUTHORING_MANUAL.md 반영 → 여기 추가.
+# 근거(rationale) 없는 규칙은 추가하지 않는다.
+#
+# 필드:
+#   id:          안정 식별자 (kebab-case)
+#   pattern:     정규식 (원고 라인 단위 매치, 코드 블록 내부는 검사 제외)
+#   message:     위반 시 안내문 — 무엇으로 고칠지까지 말해 준다
+#   severity:    error(빌드 차단) | warning(보고만)
+#   rationale:   근거 — 매뉴얼 절 번호 또는 이벤트 id 목록
+
+rules: []

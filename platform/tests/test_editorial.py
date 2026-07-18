@@ -138,5 +138,56 @@ class EditorialTestCase(unittest.TestCase):
             editorial.append_event({"id": "x", "date": "2026-07-18"}, self.root)
 
 
+class StyleLintTestCase(unittest.TestCase):
+    RULES = """rules:
+  - id: no-update-transliteration
+    pattern: "업데이트"
+    message: "'업데이트' 대신 '갱신'을 쓴다 (AUTHORING_MANUAL §표기)"
+    severity: error
+    rationale: "예시 규칙"
+  - id: soft-notice
+    pattern: "TODO"
+    message: "원고에 TODO를 남기지 않는다"
+    severity: warning
+"""
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self._tmp.name)
+        rules = self.root / editorial.STYLE_RULES
+        rules.parent.mkdir(parents=True)
+        rules.write_text(self.RULES, encoding="utf-8")
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def test_violations_reported_with_location_and_severity(self) -> None:
+        page = self.root / "content/x.qmd"
+        page.parent.mkdir(parents=True)
+        page.write_text("첫 줄은 무난하다.\n필터를 업데이트한다.\nTODO 나중에\n", encoding="utf-8")
+        violations = editorial.lint_sources(self.root)
+        self.assertEqual([(v.rule, v.line, v.severity) for v in violations],
+                         [("no-update-transliteration", 2, "error"),
+                          ("soft-notice", 3, "warning")])
+
+    def test_code_blocks_are_exempt(self) -> None:
+        page = self.root / "index.qmd"
+        page.write_text("본문.\n\n```python\nstate.업데이트()  # 코드는 검사 제외\n```\n",
+                        encoding="utf-8")
+        self.assertEqual(editorial.lint_sources(self.root), [])
+
+    def test_empty_ruleset_passes(self) -> None:
+        (self.root / editorial.STYLE_RULES).write_text("rules: []\n", encoding="utf-8")
+        (self.root / "index.qmd").write_text("업데이트라고 써도 규칙이 없으면 통과.\n",
+                                             encoding="utf-8")
+        self.assertEqual(editorial.lint_sources(self.root), [])
+
+    def test_malformed_rule_rejected(self) -> None:
+        (self.root / editorial.STYLE_RULES).write_text(
+            "rules:\n  - id: broken\n    pattern: x\n", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "missing fields"):
+            editorial.load_rules(self.root)
+
+
 if __name__ == "__main__":
     unittest.main()

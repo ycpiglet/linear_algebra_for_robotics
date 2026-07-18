@@ -17,6 +17,7 @@ validate: sync
 	$(UV) run python platform/scripts/atlas.py build --check
 	$(UV) run python platform/scripts/glossary.py build
 	$(UV) run python platform/scripts/glossary.py build --check
+	$(UV) run python platform/scripts/editorial.py lint
 
 test: validate
 	$(UV) run pytest
