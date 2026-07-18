@@ -4,7 +4,7 @@ QUARTO := $(TOOLS)/quarto/bin/quarto
 TYPST := $(TOOLS)/typst/typst
 UV := $(TOOLS)/uv/uv
 
-.PHONY: bootstrap sync validate test lint web book proof all preview clean
+.PHONY: bootstrap sync validate test lint web review book proof all preview clean
 
 bootstrap:
 	./scripts/bootstrap-tools.sh
@@ -29,6 +29,12 @@ web: validate
 	QUARTO_PYTHON="$(CURDIR)/.venv/bin/python" PATH="$(TOOLS)/typst:$$PATH" $(QUARTO) render --profile web
 	rm -rf "$(CURDIR)/_site/_site" "$(CURDIR)/_site/_book" "$(CURDIR)/_site/_proof"
 	$(UV) run python scripts/verify_outputs.py _site
+
+review: validate
+	rm -rf "$(CURDIR)/_review"
+	QUARTO_PYTHON="$(CURDIR)/.venv/bin/python" PATH="$(TOOLS)/typst:$$PATH" $(QUARTO) render --profile web,review
+	rm -rf "$(CURDIR)/_review/_site" "$(CURDIR)/_review/_book" "$(CURDIR)/_review/_proof" "$(CURDIR)/_review/_review"
+	$(UV) run python scripts/verify_outputs.py _review
 
 book: validate
 	rm -rf "$(CURDIR)/_book"
@@ -57,4 +63,4 @@ preview: validate
 	QUARTO_PYTHON="$(CURDIR)/.venv/bin/python" PATH="$(TOOLS)/typst:$$PATH" $(QUARTO) preview --profile web
 
 clean:
-	rm -rf _site _book _proof .quarto platform/generated courseware/labs/.jupyter_cache
+	rm -rf _site _review _book _proof .quarto platform/generated courseware/labs/.jupyter_cache

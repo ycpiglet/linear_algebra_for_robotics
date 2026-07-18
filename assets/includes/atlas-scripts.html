@@ -1,5 +1,9 @@
 <script>
 (function loadAtlasInterface() {
+  // 리뷰 프로필이 include 목록을 병합할 때 이 조각이 두 번 삽입되더라도
+  // atlas.js가 중복 로드되지 않도록 막는다.
+  if (window.__ATLAS_SCRIPTS_LOADED__) return;
+  window.__ATLAS_SCRIPTS_LOADED__ = true;
   const resources = Array.from(document.querySelectorAll('link[href], script[src]'));
   const siteLibrary = resources
     .map((element) => element.href || element.src)

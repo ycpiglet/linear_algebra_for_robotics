@@ -1,0 +1,103 @@
+<style>
+  /* 리뷰 빌드 전용: 문장 링크 복사 버튼. 독자 배포판(_site)에는 포함되지 않는다. */
+  .review-quote-link {
+    position: absolute;
+    z-index: 1090;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--bs-border-color, #adb5bd);
+    border-radius: 999px;
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+  }
+  .review-quote-link:focus-visible {
+    outline: 2px solid var(--bs-primary, #0d6efd);
+    outline-offset: 2px;
+  }
+</style>
+<script>
+(function reviewQuoteLink() {
+  'use strict';
+  if (window.__REVIEW_SCRIPTS_LOADED__) return;
+  window.__REVIEW_SCRIPTS_LOADED__ = true;
+
+  const LABEL_IDLE = '이 문장 링크 복사';
+  const LABEL_DONE = '복사됨 ✓';
+  const LABEL_FAIL = '복사 실패 — 수동 복사 필요';
+  let button = null;
+  let hideTimer = null;
+
+  // 텍스트 프래그먼트(#:~:text=)용 인코딩: 구분자로 쓰이는 '-'까지 이스케이프한다.
+  const enc = (s) => encodeURIComponent(s).replace(/-/g, '%2D');
+
+  function fragmentFor(text) {
+    const clean = text.replace(/\s+/g, ' ').trim();
+    if (!clean) return null;
+    if (clean.length <= 120) return '#:~:text=' + enc(clean);
+    // 긴 선택은 시작·끝 조각(textStart,textEnd)으로 지정한다.
+    const head = clean.slice(0, 60).replace(/\s+\S*$/, '');
+    const tail = clean.slice(-60).replace(/^\S*\s+/, '');
+    return '#:~:text=' + enc(head) + ',' + enc(tail);
+  }
+
+  function currentUrlWithFragment(fragment) {
+    const base = window.location.href.split('#')[0];
+    return base + fragment;
+  }
+
+  function removeButton() {
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+    if (button) { button.remove(); button = null; }
+  }
+
+  function showButton(rect, text) {
+    removeButton();
+    const fragment = fragmentFor(text);
+    if (!fragment) return;
+    button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'review-quote-link';
+    button.textContent = LABEL_IDLE;
+    button.style.left = window.scrollX + rect.left + 'px';
+    button.style.top = window.scrollY + rect.bottom + 6 + 'px';
+    button.addEventListener('click', async () => {
+      const url = currentUrlWithFragment(fragment);
+      try {
+        await navigator.clipboard.writeText(url);
+        button.textContent = LABEL_DONE;
+      } catch (error) {
+        button.textContent = LABEL_FAIL;
+        window.prompt('아래 링크를 복사하세요:', url);
+      }
+      hideTimer = setTimeout(removeButton, 1500);
+    });
+    document.body.appendChild(button);
+  }
+
+  function onSelectionSettled() {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+      removeButton();
+      return;
+    }
+    const text = selection.toString();
+    if (!text || !text.trim()) { removeButton(); return; }
+    const range = selection.getRangeAt(0);
+    // 본문 영역의 선택만 대상으로 한다(내비게이션·사이드바 제외).
+    const container = range.commonAncestorContainer;
+    const host = container.nodeType === Node.ELEMENT_NODE ? container : container.parentElement;
+    if (!host || !host.closest('main')) { removeButton(); return; }
+    showButton(range.getBoundingClientRect(), text);
+  }
+
+  document.addEventListener('mouseup', () => setTimeout(onSelectionSettled, 0));
+  document.addEventListener('keyup', (event) => {
+    if (event.key === 'Escape') { removeButton(); return; }
+    if (event.shiftKey || event.key === 'Shift') setTimeout(onSelectionSettled, 0);
+  });
+  window.addEventListener('scroll', removeButton, { passive: true });
+})();
+</script>

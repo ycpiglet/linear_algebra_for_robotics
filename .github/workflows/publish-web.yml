@@ -1,0 +1,87 @@
+# Phase 0 배포 파이프라인 (EDITING_SYSTEM_PLAN.md §4 Phase 0)
+#
+# - main 푸시: 독자용 웹(_site)을 gh-pages 루트에, 교정용 리뷰 빌드(_review,
+#   Hypothesis 주석 활성)를 /review/ 경로에 배포한다.
+# - PR: 리뷰 빌드를 /preview/pr-<번호>/ 에 배포해 병합 전 미리보기를 제공한다.
+#   PR 미리보기는 일회성이다 — 다음 main 배포가 루트를 정리하면서 지워질 수 있다.
+#   지속적인 교정(주석)은 main의 /review/ 에서 한다.
+#
+# 최초 1회 수동 설정: 저장소 Settings → Pages → Source: "Deploy from a branch"
+# → Branch: gh-pages / (root). 이 워크플로우가 첫 실행에서 gh-pages 브랜치를 만든다.
+name: publish-web
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-web-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || 'main' }}
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    # 포크에서 온 PR은 배포 토큰이 없으므로 건너뛴다(팀 브랜치 PR만 미리보기).
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache pinned toolchain (quarto/typst/uv)
+        uses: actions/cache@v4
+        with:
+          path: .tools
+          key: tools-${{ runner.os }}-${{ hashFiles('scripts/bootstrap-tools.sh') }}
+
+      - name: Cache Python environment
+        uses: actions/cache@v4
+        with:
+          path: |
+            .venv
+            ~/.local/share/uv
+          key: venv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+
+      - name: Cache Quarto freeze and Jupyter cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            _freeze
+            .quarto
+            courseware/labs/.jupyter_cache
+          key: freeze-${{ github.run_id }}
+          restore-keys: |
+            freeze-
+
+      - name: Build reader site (web profile)
+        if: github.event_name == 'push'
+        run: make web
+
+      - name: Build review site (web+review profiles, Hypothesis enabled)
+        run: make review
+
+      - name: Assemble deployment root (reader + /review)
+        if: github.event_name == 'push'
+        run: |
+          mkdir -p public/review
+          cp -a _site/. public/
+          cp -a _review/. public/review/
+
+      - name: Deploy to gh-pages (main)
+        if: github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+
+      - name: Deploy PR preview to gh-pages/preview
+        if: github.event_name == 'pull_request'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_review
+          destination_dir: preview/pr-${{ github.event.number }}
