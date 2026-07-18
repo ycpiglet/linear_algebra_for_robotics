@@ -30,7 +30,10 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     timeout-minutes: 90
     steps:
+      # 전체 이력 필요: pre-render의 pagehistory.py가 페이지별 git log를 굽는다.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Cache pinned toolchain (quarto/typst/uv)
         uses: actions/cache@v4

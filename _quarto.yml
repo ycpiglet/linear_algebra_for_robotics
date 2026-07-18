@@ -4,6 +4,7 @@ project:
   pre-render:
     - .tools/uv/uv run python platform/scripts/atlas.py build
     - .tools/uv/uv run python platform/scripts/glossary.py build
+    - .tools/uv/uv run python platform/scripts/pagehistory.py build
   resources:
     # Keep these paths explicit. Directory-wide resources can rediscover
     # copies inside another profile's output directory and recursively nest
@@ -17,6 +18,7 @@ project:
     - platform/generated/backlinks.json
     - platform/generated/concept-manifest.json
     - platform/generated/knowledge-graph.json
+    - platform/generated/page-history.json
     - platform/generated/paths.json
 
 bibliography: references.bib
