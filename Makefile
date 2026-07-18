@@ -33,7 +33,9 @@ web: validate
 
 review: validate
 	rm -rf "$(CURDIR)/_review"
-	QUARTO_PYTHON="$(CURDIR)/.venv/bin/python" PATH="$(TOOLS)/typst:$$PATH" $(QUARTO) render --profile web,review
+	# 프로필 순서 주의: Quarto는 먼저 나온 프로필의 스칼라 값이 우선하므로,
+	# review를 앞에 둬야 output-dir이 _review가 된다(web이 앞이면 _site를 덮어쓴다).
+	QUARTO_PYTHON="$(CURDIR)/.venv/bin/python" PATH="$(TOOLS)/typst:$$PATH" $(QUARTO) render --profile review,web
 	rm -rf "$(CURDIR)/_review/_site" "$(CURDIR)/_review/_book" "$(CURDIR)/_review/_proof" "$(CURDIR)/_review/_review"
 	$(UV) run python scripts/verify_outputs.py _review
 
