@@ -1,0 +1,91 @@
+# 교정 다이제스트 (EDITING_SYSTEM_PLAN.md §5.6, Phase 1-3 + 3-1)
+#
+# 하루 한 번(06:00 KST) 리뷰 패널이 만든 editorial 이슈를 수거해서:
+#   1. 사전 필터 — 대기 건수만 조회(토큰 소모 0), 0건이면 즉시 종료
+#   2. 기계 반영 가능한 수정안은 배치 브랜치(editorial/batch)에
+#      교정 1건 = 커밋 1개로 적용 + 편집 이벤트 레코드(§6) 동승
+#   3. 반영 불가(서식 걸침·모호·코멘트만)는 소스 위치를 이슈에 회신
+#   4. 배치 PR이 없으면 생성 — 병합은 사람(감독자)이 리뷰 후 결정
+#
+# 주의: GITHUB_TOKEN으로 만든 PR은 다른 워크플로우(publish-web의 PR
+# 미리보기)를 트리거하지 않는다. 미리보기가 필요하면 PR에서 수동으로
+# workflow_dispatch 하거나 PAT를 쓰도록 바꿀 것.
+name: editorial-digest
+
+on:
+  schedule:
+    - cron: '0 21 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: editorial-digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Count pending proposals (zero-cost pre-filter)
+        id: precheck
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          count=$(gh api "search/issues?q=repo:${{ github.repository }}+is:issue+state:open+label:editorial+-label:bridged&per_page=1" --jq .total_count)
+          echo "pending=$count" >> "$GITHUB_OUTPUT"
+          echo "대기 중 제안: ${count}건"
+
+      - uses: actions/checkout@v4
+        if: steps.precheck.outputs.pending != '0'
+        with:
+          fetch-depth: 0
+
+      - name: Install validator dependency
+        if: steps.precheck.outputs.pending != '0'
+        run: pip install --quiet jsonschema
+
+      - name: Prepare batch branch
+        if: steps.precheck.outputs.pending != '0'
+        run: |
+          git config user.name "editorial-bridge[bot]"
+          git config user.email "editorial-bridge@users.noreply.github.com"
+          if git ls-remote --exit-code origin editorial/batch > /dev/null 2>&1; then
+            git checkout -B editorial/batch origin/editorial/batch
+          else
+            git checkout -B editorial/batch origin/main
+          fi
+          echo "base=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Fetch and apply proposals
+        if: steps.precheck.outputs.pending != '0'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python platform/scripts/editorial.py fetch --repo "${{ github.repository }}" > /tmp/editorial-issues.json
+          python platform/scripts/editorial.py apply \
+            --issues /tmp/editorial-issues.json \
+            --repo "${{ github.repository }}"
+
+      - name: Push batch and ensure PR exists
+        if: steps.precheck.outputs.pending != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$(git rev-parse HEAD)" = "$base" ] && git ls-remote --exit-code origin editorial/batch > /dev/null 2>&1; then
+            echo "새 커밋 없음 — 푸시 생략"
+            exit 0
+          fi
+          git push -u origin editorial/batch
+          open_pr=$(gh pr list --head editorial/batch --state open --json number --jq length)
+          if [ "$open_pr" = "0" ]; then
+            gh pr create \
+              --head editorial/batch \
+              --base main \
+              --title "교정 배치: 리뷰 제안 자동 반영" \
+              --body "$(printf '리뷰 빌드의 수정 제안 이슈를 자동 반영한 배치 PR입니다 (EDITING_SYSTEM_PLAN.md §5.4).\n\n- 교정 1건 = 커밋 1개 — 특정 교정만 기각하려면 해당 커밋을 revert로 상쇄한 뒤 병합하세요.\n- 각 커밋에 편집 이벤트 레코드(platform/editorial/events/)가 동승합니다.\n- 병합은 merge commit으로 해주세요(squash 금지 — 교정별 이력·작성자 보존).\n- 미결 제안이 남아 있으면 병합하지 않습니다.')"
+          fi

@@ -77,7 +77,7 @@ Google Docs의 "자동 세션 압축 + 이름 있는 버전" 2층 구조와 Noti
 세션 한도가 아니라 **검증을 통과한 출처를 확보하지 못해** 남은 것들이다:
 
 1. **자동화 경제성의 정량 근거**: Dependabot/Renovate grouped updates 설정·도입 배경, changesets 배치 릴리스, stacked PR 리뷰 단위 철학, webhook vs 폴링 vs cron digest의 비용·지연 트레이드오프. §5.6의 다이제스트+사전 필터 설계는 자체 논리로 서지만 업계 정량 선례는 미확보.
-2. **블록 ID·주석 동기화 기술 검증**: .qmd/Pandoc 안정적 블록 ID 기법(콘텐츠 해시 Lua 필터 vs 명시적 `{#id}`), 앵커 표류 처리, Hypothesis API ↔ GitHub 동기화 실전 사례 존재 여부 — **Phase 1-3 브리지 착수 전에 별도 기술 스파이크로 확인할 것.**
+2. ~~**블록 ID·주석 동기화 기술 검증**~~ → **2026-07-18 자체 스파이크로 해소**: ① 콘텐츠 해시 앵커 생존성 실측(Pandoc 3.9, 6개 수정 시나리오) — 무수정 문단은 삽입·순서 교체·서식 변경에서 100% 유지, 수정·분할된 문단만 자체 ID 변경(의도된 동작 — 인용문+문맥으로 재앵커). ② Hypothesis 라이브 API 실측 — `GET /api/search`의 `uri` 필터와 `TextQuoteSelector{exact, prefix, suffix}` 구조 확인: 우리 `editorial-anchor`와 동형. 기성 Hypothesis↔GitHub 동기화 사례는 미발견 — 자체 구현(`platform/scripts/editorial.py`)으로 진행.
 3. GitHub force-push 후 리뷰 코멘트 outdated 처리의 정확한 앵커 매칭 규칙, 사람 편집이 봇 제안을 supersede하는 처리의 직접 선례.
 4. Copilot in Word·Notion AI의 부분 수락/재프롬프트/로딩 상태 패턴, Google Docs 세션 묶음의 정량 파라미터.
 5. 중간 시행착오 궤적이 스타일 학습에 주는 실증적 가치(선례는 "기본 폐기, opt-in 보존" 관행만 답함).
