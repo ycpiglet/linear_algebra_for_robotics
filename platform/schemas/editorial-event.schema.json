@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Editorial event record (EDITING_SYSTEM_PLAN.md §6)",
+  "type": "object",
+  "required": ["id", "date", "actor", "actor_role", "target", "instruction", "status", "links"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "actor": { "type": "string", "minLength": 1 },
+    "actor_role": { "enum": ["supervisor", "editor", "agent"] },
+    "target": {
+      "type": "object",
+      "required": ["file", "anchor_quote"],
+      "properties": {
+        "file": { "type": "string", "minLength": 1 },
+        "anchor_quote": { "type": "string" },
+        "anchor_context": {
+          "type": "array",
+          "items": { "type": "string" },
+          "maxItems": 2
+        },
+        "paragraph_id": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "category": {
+      "enum": ["terminology", "tone", "structure", "math", "evidence", "visual", "scope", null]
+    },
+    "instruction": { "type": "string" },
+    "before": { "type": ["string", "null"] },
+    "after": { "type": ["string", "null"] },
+    "rationale": { "type": ["string", "null"] },
+    "status": { "enum": ["proposed", "applied", "rejected", "reverted", "superseded"] },
+    "links": {
+      "type": "object",
+      "properties": {
+        "source": { "type": ["string", "null"] },
+        "pr": { "type": ["integer", "null"] },
+        "revert_of": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

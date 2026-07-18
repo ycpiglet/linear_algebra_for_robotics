@@ -1,0 +1,151 @@
+---
+title: "편집 데스크"
+description: "열린 교정 제안 · 배치 PR · 최근 반영 현황 — 편집팀 전용 도구"
+search: false
+toc: false
+sidebar: false
+format:
+  html:
+    include-in-header:
+      - text: |
+          <meta name="robots" content="noindex">
+---
+
+리뷰 빌드의 [수정 제안]이 만든 이슈와 자동 반영 배치의 현황을 GitHub을 열지 않고 한눈에 봅니다.
+브라우저에서 GitHub API를 직접 조회하며, 서버는 없습니다.
+
+::: {.callout-note collapse="true"}
+## 접근 토큰 (비공개 저장소이거나 조회 한도에 걸릴 때)
+
+저장소가 비공개라면 fine-grained 토큰(권한: Contents·Issues·Pull requests 읽기)을 한 번 입력해 두세요.
+이 브라우저의 localStorage에만 저장됩니다.
+
+<form id="desk-token-form" style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+  <input id="desk-token" type="password" placeholder="github_pat_…" autocomplete="off"
+         style="flex:1; min-width:14rem; padding:0.3rem 0.6rem;">
+  <button type="submit" class="btn btn-sm btn-primary">저장</button>
+  <button type="button" id="desk-token-clear" class="btn btn-sm btn-outline-secondary">지우기</button>
+</form>
+:::
+
+## 대기 중 제안 {#pending}
+
+<div id="desk-pending" aria-live="polite">불러오는 중…</div>
+
+## 교정 배치 PR {#batch}
+
+<div id="desk-batch" aria-live="polite">불러오는 중…</div>
+
+## 최근 반영(병합) {#merged}
+
+<div id="desk-merged" aria-live="polite">불러오는 중…</div>
+
+<p class="text-muted" style="font-size:0.85rem">
+편집 이벤트 원장은 저장소의 <code>platform/editorial/events/</code>에 커밋과 함께 쌓입니다.
+규약: 배치 PR은 merge commit으로 병합(squash 금지), 특정 교정만 기각하려면 그 커밋을 revert로 상쇄 후 병합.
+</p>
+
+```{=html}
+<script>
+(function editorialDesk() {
+  'use strict';
+  const REPO = 'ycpiglet/linear_algebra_for_robotics';
+  const API = 'https://api.github.com';
+  const TOKEN_KEY = 'editorial-desk-token';
+
+  const $ = (id) => document.getElementById(id);
+
+  async function gh(path) {
+    const headers = { Accept: 'application/vnd.github+json' };
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) headers.Authorization = 'Bearer ' + token;
+    const response = await fetch(API + path, { headers });
+    if (!response.ok) {
+      throw new Error('GitHub API ' + response.status
+        + (response.status === 404 || response.status === 401
+           ? ' — 비공개 저장소라면 위의 접근 토큰을 설정하세요.'
+           : response.status === 403 ? ' — 조회 한도 초과일 수 있습니다(토큰 설정으로 완화).' : ''));
+    }
+    return response.json();
+  }
+
+  const escapeHtml = (s) => String(s).replace(/[&<>"]/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const dateOf = (iso) => iso ? iso.slice(0, 10) : '';
+
+  function issueRow(issue) {
+    const labels = issue.labels.map((l) => l.name);
+    const state = labels.includes('bridged')
+      ? '<span class="badge bg-secondary">브리지 처리됨</span>'
+      : '<span class="badge bg-warning text-dark">미처리</span>';
+    return '<tr><td><a href="' + issue.html_url + '" target="_blank" rel="noopener">#'
+      + issue.number + '</a></td><td>' + escapeHtml(issue.title) + '</td><td>'
+      + escapeHtml(issue.user.login) + '</td><td>' + dateOf(issue.created_at)
+      + '</td><td>' + state + '</td></tr>';
+  }
+
+  async function renderPending() {
+    const issues = (await gh('/repos/' + REPO + '/issues?labels=editorial&state=open&per_page=50'))
+      .filter((issue) => !issue.pull_request);
+    if (!issues.length) { $('desk-pending').innerHTML = '<p>열린 제안이 없습니다. ✨</p>'; return; }
+    const fresh = issues.filter((i) => !i.labels.some((l) => l.name === 'bridged')).length;
+    $('desk-pending').innerHTML =
+      '<p>' + issues.length + '건 열림 (다음 다이제스트 대상 ' + fresh + '건 — 매일 06:00 KST 수거)</p>'
+      + '<div style="overflow-x:auto"><table class="table table-sm"><thead><tr>'
+      + '<th>이슈</th><th>제목</th><th>제안자</th><th>날짜</th><th>상태</th></tr></thead><tbody>'
+      + issues.map(issueRow).join('') + '</tbody></table></div>';
+  }
+
+  async function renderBatch() {
+    const pulls = await gh('/repos/' + REPO + '/pulls?state=open&per_page=50');
+    const batches = pulls.filter((pr) => pr.head.ref.startsWith('editorial/'));
+    if (!batches.length) { $('desk-batch').innerHTML = '<p>열린 배치 PR이 없습니다.</p>'; return; }
+    const rows = await Promise.all(batches.map(async (pr) => {
+      const detail = await gh('/repos/' + REPO + '/pulls/' + pr.number);
+      return '<tr><td><a href="' + pr.html_url + '" target="_blank" rel="noopener">#'
+        + pr.number + '</a></td><td>' + escapeHtml(pr.title) + '</td><td>'
+        + detail.commits + '커밋 · ' + detail.changed_files + '파일</td><td>'
+        + dateOf(pr.updated_at) + '</td></tr>';
+    }));
+    $('desk-batch').innerHTML =
+      '<div style="overflow-x:auto"><table class="table table-sm"><thead><tr>'
+      + '<th>PR</th><th>제목</th><th>규모</th><th>갱신</th></tr></thead><tbody>'
+      + rows.join('') + '</tbody></table></div>';
+  }
+
+  async function renderMerged() {
+    const pulls = await gh('/repos/' + REPO
+      + '/pulls?state=closed&sort=updated&direction=desc&per_page=20');
+    const merged = pulls.filter((pr) => pr.merged_at).slice(0, 5);
+    if (!merged.length) { $('desk-merged').innerHTML = '<p>아직 병합 이력이 없습니다.</p>'; return; }
+    $('desk-merged').innerHTML =
+      '<ul>' + merged.map((pr) => '<li><a href="' + pr.html_url
+        + '" target="_blank" rel="noopener">#' + pr.number + '</a> '
+        + escapeHtml(pr.title) + ' <span class="text-muted">('
+        + dateOf(pr.merged_at) + ')</span></li>').join('') + '</ul>';
+  }
+
+  function refresh() {
+    [['desk-pending', renderPending], ['desk-batch', renderBatch], ['desk-merged', renderMerged]]
+      .forEach(async ([id, render]) => {
+        try { await render(); }
+        catch (error) { $(id).innerHTML = '<p class="text-danger">' + escapeHtml(error.message) + '</p>'; }
+      });
+  }
+
+  $('desk-token-form').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const value = $('desk-token').value.trim();
+    if (value) localStorage.setItem(TOKEN_KEY, value);
+    $('desk-token').value = '';
+    refresh();
+  });
+  $('desk-token-clear').addEventListener('click', () => {
+    localStorage.removeItem(TOKEN_KEY);
+    refresh();
+  });
+
+  refresh();
+})();
+</script>
+```
