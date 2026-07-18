@@ -85,6 +85,20 @@
     z-index: 1095;
     background: rgba(0, 0, 0, 0.35);
   }
+  .review-desk-link {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1080;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--bs-border-color, #adb5bd);
+    border-radius: 999px;
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    font-size: 0.78rem;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
 </style>
 <script>
 (function reviewTools() {
@@ -315,6 +329,23 @@
     document.body.appendChild(backdrop);
     document.body.appendChild(dialog);
     suggestionInput.focus();
+  }
+
+  // ---------- 편집 데스크 진입 링크 (리뷰 빌드 전용 표시) ----------
+
+  function addDeskLink() {
+    if (/\/editorial-desk\.html$/.test(window.location.pathname)) return;
+    const root = window.__ROBOTICS_MATH_ATLAS_ROOT__ || new URL('./', document.baseURI).href;
+    const link = document.createElement('a');
+    link.className = 'review-desk-link';
+    link.href = new URL('editorial-desk.html', root).href;
+    link.textContent = '편집 데스크';
+    document.body.appendChild(link);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addDeskLink);
+  } else {
+    addDeskLink();
   }
 
   // ---------- 이벤트 배선 ----------

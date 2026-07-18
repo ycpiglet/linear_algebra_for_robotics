@@ -379,6 +379,30 @@ def fetch_issues(repo: str, token: str, label: str = DEFAULT_LABEL) -> list[dict
     ]
 
 
+LABELS = [
+    ("editorial", "1d76db", "리뷰 패널의 수정 제안 (브리지 수거 대상)"),
+    ("bridged", "c5def5", "브리지가 처리함 — 자동 반영 또는 소스 위치 회신"),
+    ("actor:agent", "0e8a16", "에이전트가 만든 변경 (§1-5 주체 구분)"),
+    ("actor:supervisor", "5319e7", "감독자가 만든 변경 (§1-5 주체 구분)"),
+    ("actor:editor", "fbca04", "외부 편집자가 만든 변경 (§1-5 주체 구분)"),
+]
+
+
+def setup_labels(repo: str, token: str) -> None:
+    """Create the editorial label set; existing labels are left untouched."""
+    import urllib.error
+
+    for name, color, description in LABELS:
+        try:
+            _github(f"/repos/{repo}/labels", token, "POST",
+                    {"name": name, "color": color, "description": description})
+            print(f"created label: {name}", file=sys.stderr)
+        except urllib.error.HTTPError as error:
+            if error.code != 422:  # 422 = already exists
+                raise
+            print(f"label exists: {name}", file=sys.stderr)
+
+
 def mark_processed(repo: str, token: str, outcome: Outcome) -> None:
     comments = {
         "applied": "🤖 자동 반영했습니다 — `{file}` {line}행, 커밋 `{commit}`. 배치 PR 병합 시 확정되며, 배치 리뷰에서 이 커밋만 revert로 기각할 수 있습니다.",
@@ -426,6 +450,10 @@ def main(argv: list[str] | None = None) -> int:
     ingest = commands.add_parser("ingest", help="validate and append one event record")
     ingest.add_argument("--record", required=True, help="path to a JSON record ('-' for stdin)")
 
+    labels = commands.add_parser("setup-labels", help="create the editorial label set (idempotent)")
+    labels.add_argument("--repo", required=True)
+    labels.add_argument("--token", default=None)
+
     args = parser.parse_args(argv)
     import os
 
@@ -459,6 +487,14 @@ def main(argv: list[str] | None = None) -> int:
         raw = sys.stdin.read() if args.record == "-" else Path(args.record).read_text(encoding="utf-8")
         target = append_event(json.loads(raw))
         print(f"appended to {target}", file=sys.stderr)
+        return 0
+
+    if args.command == "setup-labels":
+        token = args.token or os.environ.get("GITHUB_TOKEN", "")
+        if not token:
+            print("GITHUB_TOKEN이 필요합니다", file=sys.stderr)
+            return 2
+        setup_labels(args.repo, token)
         return 0
 
     return 2

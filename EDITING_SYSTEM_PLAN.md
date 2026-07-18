@@ -137,6 +137,11 @@ Hypothesis는 R1(형광펜·코멘트·작성자 구분)을 개발 없이 즉시
 - 다이제스트: `.github/workflows/editorial-digest.yml` — 매일 06:00 KST, `bridged` 라벨 없는 editorial 이슈 카운트 조회(토큰 소모 0)로 사전 필터 후, 있을 때만 수거→적용→`editorial/batch` 브랜치 푸시→배치 PR 보장. 처리된 이슈에는 `bridged` 라벨(재처리 방지).
 - v1 단순화: 배치 브랜치가 장별이 아니라 단일(`editorial/batch`)이다 — 제안량이 §5.4의 장별 분리를 정당화할 때 나눈다. GITHUB_TOKEN이 만든 배치 PR은 미리보기 워크플로우를 트리거하지 않는다(필요시 PAT 전환).
 
+**구현 노트 (2026-07-18, 1-4·1-5 구현 커밋):**
+
+- 1-4 구현됨: `editorial-desk.qmd`(→ `/editorial-desk.html`) — 대기 중 제안(미처리/브리지 처리 구분·다음 다이제스트 대상 집계), 열린 배치 PR(커밋·파일 규모), 최근 병합 5건을 브라우저에서 GitHub API로 직접 조회(서버 없음). 비공개 저장소·조회 한도 대비 선택적 fine-grained 토큰(localStorage). 내비게이션 미등록 + `noindex` + 사이트 검색 제외 — 독자 빌드에도 파일은 존재하나 표시 데이터가 GitHub 권한으로 보호되는 정보뿐이라 유출 없음. 리뷰 빌드에는 우하단 고정 [편집 데스크] 진입 링크. mock API 브라우저 테스트 통과(집계·필터·XSS 이스케이프).
+- 1-5 구현됨: 규약 문서 `platform/editorial/README.md` — 에이전트 전용 author 서명 + `Actor:`/`Issue:` 커밋 트레일러, `actor:*`/`editorial`/`bridged` 라벨 체계, `git log --grep` 기반 주체별 조회법. 라벨은 `editorial.py setup-labels --repo <owner/repo>` 1회 실행으로 생성(멱등) — **최초 수동 설정에 추가**. 다이제스트가 배치 PR에 `actor:agent` 라벨을 부여.
+
 ### Phase 2 — 직접 편집의 자유도
 
 | 작업 | 내용 | 수용 기준 |
