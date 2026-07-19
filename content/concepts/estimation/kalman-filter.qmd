@@ -310,7 +310,7 @@ $$
 
 $$P_k^+=(I-K_kH_k)P_k^-$$
 
-보다 유한 정밀도(finite precision)에 더 안전한 조지프(Joseph) 형식을 기본 구현으로 둔다.
+보다 유한 정밀도(finite precision) 계산에서 더 안전한 조지프(Joseph) 형식을 기본 구현으로 둔다.
 
 ::: {.formula-card #sec-kf-joseph-card data-importance="5" data-difficulty="3"}
 #### 조지프 공분산 갱신
