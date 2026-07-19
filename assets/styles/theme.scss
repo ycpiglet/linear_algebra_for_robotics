@@ -9,13 +9,14 @@ $border-radius: 0.85rem;
 /* 번들 웹폰트(Noto Sans CJK KR 서브셋) — 로컬에 한국어 고품질 서체가 없는
  * 환경(특히 Windows의 맑은 고딕 폴백)에서 마지막 안전망으로 쓴다.
  * 로컬 서체가 있으면 브라우저가 다운로드하지 않는다.
- * 경로는 컴파일된 CSS 위치(site_libs/bootstrap/) 기준이다. */
+ * Quarto는 테마 SCSS의 url()을 프로젝트 루트 기준으로 해석해 파일을
+ * 테마 의존성 폴더로 복사한다 — ../ 를 쓰면 저장소 밖을 가리켜 빌드가 죽는다. */
 @font-face {
   font-family: "Atlas Sans KR";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("../../assets/fonts/AtlasSansKR-Regular.woff2") format("woff2");
+  src: url("assets/fonts/AtlasSansKR-Regular.woff2") format("woff2");
 }
 
 @font-face {
@@ -23,7 +24,7 @@ $border-radius: 0.85rem;
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("../../assets/fonts/AtlasSansKR-Bold.woff2") format("woff2");
+  src: url("assets/fonts/AtlasSansKR-Bold.woff2") format("woff2");
 }
 
 body {
