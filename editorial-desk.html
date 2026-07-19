@@ -80,9 +80,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-4a0610749eeff5ab924a4729b5181608.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-cc6ea0be87d5a8b3413ffadf91d65f43.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-a8089986a9afe3c4f747238e4d5cfdb5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-cc6ea0be87d5a8b3413ffadf91d65f43.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-55cdd55abd4d809c545b5ee0b7576e2a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-72b88d8d09b5b032ff7debd54bb8d9a0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-55cdd55abd4d809c545b5ee0b7576e2a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": true,
@@ -457,16 +457,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       + '</td><td>' + state + '</td></tr>';
   }
 
+  // 이슈가 많아져도 총계가 틀리지 않게 최대 3페이지(300건)까지 수거한다.
+  async function ghPaged(path, maxPages = 3) {
+    const all = [];
+    for (let pageNo = 1; pageNo <= maxPages; pageNo += 1) {
+      const batch = await gh(path + '&per_page=100&page=' + pageNo);
+      all.push(...batch);
+      if (batch.length < 100) return { items: all, capped: false };
+    }
+    return { items: all, capped: true };
+  }
+
+  const PAGE_SIZE = 30;
+
   async function renderPending() {
-    const issues = (await gh('/repos/' + REPO + '/issues?labels=editorial&state=open&per_page=50'))
-      .filter((issue) => !issue.pull_request);
+    const { items, capped } = await ghPaged('/repos/' + REPO + '/issues?labels=editorial&state=open');
+    const issues = items.filter((issue) => !issue.pull_request);
     if (!issues.length) { $('desk-pending').innerHTML = '<p>열린 제안이 없습니다. ✨</p>'; return; }
     const fresh = issues.filter((i) => !i.labels.some((l) => l.name === 'bridged')).length;
-    $('desk-pending').innerHTML =
-      '<p>' + issues.length + '건 열림 (다음 다이제스트 대상 ' + fresh + '건 — 매일 06:00 KST 수거)</p>'
+    const container = $('desk-pending');
+    container.innerHTML =
+      '<p>' + issues.length + (capped ? '+' : '') + '건 열림 (다음 다이제스트 대상 '
+      + fresh + '건 — 매일 06:00 KST 수거)</p>'
       + '<div style="overflow-x:auto"><table class="table table-sm"><thead><tr>'
-      + '<th>이슈</th><th>제목</th><th>제안자</th><th>날짜</th><th>상태</th></tr></thead><tbody>'
-      + issues.map(issueRow).join('') + '</tbody></table></div>';
+      + '<th>이슈</th><th>제목</th><th>제안자</th><th>날짜</th><th>상태</th></tr></thead>'
+      + '<tbody id="desk-pending-rows"></tbody></table></div>';
+    const tbody = document.getElementById('desk-pending-rows');
+    const more = document.createElement('button');
+    more.type = 'button';
+    more.className = 'btn btn-sm btn-outline-secondary';
+    let shown = 0;
+    const showMore = () => {
+      tbody.insertAdjacentHTML('beforeend',
+        issues.slice(shown, shown + PAGE_SIZE).map(issueRow).join(''));
+      shown = Math.min(shown + PAGE_SIZE, issues.length);
+      if (shown >= issues.length) { more.remove(); return; }
+      more.textContent = '더 보기 (' + (issues.length - shown) + '건 남음)';
+    };
+    more.addEventListener('click', showMore);
+    container.appendChild(more);
+    showMore();
   }
 
   async function renderBatch() {
@@ -1018,157 +1048,187 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">소스 코드</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="p-219be53d" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="p-219be53d-1"><a href="#p-219be53d-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="p-219be53d-2"><a href="#p-219be53d-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "편집 데스크"</span></span>
-<span id="p-219be53d-3"><a href="#p-219be53d-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> "열린 교정 제안 · 배치 PR · 최근 반영 현황 — 편집팀 전용 도구"</span></span>
-<span id="p-219be53d-4"><a href="#p-219be53d-4" aria-hidden="true" tabindex="-1"></a><span class="an">search:</span><span class="co"> false</span></span>
-<span id="p-219be53d-5"><a href="#p-219be53d-5" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> false</span></span>
-<span id="p-219be53d-6"><a href="#p-219be53d-6" aria-hidden="true" tabindex="-1"></a><span class="an">sidebar:</span><span class="co"> false</span></span>
-<span id="p-219be53d-7"><a href="#p-219be53d-7" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
-<span id="p-219be53d-8"><a href="#p-219be53d-8" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="p-219be53d-9"><a href="#p-219be53d-9" aria-hidden="true" tabindex="-1"></a><span class="co">    include-in-header:</span></span>
-<span id="p-219be53d-10"><a href="#p-219be53d-10" aria-hidden="true" tabindex="-1"></a><span class="co">      - text: |</span></span>
-<span id="p-219be53d-11"><a href="#p-219be53d-11" aria-hidden="true" tabindex="-1"></a><span class="co">          &lt;meta name="robots" content="noindex"&gt;</span></span>
-<span id="p-219be53d-12"><a href="#p-219be53d-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="p-219be53d-13"><a href="#p-219be53d-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-14"><a href="#p-219be53d-14" aria-hidden="true" tabindex="-1"></a>리뷰 빌드의 <span class="co">[</span><span class="ot">수정 제안</span><span class="co">]</span>이 만든 이슈와 자동 반영 배치의 현황을 GitHub을 열지 않고 한눈에 봅니다.</span>
-<span id="p-219be53d-15"><a href="#p-219be53d-15" aria-hidden="true" tabindex="-1"></a>브라우저에서 GitHub API를 직접 조회하며, 서버는 없습니다.</span>
-<span id="p-219be53d-16"><a href="#p-219be53d-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-17"><a href="#p-219be53d-17" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse="true"}</span>
-<span id="p-219be53d-18"><a href="#p-219be53d-18" aria-hidden="true" tabindex="-1"></a><span class="fu">## 접근 토큰 (비공개 저장소이거나 조회 한도에 걸릴 때)</span></span>
-<span id="p-219be53d-19"><a href="#p-219be53d-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-20"><a href="#p-219be53d-20" aria-hidden="true" tabindex="-1"></a>저장소가 비공개라면 fine-grained 토큰(권한: Contents·Issues·Pull requests 읽기)을 한 번 입력해 두세요.</span>
-<span id="p-219be53d-21"><a href="#p-219be53d-21" aria-hidden="true" tabindex="-1"></a>이 브라우저의 localStorage에만 저장됩니다.</span>
-<span id="p-219be53d-22"><a href="#p-219be53d-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-23"><a href="#p-219be53d-23" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">form</span><span class="ot"> id</span><span class="op">=</span><span class="st">"desk-token-form"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"display:flex; gap:0.5rem; flex-wrap:wrap;"</span><span class="dt">&gt;</span></span>
-<span id="p-219be53d-24"><a href="#p-219be53d-24" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">input</span><span class="ot"> id</span><span class="op">=</span><span class="st">"desk-token"</span><span class="ot"> type</span><span class="op">=</span><span class="st">"password"</span><span class="ot"> placeholder</span><span class="op">=</span><span class="st">"github_pat_…"</span><span class="ot"> autocomplete</span><span class="op">=</span><span class="st">"off"</span></span>
-<span id="p-219be53d-25"><a href="#p-219be53d-25" aria-hidden="true" tabindex="-1"></a><span class="ot">         style</span><span class="op">=</span><span class="st">"flex:1; min-width:14rem; padding:0.3rem 0.6rem;"</span><span class="dt">&gt;</span></span>
-<span id="p-219be53d-26"><a href="#p-219be53d-26" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">button</span><span class="ot"> type</span><span class="op">=</span><span class="st">"submit"</span><span class="ot"> class</span><span class="op">=</span><span class="st">"btn btn-sm btn-primary"</span><span class="dt">&gt;</span>저장<span class="dt">&lt;/</span><span class="kw">button</span><span class="dt">&gt;</span></span>
-<span id="p-219be53d-27"><a href="#p-219be53d-27" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">button</span><span class="ot"> type</span><span class="op">=</span><span class="st">"button"</span><span class="ot"> id</span><span class="op">=</span><span class="st">"desk-token-clear"</span><span class="ot"> class</span><span class="op">=</span><span class="st">"btn btn-sm btn-outline-secondary"</span><span class="dt">&gt;</span>지우기<span class="dt">&lt;/</span><span class="kw">button</span><span class="dt">&gt;</span></span>
-<span id="p-219be53d-28"><a href="#p-219be53d-28" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">form</span><span class="dt">&gt;</span></span>
-<span id="p-219be53d-29"><a href="#p-219be53d-29" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="p-219be53d-30"><a href="#p-219be53d-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-31"><a href="#p-219be53d-31" aria-hidden="true" tabindex="-1"></a><span class="fu">## 대기 중 제안 {#pending}</span></span>
-<span id="p-219be53d-32"><a href="#p-219be53d-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-33"><a href="#p-219be53d-33" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> id</span><span class="op">=</span><span class="st">"desk-pending"</span><span class="ot"> aria-live</span><span class="op">=</span><span class="st">"polite"</span><span class="dt">&gt;</span>불러오는 중…<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="p-219be53d-34"><a href="#p-219be53d-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-35"><a href="#p-219be53d-35" aria-hidden="true" tabindex="-1"></a><span class="fu">## 교정 배치 PR {#batch}</span></span>
-<span id="p-219be53d-36"><a href="#p-219be53d-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-37"><a href="#p-219be53d-37" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> id</span><span class="op">=</span><span class="st">"desk-batch"</span><span class="ot"> aria-live</span><span class="op">=</span><span class="st">"polite"</span><span class="dt">&gt;</span>불러오는 중…<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="p-219be53d-38"><a href="#p-219be53d-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-39"><a href="#p-219be53d-39" aria-hidden="true" tabindex="-1"></a><span class="fu">## 최근 반영(병합) {#merged}</span></span>
-<span id="p-219be53d-40"><a href="#p-219be53d-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-41"><a href="#p-219be53d-41" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> id</span><span class="op">=</span><span class="st">"desk-merged"</span><span class="ot"> aria-live</span><span class="op">=</span><span class="st">"polite"</span><span class="dt">&gt;</span>불러오는 중…<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
-<span id="p-219be53d-42"><a href="#p-219be53d-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-43"><a href="#p-219be53d-43" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">"text-muted"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size:0.85rem"</span><span class="dt">&gt;</span></span>
-<span id="p-219be53d-44"><a href="#p-219be53d-44" aria-hidden="true" tabindex="-1"></a>편집 이벤트 원장은 저장소의 <span class="dt">&lt;</span><span class="kw">code</span><span class="dt">&gt;</span>platform/editorial/events/<span class="dt">&lt;/</span><span class="kw">code</span><span class="dt">&gt;</span>에 커밋과 함께 쌓입니다.</span>
-<span id="p-219be53d-45"><a href="#p-219be53d-45" aria-hidden="true" tabindex="-1"></a>규약: 배치 PR은 merge commit으로 병합(squash 금지), 특정 교정만 기각하려면 그 커밋을 revert로 상쇄 후 병합.</span>
-<span id="p-219be53d-46"><a href="#p-219be53d-46" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="p-219be53d-47"><a href="#p-219be53d-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-48"><a href="#p-219be53d-48" aria-hidden="true" tabindex="-1"></a><span class="in">```{=html}</span></span>
-<span id="p-219be53d-49"><a href="#p-219be53d-49" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;script&gt;</span></span>
-<span id="p-219be53d-50"><a href="#p-219be53d-50" aria-hidden="true" tabindex="-1"></a><span class="in">(function editorialDesk() {</span></span>
-<span id="p-219be53d-51"><a href="#p-219be53d-51" aria-hidden="true" tabindex="-1"></a><span class="in">  'use strict';</span></span>
-<span id="p-219be53d-52"><a href="#p-219be53d-52" aria-hidden="true" tabindex="-1"></a><span class="in">  const REPO = 'ycpiglet/linear_algebra_for_robotics';</span></span>
-<span id="p-219be53d-53"><a href="#p-219be53d-53" aria-hidden="true" tabindex="-1"></a><span class="in">  const API = 'https://api.github.com';</span></span>
-<span id="p-219be53d-54"><a href="#p-219be53d-54" aria-hidden="true" tabindex="-1"></a><span class="in">  const TOKEN_KEY = 'editorial-desk-token';</span></span>
-<span id="p-219be53d-55"><a href="#p-219be53d-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-56"><a href="#p-219be53d-56" aria-hidden="true" tabindex="-1"></a><span class="in">  const $ = (id) =&gt; document.getElementById(id);</span></span>
-<span id="p-219be53d-57"><a href="#p-219be53d-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-58"><a href="#p-219be53d-58" aria-hidden="true" tabindex="-1"></a><span class="in">  async function gh(path) {</span></span>
-<span id="p-219be53d-59"><a href="#p-219be53d-59" aria-hidden="true" tabindex="-1"></a><span class="in">    const headers = { Accept: 'application/vnd.github+json' };</span></span>
-<span id="p-219be53d-60"><a href="#p-219be53d-60" aria-hidden="true" tabindex="-1"></a><span class="in">    const token = localStorage.getItem(TOKEN_KEY);</span></span>
-<span id="p-219be53d-61"><a href="#p-219be53d-61" aria-hidden="true" tabindex="-1"></a><span class="in">    if (token) headers.Authorization = 'Bearer ' + token;</span></span>
-<span id="p-219be53d-62"><a href="#p-219be53d-62" aria-hidden="true" tabindex="-1"></a><span class="in">    const response = await fetch(API + path, { headers });</span></span>
-<span id="p-219be53d-63"><a href="#p-219be53d-63" aria-hidden="true" tabindex="-1"></a><span class="in">    if (!response.ok) {</span></span>
-<span id="p-219be53d-64"><a href="#p-219be53d-64" aria-hidden="true" tabindex="-1"></a><span class="in">      throw new Error('GitHub API ' + response.status</span></span>
-<span id="p-219be53d-65"><a href="#p-219be53d-65" aria-hidden="true" tabindex="-1"></a><span class="in">        + (response.status === 404 || response.status === 401</span></span>
-<span id="p-219be53d-66"><a href="#p-219be53d-66" aria-hidden="true" tabindex="-1"></a><span class="in">           ? ' — 비공개 저장소라면 위의 접근 토큰을 설정하세요.'</span></span>
-<span id="p-219be53d-67"><a href="#p-219be53d-67" aria-hidden="true" tabindex="-1"></a><span class="in">           : response.status === 403 ? ' — 조회 한도 초과일 수 있습니다(토큰 설정으로 완화).' : ''));</span></span>
-<span id="p-219be53d-68"><a href="#p-219be53d-68" aria-hidden="true" tabindex="-1"></a><span class="in">    }</span></span>
-<span id="p-219be53d-69"><a href="#p-219be53d-69" aria-hidden="true" tabindex="-1"></a><span class="in">    return response.json();</span></span>
-<span id="p-219be53d-70"><a href="#p-219be53d-70" aria-hidden="true" tabindex="-1"></a><span class="in">  }</span></span>
-<span id="p-219be53d-71"><a href="#p-219be53d-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-72"><a href="#p-219be53d-72" aria-hidden="true" tabindex="-1"></a><span class="in">  const escapeHtml = (s) =&gt; String(s).replace(/[&amp;&lt;&gt;"]/g,</span></span>
-<span id="p-219be53d-73"><a href="#p-219be53d-73" aria-hidden="true" tabindex="-1"></a><span class="in">    (c) =&gt; ({ '&amp;': '&amp;amp;', '&lt;': '&amp;lt;', '&gt;': '&amp;gt;', '"': '&amp;quot;' }[c]));</span></span>
-<span id="p-219be53d-74"><a href="#p-219be53d-74" aria-hidden="true" tabindex="-1"></a><span class="in">  const dateOf = (iso) =&gt; iso ? iso.slice(0, 10) : '';</span></span>
-<span id="p-219be53d-75"><a href="#p-219be53d-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-76"><a href="#p-219be53d-76" aria-hidden="true" tabindex="-1"></a><span class="in">  function issueRow(issue) {</span></span>
-<span id="p-219be53d-77"><a href="#p-219be53d-77" aria-hidden="true" tabindex="-1"></a><span class="in">    const labels = issue.labels.map((l) =&gt; l.name);</span></span>
-<span id="p-219be53d-78"><a href="#p-219be53d-78" aria-hidden="true" tabindex="-1"></a><span class="in">    const state = labels.includes('bridged')</span></span>
-<span id="p-219be53d-79"><a href="#p-219be53d-79" aria-hidden="true" tabindex="-1"></a><span class="in">      ? '&lt;span class="badge bg-secondary"&gt;브리지 처리됨&lt;/span&gt;'</span></span>
-<span id="p-219be53d-80"><a href="#p-219be53d-80" aria-hidden="true" tabindex="-1"></a><span class="in">      : '&lt;span class="badge bg-warning text-dark"&gt;미처리&lt;/span&gt;';</span></span>
-<span id="p-219be53d-81"><a href="#p-219be53d-81" aria-hidden="true" tabindex="-1"></a><span class="in">    return '&lt;tr&gt;&lt;td&gt;&lt;a href="' + issue.html_url + '" target="_blank" rel="noopener"&gt;#'</span></span>
-<span id="p-219be53d-82"><a href="#p-219be53d-82" aria-hidden="true" tabindex="-1"></a><span class="in">      + issue.number + '&lt;/a&gt;&lt;/td&gt;&lt;td&gt;' + escapeHtml(issue.title) + '&lt;/td&gt;&lt;td&gt;'</span></span>
-<span id="p-219be53d-83"><a href="#p-219be53d-83" aria-hidden="true" tabindex="-1"></a><span class="in">      + escapeHtml(issue.user.login) + '&lt;/td&gt;&lt;td&gt;' + dateOf(issue.created_at)</span></span>
-<span id="p-219be53d-84"><a href="#p-219be53d-84" aria-hidden="true" tabindex="-1"></a><span class="in">      + '&lt;/td&gt;&lt;td&gt;' + state + '&lt;/td&gt;&lt;/tr&gt;';</span></span>
-<span id="p-219be53d-85"><a href="#p-219be53d-85" aria-hidden="true" tabindex="-1"></a><span class="in">  }</span></span>
-<span id="p-219be53d-86"><a href="#p-219be53d-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-87"><a href="#p-219be53d-87" aria-hidden="true" tabindex="-1"></a><span class="in">  async function renderPending() {</span></span>
-<span id="p-219be53d-88"><a href="#p-219be53d-88" aria-hidden="true" tabindex="-1"></a><span class="in">    const issues = (await gh('/repos/' + REPO + '/issues?labels=editorial&amp;state=open&amp;per_page=50'))</span></span>
-<span id="p-219be53d-89"><a href="#p-219be53d-89" aria-hidden="true" tabindex="-1"></a><span class="in">      .filter((issue) =&gt; !issue.pull_request);</span></span>
-<span id="p-219be53d-90"><a href="#p-219be53d-90" aria-hidden="true" tabindex="-1"></a><span class="in">    if (!issues.length) { $('desk-pending').innerHTML = '&lt;p&gt;열린 제안이 없습니다. ✨&lt;/p&gt;'; return; }</span></span>
-<span id="p-219be53d-91"><a href="#p-219be53d-91" aria-hidden="true" tabindex="-1"></a><span class="in">    const fresh = issues.filter((i) =&gt; !i.labels.some((l) =&gt; l.name === 'bridged')).length;</span></span>
-<span id="p-219be53d-92"><a href="#p-219be53d-92" aria-hidden="true" tabindex="-1"></a><span class="in">    $('desk-pending').innerHTML =</span></span>
-<span id="p-219be53d-93"><a href="#p-219be53d-93" aria-hidden="true" tabindex="-1"></a><span class="in">      '&lt;p&gt;' + issues.length + '건 열림 (다음 다이제스트 대상 ' + fresh + '건 — 매일 06:00 KST 수거)&lt;/p&gt;'</span></span>
-<span id="p-219be53d-94"><a href="#p-219be53d-94" aria-hidden="true" tabindex="-1"></a><span class="in">      + '&lt;div style="overflow-x:auto"&gt;&lt;table class="table table-sm"&gt;&lt;thead&gt;&lt;tr&gt;'</span></span>
-<span id="p-219be53d-95"><a href="#p-219be53d-95" aria-hidden="true" tabindex="-1"></a><span class="in">      + '&lt;th&gt;이슈&lt;/th&gt;&lt;th&gt;제목&lt;/th&gt;&lt;th&gt;제안자&lt;/th&gt;&lt;th&gt;날짜&lt;/th&gt;&lt;th&gt;상태&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;'</span></span>
-<span id="p-219be53d-96"><a href="#p-219be53d-96" aria-hidden="true" tabindex="-1"></a><span class="in">      + issues.map(issueRow).join('') + '&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;';</span></span>
-<span id="p-219be53d-97"><a href="#p-219be53d-97" aria-hidden="true" tabindex="-1"></a><span class="in">  }</span></span>
-<span id="p-219be53d-98"><a href="#p-219be53d-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-99"><a href="#p-219be53d-99" aria-hidden="true" tabindex="-1"></a><span class="in">  async function renderBatch() {</span></span>
-<span id="p-219be53d-100"><a href="#p-219be53d-100" aria-hidden="true" tabindex="-1"></a><span class="in">    const pulls = await gh('/repos/' + REPO + '/pulls?state=open&amp;per_page=50');</span></span>
-<span id="p-219be53d-101"><a href="#p-219be53d-101" aria-hidden="true" tabindex="-1"></a><span class="in">    const batches = pulls.filter((pr) =&gt; pr.head.ref.startsWith('editorial/'));</span></span>
-<span id="p-219be53d-102"><a href="#p-219be53d-102" aria-hidden="true" tabindex="-1"></a><span class="in">    if (!batches.length) { $('desk-batch').innerHTML = '&lt;p&gt;열린 배치 PR이 없습니다.&lt;/p&gt;'; return; }</span></span>
-<span id="p-219be53d-103"><a href="#p-219be53d-103" aria-hidden="true" tabindex="-1"></a><span class="in">    const rows = await Promise.all(batches.map(async (pr) =&gt; {</span></span>
-<span id="p-219be53d-104"><a href="#p-219be53d-104" aria-hidden="true" tabindex="-1"></a><span class="in">      const detail = await gh('/repos/' + REPO + '/pulls/' + pr.number);</span></span>
-<span id="p-219be53d-105"><a href="#p-219be53d-105" aria-hidden="true" tabindex="-1"></a><span class="in">      return '&lt;tr&gt;&lt;td&gt;&lt;a href="' + pr.html_url + '" target="_blank" rel="noopener"&gt;#'</span></span>
-<span id="p-219be53d-106"><a href="#p-219be53d-106" aria-hidden="true" tabindex="-1"></a><span class="in">        + pr.number + '&lt;/a&gt;&lt;/td&gt;&lt;td&gt;' + escapeHtml(pr.title) + '&lt;/td&gt;&lt;td&gt;'</span></span>
-<span id="p-219be53d-107"><a href="#p-219be53d-107" aria-hidden="true" tabindex="-1"></a><span class="in">        + detail.commits + '커밋 · ' + detail.changed_files + '파일&lt;/td&gt;&lt;td&gt;'</span></span>
-<span id="p-219be53d-108"><a href="#p-219be53d-108" aria-hidden="true" tabindex="-1"></a><span class="in">        + dateOf(pr.updated_at) + '&lt;/td&gt;&lt;/tr&gt;';</span></span>
-<span id="p-219be53d-109"><a href="#p-219be53d-109" aria-hidden="true" tabindex="-1"></a><span class="in">    }));</span></span>
-<span id="p-219be53d-110"><a href="#p-219be53d-110" aria-hidden="true" tabindex="-1"></a><span class="in">    $('desk-batch').innerHTML =</span></span>
-<span id="p-219be53d-111"><a href="#p-219be53d-111" aria-hidden="true" tabindex="-1"></a><span class="in">      '&lt;div style="overflow-x:auto"&gt;&lt;table class="table table-sm"&gt;&lt;thead&gt;&lt;tr&gt;'</span></span>
-<span id="p-219be53d-112"><a href="#p-219be53d-112" aria-hidden="true" tabindex="-1"></a><span class="in">      + '&lt;th&gt;PR&lt;/th&gt;&lt;th&gt;제목&lt;/th&gt;&lt;th&gt;규모&lt;/th&gt;&lt;th&gt;갱신&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;'</span></span>
-<span id="p-219be53d-113"><a href="#p-219be53d-113" aria-hidden="true" tabindex="-1"></a><span class="in">      + rows.join('') + '&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;';</span></span>
-<span id="p-219be53d-114"><a href="#p-219be53d-114" aria-hidden="true" tabindex="-1"></a><span class="in">  }</span></span>
-<span id="p-219be53d-115"><a href="#p-219be53d-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-116"><a href="#p-219be53d-116" aria-hidden="true" tabindex="-1"></a><span class="in">  async function renderMerged() {</span></span>
-<span id="p-219be53d-117"><a href="#p-219be53d-117" aria-hidden="true" tabindex="-1"></a><span class="in">    const pulls = await gh('/repos/' + REPO</span></span>
-<span id="p-219be53d-118"><a href="#p-219be53d-118" aria-hidden="true" tabindex="-1"></a><span class="in">      + '/pulls?state=closed&amp;sort=updated&amp;direction=desc&amp;per_page=20');</span></span>
-<span id="p-219be53d-119"><a href="#p-219be53d-119" aria-hidden="true" tabindex="-1"></a><span class="in">    const merged = pulls.filter((pr) =&gt; pr.merged_at).slice(0, 5);</span></span>
-<span id="p-219be53d-120"><a href="#p-219be53d-120" aria-hidden="true" tabindex="-1"></a><span class="in">    if (!merged.length) { $('desk-merged').innerHTML = '&lt;p&gt;아직 병합 이력이 없습니다.&lt;/p&gt;'; return; }</span></span>
-<span id="p-219be53d-121"><a href="#p-219be53d-121" aria-hidden="true" tabindex="-1"></a><span class="in">    $('desk-merged').innerHTML =</span></span>
-<span id="p-219be53d-122"><a href="#p-219be53d-122" aria-hidden="true" tabindex="-1"></a><span class="in">      '&lt;ul&gt;' + merged.map((pr) =&gt; '&lt;li&gt;&lt;a href="' + pr.html_url</span></span>
-<span id="p-219be53d-123"><a href="#p-219be53d-123" aria-hidden="true" tabindex="-1"></a><span class="in">        + '" target="_blank" rel="noopener"&gt;#' + pr.number + '&lt;/a&gt; '</span></span>
-<span id="p-219be53d-124"><a href="#p-219be53d-124" aria-hidden="true" tabindex="-1"></a><span class="in">        + escapeHtml(pr.title) + ' &lt;span class="text-muted"&gt;('</span></span>
-<span id="p-219be53d-125"><a href="#p-219be53d-125" aria-hidden="true" tabindex="-1"></a><span class="in">        + dateOf(pr.merged_at) + ')&lt;/span&gt;&lt;/li&gt;').join('') + '&lt;/ul&gt;';</span></span>
-<span id="p-219be53d-126"><a href="#p-219be53d-126" aria-hidden="true" tabindex="-1"></a><span class="in">  }</span></span>
-<span id="p-219be53d-127"><a href="#p-219be53d-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-128"><a href="#p-219be53d-128" aria-hidden="true" tabindex="-1"></a><span class="in">  function refresh() {</span></span>
-<span id="p-219be53d-129"><a href="#p-219be53d-129" aria-hidden="true" tabindex="-1"></a><span class="in">    [['desk-pending', renderPending], ['desk-batch', renderBatch], ['desk-merged', renderMerged]]</span></span>
-<span id="p-219be53d-130"><a href="#p-219be53d-130" aria-hidden="true" tabindex="-1"></a><span class="in">      .forEach(async ([id, render]) =&gt; {</span></span>
-<span id="p-219be53d-131"><a href="#p-219be53d-131" aria-hidden="true" tabindex="-1"></a><span class="in">        try { await render(); }</span></span>
-<span id="p-219be53d-132"><a href="#p-219be53d-132" aria-hidden="true" tabindex="-1"></a><span class="in">        catch (error) { $(id).innerHTML = '&lt;p class="text-danger"&gt;' + escapeHtml(error.message) + '&lt;/p&gt;'; }</span></span>
-<span id="p-219be53d-133"><a href="#p-219be53d-133" aria-hidden="true" tabindex="-1"></a><span class="in">      });</span></span>
-<span id="p-219be53d-134"><a href="#p-219be53d-134" aria-hidden="true" tabindex="-1"></a><span class="in">  }</span></span>
-<span id="p-219be53d-135"><a href="#p-219be53d-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-136"><a href="#p-219be53d-136" aria-hidden="true" tabindex="-1"></a><span class="in">  $('desk-token-form').addEventListener('submit', (event) =&gt; {</span></span>
-<span id="p-219be53d-137"><a href="#p-219be53d-137" aria-hidden="true" tabindex="-1"></a><span class="in">    event.preventDefault();</span></span>
-<span id="p-219be53d-138"><a href="#p-219be53d-138" aria-hidden="true" tabindex="-1"></a><span class="in">    const value = $('desk-token').value.trim();</span></span>
-<span id="p-219be53d-139"><a href="#p-219be53d-139" aria-hidden="true" tabindex="-1"></a><span class="in">    if (value) localStorage.setItem(TOKEN_KEY, value);</span></span>
-<span id="p-219be53d-140"><a href="#p-219be53d-140" aria-hidden="true" tabindex="-1"></a><span class="in">    $('desk-token').value = '';</span></span>
-<span id="p-219be53d-141"><a href="#p-219be53d-141" aria-hidden="true" tabindex="-1"></a><span class="in">    refresh();</span></span>
-<span id="p-219be53d-142"><a href="#p-219be53d-142" aria-hidden="true" tabindex="-1"></a><span class="in">  });</span></span>
-<span id="p-219be53d-143"><a href="#p-219be53d-143" aria-hidden="true" tabindex="-1"></a><span class="in">  $('desk-token-clear').addEventListener('click', () =&gt; {</span></span>
-<span id="p-219be53d-144"><a href="#p-219be53d-144" aria-hidden="true" tabindex="-1"></a><span class="in">    localStorage.removeItem(TOKEN_KEY);</span></span>
-<span id="p-219be53d-145"><a href="#p-219be53d-145" aria-hidden="true" tabindex="-1"></a><span class="in">    refresh();</span></span>
-<span id="p-219be53d-146"><a href="#p-219be53d-146" aria-hidden="true" tabindex="-1"></a><span class="in">  });</span></span>
-<span id="p-219be53d-147"><a href="#p-219be53d-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-219be53d-148"><a href="#p-219be53d-148" aria-hidden="true" tabindex="-1"></a><span class="in">  refresh();</span></span>
-<span id="p-219be53d-149"><a href="#p-219be53d-149" aria-hidden="true" tabindex="-1"></a><span class="in">})();</span></span>
-<span id="p-219be53d-150"><a href="#p-219be53d-150" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;/script&gt;</span></span>
-<span id="p-219be53d-151"><a href="#p-219be53d-151" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="클립보드 복사" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="p-848ee74c" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="p-848ee74c-1"><a href="#p-848ee74c-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-848ee74c-2"><a href="#p-848ee74c-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "편집 데스크"</span></span>
+<span id="p-848ee74c-3"><a href="#p-848ee74c-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> "열린 교정 제안 · 배치 PR · 최근 반영 현황 — 편집팀 전용 도구"</span></span>
+<span id="p-848ee74c-4"><a href="#p-848ee74c-4" aria-hidden="true" tabindex="-1"></a><span class="an">search:</span><span class="co"> false</span></span>
+<span id="p-848ee74c-5"><a href="#p-848ee74c-5" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> false</span></span>
+<span id="p-848ee74c-6"><a href="#p-848ee74c-6" aria-hidden="true" tabindex="-1"></a><span class="an">sidebar:</span><span class="co"> false</span></span>
+<span id="p-848ee74c-7"><a href="#p-848ee74c-7" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="p-848ee74c-8"><a href="#p-848ee74c-8" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="p-848ee74c-9"><a href="#p-848ee74c-9" aria-hidden="true" tabindex="-1"></a><span class="co">    include-in-header:</span></span>
+<span id="p-848ee74c-10"><a href="#p-848ee74c-10" aria-hidden="true" tabindex="-1"></a><span class="co">      - text: |</span></span>
+<span id="p-848ee74c-11"><a href="#p-848ee74c-11" aria-hidden="true" tabindex="-1"></a><span class="co">          &lt;meta name="robots" content="noindex"&gt;</span></span>
+<span id="p-848ee74c-12"><a href="#p-848ee74c-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-848ee74c-13"><a href="#p-848ee74c-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-14"><a href="#p-848ee74c-14" aria-hidden="true" tabindex="-1"></a>리뷰 빌드의 <span class="co">[</span><span class="ot">수정 제안</span><span class="co">]</span>이 만든 이슈와 자동 반영 배치의 현황을 GitHub을 열지 않고 한눈에 봅니다.</span>
+<span id="p-848ee74c-15"><a href="#p-848ee74c-15" aria-hidden="true" tabindex="-1"></a>브라우저에서 GitHub API를 직접 조회하며, 서버는 없습니다.</span>
+<span id="p-848ee74c-16"><a href="#p-848ee74c-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-17"><a href="#p-848ee74c-17" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse="true"}</span>
+<span id="p-848ee74c-18"><a href="#p-848ee74c-18" aria-hidden="true" tabindex="-1"></a><span class="fu">## 접근 토큰 (비공개 저장소이거나 조회 한도에 걸릴 때)</span></span>
+<span id="p-848ee74c-19"><a href="#p-848ee74c-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-20"><a href="#p-848ee74c-20" aria-hidden="true" tabindex="-1"></a>저장소가 비공개라면 fine-grained 토큰(권한: Contents·Issues·Pull requests 읽기)을 한 번 입력해 두세요.</span>
+<span id="p-848ee74c-21"><a href="#p-848ee74c-21" aria-hidden="true" tabindex="-1"></a>이 브라우저의 localStorage에만 저장됩니다.</span>
+<span id="p-848ee74c-22"><a href="#p-848ee74c-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-23"><a href="#p-848ee74c-23" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">form</span><span class="ot"> id</span><span class="op">=</span><span class="st">"desk-token-form"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"display:flex; gap:0.5rem; flex-wrap:wrap;"</span><span class="dt">&gt;</span></span>
+<span id="p-848ee74c-24"><a href="#p-848ee74c-24" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">input</span><span class="ot"> id</span><span class="op">=</span><span class="st">"desk-token"</span><span class="ot"> type</span><span class="op">=</span><span class="st">"password"</span><span class="ot"> placeholder</span><span class="op">=</span><span class="st">"github_pat_…"</span><span class="ot"> autocomplete</span><span class="op">=</span><span class="st">"off"</span></span>
+<span id="p-848ee74c-25"><a href="#p-848ee74c-25" aria-hidden="true" tabindex="-1"></a><span class="ot">         style</span><span class="op">=</span><span class="st">"flex:1; min-width:14rem; padding:0.3rem 0.6rem;"</span><span class="dt">&gt;</span></span>
+<span id="p-848ee74c-26"><a href="#p-848ee74c-26" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">button</span><span class="ot"> type</span><span class="op">=</span><span class="st">"submit"</span><span class="ot"> class</span><span class="op">=</span><span class="st">"btn btn-sm btn-primary"</span><span class="dt">&gt;</span>저장<span class="dt">&lt;/</span><span class="kw">button</span><span class="dt">&gt;</span></span>
+<span id="p-848ee74c-27"><a href="#p-848ee74c-27" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">button</span><span class="ot"> type</span><span class="op">=</span><span class="st">"button"</span><span class="ot"> id</span><span class="op">=</span><span class="st">"desk-token-clear"</span><span class="ot"> class</span><span class="op">=</span><span class="st">"btn btn-sm btn-outline-secondary"</span><span class="dt">&gt;</span>지우기<span class="dt">&lt;/</span><span class="kw">button</span><span class="dt">&gt;</span></span>
+<span id="p-848ee74c-28"><a href="#p-848ee74c-28" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">form</span><span class="dt">&gt;</span></span>
+<span id="p-848ee74c-29"><a href="#p-848ee74c-29" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-848ee74c-30"><a href="#p-848ee74c-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-31"><a href="#p-848ee74c-31" aria-hidden="true" tabindex="-1"></a><span class="fu">## 대기 중 제안 {#pending}</span></span>
+<span id="p-848ee74c-32"><a href="#p-848ee74c-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-33"><a href="#p-848ee74c-33" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> id</span><span class="op">=</span><span class="st">"desk-pending"</span><span class="ot"> aria-live</span><span class="op">=</span><span class="st">"polite"</span><span class="dt">&gt;</span>불러오는 중…<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="p-848ee74c-34"><a href="#p-848ee74c-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-35"><a href="#p-848ee74c-35" aria-hidden="true" tabindex="-1"></a><span class="fu">## 교정 배치 PR {#batch}</span></span>
+<span id="p-848ee74c-36"><a href="#p-848ee74c-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-37"><a href="#p-848ee74c-37" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> id</span><span class="op">=</span><span class="st">"desk-batch"</span><span class="ot"> aria-live</span><span class="op">=</span><span class="st">"polite"</span><span class="dt">&gt;</span>불러오는 중…<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="p-848ee74c-38"><a href="#p-848ee74c-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-39"><a href="#p-848ee74c-39" aria-hidden="true" tabindex="-1"></a><span class="fu">## 최근 반영(병합) {#merged}</span></span>
+<span id="p-848ee74c-40"><a href="#p-848ee74c-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-41"><a href="#p-848ee74c-41" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> id</span><span class="op">=</span><span class="st">"desk-merged"</span><span class="ot"> aria-live</span><span class="op">=</span><span class="st">"polite"</span><span class="dt">&gt;</span>불러오는 중…<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="p-848ee74c-42"><a href="#p-848ee74c-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-43"><a href="#p-848ee74c-43" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">"text-muted"</span><span class="ot"> style</span><span class="op">=</span><span class="st">"font-size:0.85rem"</span><span class="dt">&gt;</span></span>
+<span id="p-848ee74c-44"><a href="#p-848ee74c-44" aria-hidden="true" tabindex="-1"></a>편집 이벤트 원장은 저장소의 <span class="dt">&lt;</span><span class="kw">code</span><span class="dt">&gt;</span>platform/editorial/events/<span class="dt">&lt;/</span><span class="kw">code</span><span class="dt">&gt;</span>에 커밋과 함께 쌓입니다.</span>
+<span id="p-848ee74c-45"><a href="#p-848ee74c-45" aria-hidden="true" tabindex="-1"></a>규약: 배치 PR은 merge commit으로 병합(squash 금지), 특정 교정만 기각하려면 그 커밋을 revert로 상쇄 후 병합.</span>
+<span id="p-848ee74c-46"><a href="#p-848ee74c-46" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="p-848ee74c-47"><a href="#p-848ee74c-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-48"><a href="#p-848ee74c-48" aria-hidden="true" tabindex="-1"></a><span class="in">```{=html}</span></span>
+<span id="p-848ee74c-49"><a href="#p-848ee74c-49" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;script&gt;</span></span>
+<span id="p-848ee74c-50"><a href="#p-848ee74c-50" aria-hidden="true" tabindex="-1"></a><span class="in">(function editorialDesk() {</span></span>
+<span id="p-848ee74c-51"><a href="#p-848ee74c-51" aria-hidden="true" tabindex="-1"></a><span class="in">  'use strict';</span></span>
+<span id="p-848ee74c-52"><a href="#p-848ee74c-52" aria-hidden="true" tabindex="-1"></a><span class="in">  const REPO = 'ycpiglet/linear_algebra_for_robotics';</span></span>
+<span id="p-848ee74c-53"><a href="#p-848ee74c-53" aria-hidden="true" tabindex="-1"></a><span class="in">  const API = 'https://api.github.com';</span></span>
+<span id="p-848ee74c-54"><a href="#p-848ee74c-54" aria-hidden="true" tabindex="-1"></a><span class="in">  const TOKEN_KEY = 'editorial-desk-token';</span></span>
+<span id="p-848ee74c-55"><a href="#p-848ee74c-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-56"><a href="#p-848ee74c-56" aria-hidden="true" tabindex="-1"></a><span class="in">  const $ = (id) =&gt; document.getElementById(id);</span></span>
+<span id="p-848ee74c-57"><a href="#p-848ee74c-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-58"><a href="#p-848ee74c-58" aria-hidden="true" tabindex="-1"></a><span class="in">  async function gh(path) {</span></span>
+<span id="p-848ee74c-59"><a href="#p-848ee74c-59" aria-hidden="true" tabindex="-1"></a><span class="in">    const headers = { Accept: 'application/vnd.github+json' };</span></span>
+<span id="p-848ee74c-60"><a href="#p-848ee74c-60" aria-hidden="true" tabindex="-1"></a><span class="in">    const token = localStorage.getItem(TOKEN_KEY);</span></span>
+<span id="p-848ee74c-61"><a href="#p-848ee74c-61" aria-hidden="true" tabindex="-1"></a><span class="in">    if (token) headers.Authorization = 'Bearer ' + token;</span></span>
+<span id="p-848ee74c-62"><a href="#p-848ee74c-62" aria-hidden="true" tabindex="-1"></a><span class="in">    const response = await fetch(API + path, { headers });</span></span>
+<span id="p-848ee74c-63"><a href="#p-848ee74c-63" aria-hidden="true" tabindex="-1"></a><span class="in">    if (!response.ok) {</span></span>
+<span id="p-848ee74c-64"><a href="#p-848ee74c-64" aria-hidden="true" tabindex="-1"></a><span class="in">      throw new Error('GitHub API ' + response.status</span></span>
+<span id="p-848ee74c-65"><a href="#p-848ee74c-65" aria-hidden="true" tabindex="-1"></a><span class="in">        + (response.status === 404 || response.status === 401</span></span>
+<span id="p-848ee74c-66"><a href="#p-848ee74c-66" aria-hidden="true" tabindex="-1"></a><span class="in">           ? ' — 비공개 저장소라면 위의 접근 토큰을 설정하세요.'</span></span>
+<span id="p-848ee74c-67"><a href="#p-848ee74c-67" aria-hidden="true" tabindex="-1"></a><span class="in">           : response.status === 403 ? ' — 조회 한도 초과일 수 있습니다(토큰 설정으로 완화).' : ''));</span></span>
+<span id="p-848ee74c-68"><a href="#p-848ee74c-68" aria-hidden="true" tabindex="-1"></a><span class="in">    }</span></span>
+<span id="p-848ee74c-69"><a href="#p-848ee74c-69" aria-hidden="true" tabindex="-1"></a><span class="in">    return response.json();</span></span>
+<span id="p-848ee74c-70"><a href="#p-848ee74c-70" aria-hidden="true" tabindex="-1"></a><span class="in">  }</span></span>
+<span id="p-848ee74c-71"><a href="#p-848ee74c-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-72"><a href="#p-848ee74c-72" aria-hidden="true" tabindex="-1"></a><span class="in">  const escapeHtml = (s) =&gt; String(s).replace(/[&amp;&lt;&gt;"]/g,</span></span>
+<span id="p-848ee74c-73"><a href="#p-848ee74c-73" aria-hidden="true" tabindex="-1"></a><span class="in">    (c) =&gt; ({ '&amp;': '&amp;amp;', '&lt;': '&amp;lt;', '&gt;': '&amp;gt;', '"': '&amp;quot;' }[c]));</span></span>
+<span id="p-848ee74c-74"><a href="#p-848ee74c-74" aria-hidden="true" tabindex="-1"></a><span class="in">  const dateOf = (iso) =&gt; iso ? iso.slice(0, 10) : '';</span></span>
+<span id="p-848ee74c-75"><a href="#p-848ee74c-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-76"><a href="#p-848ee74c-76" aria-hidden="true" tabindex="-1"></a><span class="in">  function issueRow(issue) {</span></span>
+<span id="p-848ee74c-77"><a href="#p-848ee74c-77" aria-hidden="true" tabindex="-1"></a><span class="in">    const labels = issue.labels.map((l) =&gt; l.name);</span></span>
+<span id="p-848ee74c-78"><a href="#p-848ee74c-78" aria-hidden="true" tabindex="-1"></a><span class="in">    const state = labels.includes('bridged')</span></span>
+<span id="p-848ee74c-79"><a href="#p-848ee74c-79" aria-hidden="true" tabindex="-1"></a><span class="in">      ? '&lt;span class="badge bg-secondary"&gt;브리지 처리됨&lt;/span&gt;'</span></span>
+<span id="p-848ee74c-80"><a href="#p-848ee74c-80" aria-hidden="true" tabindex="-1"></a><span class="in">      : '&lt;span class="badge bg-warning text-dark"&gt;미처리&lt;/span&gt;';</span></span>
+<span id="p-848ee74c-81"><a href="#p-848ee74c-81" aria-hidden="true" tabindex="-1"></a><span class="in">    return '&lt;tr&gt;&lt;td&gt;&lt;a href="' + issue.html_url + '" target="_blank" rel="noopener"&gt;#'</span></span>
+<span id="p-848ee74c-82"><a href="#p-848ee74c-82" aria-hidden="true" tabindex="-1"></a><span class="in">      + issue.number + '&lt;/a&gt;&lt;/td&gt;&lt;td&gt;' + escapeHtml(issue.title) + '&lt;/td&gt;&lt;td&gt;'</span></span>
+<span id="p-848ee74c-83"><a href="#p-848ee74c-83" aria-hidden="true" tabindex="-1"></a><span class="in">      + escapeHtml(issue.user.login) + '&lt;/td&gt;&lt;td&gt;' + dateOf(issue.created_at)</span></span>
+<span id="p-848ee74c-84"><a href="#p-848ee74c-84" aria-hidden="true" tabindex="-1"></a><span class="in">      + '&lt;/td&gt;&lt;td&gt;' + state + '&lt;/td&gt;&lt;/tr&gt;';</span></span>
+<span id="p-848ee74c-85"><a href="#p-848ee74c-85" aria-hidden="true" tabindex="-1"></a><span class="in">  }</span></span>
+<span id="p-848ee74c-86"><a href="#p-848ee74c-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-87"><a href="#p-848ee74c-87" aria-hidden="true" tabindex="-1"></a><span class="in">  // 이슈가 많아져도 총계가 틀리지 않게 최대 3페이지(300건)까지 수거한다.</span></span>
+<span id="p-848ee74c-88"><a href="#p-848ee74c-88" aria-hidden="true" tabindex="-1"></a><span class="in">  async function ghPaged(path, maxPages = 3) {</span></span>
+<span id="p-848ee74c-89"><a href="#p-848ee74c-89" aria-hidden="true" tabindex="-1"></a><span class="in">    const all = [];</span></span>
+<span id="p-848ee74c-90"><a href="#p-848ee74c-90" aria-hidden="true" tabindex="-1"></a><span class="in">    for (let pageNo = 1; pageNo &lt;= maxPages; pageNo += 1) {</span></span>
+<span id="p-848ee74c-91"><a href="#p-848ee74c-91" aria-hidden="true" tabindex="-1"></a><span class="in">      const batch = await gh(path + '&amp;per_page=100&amp;page=' + pageNo);</span></span>
+<span id="p-848ee74c-92"><a href="#p-848ee74c-92" aria-hidden="true" tabindex="-1"></a><span class="in">      all.push(...batch);</span></span>
+<span id="p-848ee74c-93"><a href="#p-848ee74c-93" aria-hidden="true" tabindex="-1"></a><span class="in">      if (batch.length &lt; 100) return { items: all, capped: false };</span></span>
+<span id="p-848ee74c-94"><a href="#p-848ee74c-94" aria-hidden="true" tabindex="-1"></a><span class="in">    }</span></span>
+<span id="p-848ee74c-95"><a href="#p-848ee74c-95" aria-hidden="true" tabindex="-1"></a><span class="in">    return { items: all, capped: true };</span></span>
+<span id="p-848ee74c-96"><a href="#p-848ee74c-96" aria-hidden="true" tabindex="-1"></a><span class="in">  }</span></span>
+<span id="p-848ee74c-97"><a href="#p-848ee74c-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-98"><a href="#p-848ee74c-98" aria-hidden="true" tabindex="-1"></a><span class="in">  const PAGE_SIZE = 30;</span></span>
+<span id="p-848ee74c-99"><a href="#p-848ee74c-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-100"><a href="#p-848ee74c-100" aria-hidden="true" tabindex="-1"></a><span class="in">  async function renderPending() {</span></span>
+<span id="p-848ee74c-101"><a href="#p-848ee74c-101" aria-hidden="true" tabindex="-1"></a><span class="in">    const { items, capped } = await ghPaged('/repos/' + REPO + '/issues?labels=editorial&amp;state=open');</span></span>
+<span id="p-848ee74c-102"><a href="#p-848ee74c-102" aria-hidden="true" tabindex="-1"></a><span class="in">    const issues = items.filter((issue) =&gt; !issue.pull_request);</span></span>
+<span id="p-848ee74c-103"><a href="#p-848ee74c-103" aria-hidden="true" tabindex="-1"></a><span class="in">    if (!issues.length) { $('desk-pending').innerHTML = '&lt;p&gt;열린 제안이 없습니다. ✨&lt;/p&gt;'; return; }</span></span>
+<span id="p-848ee74c-104"><a href="#p-848ee74c-104" aria-hidden="true" tabindex="-1"></a><span class="in">    const fresh = issues.filter((i) =&gt; !i.labels.some((l) =&gt; l.name === 'bridged')).length;</span></span>
+<span id="p-848ee74c-105"><a href="#p-848ee74c-105" aria-hidden="true" tabindex="-1"></a><span class="in">    const container = $('desk-pending');</span></span>
+<span id="p-848ee74c-106"><a href="#p-848ee74c-106" aria-hidden="true" tabindex="-1"></a><span class="in">    container.innerHTML =</span></span>
+<span id="p-848ee74c-107"><a href="#p-848ee74c-107" aria-hidden="true" tabindex="-1"></a><span class="in">      '&lt;p&gt;' + issues.length + (capped ? '+' : '') + '건 열림 (다음 다이제스트 대상 '</span></span>
+<span id="p-848ee74c-108"><a href="#p-848ee74c-108" aria-hidden="true" tabindex="-1"></a><span class="in">      + fresh + '건 — 매일 06:00 KST 수거)&lt;/p&gt;'</span></span>
+<span id="p-848ee74c-109"><a href="#p-848ee74c-109" aria-hidden="true" tabindex="-1"></a><span class="in">      + '&lt;div style="overflow-x:auto"&gt;&lt;table class="table table-sm"&gt;&lt;thead&gt;&lt;tr&gt;'</span></span>
+<span id="p-848ee74c-110"><a href="#p-848ee74c-110" aria-hidden="true" tabindex="-1"></a><span class="in">      + '&lt;th&gt;이슈&lt;/th&gt;&lt;th&gt;제목&lt;/th&gt;&lt;th&gt;제안자&lt;/th&gt;&lt;th&gt;날짜&lt;/th&gt;&lt;th&gt;상태&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;'</span></span>
+<span id="p-848ee74c-111"><a href="#p-848ee74c-111" aria-hidden="true" tabindex="-1"></a><span class="in">      + '&lt;tbody id="desk-pending-rows"&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;';</span></span>
+<span id="p-848ee74c-112"><a href="#p-848ee74c-112" aria-hidden="true" tabindex="-1"></a><span class="in">    const tbody = document.getElementById('desk-pending-rows');</span></span>
+<span id="p-848ee74c-113"><a href="#p-848ee74c-113" aria-hidden="true" tabindex="-1"></a><span class="in">    const more = document.createElement('button');</span></span>
+<span id="p-848ee74c-114"><a href="#p-848ee74c-114" aria-hidden="true" tabindex="-1"></a><span class="in">    more.type = 'button';</span></span>
+<span id="p-848ee74c-115"><a href="#p-848ee74c-115" aria-hidden="true" tabindex="-1"></a><span class="in">    more.className = 'btn btn-sm btn-outline-secondary';</span></span>
+<span id="p-848ee74c-116"><a href="#p-848ee74c-116" aria-hidden="true" tabindex="-1"></a><span class="in">    let shown = 0;</span></span>
+<span id="p-848ee74c-117"><a href="#p-848ee74c-117" aria-hidden="true" tabindex="-1"></a><span class="in">    const showMore = () =&gt; {</span></span>
+<span id="p-848ee74c-118"><a href="#p-848ee74c-118" aria-hidden="true" tabindex="-1"></a><span class="in">      tbody.insertAdjacentHTML('beforeend',</span></span>
+<span id="p-848ee74c-119"><a href="#p-848ee74c-119" aria-hidden="true" tabindex="-1"></a><span class="in">        issues.slice(shown, shown + PAGE_SIZE).map(issueRow).join(''));</span></span>
+<span id="p-848ee74c-120"><a href="#p-848ee74c-120" aria-hidden="true" tabindex="-1"></a><span class="in">      shown = Math.min(shown + PAGE_SIZE, issues.length);</span></span>
+<span id="p-848ee74c-121"><a href="#p-848ee74c-121" aria-hidden="true" tabindex="-1"></a><span class="in">      if (shown &gt;= issues.length) { more.remove(); return; }</span></span>
+<span id="p-848ee74c-122"><a href="#p-848ee74c-122" aria-hidden="true" tabindex="-1"></a><span class="in">      more.textContent = '더 보기 (' + (issues.length - shown) + '건 남음)';</span></span>
+<span id="p-848ee74c-123"><a href="#p-848ee74c-123" aria-hidden="true" tabindex="-1"></a><span class="in">    };</span></span>
+<span id="p-848ee74c-124"><a href="#p-848ee74c-124" aria-hidden="true" tabindex="-1"></a><span class="in">    more.addEventListener('click', showMore);</span></span>
+<span id="p-848ee74c-125"><a href="#p-848ee74c-125" aria-hidden="true" tabindex="-1"></a><span class="in">    container.appendChild(more);</span></span>
+<span id="p-848ee74c-126"><a href="#p-848ee74c-126" aria-hidden="true" tabindex="-1"></a><span class="in">    showMore();</span></span>
+<span id="p-848ee74c-127"><a href="#p-848ee74c-127" aria-hidden="true" tabindex="-1"></a><span class="in">  }</span></span>
+<span id="p-848ee74c-128"><a href="#p-848ee74c-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-129"><a href="#p-848ee74c-129" aria-hidden="true" tabindex="-1"></a><span class="in">  async function renderBatch() {</span></span>
+<span id="p-848ee74c-130"><a href="#p-848ee74c-130" aria-hidden="true" tabindex="-1"></a><span class="in">    const pulls = await gh('/repos/' + REPO + '/pulls?state=open&amp;per_page=50');</span></span>
+<span id="p-848ee74c-131"><a href="#p-848ee74c-131" aria-hidden="true" tabindex="-1"></a><span class="in">    const batches = pulls.filter((pr) =&gt; pr.head.ref.startsWith('editorial/'));</span></span>
+<span id="p-848ee74c-132"><a href="#p-848ee74c-132" aria-hidden="true" tabindex="-1"></a><span class="in">    if (!batches.length) { $('desk-batch').innerHTML = '&lt;p&gt;열린 배치 PR이 없습니다.&lt;/p&gt;'; return; }</span></span>
+<span id="p-848ee74c-133"><a href="#p-848ee74c-133" aria-hidden="true" tabindex="-1"></a><span class="in">    const rows = await Promise.all(batches.map(async (pr) =&gt; {</span></span>
+<span id="p-848ee74c-134"><a href="#p-848ee74c-134" aria-hidden="true" tabindex="-1"></a><span class="in">      const detail = await gh('/repos/' + REPO + '/pulls/' + pr.number);</span></span>
+<span id="p-848ee74c-135"><a href="#p-848ee74c-135" aria-hidden="true" tabindex="-1"></a><span class="in">      return '&lt;tr&gt;&lt;td&gt;&lt;a href="' + pr.html_url + '" target="_blank" rel="noopener"&gt;#'</span></span>
+<span id="p-848ee74c-136"><a href="#p-848ee74c-136" aria-hidden="true" tabindex="-1"></a><span class="in">        + pr.number + '&lt;/a&gt;&lt;/td&gt;&lt;td&gt;' + escapeHtml(pr.title) + '&lt;/td&gt;&lt;td&gt;'</span></span>
+<span id="p-848ee74c-137"><a href="#p-848ee74c-137" aria-hidden="true" tabindex="-1"></a><span class="in">        + detail.commits + '커밋 · ' + detail.changed_files + '파일&lt;/td&gt;&lt;td&gt;'</span></span>
+<span id="p-848ee74c-138"><a href="#p-848ee74c-138" aria-hidden="true" tabindex="-1"></a><span class="in">        + dateOf(pr.updated_at) + '&lt;/td&gt;&lt;/tr&gt;';</span></span>
+<span id="p-848ee74c-139"><a href="#p-848ee74c-139" aria-hidden="true" tabindex="-1"></a><span class="in">    }));</span></span>
+<span id="p-848ee74c-140"><a href="#p-848ee74c-140" aria-hidden="true" tabindex="-1"></a><span class="in">    $('desk-batch').innerHTML =</span></span>
+<span id="p-848ee74c-141"><a href="#p-848ee74c-141" aria-hidden="true" tabindex="-1"></a><span class="in">      '&lt;div style="overflow-x:auto"&gt;&lt;table class="table table-sm"&gt;&lt;thead&gt;&lt;tr&gt;'</span></span>
+<span id="p-848ee74c-142"><a href="#p-848ee74c-142" aria-hidden="true" tabindex="-1"></a><span class="in">      + '&lt;th&gt;PR&lt;/th&gt;&lt;th&gt;제목&lt;/th&gt;&lt;th&gt;규모&lt;/th&gt;&lt;th&gt;갱신&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;'</span></span>
+<span id="p-848ee74c-143"><a href="#p-848ee74c-143" aria-hidden="true" tabindex="-1"></a><span class="in">      + rows.join('') + '&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;';</span></span>
+<span id="p-848ee74c-144"><a href="#p-848ee74c-144" aria-hidden="true" tabindex="-1"></a><span class="in">  }</span></span>
+<span id="p-848ee74c-145"><a href="#p-848ee74c-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-146"><a href="#p-848ee74c-146" aria-hidden="true" tabindex="-1"></a><span class="in">  async function renderMerged() {</span></span>
+<span id="p-848ee74c-147"><a href="#p-848ee74c-147" aria-hidden="true" tabindex="-1"></a><span class="in">    const pulls = await gh('/repos/' + REPO</span></span>
+<span id="p-848ee74c-148"><a href="#p-848ee74c-148" aria-hidden="true" tabindex="-1"></a><span class="in">      + '/pulls?state=closed&amp;sort=updated&amp;direction=desc&amp;per_page=20');</span></span>
+<span id="p-848ee74c-149"><a href="#p-848ee74c-149" aria-hidden="true" tabindex="-1"></a><span class="in">    const merged = pulls.filter((pr) =&gt; pr.merged_at).slice(0, 5);</span></span>
+<span id="p-848ee74c-150"><a href="#p-848ee74c-150" aria-hidden="true" tabindex="-1"></a><span class="in">    if (!merged.length) { $('desk-merged').innerHTML = '&lt;p&gt;아직 병합 이력이 없습니다.&lt;/p&gt;'; return; }</span></span>
+<span id="p-848ee74c-151"><a href="#p-848ee74c-151" aria-hidden="true" tabindex="-1"></a><span class="in">    $('desk-merged').innerHTML =</span></span>
+<span id="p-848ee74c-152"><a href="#p-848ee74c-152" aria-hidden="true" tabindex="-1"></a><span class="in">      '&lt;ul&gt;' + merged.map((pr) =&gt; '&lt;li&gt;&lt;a href="' + pr.html_url</span></span>
+<span id="p-848ee74c-153"><a href="#p-848ee74c-153" aria-hidden="true" tabindex="-1"></a><span class="in">        + '" target="_blank" rel="noopener"&gt;#' + pr.number + '&lt;/a&gt; '</span></span>
+<span id="p-848ee74c-154"><a href="#p-848ee74c-154" aria-hidden="true" tabindex="-1"></a><span class="in">        + escapeHtml(pr.title) + ' &lt;span class="text-muted"&gt;('</span></span>
+<span id="p-848ee74c-155"><a href="#p-848ee74c-155" aria-hidden="true" tabindex="-1"></a><span class="in">        + dateOf(pr.merged_at) + ')&lt;/span&gt;&lt;/li&gt;').join('') + '&lt;/ul&gt;';</span></span>
+<span id="p-848ee74c-156"><a href="#p-848ee74c-156" aria-hidden="true" tabindex="-1"></a><span class="in">  }</span></span>
+<span id="p-848ee74c-157"><a href="#p-848ee74c-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-158"><a href="#p-848ee74c-158" aria-hidden="true" tabindex="-1"></a><span class="in">  function refresh() {</span></span>
+<span id="p-848ee74c-159"><a href="#p-848ee74c-159" aria-hidden="true" tabindex="-1"></a><span class="in">    [['desk-pending', renderPending], ['desk-batch', renderBatch], ['desk-merged', renderMerged]]</span></span>
+<span id="p-848ee74c-160"><a href="#p-848ee74c-160" aria-hidden="true" tabindex="-1"></a><span class="in">      .forEach(async ([id, render]) =&gt; {</span></span>
+<span id="p-848ee74c-161"><a href="#p-848ee74c-161" aria-hidden="true" tabindex="-1"></a><span class="in">        try { await render(); }</span></span>
+<span id="p-848ee74c-162"><a href="#p-848ee74c-162" aria-hidden="true" tabindex="-1"></a><span class="in">        catch (error) { $(id).innerHTML = '&lt;p class="text-danger"&gt;' + escapeHtml(error.message) + '&lt;/p&gt;'; }</span></span>
+<span id="p-848ee74c-163"><a href="#p-848ee74c-163" aria-hidden="true" tabindex="-1"></a><span class="in">      });</span></span>
+<span id="p-848ee74c-164"><a href="#p-848ee74c-164" aria-hidden="true" tabindex="-1"></a><span class="in">  }</span></span>
+<span id="p-848ee74c-165"><a href="#p-848ee74c-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-166"><a href="#p-848ee74c-166" aria-hidden="true" tabindex="-1"></a><span class="in">  $('desk-token-form').addEventListener('submit', (event) =&gt; {</span></span>
+<span id="p-848ee74c-167"><a href="#p-848ee74c-167" aria-hidden="true" tabindex="-1"></a><span class="in">    event.preventDefault();</span></span>
+<span id="p-848ee74c-168"><a href="#p-848ee74c-168" aria-hidden="true" tabindex="-1"></a><span class="in">    const value = $('desk-token').value.trim();</span></span>
+<span id="p-848ee74c-169"><a href="#p-848ee74c-169" aria-hidden="true" tabindex="-1"></a><span class="in">    if (value) localStorage.setItem(TOKEN_KEY, value);</span></span>
+<span id="p-848ee74c-170"><a href="#p-848ee74c-170" aria-hidden="true" tabindex="-1"></a><span class="in">    $('desk-token').value = '';</span></span>
+<span id="p-848ee74c-171"><a href="#p-848ee74c-171" aria-hidden="true" tabindex="-1"></a><span class="in">    refresh();</span></span>
+<span id="p-848ee74c-172"><a href="#p-848ee74c-172" aria-hidden="true" tabindex="-1"></a><span class="in">  });</span></span>
+<span id="p-848ee74c-173"><a href="#p-848ee74c-173" aria-hidden="true" tabindex="-1"></a><span class="in">  $('desk-token-clear').addEventListener('click', () =&gt; {</span></span>
+<span id="p-848ee74c-174"><a href="#p-848ee74c-174" aria-hidden="true" tabindex="-1"></a><span class="in">    localStorage.removeItem(TOKEN_KEY);</span></span>
+<span id="p-848ee74c-175"><a href="#p-848ee74c-175" aria-hidden="true" tabindex="-1"></a><span class="in">    refresh();</span></span>
+<span id="p-848ee74c-176"><a href="#p-848ee74c-176" aria-hidden="true" tabindex="-1"></a><span class="in">  });</span></span>
+<span id="p-848ee74c-177"><a href="#p-848ee74c-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-848ee74c-178"><a href="#p-848ee74c-178" aria-hidden="true" tabindex="-1"></a><span class="in">  refresh();</span></span>
+<span id="p-848ee74c-179"><a href="#p-848ee74c-179" aria-hidden="true" tabindex="-1"></a><span class="in">})();</span></span>
+<span id="p-848ee74c-180"><a href="#p-848ee74c-180" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;/script&gt;</span></span>
+<span id="p-848ee74c-181"><a href="#p-848ee74c-181" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="클립보드 복사" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

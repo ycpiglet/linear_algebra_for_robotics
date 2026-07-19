@@ -79,9 +79,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-4a0610749eeff5ab924a4729b5181608.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-cc6ea0be87d5a8b3413ffadf91d65f43.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../../site_libs/bootstrap/bootstrap-dark-a8089986a9afe3c4f747238e4d5cfdb5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../../site_libs/bootstrap/bootstrap-cc6ea0be87d5a8b3413ffadf91d65f43.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-55cdd55abd4d809c545b5ee0b7576e2a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-72b88d8d09b5b032ff7debd54bb8d9a0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-55cdd55abd4d809c545b5ee0b7576e2a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": true,
@@ -1249,6 +1249,14 @@ U_j=U+(j-1)/N
     gap: 0.35rem;
     align-items: flex-end;
   }
+  /* 독서 도구막대(atlas.js reader-tools)와 같은 우하단을 쓴다 —
+     도구막대가 있으면 그 위로 비켜서고, 접힘 상태면 조금만 올라간다. */
+  body.atlas-reader-active .review-links {
+    bottom: calc(10.5rem + env(safe-area-inset-bottom, 0px));
+  }
+  body.atlas-reader-active.atlas-reader-collapsed .review-links {
+    bottom: calc(4.6rem + env(safe-area-inset-bottom, 0px));
+  }
   .review-links a {
     padding: 0.3rem 0.7rem;
     border: 1px solid var(--bs-border-color, #adb5bd);
@@ -1273,6 +1281,25 @@ U_j=U+(j-1)/N
   .review-history ul {
     margin: 0;
     padding-left: 1.1rem;
+  }
+  /* Quarto 다크 모드: 테마 토글이 body.quarto-dark를 붙인다.
+     --bs-* 변수가 토글에 따라 갱신되지 않아 명시적 다크 팔레트로 덮는다. */
+  body.quarto-dark .review-toolbar button,
+  body.quarto-dark .review-dialog,
+  body.quarto-dark .review-dialog button,
+  body.quarto-dark .review-dialog textarea,
+  body.quarto-dark .review-links a {
+    background: #212529;
+    color: #dee2e6;
+    border-color: #495057;
+  }
+  body.quarto-dark .review-dialog blockquote,
+  body.quarto-dark .review-history {
+    border-color: #495057;
+    color: inherit;
+  }
+  body.quarto-dark .review-dialog-backdrop {
+    background: rgba(0, 0, 0, 0.6);
   }
 </style>
 <script>
@@ -1398,6 +1425,7 @@ U_j=U+(j-1)/N
       anchorId: anchorIdOf(block),
       prefix: context.prefix,
       suffix: context.suffix,
+      isCode: !!(block && block.matches('div.sourceCode')),
     };
     showToolbar(range.getBoundingClientRect(), selectionInfo);
   }
@@ -1415,39 +1443,57 @@ U_j=U+(j-1)/N
     lastFocused = null;
   }
 
+  const clip = (s, n) => (s.length > n ? s.slice(0, n) + '…' : s);
+  // GitHub 이슈 프리필 URL의 실질 한도는 ~8KB — 초과하면 414이거나 본문이 잘린다.
+  const URL_BUDGET = 7500;
+
   function issueUrl(info, suggestion, comment) {
-    const clip = (s, n) => (s.length > n ? s.slice(0, n) + '…' : s);
-    const quote = clip(info.quote, 600);
     const pageUrl = window.location.href.split('#')[0];
     const pageTitle = document.title.replace(/\s*[–—-]\s*[^–—-]*$/, '').trim() || document.title;
 
-    const sections = [];
-    if (comment.trim()) sections.push('## 사유·코멘트\n\n' + comment.trim());
-    if (suggestion.trim() && suggestion.trim() !== info.quote) {
-      sections.push('## 수정안\n\n~~~\n' + suggestion.trim() + '\n~~~');
-    }
-    sections.push('## 원문\n\n> ' + quote);
-    sections.push([
-      '## 위치',
-      '',
-      '- 페이지: ' + pageUrl,
-      '- 문단: `' + (info.anchorId || '(앵커 없음)') + '`',
-    ].join('\n'));
-    const anchorPayload = JSON.stringify({
-      v: 1,
-      page: pageUrl,
-      paragraph: info.anchorId || null,
-      quote: quote,
-      prefix: clip(info.prefix, 60),
-      suffix: clip(info.suffix, 60),
-    });
-    sections.push('<!-- editorial-anchor ' + anchorPayload + ' -->');
+    const build = (quoteMax, textMax, clipped) => {
+      const quote = clip(info.quote, quoteMax);
+      const sections = [];
+      if (comment.trim()) sections.push('## 사유·코멘트\n\n' + clip(comment.trim(), textMax));
+      if (suggestion.trim() && suggestion.trim() !== info.quote) {
+        sections.push('## 수정안\n\n~~~\n' + clip(suggestion.trim(), textMax) + '\n~~~');
+      }
+      sections.push('## 원문\n\n> ' + quote);
+      if (clipped) {
+        sections.push('> ⚠ 길이 제한으로 축약된 내용입니다. 전체 원문은 아래 문단 앵커와 페이지 링크로 확인하세요.');
+      }
+      sections.push([
+        '## 위치',
+        '',
+        '- 페이지: ' + pageUrl,
+        '- 문단: `' + (info.anchorId || '(앵커 없음)') + '`',
+      ].join('\n'));
+      sections.push('<!-- editorial-anchor ' + JSON.stringify({
+        v: 1,
+        page: pageUrl,
+        paragraph: info.anchorId || null,
+        quote: quote,
+        prefix: clip(info.prefix, 60),
+        suffix: clip(info.suffix, 60),
+      }) + ' -->');
 
-    const title = '[교정] ' + clip(info.quote, 40) + ' (' + clip(pageTitle, 30) + ')';
-    return 'https://github.com/' + REPO + '/issues/new'
-      + '?title=' + encodeURIComponent(title)
-      + '&labels=' + encodeURIComponent(ISSUE_LABEL)
-      + '&body=' + encodeURIComponent(sections.join('\n\n'));
+      const title = '[교정] ' + clip(info.quote, 40) + ' (' + clip(pageTitle, 30) + ')';
+      return 'https://github.com/' + REPO + '/issues/new'
+        + '?title=' + encodeURIComponent(title)
+        + '&labels=' + encodeURIComponent(ISSUE_LABEL)
+        + '&body=' + encodeURIComponent(sections.join('\n\n'));
+    };
+
+    // 한도 안에 들 때까지 단계적으로 줄인다. 한글은 인코딩 시 글자당 9바이트로
+    // 불어나므로(%EC%88%98…) 마지막 단계는 아주 짧게 잡는다.
+    const tiers = [[600, 1500, false], [300, 800, true], [120, 400, true],
+                   [80, 150, true], [60, 60, true]];
+    let url = '';
+    for (const [quoteMax, textMax, clipped] of tiers) {
+      url = build(quoteMax, textMax, clipped);
+      if (url.length <= URL_BUDGET) return url;
+    }
+    return url;
   }
 
   function openDialog(info) {
@@ -1488,8 +1534,15 @@ U_j=U+(j-1)/N
 
     const note = document.createElement('p');
     note.className = 'review-anchor-note';
-    note.textContent = 'GitHub 이슈 작성 화면이 미리 채워져 열립니다. 내용 확인 후 제출하세요. 문단 앵커: '
+    let noteText = 'GitHub 이슈 작성 화면이 미리 채워져 열립니다. 내용 확인 후 제출하세요. 문단 앵커: '
       + (info.anchorId || '없음(텍스트 인용으로만 추적)');
+    if (info.quote.length > 600) {
+      noteText += ' · ⚠ 선택이 깁니다 — 이슈에는 앞부분만 인용되고 전체 위치는 앵커로 추적됩니다.';
+    }
+    if (info.isCode) {
+      noteText += ' · 코드 블록 제안은 자동 반영되지 않고 사람 검토로 전달됩니다.';
+    }
+    note.textContent = noteText;
 
     const actions = document.createElement('div');
     actions.className = 'review-dialog-actions';
@@ -1501,6 +1554,20 @@ U_j=U+(j-1)/N
 
     dialog.append(heading, quoteLabel, quoteView, suggestionLabel, suggestionInput,
       commentLabel, commentInput, note, actions);
+    // 포커스 트랩: Tab이 다이얼로그 밖 본문으로 탈출하지 않게 순환시킨다.
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+      const focusables = dialog.querySelectorAll('textarea, button');
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
     document.body.appendChild(backdrop);
     document.body.appendChild(dialog);
     suggestionInput.focus();
@@ -1597,6 +1664,18 @@ U_j=U+(j-1)/N
   document.addEventListener('mouseup', (event) => {
     if (dialog || (toolbar && toolbar.contains(event.target))) return;
     setTimeout(onSelectionSettled, 0);
+  });
+  // 터치 기기(모바일·태블릿)는 길게 눌러 선택해도 mouseup이 오지 않는다 —
+  // selectionchange를 디바운스해서 손가락 선택에도 툴바가 뜨게 한다.
+  let selectionDebounce = null;
+  document.addEventListener('selectionchange', () => {
+    if (dialog) return;
+    clearTimeout(selectionDebounce);
+    selectionDebounce = setTimeout(() => {
+      if (dialog) return;
+      if (toolbar && toolbar.contains(document.activeElement)) return;
+      onSelectionSettled();
+    }, 350);
   });
   document.addEventListener('keyup', (event) => {
     if (event.key === 'Escape') {

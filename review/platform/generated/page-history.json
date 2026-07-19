@@ -33,6 +33,12 @@
  ],
  "content/concepts/estimation/kalman-filter.qmd": [
   {
+   "sha": "8972e4a80c5c1fb385546800dd48b5ae9a9353ab",
+   "date": "2026-07-19",
+   "author": "editorial-bridge",
+   "subject": "교정: '더 안전한'이 무엇에 대한 안전성인지 명시 — 조사 '에'만으로는 대상이 모호하므로 '계 (#5)"
+  },
+  {
    "sha": "59ccfb55770f9268db965e4c1a26bb2a4399f651",
    "date": "2026-07-17",
    "author": "ITP OP PC(JYC)",
@@ -408,6 +414,12 @@
   }
  ],
  "editorial-desk.qmd": [
+  {
+   "sha": "d274276a561ce0270da3a2188945bd4353a41074",
+   "date": "2026-07-19",
+   "author": "Claude",
+   "subject": "Fix all six UX findings from 2026-07-19 evaluation"
+  },
   {
    "sha": "12939ef72b7aa29be434dd6dd0a1dde9d2846e5a",
    "date": "2026-07-18",
