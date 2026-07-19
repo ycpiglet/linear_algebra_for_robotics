@@ -1058,6 +1058,9 @@
   const installReadingProgress = () => {
     const article = document.querySelector('#quarto-document-content');
     if (!article || document.querySelector('.reading-progress')) return;
+    // 읽기 도구는 긴 본문(개념 장·증명·실습)에서만 의미가 있다 —
+    // 홈·아틀라스·커리큘럼 같은 허브 페이지에서는 진행률이 소음이라 띄우지 않는다.
+    if (!/\/(content|courseware)\//.test(window.location.pathname)) return;
     const track = document.createElement('div');
     track.className = 'reading-progress';
     track.setAttribute('aria-hidden', 'true');
@@ -1092,6 +1095,9 @@
     tools.className = 'reader-tools';
     tools.setAttribute('aria-label', '읽기 위치와 바로가기');
     tools.innerHTML = `
+      <button type="button" class="reader-tools__collapse" data-reader-collapse aria-expanded="true" title="읽기 도구 접기/펼치기">
+        <span data-collapse-icon aria-hidden="true">⌄</span><span data-collapse-label></span>
+      </button>
       <div class="reader-tools__actions">
         ${quickStart ? `<a class="reader-tool" href="${escapeHtml(quickStartHref)}" title="30초 핵심으로"><span aria-hidden="true">↑</span><span>핵심</span></a>` : ''}
         <button type="button" class="reader-tool" data-reader-favorite aria-pressed="false" aria-keyshortcuts="Alt+F" title="이 페이지 즐겨찾기 (Alt+F)"><span aria-hidden="true">☆</span><span>즐겨찾기</span></button>
@@ -1116,6 +1122,27 @@
     `;
     document.body.append(tools);
     document.body.classList.add('atlas-reader-active');
+
+    // 기본은 접힘 — 도구가 필요할 때만 펼친다. 선택은 기억된다.
+    const collapseButton = tools.querySelector('[data-reader-collapse]');
+    const COLLAPSE_KEY = 'atlas-reader-tools-collapsed';
+    const applyCollapsed = (collapsed) => {
+      tools.classList.toggle('reader-tools--collapsed', collapsed);
+      document.body.classList.toggle('atlas-reader-collapsed', collapsed);
+      collapseButton.setAttribute('aria-expanded', String(!collapsed));
+      collapseButton.querySelector('[data-collapse-icon]').textContent = collapsed ? '☷' : '⌄';
+      collapseButton.querySelector('[data-collapse-label]').textContent = collapsed ? ' 읽기 도구' : '';
+      try { localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0'); } catch (error) { /* 사생활 모드 등 */ }
+    };
+    collapseButton.addEventListener('click', () => {
+      applyCollapsed(!tools.classList.contains('reader-tools--collapsed'));
+    });
+    let initialCollapsed = true;
+    try {
+      const storedCollapse = localStorage.getItem(COLLAPSE_KEY);
+      if (storedCollapse !== null) initialCollapsed = storedCollapse === '1';
+    } catch (error) { /* 저장 불가 환경에서는 기본값 유지 */ }
+    applyCollapsed(initialCollapsed);
 
     const favoriteButton = tools.querySelector('[data-reader-favorite]');
     const bookmarkButton = tools.querySelector('[data-reader-bookmark]');

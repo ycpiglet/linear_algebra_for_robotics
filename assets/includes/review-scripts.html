@@ -95,6 +95,14 @@
     gap: 0.35rem;
     align-items: flex-end;
   }
+  /* 독서 도구막대(atlas.js reader-tools)와 같은 우하단을 쓴다 —
+     도구막대가 있으면 그 위로 비켜서고, 접힘 상태면 조금만 올라간다. */
+  body.atlas-reader-active .review-links {
+    bottom: calc(10.5rem + env(safe-area-inset-bottom, 0px));
+  }
+  body.atlas-reader-active.atlas-reader-collapsed .review-links {
+    bottom: calc(4.6rem + env(safe-area-inset-bottom, 0px));
+  }
   .review-links a {
     padding: 0.3rem 0.7rem;
     border: 1px solid var(--bs-border-color, #adb5bd);

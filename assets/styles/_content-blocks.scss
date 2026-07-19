@@ -655,6 +655,46 @@ abbr[title]:focus-visible {
 }
 
 body.atlas-reader-active { padding-bottom: 8rem; }
+body.atlas-reader-active.atlas-reader-collapsed { padding-bottom: 4rem; }
+
+.reader-tools__collapse {
+  position: absolute;
+  top: -0.85rem;
+  right: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.12rem 0.6rem;
+  color: var(--atlas-muted);
+  font: 680 0.78rem / 1.4 var(--atlas-font-body);
+  background: var(--atlas-surface);
+  border: 1px solid var(--atlas-line);
+  border-radius: 999px;
+  box-shadow: var(--atlas-shadow-sm);
+  cursor: pointer;
+}
+
+.reader-tools--collapsed {
+  width: auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.reader-tools--collapsed .reader-tools__actions,
+.reader-tools--collapsed .reader-tools__position {
+  display: none;
+}
+
+.reader-tools--collapsed .reader-tools__collapse {
+  position: static;
+  min-height: 2.45rem;
+  padding: 0.4rem 0.85rem;
+  color: var(--atlas-ink);
+  box-shadow: var(--atlas-shadow);
+}
 
 .reader-tools__actions,
 .reader-tools__position {
