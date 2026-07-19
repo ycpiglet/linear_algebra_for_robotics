@@ -31,6 +31,9 @@
 
 ## UX 개선 백로그 (2026-07-19 평가에서 발견, 우선순위순)
 
+> **상태: 아래 6건 전부 `claude/review-ux-fixes` 브랜치에서 수정 완료, PR 리뷰 대기 중.**
+> 병합되면 이 절을 삭제할 것.
+
 1. **[HIGH] 모바일·태블릿 터치 선택 미지원** — 제안 툴바가 `mouseup`에만 반응해 터치 길게
    눌러 선택 시 아예 안 뜸. `selectionchange` 디바운스 리스너 추가 필요
    (`assets/includes/review-scripts.html`)
