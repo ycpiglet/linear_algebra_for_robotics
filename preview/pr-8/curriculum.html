@@ -1,0 +1,3031 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="선형대수에서 제어·추정·SMC·MCMC까지 이어지는 비선형 학습 설계">
+
+<title>전체 커리큘럼 지도 – Robotics Math Atlas</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./assets/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-4a0610749eeff5ab924a4729b5181608.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-de927ec96a2411cf822331f71755f83e.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-4a0610749eeff5ab924a4729b5181608.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-cc6ea0be87d5a8b3413ffadf91d65f43.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-a8089986a9afe3c4f747238e4d5cfdb5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-cc6ea0be87d5a8b3413ffadf91d65f43.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "일치 없음",
+    "search-matching-documents-text": "일치된 문서",
+    "search-copy-link-title": "검색 링크 복사",
+    "search-hide-matches-text": "추가 검색 결과 숨기기",
+    "search-more-match-text": "추가 검색결과",
+    "search-more-matches-text": "추가 검색결과",
+    "search-clear-button-title": "제거",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "취소",
+    "search-submit-button-title": "검색",
+    "search-label": "검색"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script type="application/json" class="js-hypothesis-config">
+{
+  "theme": "clean",
+  "openSidebar": false
+}
+</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Robotics Math Atlas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="검색"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="탐색 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">홈</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./atlas.html"> 
+<span class="menu-text">아틀라스</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./paths.html"> 
+<span class="menu-text">학습 경로</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./curriculum.html"> 
+<span class="menu-text">전체 커리큘럼</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./proofs.html"> 
+<span class="menu-text">증명 지도</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./stories.html"> 
+<span class="menu-text">이야기</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./glossary.html"> 
+<span class="menu-text">용어집</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html"> 
+<span class="menu-text">사용법</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ycpiglet/linear_algebra_for_robotics"> <i class="bi bi-github" role="img" aria-label="GitHub 저장소">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="다크 모드 전환"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="리더 모드 전환">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">빠른 시작</a></li><li class="breadcrumb-item"><a href="./curriculum.html">전체 커리큘럼 지도</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">빠른 시작</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robotics Math Atlas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./paths.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">목표별 학습 경로</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./atlas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">지식 아틀라스</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./curriculum.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">전체 커리큘럼 지도</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./software.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">시각화·시뮬레이션 도구</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">로봇공학 수학 용어집</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">수학 언어</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Foundations</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/foundations/change-and-accumulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">변화율과 누적량: 미분·적분의 공학적 직관</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Linalg</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/linalg/least-squares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/linalg/linear-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">선형 시스템 Ax=b: 여러 식을 한 번에 푸는 언어</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/linalg/orthogonal-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">직교투영: 도달 가능한 것 중 가장 가까운 답</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Systems</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/systems/state-space.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">상태공간: 현재 상태로 다음 순간을 예측하는 모델</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">제어</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">Control</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/control/feedback.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">피드백: 결과를 보고 다음 행동을 고치는 구조</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/control/pid.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PID 제어: 현재·누적·변화 추세로 오차를 고치기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">로봇공학</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">Robotics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/robotics/jacobian.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">확률·추정·몬테카를로(Monte Carlo)</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">Probability</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/bayes-filtering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bayes Filtering 재귀</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/bootstrap-particle-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap Particle Filter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/detailed-balance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Balance와 Reversibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/gaussian-conditioning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/importance-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Importance Sampling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/markov-chain.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Markov Chain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/mean-covariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">평균과 공분산: 추정값과 불확실성을 함께 표현하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/measure-probability-foundations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">확률·측도 기반: 이 트랙에서 어디까지 가정하는가</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/metropolis-hastings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Metropolis–Hastings 알고리즘</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/monte-carlo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monte Carlo 적분</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/resampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Particle Resampling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/sequential-importance-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sequential Importance Sampling (SIS)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false">
+ <span class="menu-text">Statistics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/statistics/maximum-likelihood-estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false">
+ <span class="menu-text">Estimation</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/estimation/kalman-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false">
+ <span class="menu-text">엄밀한 증명</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./proofs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명 지도</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false">
+ <span class="menu-text">Proofs</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: 유한상태 Bootstrap Particle Filter의 고정-Horizon 일관성</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/proofs/detailed-balance-implies-invariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Detailed Balance는 Invariance를 함의한다</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/proofs/elementary-finite-probability-lemmas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">보조정리: 유한 확률 증명에 쓰는 집중·합집합·Borel–Cantelli</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/proofs/finite-state-mh-convergence-ergodic-average.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: 유한상태 Metropolis–Hastings의 수렴과 Ergodic Average</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/proofs/importance-sampling-identity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Importance Sampling 항등식</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/proofs/metropolis-hastings-invariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Metropolis–Hastings Kernel의 Invariance</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/proofs/resampling-unbiasedness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Resampling의 조건부 Unbiasedness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/proofs/self-normalized-importance-sampling-consistency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Self-Normalized Importance Sampling의 일관성</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/proofs/sis-weight-recursion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: SIS Importance Weight 재귀</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false">
+ <span class="menu-text">파이썬(Python) 실험실</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./courseware/labs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험실</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./courseware/labs/pid-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: PID의 세 항을 시간축에서 보기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./courseware/labs/least-squares-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: 최소제곱의 투영과 조건수</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./courseware/labs/kalman-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Kalman Filter의 예측–보정 순환</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./courseware/labs/particle-filter-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Particle Filter의 가중치 퇴화와 재표본화</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./courseware/labs/mcmc-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Metropolis proposal과 mixing</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false">
+ <span class="menu-text">읽을거리</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stories.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">숨 고르기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false">
+ <span class="menu-text">Stories</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/stories/gauss-legendre-least-squares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">먼저 발표한 Legendre, 더 일찍 썼다고 주장한 Gauss</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/stories/minorsky-steering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자동조타선에서 태어난 PID의 시간 감각</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./future-scope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">향후 확장 노드: 로봇·AI·역학·센서·구동기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false">
+ <span class="menu-text">References</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/references/jacobian-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자코비안 장의 참고문헌과 근거</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/references/kalman-filter-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">칼만 필터 장의 참고문헌과 제품 근거</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/references/maximum-likelihood-estimation-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최대우도추정 장의 참고문헌과 제품 근거</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./design-system.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UI/UX 디자인 시스템</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ui-ux-research.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UI/UX 레퍼런스 조사</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">교재 사용법</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">목차</h2>
+   
+  <ul>
+  <li><a href="#먼저-결론-순서가-아니라-네트워크다" id="toc-먼저-결론-순서가-아니라-네트워크다" class="nav-link active" data-scroll-target="#먼저-결론-순서가-아니라-네트워크다">먼저 결론: 순서가 아니라 네트워크다</a></li>
+  <li><a href="#a.-공학-수학의-공통-언어" id="toc-a.-공학-수학의-공통-언어" class="nav-link" data-scroll-target="#a.-공학-수학의-공통-언어">A. 공학 수학의 공통 언어</a>
+  <ul class="collapse">
+  <li><a href="#a0.-표기단위계산-습관" id="toc-a0.-표기단위계산-습관" class="nav-link" data-scroll-target="#a0.-표기단위계산-습관">A0. 표기·단위·계산 습관</a></li>
+  <li><a href="#a1.-미적분의-공학-직관" id="toc-a1.-미적분의-공학-직관" class="nav-link" data-scroll-target="#a1.-미적분의-공학-직관">A1. 미적분의 공학 직관</a></li>
+  </ul></li>
+  <li><a href="#b.-선형대수-strang-수준을-로봇-언어로" id="toc-b.-선형대수-strang-수준을-로봇-언어로" class="nav-link" data-scroll-target="#b.-선형대수-strang-수준을-로봇-언어로">B. 선형대수 — Strang 수준을 로봇 언어로</a>
+  <ul class="collapse">
+  <li><a href="#b1.-벡터와-선형결합" id="toc-b1.-벡터와-선형결합" class="nav-link" data-scroll-target="#b1.-벡터와-선형결합">B1. 벡터와 선형결합</a></li>
+  <li><a href="#b2.-행렬과-선형사상" id="toc-b2.-행렬과-선형사상" class="nav-link" data-scroll-target="#b2.-행렬과-선형사상">B2. 행렬과 선형사상</a></li>
+  <li><a href="#b3.-네-기본-부분공간" id="toc-b3.-네-기본-부분공간" class="nav-link" data-scroll-target="#b3.-네-기본-부분공간">B3. 네 기본 부분공간</a></li>
+  <li><a href="#b4.-내적직교최소제곱" id="toc-b4.-내적직교최소제곱" class="nav-link" data-scroll-target="#b4.-내적직교최소제곱">B4. 내적·직교·최소제곱</a></li>
+  <li><a href="#b5.-고유값과-동역학" id="toc-b5.-고유값과-동역학" class="nav-link" data-scroll-target="#b5.-고유값과-동역학">B5. 고유값과 동역학</a></li>
+  <li><a href="#b6.-svd" id="toc-b6.-svd" class="nav-link" data-scroll-target="#b6.-svd">B6. SVD</a></li>
+  </ul></li>
+  <li><a href="#c.-수치선형대수" id="toc-c.-수치선형대수" class="nav-link" data-scroll-target="#c.-수치선형대수">C. 수치선형대수</a>
+  <ul class="collapse">
+  <li><a href="#c1.-부동소수점과-민감도" id="toc-c1.-부동소수점과-민감도" class="nav-link" data-scroll-target="#c1.-부동소수점과-민감도">C1. 부동소수점과 민감도</a></li>
+  <li><a href="#c2.-안정적인-factorization" id="toc-c2.-안정적인-factorization" class="nav-link" data-scroll-target="#c2.-안정적인-factorization">C2. 안정적인 factorization</a></li>
+  <li><a href="#c3.-대규모-문제" id="toc-c3.-대규모-문제" class="nav-link" data-scroll-target="#c3.-대규모-문제">C3. 대규모 문제</a></li>
+  </ul></li>
+  <li><a href="#d.-행렬미적분과-자동미분" id="toc-d.-행렬미적분과-자동미분" class="nav-link" data-scroll-target="#d.-행렬미적분과-자동미분">D. 행렬미적분과 자동미분</a>
+  <ul class="collapse">
+  <li><a href="#d1.-미분의-언어" id="toc-d1.-미분의-언어" class="nav-link" data-scroll-target="#d1.-미분의-언어">D1. 미분의 언어</a></li>
+  <li><a href="#d2.-자주-쓰는-유도" id="toc-d2.-자주-쓰는-유도" class="nav-link" data-scroll-target="#d2.-자주-쓰는-유도">D2. 자주 쓰는 유도</a></li>
+  <li><a href="#d3.-구현" id="toc-d3.-구현" class="nav-link" data-scroll-target="#d3.-구현">D3. 구현</a></li>
+  </ul></li>
+  <li><a href="#e.-lie-group-so3와-se3" id="toc-e.-lie-group-so3와-se3" class="nav-link" data-scroll-target="#e.-lie-group-so3와-se3">E. Lie Group — <span class="math inline">\(SO(3)\)</span>와 <span class="math inline">\(SE(3)\)</span></a>
+  <ul class="collapse">
+  <li><a href="#e1.-3차원-회전-표현" id="toc-e1.-3차원-회전-표현" class="nav-link" data-scroll-target="#e1.-3차원-회전-표현">E1. 3차원 회전 표현</a></li>
+  <li><a href="#e2.-lie-groupalgebra" id="toc-e2.-lie-groupalgebra" class="nav-link" data-scroll-target="#e2.-lie-groupalgebra">E2. Lie group/algebra</a></li>
+  <li><a href="#e3.-강체변환과-추정" id="toc-e3.-강체변환과-추정" class="nav-link" data-scroll-target="#e3.-강체변환과-추정">E3. 강체변환과 추정</a></li>
+  </ul></li>
+  <li><a href="#f.-최적화" id="toc-f.-최적화" class="nav-link" data-scroll-target="#f.-최적화">F. 최적화</a>
+  <ul class="collapse">
+  <li><a href="#f1.-문제를-세우는-법" id="toc-f1.-문제를-세우는-법" class="nav-link" data-scroll-target="#f1.-문제를-세우는-법">F1. 문제를 세우는 법</a></li>
+  <li><a href="#f2.-unconstrained-optimization" id="toc-f2.-unconstrained-optimization" class="nav-link" data-scroll-target="#f2.-unconstrained-optimization">F2. unconstrained optimization</a></li>
+  <li><a href="#f3.-constrained-optimization" id="toc-f3.-constrained-optimization" class="nav-link" data-scroll-target="#f3.-constrained-optimization">F3. constrained optimization</a></li>
+  <li><a href="#f4.-확률학습으로-확장" id="toc-f4.-확률학습으로-확장" class="nav-link" data-scroll-target="#f4.-확률학습으로-확장">F4. 확률·학습으로 확장</a></li>
+  </ul></li>
+  <li><a href="#g.-확률통계확률과정" id="toc-g.-확률통계확률과정" class="nav-link" data-scroll-target="#g.-확률통계확률과정">G. 확률·통계·확률과정</a>
+  <ul class="collapse">
+  <li><a href="#g1.-확률의-기본-문법" id="toc-g1.-확률의-기본-문법" class="nav-link" data-scroll-target="#g1.-확률의-기본-문법">G1. 확률의 기본 문법</a></li>
+  <li><a href="#g2.-moment와-gaussian" id="toc-g2.-moment와-gaussian" class="nav-link" data-scroll-target="#g2.-moment와-gaussian">G2. moment와 Gaussian</a></li>
+  <li><a href="#g3.-통계적-추정" id="toc-g3.-통계적-추정" class="nav-link" data-scroll-target="#g3.-통계적-추정">G3. 통계적 추정</a></li>
+  <li><a href="#g4.-확률과정" id="toc-g4.-확률과정" class="nav-link" data-scroll-target="#g4.-확률과정">G4. 확률과정</a></li>
+  </ul></li>
+  <li><a href="#h.-신호-및-시스템" id="toc-h.-신호-및-시스템" class="nav-link" data-scroll-target="#h.-신호-및-시스템">H. 신호 및 시스템</a>
+  <ul class="collapse">
+  <li><a href="#h1.-신호와-lti-시스템" id="toc-h1.-신호와-lti-시스템" class="nav-link" data-scroll-target="#h1.-신호와-lti-시스템">H1. 신호와 LTI 시스템</a></li>
+  <li><a href="#h2.-주파수-관점" id="toc-h2.-주파수-관점" class="nav-link" data-scroll-target="#h2.-주파수-관점">H2. 주파수 관점</a></li>
+  <li><a href="#h3.-filtering과-smoothing" id="toc-h3.-filtering과-smoothing" class="nav-link" data-scroll-target="#h3.-filtering과-smoothing">H3. filtering과 smoothing</a></li>
+  </ul></li>
+  <li><a href="#i.-제어공학" id="toc-i.-제어공학" class="nav-link" data-scroll-target="#i.-제어공학">I. 제어공학</a>
+  <ul class="collapse">
+  <li><a href="#i1.-피드백과-pid" id="toc-i1.-피드백과-pid" class="nav-link" data-scroll-target="#i1.-피드백과-pid">I1. 피드백과 PID</a></li>
+  <li><a href="#i2.-고전제어" id="toc-i2.-고전제어" class="nav-link" data-scroll-target="#i2.-고전제어">I2. 고전제어</a></li>
+  <li><a href="#i3.-상태공간-제어" id="toc-i3.-상태공간-제어" class="nav-link" data-scroll-target="#i3.-상태공간-제어">I3. 상태공간 제어</a></li>
+  </ul></li>
+  <li><a href="#j.-센서추정퓨전로컬라이제이션" id="toc-j.-센서추정퓨전로컬라이제이션" class="nav-link" data-scroll-target="#j.-센서추정퓨전로컬라이제이션">J. 센서·추정·퓨전·로컬라이제이션</a>
+  <ul class="collapse">
+  <li><a href="#j1.-센서공학" id="toc-j1.-센서공학" class="nav-link" data-scroll-target="#j1.-센서공학">J1. 센서공학</a></li>
+  <li><a href="#j2.-상태추정" id="toc-j2.-상태추정" class="nav-link" data-scroll-target="#j2.-상태추정">J2. 상태추정</a></li>
+  <li><a href="#j3.-센서-퓨전과-위치추정" id="toc-j3.-센서-퓨전과-위치추정" class="nav-link" data-scroll-target="#j3.-센서-퓨전과-위치추정">J3. 센서 퓨전과 위치추정</a></li>
+  </ul></li>
+  <li><a href="#k.-monte-carlosmcparticle-filter" id="toc-k.-monte-carlosmcparticle-filter" class="nav-link" data-scroll-target="#k.-monte-carlosmcparticle-filter">K. Monte Carlo·SMC·Particle Filter</a></li>
+  <li><a href="#l.-mcmc" id="toc-l.-mcmc" class="nav-link" data-scroll-target="#l.-mcmc">L. MCMC</a></li>
+  <li><a href="#m.-머신러닝과-강화학습으로의-연결" id="toc-m.-머신러닝과-강화학습으로의-연결" class="nav-link" data-scroll-target="#m.-머신러닝과-강화학습으로의-연결">M. 머신러닝과 강화학습으로의 연결</a>
+  <ul class="collapse">
+  <li><a href="#m1.-머신러닝" id="toc-m1.-머신러닝" class="nav-link" data-scroll-target="#m1.-머신러닝">M1. 머신러닝</a></li>
+  <li><a href="#m2.-강화학습" id="toc-m2.-강화학습" class="nav-link" data-scroll-target="#m2.-강화학습">M2. 강화학습</a></li>
+  </ul></li>
+  <li><a href="#성취-기준과-평가-방식" id="toc-성취-기준과-평가-방식" class="nav-link" data-scroll-target="#성취-기준과-평가-방식">성취 기준과 평가 방식</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/blob/main/curriculum.qmd" class="toc-action"><i class="bi bi-github"></i>소스코드 보기</a></li><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/issues/new" class="toc-action"><i class="bi empty"></i>이슈 보고</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">빠른 시작</a></li><li class="breadcrumb-item"><a href="./curriculum.html">전체 커리큘럼 지도</a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">전체 커리큘럼 지도</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> 코드</button></div></div>
+</div>
+
+<div>
+  <div class="description">
+    선형대수에서 제어·추정·SMC·MCMC까지 이어지는 비선형 학습 설계
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="먼저-결론-순서가-아니라-네트워크다" class="level2">
+<h2 class="anchored" data-anchor-id="먼저-결론-순서가-아니라-네트워크다">먼저 결론: 순서가 아니라 네트워크다</h2>
+<p><span id="p-aa0350d2" class="paragraph-anchor"></span>아래 번호는 종이책을 위한 <strong>권장 참조 순서</strong>이지 수강 허가 조건이 아닙니다. PID처럼 바로 시작할 수 있는 주제는 먼저 읽고, 페이지의 선수 체크에서 막힌 개념만 되돌아갑니다. 한 개념도 <code>직관 → 계산·적용 → 유도 → 증명·가정 → 가르치기</code>의 숙달 상태를 따로 가집니다.</p>
+<table id="p-f9cb6c0f" class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>지금 알고 싶은 것</th>
+<th>직관에 필요한 최소 선수</th>
+<th>구현·유도에서 추가</th>
+<th>증명 모드에서 추가</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>PID</td>
+<td>오차, 음의 피드백</td>
+<td>변화율·누적, sampling, saturation</td>
+<td>대상 모델, 폐루프 안정성</td>
+</tr>
+<tr class="even">
+<td>최소제곱</td>
+<td>벡터, <span class="math inline">\(Ax\)</span>의 열 조합</td>
+<td>직교투영, QR/SVD, 조건수</td>
+<td>내적공간, convexity, rank</td>
+</tr>
+<tr class="odd">
+<td>Kalman Filter</td>
+<td>평균·공분산, 상태와 측정</td>
+<td>선형 시스템, 상태공간, Gaussian 조건부</td>
+<td>LMMSE 직교성, PSD, 확률 가정</td>
+</tr>
+<tr class="even">
+<td>Particle Filter</td>
+<td>Bayes 갱신, Monte Carlo</td>
+<td>IS, SIS, ESS, resampling</td>
+<td>측도·적분, SLLN, 조건부기댓값</td>
+</tr>
+<tr class="odd">
+<td>MCMC</td>
+<td>확률분포와 조건부확률</td>
+<td>Markov chain, 불변분포, detailed balance</td>
+<td>kernel, irreducibility, ergodic theorem</td>
+</tr>
+<tr class="even">
+<td>로봇 Jacobian</td>
+<td>벡터미적분, 좌표계</td>
+<td>matrix calculus, 선형화, SVD</td>
+<td>미분사상과 rank theorem(선택)</td>
+</tr>
+<tr class="odd">
+<td>센서 융합·로컬라이제이션</td>
+<td>frame, noise, Bayes</td>
+<td>SE(3), KF/PF, 관측가능성</td>
+<td>Lie group 확률·수렴론(선택)</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip callout-titled" title="권장 사용법">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">힌트</span>권장 사용법
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span id="p-4381f102" class="paragraph-anchor"></span>목표 페이지의 30초 핵심을 먼저 읽고, 직관 체크를 통과하면 계속 갑니다. 계산에서 막히면 필요한 선수 하나만 우회하고 <code>돌아가기</code> 버튼으로 원래 문단에 복귀합니다.</p>
+</div>
+</div>
+</section>
+<section id="a.-공학-수학의-공통-언어" class="level2">
+<h2 class="anchored" data-anchor-id="a.-공학-수학의-공통-언어">A. 공학 수학의 공통 언어</h2>
+<section id="a0.-표기단위계산-습관" class="level3">
+<h3 class="anchored" data-anchor-id="a0.-표기단위계산-습관">A0. 표기·단위·계산 습관</h3>
+<ol type="1">
+<li>scalar, vector, matrix, tensor와 shape</li>
+<li>index, summation, transpose, inverse, pseudoinverse</li>
+<li>물리 단위와 차원 분석</li>
+<li>좌표 frame, active/passive transformation</li>
+<li>exact equality, approximation, heuristic, numerical error의 구분</li>
+<li>Python/NumPy 배열, broadcasting, 재현 가능한 난수</li>
+</ol>
+<p><span id="p-206c0633" class="paragraph-anchor"></span><strong>통과 기준:</strong> 식을 계산하기 전에 각 항의 shape·단위·frame을 표로 적을 수 있다.</p>
+</section>
+<section id="a1.-미적분의-공학-직관" class="level3">
+<h3 class="anchored" data-anchor-id="a1.-미적분의-공학-직관">A1. 미적분의 공학 직관</h3>
+<ol type="1">
+<li>함수와 변화량</li>
+<li>미분: 국소 선형화와 민감도</li>
+<li>적분: 누적량과 면적</li>
+<li>Taylor 전개와 remainder의 의미</li>
+<li>연속시간과 이산시간, sampling과 차분</li>
+<li>gradient, directional derivative, Jacobian의 예고편</li>
+</ol>
+<p><span id="p-054753c0" class="paragraph-anchor"></span><strong>바로 연결:</strong> PID의 I/D항, 상태방정식 이산화, optimization gradient.</p>
+</section>
+</section>
+<section id="b.-선형대수-strang-수준을-로봇-언어로" class="level2">
+<h2 class="anchored" data-anchor-id="b.-선형대수-strang-수준을-로봇-언어로">B. 선형대수 — Strang 수준을 로봇 언어로</h2>
+<section id="b1.-벡터와-선형결합" class="level3">
+<h3 class="anchored" data-anchor-id="b1.-벡터와-선형결합">B1. 벡터와 선형결합</h3>
+<ol type="1">
+<li>벡터의 기하·데이터·물리량 해석</li>
+<li>선형결합, span, 생성집합</li>
+<li>선형독립과 redundancy</li>
+<li>basis, dimension, coordinates</li>
+<li>affine combination과 homogeneous coordinates</li>
+</ol>
+</section>
+<section id="b2.-행렬과-선형사상" class="level3">
+<h3 class="anchored" data-anchor-id="b2.-행렬과-선형사상">B2. 행렬과 선형사상</h3>
+<ol type="1">
+<li>행렬곱을 열 조합·행별 측정·함수 합성으로 읽기</li>
+<li><span class="math inline">\(Ax=b\)</span>의 존재성과 유일성</li>
+<li>elimination, LU, pivoting</li>
+<li>invertibility와 equivalent conditions</li>
+<li>block matrix와 Schur complement의 첫 등장</li>
+</ol>
+</section>
+<section id="b3.-네-기본-부분공간" class="level3">
+<h3 class="anchored" data-anchor-id="b3.-네-기본-부분공간">B3. 네 기본 부분공간</h3>
+<ol type="1">
+<li>column space와 가능한 출력</li>
+<li>null space와 식별 불가능한 방향</li>
+<li>row space와 left null space</li>
+<li>rank–nullity</li>
+<li>센서 observability와 actuator controllability의 예고편</li>
+</ol>
+</section>
+<section id="b4.-내적직교최소제곱" class="level3">
+<h3 class="anchored" data-anchor-id="b4.-내적직교최소제곱">B4. 내적·직교·최소제곱</h3>
+<ol type="1">
+<li>inner product, norm, angle</li>
+<li>orthogonal complement</li>
+<li>projection과 projection matrix</li>
+<li>Gram–Schmidt와 QR</li>
+<li>least squares, weighted least squares</li>
+<li>rank-deficient 해와 Moore–Penrose pseudoinverse</li>
+</ol>
+</section>
+<section id="b5.-고유값과-동역학" class="level3">
+<h3 class="anchored" data-anchor-id="b5.-고유값과-동역학">B5. 고유값과 동역학</h3>
+<ol type="1">
+<li>eigenvector/eigenvalue의 불변 방향</li>
+<li>diagonalization과 matrix powers</li>
+<li>complex eigenpair와 회전·진동</li>
+<li>positive definite matrix와 quadratic form</li>
+<li>안정성과 discrete/continuous eigenvalue 영역</li>
+</ol>
+</section>
+<section id="b6.-svd" class="level3">
+<h3 class="anchored" data-anchor-id="b6.-svd">B6. SVD</h3>
+<ol type="1">
+<li>회전–축척–회전이라는 기하</li>
+<li>singular value, rank, condition number</li>
+<li>low-rank approximation</li>
+<li>pseudoinverse와 damped least squares</li>
+<li>Jacobian singularity와 manipulability</li>
+</ol>
+</section>
+</section>
+<section id="c.-수치선형대수" class="level2">
+<h2 class="anchored" data-anchor-id="c.-수치선형대수">C. 수치선형대수</h2>
+<section id="c1.-부동소수점과-민감도" class="level3">
+<h3 class="anchored" data-anchor-id="c1.-부동소수점과-민감도">C1. 부동소수점과 민감도</h3>
+<ol type="1">
+<li>rounding, cancellation, overflow/underflow</li>
+<li>forward error와 backward error</li>
+<li>problem conditioning과 algorithm stability</li>
+<li>vector/matrix norm과 condition number</li>
+</ol>
+</section>
+<section id="c2.-안정적인-factorization" class="level3">
+<h3 class="anchored" data-anchor-id="c2.-안정적인-factorization">C2. 안정적인 factorization</h3>
+<ol type="1">
+<li>LU와 partial pivoting</li>
+<li>Householder/Givens QR</li>
+<li>Cholesky와 SPD 조건</li>
+<li>SVD와 rank revealing</li>
+<li>explicit inverse를 피해야 하는 이유</li>
+</ol>
+</section>
+<section id="c3.-대규모-문제" class="level3">
+<h3 class="anchored" data-anchor-id="c3.-대규모-문제">C3. 대규모 문제</h3>
+<ol type="1">
+<li>sparse matrix와 fill-in</li>
+<li>stationary/Krylov iterative method</li>
+<li>conjugate gradient와 preconditioning</li>
+<li>least-squares iterative solver</li>
+<li>eigenvalue iteration과 Lanczos/Arnoldi 개요</li>
+</ol>
+<p><span id="p-46c8638e" class="paragraph-anchor"></span><strong>로봇 연결:</strong> SLAM sparse normal equation, Jacobian inverse, square-root filtering, trajectory optimization.</p>
+</section>
+</section>
+<section id="d.-행렬미적분과-자동미분" class="level2">
+<h2 class="anchored" data-anchor-id="d.-행렬미적분과-자동미분">D. 행렬미적분과 자동미분</h2>
+<section id="d1.-미분의-언어" class="level3">
+<h3 class="anchored" data-anchor-id="d1.-미분의-언어">D1. 미분의 언어</h3>
+<ol type="1">
+<li>differential과 linear approximation</li>
+<li>Jacobian, gradient, Hessian의 shape</li>
+<li>numerator/denominator layout 관례</li>
+<li>chain rule을 함수 합성으로 읽기</li>
+<li>vector–Jacobian product와 Jacobian–vector product</li>
+</ol>
+</section>
+<section id="d2.-자주-쓰는-유도" class="level3">
+<h3 class="anchored" data-anchor-id="d2.-자주-쓰는-유도">D2. 자주 쓰는 유도</h3>
+<ol type="1">
+<li>linear/quadratic form</li>
+<li>trace trick</li>
+<li>inverse와 determinant 미분</li>
+<li>least-squares gradient/Hessian</li>
+<li>covariance propagation의 1차 근사</li>
+<li>implicit differentiation</li>
+</ol>
+</section>
+<section id="d3.-구현" class="level3">
+<h3 class="anchored" data-anchor-id="d3.-구현">D3. 구현</h3>
+<ol type="1">
+<li>finite difference 검산</li>
+<li>symbolic differentiation</li>
+<li>forward/reverse-mode AD</li>
+<li>computational graph와 memory trade-off</li>
+<li>nonsmooth point와 custom derivative</li>
+</ol>
+</section>
+</section>
+<section id="e.-lie-group-so3와-se3" class="level2">
+<h2 class="anchored" data-anchor-id="e.-lie-group-so3와-se3">E. Lie Group — <span class="math inline">\(SO(3)\)</span>와 <span class="math inline">\(SE(3)\)</span></h2>
+<section id="e1.-3차원-회전-표현" class="level3">
+<h3 class="anchored" data-anchor-id="e1.-3차원-회전-표현">E1. 3차원 회전 표현</h3>
+<ol type="1">
+<li>rotation matrix의 조건과 자유도</li>
+<li>Euler angle과 singularity</li>
+<li>axis–angle, exponential coordinates</li>
+<li>quaternion, double cover, normalization</li>
+<li>표현 선택과 frame convention</li>
+</ol>
+</section>
+<section id="e2.-lie-groupalgebra" class="level3">
+<h3 class="anchored" data-anchor-id="e2.-lie-groupalgebra">E2. Lie group/algebra</h3>
+<ol type="1">
+<li>group, tangent space, hat/vee</li>
+<li>exponential/logarithm map</li>
+<li>adjoint와 frame 변화</li>
+<li>BCH의 공학적 범위</li>
+<li>left/right perturbation과 Jacobian</li>
+</ol>
+</section>
+<section id="e3.-강체변환과-추정" class="level3">
+<h3 class="anchored" data-anchor-id="e3.-강체변환과-추정">E3. 강체변환과 추정</h3>
+<ol type="1">
+<li>homogeneous transform와 <span class="math inline">\(SE(3)\)</span></li>
+<li>twist, screw motion, forward kinematics</li>
+<li>pose residual과 manifold optimization</li>
+<li>covariance를 tangent space에서 다루기</li>
+<li>IMU preintegration과 factor graph의 입구</li>
+</ol>
+</section>
+</section>
+<section id="f.-최적화" class="level2">
+<h2 class="anchored" data-anchor-id="f.-최적화">F. 최적화</h2>
+<section id="f1.-문제를-세우는-법" class="level3">
+<h3 class="anchored" data-anchor-id="f1.-문제를-세우는-법">F1. 문제를 세우는 법</h3>
+<ol type="1">
+<li>decision variable, objective, constraint</li>
+<li>feasible set와 local/global optimum</li>
+<li>scaling, units, residual design</li>
+<li>convex set/function과 왜 중요한가</li>
+</ol>
+</section>
+<section id="f2.-unconstrained-optimization" class="level3">
+<h3 class="anchored" data-anchor-id="f2.-unconstrained-optimization">F2. unconstrained optimization</h3>
+<ol type="1">
+<li>gradient descent와 line search</li>
+<li>Newton, Gauss–Newton, Levenberg–Marquardt</li>
+<li>trust region</li>
+<li>conditioning과 preconditioning</li>
+<li>stopping criterion과 진단</li>
+</ol>
+</section>
+<section id="f3.-constrained-optimization" class="level3">
+<h3 class="anchored" data-anchor-id="f3.-constrained-optimization">F3. constrained optimization</h3>
+<ol type="1">
+<li>equality constraint와 Lagrange multiplier</li>
+<li>KKT conditions</li>
+<li>inequality, active set, barrier/interior point</li>
+<li>quadratic programming</li>
+<li>trajectory optimization와 model predictive control</li>
+</ol>
+</section>
+<section id="f4.-확률학습으로-확장" class="level3">
+<h3 class="anchored" data-anchor-id="f4.-확률학습으로-확장">F4. 확률·학습으로 확장</h3>
+<ol type="1">
+<li>least squares와 maximum likelihood</li>
+<li>MAP와 regularization</li>
+<li>stochastic gradient와 minibatch</li>
+<li>policy optimization와 reinforcement learning</li>
+<li>sampling과 variational inference의 차이</li>
+</ol>
+</section>
+</section>
+<section id="g.-확률통계확률과정" class="level2">
+<h2 class="anchored" data-anchor-id="g.-확률통계확률과정">G. 확률·통계·확률과정</h2>
+<section id="g1.-확률의-기본-문법" class="level3">
+<h3 class="anchored" data-anchor-id="g1.-확률의-기본-문법">G1. 확률의 기본 문법</h3>
+<ol type="1">
+<li>sample space, event, probability</li>
+<li>random variable과 distribution</li>
+<li>PMF/PDF/CDF와 density의 한계</li>
+<li>joint, marginal, conditional probability</li>
+<li>Bayes theorem과 likelihood/prior/posterior</li>
+</ol>
+</section>
+<section id="g2.-moment와-gaussian" class="level3">
+<h3 class="anchored" data-anchor-id="g2.-moment와-gaussian">G2. moment와 Gaussian</h3>
+<ol type="1">
+<li>expectation, variance, covariance</li>
+<li>independence와 uncorrelated의 차이</li>
+<li>covariance matrix, PSD, ellipse</li>
+<li>multivariate Gaussian</li>
+<li>marginalization과 conditioning</li>
+<li>law of total expectation/variance</li>
+</ol>
+</section>
+<section id="g3.-통계적-추정" class="level3">
+<h3 class="anchored" data-anchor-id="g3.-통계적-추정">G3. 통계적 추정</h3>
+<ol type="1">
+<li>estimator, bias, variance, MSE</li>
+<li>LLN과 CLT의 사용 조건</li>
+<li>confidence/credible interval 구분</li>
+<li>likelihood, MLE, MAP</li>
+<li>linear regression과 residual diagnostic</li>
+<li>robust statistics와 outlier</li>
+</ol>
+</section>
+<section id="g4.-확률과정" class="level3">
+<h3 class="anchored" data-anchor-id="g4.-확률과정">G4. 확률과정</h3>
+<ol type="1">
+<li>random process와 finite-dimensional distribution</li>
+<li>stationarity와 ergodicity</li>
+<li>autocorrelation, cross-correlation, PSD</li>
+<li>white/colored noise</li>
+<li>Markov property와 state-space model</li>
+<li>Gaussian process의 입구</li>
+</ol>
+</section>
+</section>
+<section id="h.-신호-및-시스템" class="level2">
+<h2 class="anchored" data-anchor-id="h.-신호-및-시스템">H. 신호 및 시스템</h2>
+<section id="h1.-신호와-lti-시스템" class="level3">
+<h3 class="anchored" data-anchor-id="h1.-신호와-lti-시스템">H1. 신호와 LTI 시스템</h3>
+<ol type="1">
+<li>continuous/discrete signal, energy/power</li>
+<li>impulse, step, exponential, sinusoid</li>
+<li>linearity, time invariance, causality, stability</li>
+<li>impulse response와 convolution</li>
+<li>difference/differential equation</li>
+</ol>
+</section>
+<section id="h2.-주파수-관점" class="level3">
+<h3 class="anchored" data-anchor-id="h2.-주파수-관점">H2. 주파수 관점</h3>
+<ol type="1">
+<li>Fourier series/transform</li>
+<li>sampling, aliasing, reconstruction</li>
+<li>frequency response와 Bode plot</li>
+<li>Laplace/Z transform</li>
+<li>pole–zero와 stability</li>
+</ol>
+</section>
+<section id="h3.-filtering과-smoothing" class="level3">
+<h3 class="anchored" data-anchor-id="h3.-filtering과-smoothing">H3. filtering과 smoothing</h3>
+<ol type="1">
+<li>moving average와 exponential moving average</li>
+<li>FIR/IIR low-pass filter</li>
+<li>phase delay와 group delay</li>
+<li>batch smoothing와 causal filtering</li>
+<li>Wiener filter와 least squares</li>
+<li>Kalman filtering/smoothing과의 차이</li>
+</ol>
+</section>
+</section>
+<section id="i.-제어공학" class="level2">
+<h2 class="anchored" data-anchor-id="i.-제어공학">I. 제어공학</h2>
+<section id="i1.-피드백과-pid" class="level3">
+<h3 class="anchored" data-anchor-id="i1.-피드백과-pid">I1. 피드백과 PID</h3>
+<ol type="1">
+<li>open/closed loop와 disturbance rejection</li>
+<li>P·PI·PD·PID</li>
+<li>discrete implementation, filtering, anti-windup</li>
+<li>tuning과 robustness</li>
+<li>cascade/feedforward</li>
+</ol>
+</section>
+<section id="i2.-고전제어" class="level3">
+<h3 class="anchored" data-anchor-id="i2.-고전제어">I2. 고전제어</h3>
+<ol type="1">
+<li>transfer function</li>
+<li>transient/steady-state specification</li>
+<li>root locus</li>
+<li>Bode/Nyquist와 gain/phase margin</li>
+<li>lead/lag compensator</li>
+</ol>
+</section>
+<section id="i3.-상태공간-제어" class="level3">
+<h3 class="anchored" data-anchor-id="i3.-상태공간-제어">I3. 상태공간 제어</h3>
+<ol type="1">
+<li>state transition과 discretization</li>
+<li>controllability/observability</li>
+<li>pole placement</li>
+<li>LQR와 Riccati equation</li>
+<li>observer와 separation principle</li>
+<li>impedance/admittance control</li>
+</ol>
+</section>
+</section>
+<section id="j.-센서추정퓨전로컬라이제이션" class="level2">
+<h2 class="anchored" data-anchor-id="j.-센서추정퓨전로컬라이제이션">J. 센서·추정·퓨전·로컬라이제이션</h2>
+<section id="j1.-센서공학" class="level3">
+<h3 class="anchored" data-anchor-id="j1.-센서공학">J1. 센서공학</h3>
+<ol type="1">
+<li>accuracy, precision, resolution, range, bandwidth</li>
+<li>bias, scale factor, nonlinearity, hysteresis</li>
+<li>quantization, saturation, latency, timestamp</li>
+<li>calibration과 uncertainty propagation</li>
+<li>IMU, encoder, camera, LiDAR, GNSS의 측정모델</li>
+</ol>
+</section>
+<section id="j2.-상태추정" class="level3">
+<h3 class="anchored" data-anchor-id="j2.-상태추정">J2. 상태추정</h3>
+<ol type="1">
+<li>Bayes filter</li>
+<li>Kalman/extended/unscented Kalman filter</li>
+<li>information/square-root form</li>
+<li>RTS smoothing</li>
+<li>consistency, NIS/NEES, observability</li>
+</ol>
+</section>
+<section id="j3.-센서-퓨전과-위치추정" class="level3">
+<h3 class="anchored" data-anchor-id="j3.-센서-퓨전과-위치추정">J3. 센서 퓨전과 위치추정</h3>
+<ol type="1">
+<li>frame/time synchronization</li>
+<li>dead reckoning</li>
+<li>landmark measurement와 triangulation</li>
+<li>EKF/PF localization</li>
+<li>occupancy grid</li>
+<li>factor graph, bundle adjustment, graph SLAM</li>
+</ol>
+</section>
+</section>
+<section id="k.-monte-carlosmcparticle-filter" class="level2">
+<h2 class="anchored" data-anchor-id="k.-monte-carlosmcparticle-filter">K. Monte Carlo·SMC·Particle Filter</h2>
+<ol type="1">
+<li>Monte Carlo 적분과 <span class="math inline">\(N^{-1/2}\)</span> 오차</li>
+<li>Importance Sampling 항등식·support·weight variance</li>
+<li>self-normalized IS와 일관성</li>
+<li>Bayes filtering recursion</li>
+<li>Sequential Importance Sampling의 path proposal</li>
+<li>incremental weight의 완전 유도</li>
+<li>weight degeneracy와 ESS</li>
+<li>multinomial/residual/stratified/systematic resampling</li>
+<li>조건부 불편성과 sample impoverishment</li>
+<li>SIR/SISR, bootstrap Particle Filter</li>
+<li>auxiliary/proposal design, Rao–Blackwellization</li>
+<li>smoothing, genealogy, PMCMC로 확장</li>
+</ol>
+<p><span id="p-23600cdc" class="paragraph-anchor"></span><a href="./content/paths/particle-filter.html">Particle Filter 전체 경로</a>는 1–10을 직관·구현·증명 모드로 나누어 제공합니다.</p>
+</section>
+<section id="l.-mcmc" class="level2">
+<h2 class="anchored" data-anchor-id="l.-mcmc">L. MCMC</h2>
+<ol type="1">
+<li>Markov chain과 transition kernel</li>
+<li>stationary/invariant distribution</li>
+<li>irreducibility, aperiodicity, recurrence</li>
+<li>detailed balance는 충분조건이지 필요조건이 아님</li>
+<li>Metropolis–Hastings accept/reject</li>
+<li>정규화 상수의 소거</li>
+<li>Gibbs sampling</li>
+<li>burn-in, autocorrelation, ESS, mixing</li>
+<li>ergodic average와 Monte Carlo error</li>
+<li>HMC/NUTS, Langevin method, PMCMC의 입구</li>
+</ol>
+<p><span id="p-e66f9da1" class="paragraph-anchor"></span><a href="./content/paths/mcmc.html">MCMC 전체 경로</a>는 유한상태 완결 증명에서 시작해 density와 general-kernel 층의 추가 가정을 분리합니다.</p>
+</section>
+<section id="m.-머신러닝과-강화학습으로의-연결" class="level2">
+<h2 class="anchored" data-anchor-id="m.-머신러닝과-강화학습으로의-연결">M. 머신러닝과 강화학습으로의 연결</h2>
+<section id="m1.-머신러닝" class="level3">
+<h3 class="anchored" data-anchor-id="m1.-머신러닝">M1. 머신러닝</h3>
+<ol type="1">
+<li>empirical risk와 train/validation/test</li>
+<li>linear/logistic model</li>
+<li>regularization, bias–variance</li>
+<li>neural network와 backpropagation</li>
+<li>probabilistic model와 uncertainty</li>
+</ol>
+</section>
+<section id="m2.-강화학습" class="level3">
+<h3 class="anchored" data-anchor-id="m2.-강화학습">M2. 강화학습</h3>
+<ol type="1">
+<li>MDP, state, action, reward, return</li>
+<li>Bellman equation과 dynamic programming</li>
+<li>Monte Carlo와 temporal difference</li>
+<li>value approximation과 least squares</li>
+<li>policy gradient와 importance sampling</li>
+<li>model-based RL과 optimal control 연결</li>
+</ol>
+</section>
+</section>
+<section id="성취-기준과-평가-방식" class="level2">
+<h2 class="anchored" data-anchor-id="성취-기준과-평가-방식">성취 기준과 평가 방식</h2>
+<p><span id="p-ba68f43c" class="paragraph-anchor"></span>각 개념의 “완료”는 한 종류가 아닙니다.</p>
+<ol type="1">
+<li><strong>설명:</strong> 핵심을 식 없이 물리적으로 설명한다.</li>
+<li><strong>계산:</strong> 작은 예를 손으로 풀고 shape·단위를 확인한다.</li>
+<li><strong>구현:</strong> Python 실험을 수정하고 예상한 실패를 재현한다.</li>
+<li><strong>유도:</strong> 출발 가정에서 공식을 다시 만든다.</li>
+<li><strong>비판:</strong> 적용 조건, 반례, 수치 실패를 구분한다.</li>
+<li><strong>증명:</strong> 선택한 엄밀성 층에서 모든 의존 정리를 추적한다.</li>
+<li><strong>전이:</strong> 새로운 로봇 문제를 같은 구조로 모델링한다.</li>
+</ol>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script>
+(function loadAtlasInterface() {
+  // 리뷰 프로필이 include 목록을 병합할 때 이 조각이 두 번 삽입되더라도
+  // atlas.js가 중복 로드되지 않도록 막는다.
+  if (window.__ATLAS_SCRIPTS_LOADED__) return;
+  window.__ATLAS_SCRIPTS_LOADED__ = true;
+  const resources = Array.from(document.querySelectorAll('link[href], script[src]'));
+  const siteLibrary = resources
+    .map((element) => element.href || element.src)
+    .find((url) => url && url.includes('/site_libs/'));
+  const fallback = new URL('./', document.baseURI).href;
+  const siteRoot = siteLibrary ? siteLibrary.split('/site_libs/')[0] + '/' : fallback;
+  window.__ROBOTICS_MATH_ATLAS_ROOT__ = siteRoot;
+
+  const script = document.createElement('script');
+  script.src = new URL('assets/js/atlas.js', siteRoot).href;
+  script.defer = true;
+  document.head.appendChild(script);
+})();
+</script>
+
+<style>
+  /* 리뷰 빌드 전용 UI. 독자 배포판(_site)에는 포함되지 않는다. */
+  .review-toolbar {
+    position: absolute;
+    z-index: 1090;
+    display: flex;
+    gap: 0.35rem;
+  }
+  .review-toolbar button,
+  .review-dialog button {
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--bs-border-color, #adb5bd);
+    border-radius: 999px;
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+  }
+  .review-toolbar button:focus-visible,
+  .review-dialog button:focus-visible,
+  .review-dialog textarea:focus-visible {
+    outline: 2px solid var(--bs-primary, #0d6efd);
+    outline-offset: 2px;
+  }
+  .review-dialog {
+    position: fixed;
+    z-index: 1100;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(34rem, calc(100vw - 2rem));
+    max-height: min(80vh, 40rem);
+    overflow-y: auto;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--bs-border-color, #adb5bd);
+    border-radius: 0.5rem;
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  .review-dialog h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+  }
+  .review-dialog label {
+    display: block;
+    margin: 0.6rem 0 0.2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .review-dialog blockquote {
+    margin: 0;
+    padding: 0.4rem 0.6rem;
+    border-left: 3px solid var(--bs-border-color, #adb5bd);
+    font-size: 0.85rem;
+    max-height: 8rem;
+    overflow-y: auto;
+  }
+  .review-dialog textarea {
+    width: 100%;
+    min-height: 4.5rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--bs-border-color, #adb5bd);
+    border-radius: 0.3rem;
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    font-size: 0.85rem;
+  }
+  .review-dialog .review-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.9rem;
+  }
+  .review-dialog .review-anchor-note {
+    margin-top: 0.6rem;
+    font-size: 0.72rem;
+    opacity: 0.7;
+  }
+  .review-dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1095;
+    background: rgba(0, 0, 0, 0.35);
+  }
+  .review-links {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1080;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: flex-end;
+  }
+  .review-links a {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--bs-border-color, #adb5bd);
+    border-radius: 999px;
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    font-size: 0.78rem;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  .review-history {
+    margin-top: 2.5rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px dashed var(--bs-border-color, #adb5bd);
+    border-radius: 0.5rem;
+    font-size: 0.82rem;
+  }
+  .review-history h2 {
+    margin: 0 0 0.4rem;
+    font-size: 0.85rem;
+  }
+  .review-history ul {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+  /* Quarto 다크 모드: 테마 토글이 body.quarto-dark를 붙인다.
+     --bs-* 변수가 토글에 따라 갱신되지 않아 명시적 다크 팔레트로 덮는다. */
+  body.quarto-dark .review-toolbar button,
+  body.quarto-dark .review-dialog,
+  body.quarto-dark .review-dialog button,
+  body.quarto-dark .review-dialog textarea,
+  body.quarto-dark .review-links a {
+    background: #212529;
+    color: #dee2e6;
+    border-color: #495057;
+  }
+  body.quarto-dark .review-dialog blockquote,
+  body.quarto-dark .review-history {
+    border-color: #495057;
+    color: inherit;
+  }
+  body.quarto-dark .review-dialog-backdrop {
+    background: rgba(0, 0, 0, 0.6);
+  }
+</style>
+<script>
+(function reviewTools() {
+  'use strict';
+  if (window.__REVIEW_SCRIPTS_LOADED__) return;
+  window.__REVIEW_SCRIPTS_LOADED__ = true;
+
+  // 수정 제안 이슈가 생성될 저장소 (Phase 1-3 브리지가 이 이슈를 수거한다).
+  const REPO = 'ycpiglet/linear_algebra_for_robotics';
+  const ISSUE_LABEL = 'editorial';
+
+  let toolbar = null;
+  let hideTimer = null;
+  let selectionInfo = null;
+
+  // ---------- 앵커·문맥 추출 ----------
+
+  function blockOf(node) {
+    const el = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+    return el ? el.closest('p, li, blockquote, div.sourceCode, table') : null;
+  }
+
+  function anchorIdOf(block) {
+    if (!block) return null;
+    if (/^p-[0-9a-f]{8}/.test(block.id)) return block.id;
+    const span = block.querySelector(':scope > span.paragraph-anchor');
+    if (span && span.id) return span.id;
+    const inherited = block.closest('[id^="p-"]');
+    return inherited ? inherited.id : null;
+  }
+
+  function contextOf(block, quote) {
+    if (!block) return { prefix: '', suffix: '' };
+    const full = block.textContent.replace(/\s+/g, ' ');
+    const clean = quote.replace(/\s+/g, ' ').trim();
+    const index = full.indexOf(clean);
+    if (index < 0) return { prefix: '', suffix: '' };
+    return {
+      prefix: full.slice(Math.max(0, index - 30), index).trim(),
+      suffix: full.slice(index + clean.length, index + clean.length + 30).trim(),
+    };
+  }
+
+  // 텍스트 프래그먼트(#:~:text=)용 인코딩: 구분자로 쓰이는 '-'까지 이스케이프한다.
+  const enc = (s) => encodeURIComponent(s).replace(/-/g, '%2D');
+
+  function fragmentFor(text) {
+    const clean = text.replace(/\s+/g, ' ').trim();
+    if (!clean) return '';
+    if (clean.length <= 120) return ':~:text=' + enc(clean);
+    const head = clean.slice(0, 60).replace(/\s+\S*$/, '');
+    const tail = clean.slice(-60).replace(/^\S*\s+/, '');
+    return ':~:text=' + enc(head) + ',' + enc(tail);
+  }
+
+  function quoteLink(info) {
+    // 문단 앵커가 있으면 요소 ID + 텍스트 프래그먼트를 겹쳐 쓴다 —
+    // 본문이 바뀌어 텍스트 매칭이 실패해도 문단 위치로는 도달한다.
+    const base = window.location.href.split('#')[0];
+    return base + '#' + (info.anchorId || '') + fragmentFor(info.quote);
+  }
+
+  // ---------- 선택 툴바 ----------
+
+  function removeToolbar() {
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+    if (toolbar) { toolbar.remove(); toolbar = null; }
+  }
+
+  function makeButton(label, onClick) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = label;
+    button.addEventListener('click', onClick);
+    return button;
+  }
+
+  function showToolbar(rect, info) {
+    removeToolbar();
+    toolbar = document.createElement('div');
+    toolbar.className = 'review-toolbar';
+    toolbar.style.left = window.scrollX + rect.left + 'px';
+    toolbar.style.top = window.scrollY + rect.bottom + 6 + 'px';
+
+    const copyButton = makeButton('이 문장 링크 복사', async () => {
+      const url = quoteLink(info);
+      try {
+        await navigator.clipboard.writeText(url);
+        copyButton.textContent = '복사됨 ✓';
+      } catch (error) {
+        copyButton.textContent = '복사 실패';
+        window.prompt('아래 링크를 복사하세요:', url);
+      }
+      hideTimer = setTimeout(removeToolbar, 1500);
+    });
+
+    toolbar.appendChild(copyButton);
+    toolbar.appendChild(makeButton('수정 제안', () => {
+      removeToolbar();
+      openDialog(info);
+    }));
+    document.body.appendChild(toolbar);
+  }
+
+  function onSelectionSettled() {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+      removeToolbar();
+      return;
+    }
+    const quote = selection.toString();
+    if (!quote || !quote.trim()) { removeToolbar(); return; }
+    const range = selection.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+    const host = container.nodeType === Node.ELEMENT_NODE ? container : container.parentElement;
+    if (!host || !host.closest('main')) { removeToolbar(); return; }
+
+    const block = blockOf(range.startContainer);
+    const context = contextOf(block, quote);
+    selectionInfo = {
+      quote: quote.replace(/\s+/g, ' ').trim(),
+      anchorId: anchorIdOf(block),
+      prefix: context.prefix,
+      suffix: context.suffix,
+      isCode: !!(block && block.matches('div.sourceCode')),
+    };
+    showToolbar(range.getBoundingClientRect(), selectionInfo);
+  }
+
+  // ---------- 수정 제안 다이얼로그 ----------
+
+  let dialog = null;
+  let backdrop = null;
+  let lastFocused = null;
+
+  function closeDialog() {
+    if (dialog) { dialog.remove(); dialog = null; }
+    if (backdrop) { backdrop.remove(); backdrop = null; }
+    if (lastFocused && lastFocused.focus) lastFocused.focus();
+    lastFocused = null;
+  }
+
+  const clip = (s, n) => (s.length > n ? s.slice(0, n) + '…' : s);
+  // GitHub 이슈 프리필 URL의 실질 한도는 ~8KB — 초과하면 414이거나 본문이 잘린다.
+  const URL_BUDGET = 7500;
+
+  function issueUrl(info, suggestion, comment) {
+    const pageUrl = window.location.href.split('#')[0];
+    const pageTitle = document.title.replace(/\s*[–—-]\s*[^–—-]*$/, '').trim() || document.title;
+
+    const build = (quoteMax, textMax, clipped) => {
+      const quote = clip(info.quote, quoteMax);
+      const sections = [];
+      if (comment.trim()) sections.push('## 사유·코멘트\n\n' + clip(comment.trim(), textMax));
+      if (suggestion.trim() && suggestion.trim() !== info.quote) {
+        sections.push('## 수정안\n\n~~~\n' + clip(suggestion.trim(), textMax) + '\n~~~');
+      }
+      sections.push('## 원문\n\n> ' + quote);
+      if (clipped) {
+        sections.push('> ⚠ 길이 제한으로 축약된 내용입니다. 전체 원문은 아래 문단 앵커와 페이지 링크로 확인하세요.');
+      }
+      sections.push([
+        '## 위치',
+        '',
+        '- 페이지: ' + pageUrl,
+        '- 문단: `' + (info.anchorId || '(앵커 없음)') + '`',
+      ].join('\n'));
+      sections.push('<!-- editorial-anchor ' + JSON.stringify({
+        v: 1,
+        page: pageUrl,
+        paragraph: info.anchorId || null,
+        quote: quote,
+        prefix: clip(info.prefix, 60),
+        suffix: clip(info.suffix, 60),
+      }) + ' -->');
+
+      const title = '[교정] ' + clip(info.quote, 40) + ' (' + clip(pageTitle, 30) + ')';
+      return 'https://github.com/' + REPO + '/issues/new'
+        + '?title=' + encodeURIComponent(title)
+        + '&labels=' + encodeURIComponent(ISSUE_LABEL)
+        + '&body=' + encodeURIComponent(sections.join('\n\n'));
+    };
+
+    // 한도 안에 들 때까지 단계적으로 줄인다. 한글은 인코딩 시 글자당 9바이트로
+    // 불어나므로(%EC%88%98…) 마지막 단계는 아주 짧게 잡는다.
+    const tiers = [[600, 1500, false], [300, 800, true], [120, 400, true],
+                   [80, 150, true], [60, 60, true]];
+    let url = '';
+    for (const [quoteMax, textMax, clipped] of tiers) {
+      url = build(quoteMax, textMax, clipped);
+      if (url.length <= URL_BUDGET) return url;
+    }
+    return url;
+  }
+
+  function openDialog(info) {
+    closeDialog();
+    lastFocused = document.activeElement;
+
+    backdrop = document.createElement('div');
+    backdrop.className = 'review-dialog-backdrop';
+    backdrop.addEventListener('click', closeDialog);
+
+    dialog = document.createElement('div');
+    dialog.className = 'review-dialog';
+    dialog.setAttribute('role', 'dialog');
+    dialog.setAttribute('aria-modal', 'true');
+    dialog.setAttribute('aria-labelledby', 'review-dialog-title');
+
+    const heading = document.createElement('h2');
+    heading.id = 'review-dialog-title';
+    heading.textContent = '수정 제안';
+
+    const quoteLabel = document.createElement('label');
+    quoteLabel.textContent = '원문';
+    const quoteView = document.createElement('blockquote');
+    quoteView.textContent = info.quote;
+
+    const suggestionLabel = document.createElement('label');
+    suggestionLabel.textContent = '수정안 (그대로 두면 코멘트만 제출)';
+    suggestionLabel.htmlFor = 'review-suggestion';
+    const suggestionInput = document.createElement('textarea');
+    suggestionInput.id = 'review-suggestion';
+    suggestionInput.value = info.quote;
+
+    const commentLabel = document.createElement('label');
+    commentLabel.textContent = '사유·코멘트';
+    commentLabel.htmlFor = 'review-comment';
+    const commentInput = document.createElement('textarea');
+    commentInput.id = 'review-comment';
+
+    const note = document.createElement('p');
+    note.className = 'review-anchor-note';
+    let noteText = 'GitHub 이슈 작성 화면이 미리 채워져 열립니다. 내용 확인 후 제출하세요. 문단 앵커: '
+      + (info.anchorId || '없음(텍스트 인용으로만 추적)');
+    if (info.quote.length > 600) {
+      noteText += ' · ⚠ 선택이 깁니다 — 이슈에는 앞부분만 인용되고 전체 위치는 앵커로 추적됩니다.';
+    }
+    if (info.isCode) {
+      noteText += ' · 코드 블록 제안은 자동 반영되지 않고 사람 검토로 전달됩니다.';
+    }
+    note.textContent = noteText;
+
+    const actions = document.createElement('div');
+    actions.className = 'review-dialog-actions';
+    actions.appendChild(makeButton('취소', closeDialog));
+    actions.appendChild(makeButton('GitHub 이슈로 제출', () => {
+      window.open(issueUrl(info, suggestionInput.value, commentInput.value), '_blank', 'noopener');
+      closeDialog();
+    }));
+
+    dialog.append(heading, quoteLabel, quoteView, suggestionLabel, suggestionInput,
+      commentLabel, commentInput, note, actions);
+    // 포커스 트랩: Tab이 다이얼로그 밖 본문으로 탈출하지 않게 순환시킨다.
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+      const focusables = dialog.querySelectorAll('textarea, button');
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+    document.body.appendChild(backdrop);
+    document.body.appendChild(dialog);
+    suggestionInput.focus();
+  }
+
+  // ---------- 편집 데스크·페이지 편집 링크와 최근 변경 (리뷰 빌드 전용) ----------
+
+  function siteRoot() {
+    return window.__ROBOTICS_MATH_ATLAS_ROOT__ || new URL('./', document.baseURI).href;
+  }
+
+  // 현재 페이지의 .qmd 소스 경로 (사이트 루트 기준). 브리지의 page_to_source와 동일 규칙.
+  function pageSourcePath() {
+    const rootPath = new URL(siteRoot()).pathname;
+    let relative = window.location.pathname;
+    if (relative.startsWith(rootPath)) relative = relative.slice(rootPath.length);
+    if (relative === '' || relative.endsWith('/')) relative += 'index.html';
+    if (!relative.endsWith('.html')) return null;
+    return relative.slice(0, -'.html'.length) + '.qmd';
+  }
+
+  function addReviewChrome() {
+    const source = pageSourcePath();
+    const links = document.createElement('nav');
+    links.className = 'review-links';
+    links.setAttribute('aria-label', '편집 도구');
+
+    if (!/\/editorial-desk\.html$/.test(window.location.pathname)) {
+      const desk = document.createElement('a');
+      desk.href = new URL('editorial-desk.html', siteRoot()).href;
+      desk.textContent = '편집 데스크';
+      links.appendChild(desk);
+    }
+    if (source && source !== 'editorial-desk.qmd') {
+      const edit = document.createElement('a');
+      edit.href = 'https://github.dev/' + REPO + '/blob/main/' + source;
+      edit.target = '_blank';
+      edit.rel = 'noopener';
+      edit.textContent = '이 페이지 고치기';
+      links.appendChild(edit);
+    }
+    if (links.children.length) document.body.appendChild(links);
+    if (source) addPageHistory(source);
+  }
+
+  async function addPageHistory(source) {
+    const main = document.querySelector('main');
+    if (!main) return;
+    let entries;
+    try {
+      const response = await fetch(new URL('platform/generated/page-history.json', siteRoot()).href);
+      if (!response.ok) return;
+      entries = (await response.json())[source];
+    } catch (error) {
+      return;
+    }
+    if (!entries || !entries.length) return;
+    const box = document.createElement('section');
+    box.className = 'review-history';
+    const heading = document.createElement('h2');
+    heading.textContent = '최근 변경';
+    const list = document.createElement('ul');
+    for (const entry of entries) {
+      const item = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = 'https://github.com/' + REPO + '/commit/' + entry.sha;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = entry.subject;
+      item.append(entry.date + ' · ' + entry.author + ' — ');
+      item.appendChild(link);
+      list.appendChild(item);
+    }
+    const all = document.createElement('p');
+    all.style.margin = '0.4rem 0 0';
+    const allLink = document.createElement('a');
+    allLink.href = 'https://github.com/' + REPO + '/commits/main/' + source;
+    allLink.target = '_blank';
+    allLink.rel = 'noopener';
+    allLink.textContent = '이 페이지의 전체 이력 →';
+    all.appendChild(allLink);
+    box.append(heading, list, all);
+    main.appendChild(box);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addReviewChrome);
+  } else {
+    addReviewChrome();
+  }
+
+  // ---------- 이벤트 배선 ----------
+
+  document.addEventListener('mouseup', (event) => {
+    if (dialog || (toolbar && toolbar.contains(event.target))) return;
+    setTimeout(onSelectionSettled, 0);
+  });
+  // 터치 기기(모바일·태블릿)는 길게 눌러 선택해도 mouseup이 오지 않는다 —
+  // selectionchange를 디바운스해서 손가락 선택에도 툴바가 뜨게 한다.
+  let selectionDebounce = null;
+  document.addEventListener('selectionchange', () => {
+    if (dialog) return;
+    clearTimeout(selectionDebounce);
+    selectionDebounce = setTimeout(() => {
+      if (dialog) return;
+      if (toolbar && toolbar.contains(document.activeElement)) return;
+      onSelectionSettled();
+    }, 350);
+  });
+  document.addEventListener('keyup', (event) => {
+    if (event.key === 'Escape') {
+      if (dialog) { closeDialog(); return; }
+      removeToolbar();
+      return;
+    }
+    if (dialog) return;
+    if (event.shiftKey || event.key === 'Shift') setTimeout(onSelectionSettled, 0);
+  });
+  window.addEventListener('scroll', () => { if (!dialog) removeToolbar(); }, { passive: true });
+})();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "복사완료!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "복사완료!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">소스 코드</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="p-59c0850b" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="p-59c0850b-1"><a href="#p-59c0850b-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-59c0850b-2"><a href="#p-59c0850b-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "전체 커리큘럼 지도"</span></span>
+<span id="p-59c0850b-3"><a href="#p-59c0850b-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> "선형대수에서 제어·추정·SMC·MCMC까지 이어지는 비선형 학습 설계"</span></span>
+<span id="p-59c0850b-4"><a href="#p-59c0850b-4" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> true</span></span>
+<span id="p-59c0850b-5"><a href="#p-59c0850b-5" aria-hidden="true" tabindex="-1"></a><span class="an">toc-depth:</span><span class="co"> 3</span></span>
+<span id="p-59c0850b-6"><a href="#p-59c0850b-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-59c0850b-7"><a href="#p-59c0850b-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-8"><a href="#p-59c0850b-8" aria-hidden="true" tabindex="-1"></a><span class="fu">## 먼저 결론: 순서가 아니라 네트워크다</span></span>
+<span id="p-59c0850b-9"><a href="#p-59c0850b-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-10"><a href="#p-59c0850b-10" aria-hidden="true" tabindex="-1"></a>아래 번호는 종이책을 위한 **권장 참조 순서**이지 수강 허가 조건이 아닙니다. PID처럼</span>
+<span id="p-59c0850b-11"><a href="#p-59c0850b-11" aria-hidden="true" tabindex="-1"></a>바로 시작할 수 있는 주제는 먼저 읽고, 페이지의 선수 체크에서 막힌 개념만 되돌아갑니다.</span>
+<span id="p-59c0850b-12"><a href="#p-59c0850b-12" aria-hidden="true" tabindex="-1"></a>한 개념도 <span class="in">`직관 → 계산·적용 → 유도 → 증명·가정 → 가르치기`</span>의 숙달 상태를 따로 가집니다.</span>
+<span id="p-59c0850b-13"><a href="#p-59c0850b-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-14"><a href="#p-59c0850b-14" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 지금 알고 싶은 것 <span class="pp">|</span> 직관에 필요한 최소 선수 <span class="pp">|</span> 구현·유도에서 추가 <span class="pp">|</span> 증명 모드에서 추가 <span class="pp">|</span></span>
+<span id="p-59c0850b-15"><a href="#p-59c0850b-15" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|</span></span>
+<span id="p-59c0850b-16"><a href="#p-59c0850b-16" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> PID <span class="pp">|</span> 오차, 음의 피드백 <span class="pp">|</span> 변화율·누적, sampling, saturation <span class="pp">|</span> 대상 모델, 폐루프 안정성 <span class="pp">|</span></span>
+<span id="p-59c0850b-17"><a href="#p-59c0850b-17" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 최소제곱 <span class="pp">|</span> 벡터, $Ax$의 열 조합 <span class="pp">|</span> 직교투영, QR/SVD, 조건수 <span class="pp">|</span> 내적공간, convexity, rank <span class="pp">|</span></span>
+<span id="p-59c0850b-18"><a href="#p-59c0850b-18" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Kalman Filter <span class="pp">|</span> 평균·공분산, 상태와 측정 <span class="pp">|</span> 선형 시스템, 상태공간, Gaussian 조건부 <span class="pp">|</span> LMMSE 직교성, PSD, 확률 가정 <span class="pp">|</span></span>
+<span id="p-59c0850b-19"><a href="#p-59c0850b-19" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Particle Filter <span class="pp">|</span> Bayes 갱신, Monte Carlo <span class="pp">|</span> IS, SIS, ESS, resampling <span class="pp">|</span> 측도·적분, SLLN, 조건부기댓값 <span class="pp">|</span></span>
+<span id="p-59c0850b-20"><a href="#p-59c0850b-20" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> MCMC <span class="pp">|</span> 확률분포와 조건부확률 <span class="pp">|</span> Markov chain, 불변분포, detailed balance <span class="pp">|</span> kernel, irreducibility, ergodic theorem <span class="pp">|</span></span>
+<span id="p-59c0850b-21"><a href="#p-59c0850b-21" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 로봇 Jacobian <span class="pp">|</span> 벡터미적분, 좌표계 <span class="pp">|</span> matrix calculus, 선형화, SVD <span class="pp">|</span> 미분사상과 rank theorem(선택) <span class="pp">|</span></span>
+<span id="p-59c0850b-22"><a href="#p-59c0850b-22" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 센서 융합·로컬라이제이션 <span class="pp">|</span> frame, noise, Bayes <span class="pp">|</span> SE(3), KF/PF, 관측가능성 <span class="pp">|</span> Lie group 확률·수렴론(선택) <span class="pp">|</span></span>
+<span id="p-59c0850b-23"><a href="#p-59c0850b-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-24"><a href="#p-59c0850b-24" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="권장 사용법"}</span>
+<span id="p-59c0850b-25"><a href="#p-59c0850b-25" aria-hidden="true" tabindex="-1"></a>목표 페이지의 30초 핵심을 먼저 읽고, 직관 체크를 통과하면 계속 갑니다. 계산에서 막히면</span>
+<span id="p-59c0850b-26"><a href="#p-59c0850b-26" aria-hidden="true" tabindex="-1"></a>필요한 선수 하나만 우회하고 <span class="in">`돌아가기`</span> 버튼으로 원래 문단에 복귀합니다.</span>
+<span id="p-59c0850b-27"><a href="#p-59c0850b-27" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-59c0850b-28"><a href="#p-59c0850b-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-29"><a href="#p-59c0850b-29" aria-hidden="true" tabindex="-1"></a><span class="fu">## A. 공학 수학의 공통 언어</span></span>
+<span id="p-59c0850b-30"><a href="#p-59c0850b-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-31"><a href="#p-59c0850b-31" aria-hidden="true" tabindex="-1"></a><span class="fu">### A0. 표기·단위·계산 습관</span></span>
+<span id="p-59c0850b-32"><a href="#p-59c0850b-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-33"><a href="#p-59c0850b-33" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>scalar, vector, matrix, tensor와 shape</span>
+<span id="p-59c0850b-34"><a href="#p-59c0850b-34" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>index, summation, transpose, inverse, pseudoinverse</span>
+<span id="p-59c0850b-35"><a href="#p-59c0850b-35" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>물리 단위와 차원 분석</span>
+<span id="p-59c0850b-36"><a href="#p-59c0850b-36" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>좌표 frame, active/passive transformation</span>
+<span id="p-59c0850b-37"><a href="#p-59c0850b-37" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>exact equality, approximation, heuristic, numerical error의 구분</span>
+<span id="p-59c0850b-38"><a href="#p-59c0850b-38" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Python/NumPy 배열, broadcasting, 재현 가능한 난수</span>
+<span id="p-59c0850b-39"><a href="#p-59c0850b-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-40"><a href="#p-59c0850b-40" aria-hidden="true" tabindex="-1"></a>**통과 기준:** 식을 계산하기 전에 각 항의 shape·단위·frame을 표로 적을 수 있다.</span>
+<span id="p-59c0850b-41"><a href="#p-59c0850b-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-42"><a href="#p-59c0850b-42" aria-hidden="true" tabindex="-1"></a><span class="fu">### A1. 미적분의 공학 직관</span></span>
+<span id="p-59c0850b-43"><a href="#p-59c0850b-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-44"><a href="#p-59c0850b-44" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>함수와 변화량</span>
+<span id="p-59c0850b-45"><a href="#p-59c0850b-45" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>미분: 국소 선형화와 민감도</span>
+<span id="p-59c0850b-46"><a href="#p-59c0850b-46" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>적분: 누적량과 면적</span>
+<span id="p-59c0850b-47"><a href="#p-59c0850b-47" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Taylor 전개와 remainder의 의미</span>
+<span id="p-59c0850b-48"><a href="#p-59c0850b-48" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>연속시간과 이산시간, sampling과 차분</span>
+<span id="p-59c0850b-49"><a href="#p-59c0850b-49" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>gradient, directional derivative, Jacobian의 예고편</span>
+<span id="p-59c0850b-50"><a href="#p-59c0850b-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-51"><a href="#p-59c0850b-51" aria-hidden="true" tabindex="-1"></a>**바로 연결:** PID의 I/D항, 상태방정식 이산화, optimization gradient.</span>
+<span id="p-59c0850b-52"><a href="#p-59c0850b-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-53"><a href="#p-59c0850b-53" aria-hidden="true" tabindex="-1"></a><span class="fu">## B. 선형대수 — Strang 수준을 로봇 언어로</span></span>
+<span id="p-59c0850b-54"><a href="#p-59c0850b-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-55"><a href="#p-59c0850b-55" aria-hidden="true" tabindex="-1"></a><span class="fu">### B1. 벡터와 선형결합</span></span>
+<span id="p-59c0850b-56"><a href="#p-59c0850b-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-57"><a href="#p-59c0850b-57" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>벡터의 기하·데이터·물리량 해석</span>
+<span id="p-59c0850b-58"><a href="#p-59c0850b-58" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>선형결합, span, 생성집합</span>
+<span id="p-59c0850b-59"><a href="#p-59c0850b-59" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>선형독립과 redundancy</span>
+<span id="p-59c0850b-60"><a href="#p-59c0850b-60" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>basis, dimension, coordinates</span>
+<span id="p-59c0850b-61"><a href="#p-59c0850b-61" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>affine combination과 homogeneous coordinates</span>
+<span id="p-59c0850b-62"><a href="#p-59c0850b-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-63"><a href="#p-59c0850b-63" aria-hidden="true" tabindex="-1"></a><span class="fu">### B2. 행렬과 선형사상</span></span>
+<span id="p-59c0850b-64"><a href="#p-59c0850b-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-65"><a href="#p-59c0850b-65" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>행렬곱을 열 조합·행별 측정·함수 합성으로 읽기</span>
+<span id="p-59c0850b-66"><a href="#p-59c0850b-66" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$Ax=b$의 존재성과 유일성</span>
+<span id="p-59c0850b-67"><a href="#p-59c0850b-67" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>elimination, LU, pivoting</span>
+<span id="p-59c0850b-68"><a href="#p-59c0850b-68" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>invertibility와 equivalent conditions</span>
+<span id="p-59c0850b-69"><a href="#p-59c0850b-69" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>block matrix와 Schur complement의 첫 등장</span>
+<span id="p-59c0850b-70"><a href="#p-59c0850b-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-71"><a href="#p-59c0850b-71" aria-hidden="true" tabindex="-1"></a><span class="fu">### B3. 네 기본 부분공간</span></span>
+<span id="p-59c0850b-72"><a href="#p-59c0850b-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-73"><a href="#p-59c0850b-73" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>column space와 가능한 출력</span>
+<span id="p-59c0850b-74"><a href="#p-59c0850b-74" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>null space와 식별 불가능한 방향</span>
+<span id="p-59c0850b-75"><a href="#p-59c0850b-75" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>row space와 left null space</span>
+<span id="p-59c0850b-76"><a href="#p-59c0850b-76" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>rank–nullity</span>
+<span id="p-59c0850b-77"><a href="#p-59c0850b-77" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>센서 observability와 actuator controllability의 예고편</span>
+<span id="p-59c0850b-78"><a href="#p-59c0850b-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-79"><a href="#p-59c0850b-79" aria-hidden="true" tabindex="-1"></a><span class="fu">### B4. 내적·직교·최소제곱</span></span>
+<span id="p-59c0850b-80"><a href="#p-59c0850b-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-81"><a href="#p-59c0850b-81" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>inner product, norm, angle</span>
+<span id="p-59c0850b-82"><a href="#p-59c0850b-82" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>orthogonal complement</span>
+<span id="p-59c0850b-83"><a href="#p-59c0850b-83" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>projection과 projection matrix</span>
+<span id="p-59c0850b-84"><a href="#p-59c0850b-84" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Gram–Schmidt와 QR</span>
+<span id="p-59c0850b-85"><a href="#p-59c0850b-85" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>least squares, weighted least squares</span>
+<span id="p-59c0850b-86"><a href="#p-59c0850b-86" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>rank-deficient 해와 Moore–Penrose pseudoinverse</span>
+<span id="p-59c0850b-87"><a href="#p-59c0850b-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-88"><a href="#p-59c0850b-88" aria-hidden="true" tabindex="-1"></a><span class="fu">### B5. 고유값과 동역학</span></span>
+<span id="p-59c0850b-89"><a href="#p-59c0850b-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-90"><a href="#p-59c0850b-90" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>eigenvector/eigenvalue의 불변 방향</span>
+<span id="p-59c0850b-91"><a href="#p-59c0850b-91" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>diagonalization과 matrix powers</span>
+<span id="p-59c0850b-92"><a href="#p-59c0850b-92" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>complex eigenpair와 회전·진동</span>
+<span id="p-59c0850b-93"><a href="#p-59c0850b-93" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>positive definite matrix와 quadratic form</span>
+<span id="p-59c0850b-94"><a href="#p-59c0850b-94" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>안정성과 discrete/continuous eigenvalue 영역</span>
+<span id="p-59c0850b-95"><a href="#p-59c0850b-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-96"><a href="#p-59c0850b-96" aria-hidden="true" tabindex="-1"></a><span class="fu">### B6. SVD</span></span>
+<span id="p-59c0850b-97"><a href="#p-59c0850b-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-98"><a href="#p-59c0850b-98" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>회전–축척–회전이라는 기하</span>
+<span id="p-59c0850b-99"><a href="#p-59c0850b-99" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>singular value, rank, condition number</span>
+<span id="p-59c0850b-100"><a href="#p-59c0850b-100" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>low-rank approximation</span>
+<span id="p-59c0850b-101"><a href="#p-59c0850b-101" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>pseudoinverse와 damped least squares</span>
+<span id="p-59c0850b-102"><a href="#p-59c0850b-102" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Jacobian singularity와 manipulability</span>
+<span id="p-59c0850b-103"><a href="#p-59c0850b-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-104"><a href="#p-59c0850b-104" aria-hidden="true" tabindex="-1"></a><span class="fu">## C. 수치선형대수</span></span>
+<span id="p-59c0850b-105"><a href="#p-59c0850b-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-106"><a href="#p-59c0850b-106" aria-hidden="true" tabindex="-1"></a><span class="fu">### C1. 부동소수점과 민감도</span></span>
+<span id="p-59c0850b-107"><a href="#p-59c0850b-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-108"><a href="#p-59c0850b-108" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>rounding, cancellation, overflow/underflow</span>
+<span id="p-59c0850b-109"><a href="#p-59c0850b-109" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>forward error와 backward error</span>
+<span id="p-59c0850b-110"><a href="#p-59c0850b-110" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>problem conditioning과 algorithm stability</span>
+<span id="p-59c0850b-111"><a href="#p-59c0850b-111" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>vector/matrix norm과 condition number</span>
+<span id="p-59c0850b-112"><a href="#p-59c0850b-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-113"><a href="#p-59c0850b-113" aria-hidden="true" tabindex="-1"></a><span class="fu">### C2. 안정적인 factorization</span></span>
+<span id="p-59c0850b-114"><a href="#p-59c0850b-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-115"><a href="#p-59c0850b-115" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>LU와 partial pivoting</span>
+<span id="p-59c0850b-116"><a href="#p-59c0850b-116" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Householder/Givens QR</span>
+<span id="p-59c0850b-117"><a href="#p-59c0850b-117" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Cholesky와 SPD 조건</span>
+<span id="p-59c0850b-118"><a href="#p-59c0850b-118" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>SVD와 rank revealing</span>
+<span id="p-59c0850b-119"><a href="#p-59c0850b-119" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>explicit inverse를 피해야 하는 이유</span>
+<span id="p-59c0850b-120"><a href="#p-59c0850b-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-121"><a href="#p-59c0850b-121" aria-hidden="true" tabindex="-1"></a><span class="fu">### C3. 대규모 문제</span></span>
+<span id="p-59c0850b-122"><a href="#p-59c0850b-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-123"><a href="#p-59c0850b-123" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>sparse matrix와 fill-in</span>
+<span id="p-59c0850b-124"><a href="#p-59c0850b-124" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>stationary/Krylov iterative method</span>
+<span id="p-59c0850b-125"><a href="#p-59c0850b-125" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>conjugate gradient와 preconditioning</span>
+<span id="p-59c0850b-126"><a href="#p-59c0850b-126" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>least-squares iterative solver</span>
+<span id="p-59c0850b-127"><a href="#p-59c0850b-127" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>eigenvalue iteration과 Lanczos/Arnoldi 개요</span>
+<span id="p-59c0850b-128"><a href="#p-59c0850b-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-129"><a href="#p-59c0850b-129" aria-hidden="true" tabindex="-1"></a>**로봇 연결:** SLAM sparse normal equation, Jacobian inverse, square-root filtering,</span>
+<span id="p-59c0850b-130"><a href="#p-59c0850b-130" aria-hidden="true" tabindex="-1"></a>trajectory optimization.</span>
+<span id="p-59c0850b-131"><a href="#p-59c0850b-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-132"><a href="#p-59c0850b-132" aria-hidden="true" tabindex="-1"></a><span class="fu">## D. 행렬미적분과 자동미분</span></span>
+<span id="p-59c0850b-133"><a href="#p-59c0850b-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-134"><a href="#p-59c0850b-134" aria-hidden="true" tabindex="-1"></a><span class="fu">### D1. 미분의 언어</span></span>
+<span id="p-59c0850b-135"><a href="#p-59c0850b-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-136"><a href="#p-59c0850b-136" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>differential과 linear approximation</span>
+<span id="p-59c0850b-137"><a href="#p-59c0850b-137" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Jacobian, gradient, Hessian의 shape</span>
+<span id="p-59c0850b-138"><a href="#p-59c0850b-138" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>numerator/denominator layout 관례</span>
+<span id="p-59c0850b-139"><a href="#p-59c0850b-139" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>chain rule을 함수 합성으로 읽기</span>
+<span id="p-59c0850b-140"><a href="#p-59c0850b-140" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>vector–Jacobian product와 Jacobian–vector product</span>
+<span id="p-59c0850b-141"><a href="#p-59c0850b-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-142"><a href="#p-59c0850b-142" aria-hidden="true" tabindex="-1"></a><span class="fu">### D2. 자주 쓰는 유도</span></span>
+<span id="p-59c0850b-143"><a href="#p-59c0850b-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-144"><a href="#p-59c0850b-144" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>linear/quadratic form</span>
+<span id="p-59c0850b-145"><a href="#p-59c0850b-145" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>trace trick</span>
+<span id="p-59c0850b-146"><a href="#p-59c0850b-146" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>inverse와 determinant 미분</span>
+<span id="p-59c0850b-147"><a href="#p-59c0850b-147" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>least-squares gradient/Hessian</span>
+<span id="p-59c0850b-148"><a href="#p-59c0850b-148" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>covariance propagation의 1차 근사</span>
+<span id="p-59c0850b-149"><a href="#p-59c0850b-149" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>implicit differentiation</span>
+<span id="p-59c0850b-150"><a href="#p-59c0850b-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-151"><a href="#p-59c0850b-151" aria-hidden="true" tabindex="-1"></a><span class="fu">### D3. 구현</span></span>
+<span id="p-59c0850b-152"><a href="#p-59c0850b-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-153"><a href="#p-59c0850b-153" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>finite difference 검산</span>
+<span id="p-59c0850b-154"><a href="#p-59c0850b-154" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>symbolic differentiation</span>
+<span id="p-59c0850b-155"><a href="#p-59c0850b-155" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>forward/reverse-mode AD</span>
+<span id="p-59c0850b-156"><a href="#p-59c0850b-156" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>computational graph와 memory trade-off</span>
+<span id="p-59c0850b-157"><a href="#p-59c0850b-157" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>nonsmooth point와 custom derivative</span>
+<span id="p-59c0850b-158"><a href="#p-59c0850b-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-159"><a href="#p-59c0850b-159" aria-hidden="true" tabindex="-1"></a><span class="fu">## E. Lie Group — $SO(3)$와 $SE(3)$</span></span>
+<span id="p-59c0850b-160"><a href="#p-59c0850b-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-161"><a href="#p-59c0850b-161" aria-hidden="true" tabindex="-1"></a><span class="fu">### E1. 3차원 회전 표현</span></span>
+<span id="p-59c0850b-162"><a href="#p-59c0850b-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-163"><a href="#p-59c0850b-163" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>rotation matrix의 조건과 자유도</span>
+<span id="p-59c0850b-164"><a href="#p-59c0850b-164" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Euler angle과 singularity</span>
+<span id="p-59c0850b-165"><a href="#p-59c0850b-165" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>axis–angle, exponential coordinates</span>
+<span id="p-59c0850b-166"><a href="#p-59c0850b-166" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>quaternion, double cover, normalization</span>
+<span id="p-59c0850b-167"><a href="#p-59c0850b-167" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>표현 선택과 frame convention</span>
+<span id="p-59c0850b-168"><a href="#p-59c0850b-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-169"><a href="#p-59c0850b-169" aria-hidden="true" tabindex="-1"></a><span class="fu">### E2. Lie group/algebra</span></span>
+<span id="p-59c0850b-170"><a href="#p-59c0850b-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-171"><a href="#p-59c0850b-171" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>group, tangent space, hat/vee</span>
+<span id="p-59c0850b-172"><a href="#p-59c0850b-172" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>exponential/logarithm map</span>
+<span id="p-59c0850b-173"><a href="#p-59c0850b-173" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>adjoint와 frame 변화</span>
+<span id="p-59c0850b-174"><a href="#p-59c0850b-174" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>BCH의 공학적 범위</span>
+<span id="p-59c0850b-175"><a href="#p-59c0850b-175" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>left/right perturbation과 Jacobian</span>
+<span id="p-59c0850b-176"><a href="#p-59c0850b-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-177"><a href="#p-59c0850b-177" aria-hidden="true" tabindex="-1"></a><span class="fu">### E3. 강체변환과 추정</span></span>
+<span id="p-59c0850b-178"><a href="#p-59c0850b-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-179"><a href="#p-59c0850b-179" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>homogeneous transform와 $SE(3)$</span>
+<span id="p-59c0850b-180"><a href="#p-59c0850b-180" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>twist, screw motion, forward kinematics</span>
+<span id="p-59c0850b-181"><a href="#p-59c0850b-181" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>pose residual과 manifold optimization</span>
+<span id="p-59c0850b-182"><a href="#p-59c0850b-182" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>covariance를 tangent space에서 다루기</span>
+<span id="p-59c0850b-183"><a href="#p-59c0850b-183" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>IMU preintegration과 factor graph의 입구</span>
+<span id="p-59c0850b-184"><a href="#p-59c0850b-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-185"><a href="#p-59c0850b-185" aria-hidden="true" tabindex="-1"></a><span class="fu">## F. 최적화</span></span>
+<span id="p-59c0850b-186"><a href="#p-59c0850b-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-187"><a href="#p-59c0850b-187" aria-hidden="true" tabindex="-1"></a><span class="fu">### F1. 문제를 세우는 법</span></span>
+<span id="p-59c0850b-188"><a href="#p-59c0850b-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-189"><a href="#p-59c0850b-189" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>decision variable, objective, constraint</span>
+<span id="p-59c0850b-190"><a href="#p-59c0850b-190" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>feasible set와 local/global optimum</span>
+<span id="p-59c0850b-191"><a href="#p-59c0850b-191" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>scaling, units, residual design</span>
+<span id="p-59c0850b-192"><a href="#p-59c0850b-192" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>convex set/function과 왜 중요한가</span>
+<span id="p-59c0850b-193"><a href="#p-59c0850b-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-194"><a href="#p-59c0850b-194" aria-hidden="true" tabindex="-1"></a><span class="fu">### F2. unconstrained optimization</span></span>
+<span id="p-59c0850b-195"><a href="#p-59c0850b-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-196"><a href="#p-59c0850b-196" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>gradient descent와 line search</span>
+<span id="p-59c0850b-197"><a href="#p-59c0850b-197" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Newton, Gauss–Newton, Levenberg–Marquardt</span>
+<span id="p-59c0850b-198"><a href="#p-59c0850b-198" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>trust region</span>
+<span id="p-59c0850b-199"><a href="#p-59c0850b-199" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>conditioning과 preconditioning</span>
+<span id="p-59c0850b-200"><a href="#p-59c0850b-200" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>stopping criterion과 진단</span>
+<span id="p-59c0850b-201"><a href="#p-59c0850b-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-202"><a href="#p-59c0850b-202" aria-hidden="true" tabindex="-1"></a><span class="fu">### F3. constrained optimization</span></span>
+<span id="p-59c0850b-203"><a href="#p-59c0850b-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-204"><a href="#p-59c0850b-204" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>equality constraint와 Lagrange multiplier</span>
+<span id="p-59c0850b-205"><a href="#p-59c0850b-205" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>KKT conditions</span>
+<span id="p-59c0850b-206"><a href="#p-59c0850b-206" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>inequality, active set, barrier/interior point</span>
+<span id="p-59c0850b-207"><a href="#p-59c0850b-207" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>quadratic programming</span>
+<span id="p-59c0850b-208"><a href="#p-59c0850b-208" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>trajectory optimization와 model predictive control</span>
+<span id="p-59c0850b-209"><a href="#p-59c0850b-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-210"><a href="#p-59c0850b-210" aria-hidden="true" tabindex="-1"></a><span class="fu">### F4. 확률·학습으로 확장</span></span>
+<span id="p-59c0850b-211"><a href="#p-59c0850b-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-212"><a href="#p-59c0850b-212" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>least squares와 maximum likelihood</span>
+<span id="p-59c0850b-213"><a href="#p-59c0850b-213" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>MAP와 regularization</span>
+<span id="p-59c0850b-214"><a href="#p-59c0850b-214" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>stochastic gradient와 minibatch</span>
+<span id="p-59c0850b-215"><a href="#p-59c0850b-215" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>policy optimization와 reinforcement learning</span>
+<span id="p-59c0850b-216"><a href="#p-59c0850b-216" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>sampling과 variational inference의 차이</span>
+<span id="p-59c0850b-217"><a href="#p-59c0850b-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-218"><a href="#p-59c0850b-218" aria-hidden="true" tabindex="-1"></a><span class="fu">## G. 확률·통계·확률과정</span></span>
+<span id="p-59c0850b-219"><a href="#p-59c0850b-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-220"><a href="#p-59c0850b-220" aria-hidden="true" tabindex="-1"></a><span class="fu">### G1. 확률의 기본 문법</span></span>
+<span id="p-59c0850b-221"><a href="#p-59c0850b-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-222"><a href="#p-59c0850b-222" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>sample space, event, probability</span>
+<span id="p-59c0850b-223"><a href="#p-59c0850b-223" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>random variable과 distribution</span>
+<span id="p-59c0850b-224"><a href="#p-59c0850b-224" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>PMF/PDF/CDF와 density의 한계</span>
+<span id="p-59c0850b-225"><a href="#p-59c0850b-225" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>joint, marginal, conditional probability</span>
+<span id="p-59c0850b-226"><a href="#p-59c0850b-226" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Bayes theorem과 likelihood/prior/posterior</span>
+<span id="p-59c0850b-227"><a href="#p-59c0850b-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-228"><a href="#p-59c0850b-228" aria-hidden="true" tabindex="-1"></a><span class="fu">### G2. moment와 Gaussian</span></span>
+<span id="p-59c0850b-229"><a href="#p-59c0850b-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-230"><a href="#p-59c0850b-230" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>expectation, variance, covariance</span>
+<span id="p-59c0850b-231"><a href="#p-59c0850b-231" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>independence와 uncorrelated의 차이</span>
+<span id="p-59c0850b-232"><a href="#p-59c0850b-232" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>covariance matrix, PSD, ellipse</span>
+<span id="p-59c0850b-233"><a href="#p-59c0850b-233" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>multivariate Gaussian</span>
+<span id="p-59c0850b-234"><a href="#p-59c0850b-234" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>marginalization과 conditioning</span>
+<span id="p-59c0850b-235"><a href="#p-59c0850b-235" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>law of total expectation/variance</span>
+<span id="p-59c0850b-236"><a href="#p-59c0850b-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-237"><a href="#p-59c0850b-237" aria-hidden="true" tabindex="-1"></a><span class="fu">### G3. 통계적 추정</span></span>
+<span id="p-59c0850b-238"><a href="#p-59c0850b-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-239"><a href="#p-59c0850b-239" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>estimator, bias, variance, MSE</span>
+<span id="p-59c0850b-240"><a href="#p-59c0850b-240" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>LLN과 CLT의 사용 조건</span>
+<span id="p-59c0850b-241"><a href="#p-59c0850b-241" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>confidence/credible interval 구분</span>
+<span id="p-59c0850b-242"><a href="#p-59c0850b-242" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>likelihood, MLE, MAP</span>
+<span id="p-59c0850b-243"><a href="#p-59c0850b-243" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>linear regression과 residual diagnostic</span>
+<span id="p-59c0850b-244"><a href="#p-59c0850b-244" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>robust statistics와 outlier</span>
+<span id="p-59c0850b-245"><a href="#p-59c0850b-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-246"><a href="#p-59c0850b-246" aria-hidden="true" tabindex="-1"></a><span class="fu">### G4. 확률과정</span></span>
+<span id="p-59c0850b-247"><a href="#p-59c0850b-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-248"><a href="#p-59c0850b-248" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>random process와 finite-dimensional distribution</span>
+<span id="p-59c0850b-249"><a href="#p-59c0850b-249" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>stationarity와 ergodicity</span>
+<span id="p-59c0850b-250"><a href="#p-59c0850b-250" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>autocorrelation, cross-correlation, PSD</span>
+<span id="p-59c0850b-251"><a href="#p-59c0850b-251" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>white/colored noise</span>
+<span id="p-59c0850b-252"><a href="#p-59c0850b-252" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Markov property와 state-space model</span>
+<span id="p-59c0850b-253"><a href="#p-59c0850b-253" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Gaussian process의 입구</span>
+<span id="p-59c0850b-254"><a href="#p-59c0850b-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-255"><a href="#p-59c0850b-255" aria-hidden="true" tabindex="-1"></a><span class="fu">## H. 신호 및 시스템</span></span>
+<span id="p-59c0850b-256"><a href="#p-59c0850b-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-257"><a href="#p-59c0850b-257" aria-hidden="true" tabindex="-1"></a><span class="fu">### H1. 신호와 LTI 시스템</span></span>
+<span id="p-59c0850b-258"><a href="#p-59c0850b-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-259"><a href="#p-59c0850b-259" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>continuous/discrete signal, energy/power</span>
+<span id="p-59c0850b-260"><a href="#p-59c0850b-260" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>impulse, step, exponential, sinusoid</span>
+<span id="p-59c0850b-261"><a href="#p-59c0850b-261" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>linearity, time invariance, causality, stability</span>
+<span id="p-59c0850b-262"><a href="#p-59c0850b-262" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>impulse response와 convolution</span>
+<span id="p-59c0850b-263"><a href="#p-59c0850b-263" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>difference/differential equation</span>
+<span id="p-59c0850b-264"><a href="#p-59c0850b-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-265"><a href="#p-59c0850b-265" aria-hidden="true" tabindex="-1"></a><span class="fu">### H2. 주파수 관점</span></span>
+<span id="p-59c0850b-266"><a href="#p-59c0850b-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-267"><a href="#p-59c0850b-267" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Fourier series/transform</span>
+<span id="p-59c0850b-268"><a href="#p-59c0850b-268" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>sampling, aliasing, reconstruction</span>
+<span id="p-59c0850b-269"><a href="#p-59c0850b-269" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>frequency response와 Bode plot</span>
+<span id="p-59c0850b-270"><a href="#p-59c0850b-270" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Laplace/Z transform</span>
+<span id="p-59c0850b-271"><a href="#p-59c0850b-271" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>pole–zero와 stability</span>
+<span id="p-59c0850b-272"><a href="#p-59c0850b-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-273"><a href="#p-59c0850b-273" aria-hidden="true" tabindex="-1"></a><span class="fu">### H3. filtering과 smoothing</span></span>
+<span id="p-59c0850b-274"><a href="#p-59c0850b-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-275"><a href="#p-59c0850b-275" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>moving average와 exponential moving average</span>
+<span id="p-59c0850b-276"><a href="#p-59c0850b-276" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>FIR/IIR low-pass filter</span>
+<span id="p-59c0850b-277"><a href="#p-59c0850b-277" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>phase delay와 group delay</span>
+<span id="p-59c0850b-278"><a href="#p-59c0850b-278" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>batch smoothing와 causal filtering</span>
+<span id="p-59c0850b-279"><a href="#p-59c0850b-279" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Wiener filter와 least squares</span>
+<span id="p-59c0850b-280"><a href="#p-59c0850b-280" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Kalman filtering/smoothing과의 차이</span>
+<span id="p-59c0850b-281"><a href="#p-59c0850b-281" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-282"><a href="#p-59c0850b-282" aria-hidden="true" tabindex="-1"></a><span class="fu">## I. 제어공학</span></span>
+<span id="p-59c0850b-283"><a href="#p-59c0850b-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-284"><a href="#p-59c0850b-284" aria-hidden="true" tabindex="-1"></a><span class="fu">### I1. 피드백과 PID</span></span>
+<span id="p-59c0850b-285"><a href="#p-59c0850b-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-286"><a href="#p-59c0850b-286" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>open/closed loop와 disturbance rejection</span>
+<span id="p-59c0850b-287"><a href="#p-59c0850b-287" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>P·PI·PD·PID</span>
+<span id="p-59c0850b-288"><a href="#p-59c0850b-288" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>discrete implementation, filtering, anti-windup</span>
+<span id="p-59c0850b-289"><a href="#p-59c0850b-289" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>tuning과 robustness</span>
+<span id="p-59c0850b-290"><a href="#p-59c0850b-290" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>cascade/feedforward</span>
+<span id="p-59c0850b-291"><a href="#p-59c0850b-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-292"><a href="#p-59c0850b-292" aria-hidden="true" tabindex="-1"></a><span class="fu">### I2. 고전제어</span></span>
+<span id="p-59c0850b-293"><a href="#p-59c0850b-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-294"><a href="#p-59c0850b-294" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>transfer function</span>
+<span id="p-59c0850b-295"><a href="#p-59c0850b-295" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>transient/steady-state specification</span>
+<span id="p-59c0850b-296"><a href="#p-59c0850b-296" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>root locus</span>
+<span id="p-59c0850b-297"><a href="#p-59c0850b-297" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Bode/Nyquist와 gain/phase margin</span>
+<span id="p-59c0850b-298"><a href="#p-59c0850b-298" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>lead/lag compensator</span>
+<span id="p-59c0850b-299"><a href="#p-59c0850b-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-300"><a href="#p-59c0850b-300" aria-hidden="true" tabindex="-1"></a><span class="fu">### I3. 상태공간 제어</span></span>
+<span id="p-59c0850b-301"><a href="#p-59c0850b-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-302"><a href="#p-59c0850b-302" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>state transition과 discretization</span>
+<span id="p-59c0850b-303"><a href="#p-59c0850b-303" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>controllability/observability</span>
+<span id="p-59c0850b-304"><a href="#p-59c0850b-304" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>pole placement</span>
+<span id="p-59c0850b-305"><a href="#p-59c0850b-305" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>LQR와 Riccati equation</span>
+<span id="p-59c0850b-306"><a href="#p-59c0850b-306" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>observer와 separation principle</span>
+<span id="p-59c0850b-307"><a href="#p-59c0850b-307" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>impedance/admittance control</span>
+<span id="p-59c0850b-308"><a href="#p-59c0850b-308" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-309"><a href="#p-59c0850b-309" aria-hidden="true" tabindex="-1"></a><span class="fu">## J. 센서·추정·퓨전·로컬라이제이션</span></span>
+<span id="p-59c0850b-310"><a href="#p-59c0850b-310" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-311"><a href="#p-59c0850b-311" aria-hidden="true" tabindex="-1"></a><span class="fu">### J1. 센서공학</span></span>
+<span id="p-59c0850b-312"><a href="#p-59c0850b-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-313"><a href="#p-59c0850b-313" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>accuracy, precision, resolution, range, bandwidth</span>
+<span id="p-59c0850b-314"><a href="#p-59c0850b-314" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>bias, scale factor, nonlinearity, hysteresis</span>
+<span id="p-59c0850b-315"><a href="#p-59c0850b-315" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>quantization, saturation, latency, timestamp</span>
+<span id="p-59c0850b-316"><a href="#p-59c0850b-316" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>calibration과 uncertainty propagation</span>
+<span id="p-59c0850b-317"><a href="#p-59c0850b-317" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>IMU, encoder, camera, LiDAR, GNSS의 측정모델</span>
+<span id="p-59c0850b-318"><a href="#p-59c0850b-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-319"><a href="#p-59c0850b-319" aria-hidden="true" tabindex="-1"></a><span class="fu">### J2. 상태추정</span></span>
+<span id="p-59c0850b-320"><a href="#p-59c0850b-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-321"><a href="#p-59c0850b-321" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Bayes filter</span>
+<span id="p-59c0850b-322"><a href="#p-59c0850b-322" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Kalman/extended/unscented Kalman filter</span>
+<span id="p-59c0850b-323"><a href="#p-59c0850b-323" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>information/square-root form</span>
+<span id="p-59c0850b-324"><a href="#p-59c0850b-324" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>RTS smoothing</span>
+<span id="p-59c0850b-325"><a href="#p-59c0850b-325" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>consistency, NIS/NEES, observability</span>
+<span id="p-59c0850b-326"><a href="#p-59c0850b-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-327"><a href="#p-59c0850b-327" aria-hidden="true" tabindex="-1"></a><span class="fu">### J3. 센서 퓨전과 위치추정</span></span>
+<span id="p-59c0850b-328"><a href="#p-59c0850b-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-329"><a href="#p-59c0850b-329" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>frame/time synchronization</span>
+<span id="p-59c0850b-330"><a href="#p-59c0850b-330" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>dead reckoning</span>
+<span id="p-59c0850b-331"><a href="#p-59c0850b-331" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>landmark measurement와 triangulation</span>
+<span id="p-59c0850b-332"><a href="#p-59c0850b-332" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>EKF/PF localization</span>
+<span id="p-59c0850b-333"><a href="#p-59c0850b-333" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>occupancy grid</span>
+<span id="p-59c0850b-334"><a href="#p-59c0850b-334" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>factor graph, bundle adjustment, graph SLAM</span>
+<span id="p-59c0850b-335"><a href="#p-59c0850b-335" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-336"><a href="#p-59c0850b-336" aria-hidden="true" tabindex="-1"></a><span class="fu">## K. Monte Carlo·SMC·Particle Filter</span></span>
+<span id="p-59c0850b-337"><a href="#p-59c0850b-337" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-338"><a href="#p-59c0850b-338" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Monte Carlo 적분과 $N^{-1/2}$ 오차</span>
+<span id="p-59c0850b-339"><a href="#p-59c0850b-339" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Importance Sampling 항등식·support·weight variance</span>
+<span id="p-59c0850b-340"><a href="#p-59c0850b-340" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>self-normalized IS와 일관성</span>
+<span id="p-59c0850b-341"><a href="#p-59c0850b-341" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Bayes filtering recursion</span>
+<span id="p-59c0850b-342"><a href="#p-59c0850b-342" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Sequential Importance Sampling의 path proposal</span>
+<span id="p-59c0850b-343"><a href="#p-59c0850b-343" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>incremental weight의 완전 유도</span>
+<span id="p-59c0850b-344"><a href="#p-59c0850b-344" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>weight degeneracy와 ESS</span>
+<span id="p-59c0850b-345"><a href="#p-59c0850b-345" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>multinomial/residual/stratified/systematic resampling</span>
+<span id="p-59c0850b-346"><a href="#p-59c0850b-346" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>조건부 불편성과 sample impoverishment</span>
+<span id="p-59c0850b-347"><a href="#p-59c0850b-347" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>SIR/SISR, bootstrap Particle Filter</span>
+<span id="p-59c0850b-348"><a href="#p-59c0850b-348" aria-hidden="true" tabindex="-1"></a><span class="ss">11. </span>auxiliary/proposal design, Rao–Blackwellization</span>
+<span id="p-59c0850b-349"><a href="#p-59c0850b-349" aria-hidden="true" tabindex="-1"></a><span class="ss">12. </span>smoothing, genealogy, PMCMC로 확장</span>
+<span id="p-59c0850b-350"><a href="#p-59c0850b-350" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-351"><a href="#p-59c0850b-351" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Particle Filter 전체 경로</span><span class="co">](content/paths/particle-filter.qmd)</span>는 1–10을 직관·구현·증명</span>
+<span id="p-59c0850b-352"><a href="#p-59c0850b-352" aria-hidden="true" tabindex="-1"></a>모드로 나누어 제공합니다.</span>
+<span id="p-59c0850b-353"><a href="#p-59c0850b-353" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-354"><a href="#p-59c0850b-354" aria-hidden="true" tabindex="-1"></a><span class="fu">## L. MCMC</span></span>
+<span id="p-59c0850b-355"><a href="#p-59c0850b-355" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-356"><a href="#p-59c0850b-356" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Markov chain과 transition kernel</span>
+<span id="p-59c0850b-357"><a href="#p-59c0850b-357" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>stationary/invariant distribution</span>
+<span id="p-59c0850b-358"><a href="#p-59c0850b-358" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>irreducibility, aperiodicity, recurrence</span>
+<span id="p-59c0850b-359"><a href="#p-59c0850b-359" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>detailed balance는 충분조건이지 필요조건이 아님</span>
+<span id="p-59c0850b-360"><a href="#p-59c0850b-360" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Metropolis–Hastings accept/reject</span>
+<span id="p-59c0850b-361"><a href="#p-59c0850b-361" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>정규화 상수의 소거</span>
+<span id="p-59c0850b-362"><a href="#p-59c0850b-362" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Gibbs sampling</span>
+<span id="p-59c0850b-363"><a href="#p-59c0850b-363" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>burn-in, autocorrelation, ESS, mixing</span>
+<span id="p-59c0850b-364"><a href="#p-59c0850b-364" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>ergodic average와 Monte Carlo error</span>
+<span id="p-59c0850b-365"><a href="#p-59c0850b-365" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>HMC/NUTS, Langevin method, PMCMC의 입구</span>
+<span id="p-59c0850b-366"><a href="#p-59c0850b-366" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-367"><a href="#p-59c0850b-367" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">MCMC 전체 경로</span><span class="co">](content/paths/mcmc.qmd)</span>는 유한상태 완결 증명에서 시작해 density와</span>
+<span id="p-59c0850b-368"><a href="#p-59c0850b-368" aria-hidden="true" tabindex="-1"></a>general-kernel 층의 추가 가정을 분리합니다.</span>
+<span id="p-59c0850b-369"><a href="#p-59c0850b-369" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-370"><a href="#p-59c0850b-370" aria-hidden="true" tabindex="-1"></a><span class="fu">## M. 머신러닝과 강화학습으로의 연결</span></span>
+<span id="p-59c0850b-371"><a href="#p-59c0850b-371" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-372"><a href="#p-59c0850b-372" aria-hidden="true" tabindex="-1"></a><span class="fu">### M1. 머신러닝</span></span>
+<span id="p-59c0850b-373"><a href="#p-59c0850b-373" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-374"><a href="#p-59c0850b-374" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>empirical risk와 train/validation/test</span>
+<span id="p-59c0850b-375"><a href="#p-59c0850b-375" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>linear/logistic model</span>
+<span id="p-59c0850b-376"><a href="#p-59c0850b-376" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>regularization, bias–variance</span>
+<span id="p-59c0850b-377"><a href="#p-59c0850b-377" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>neural network와 backpropagation</span>
+<span id="p-59c0850b-378"><a href="#p-59c0850b-378" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>probabilistic model와 uncertainty</span>
+<span id="p-59c0850b-379"><a href="#p-59c0850b-379" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-380"><a href="#p-59c0850b-380" aria-hidden="true" tabindex="-1"></a><span class="fu">### M2. 강화학습</span></span>
+<span id="p-59c0850b-381"><a href="#p-59c0850b-381" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-382"><a href="#p-59c0850b-382" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>MDP, state, action, reward, return</span>
+<span id="p-59c0850b-383"><a href="#p-59c0850b-383" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Bellman equation과 dynamic programming</span>
+<span id="p-59c0850b-384"><a href="#p-59c0850b-384" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Monte Carlo와 temporal difference</span>
+<span id="p-59c0850b-385"><a href="#p-59c0850b-385" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>value approximation과 least squares</span>
+<span id="p-59c0850b-386"><a href="#p-59c0850b-386" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>policy gradient와 importance sampling</span>
+<span id="p-59c0850b-387"><a href="#p-59c0850b-387" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>model-based RL과 optimal control 연결</span>
+<span id="p-59c0850b-388"><a href="#p-59c0850b-388" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-389"><a href="#p-59c0850b-389" aria-hidden="true" tabindex="-1"></a><span class="fu">## 성취 기준과 평가 방식</span></span>
+<span id="p-59c0850b-390"><a href="#p-59c0850b-390" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-391"><a href="#p-59c0850b-391" aria-hidden="true" tabindex="-1"></a>각 개념의 “완료”는 한 종류가 아닙니다.</span>
+<span id="p-59c0850b-392"><a href="#p-59c0850b-392" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-59c0850b-393"><a href="#p-59c0850b-393" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**설명:** 핵심을 식 없이 물리적으로 설명한다.</span>
+<span id="p-59c0850b-394"><a href="#p-59c0850b-394" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**계산:** 작은 예를 손으로 풀고 shape·단위를 확인한다.</span>
+<span id="p-59c0850b-395"><a href="#p-59c0850b-395" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**구현:** Python 실험을 수정하고 예상한 실패를 재현한다.</span>
+<span id="p-59c0850b-396"><a href="#p-59c0850b-396" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**유도:** 출발 가정에서 공식을 다시 만든다.</span>
+<span id="p-59c0850b-397"><a href="#p-59c0850b-397" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**비판:** 적용 조건, 반례, 수치 실패를 구분한다.</span>
+<span id="p-59c0850b-398"><a href="#p-59c0850b-398" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**증명:** 선택한 엄밀성 층에서 모든 의존 정리를 추적한다.</span>
+<span id="p-59c0850b-399"><a href="#p-59c0850b-399" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**전이:** 새로운 로봇 문제를 같은 구조로 모델링한다.</span></code></pre></div><button title="클립보드 복사" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p><span id="p-34ab9566" class="paragraph-anchor"></span>© Robotics Math Atlas contributors · CC BY-NC-SA 4.0</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/blob/main/curriculum.qmd" class="toc-action"><i class="bi bi-github"></i>소스코드 보기</a></li><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/issues/new" class="toc-action"><i class="bi empty"></i>이슈 보고</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="./about.html#progress-center">
+<p><span id="p-9341ed86" class="paragraph-anchor"></span>학습 기록 관리</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

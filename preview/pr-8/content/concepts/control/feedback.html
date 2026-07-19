@@ -1,0 +1,2295 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>피드백: 결과를 보고 다음 행동을 고치는 구조 – Robotics Math Atlas</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../assets/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-4a0610749eeff5ab924a4729b5181608.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-de927ec96a2411cf822331f71755f83e.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-4a0610749eeff5ab924a4729b5181608.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-cc6ea0be87d5a8b3413ffadf91d65f43.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-a8089986a9afe3c4f747238e4d5cfdb5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-cc6ea0be87d5a8b3413ffadf91d65f43.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "일치 없음",
+    "search-matching-documents-text": "일치된 문서",
+    "search-copy-link-title": "검색 링크 복사",
+    "search-hide-matches-text": "추가 검색 결과 숨기기",
+    "search-more-match-text": "추가 검색결과",
+    "search-more-matches-text": "추가 검색결과",
+    "search-clear-button-title": "제거",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "취소",
+    "search-submit-button-title": "검색",
+    "search-label": "검색"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script type="application/json" class="js-hypothesis-config">
+{
+  "theme": "clean",
+  "openSidebar": false
+}
+</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Robotics Math Atlas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="검색"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="탐색 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../../index.html" aria-current="page"> 
+<span class="menu-text">홈</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../atlas.html"> 
+<span class="menu-text">아틀라스</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../paths.html"> 
+<span class="menu-text">학습 경로</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../curriculum.html"> 
+<span class="menu-text">전체 커리큘럼</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../proofs.html"> 
+<span class="menu-text">증명 지도</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../stories.html"> 
+<span class="menu-text">이야기</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../glossary.html"> 
+<span class="menu-text">용어집</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../about.html"> 
+<span class="menu-text">사용법</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ycpiglet/linear_algebra_for_robotics"> <i class="bi bi-github" role="img" aria-label="GitHub 저장소">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="다크 모드 전환"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="리더 모드 전환">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">제어</li><li class="breadcrumb-item"><a href="../../../content/concepts/control/feedback.html">Control</a></li><li class="breadcrumb-item"><a href="../../../content/concepts/control/feedback.html">피드백: 결과를 보고 다음 행동을 고치는 구조</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">빠른 시작</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robotics Math Atlas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../paths.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">목표별 학습 경로</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../atlas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">지식 아틀라스</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../curriculum.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">전체 커리큘럼 지도</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../software.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">시각화·시뮬레이션 도구</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">로봇공학 수학 용어집</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">수학 언어</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Foundations</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/foundations/change-and-accumulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">변화율과 누적량: 미분·적분의 공학적 직관</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Linalg</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/least-squares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/linear-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">선형 시스템 Ax=b: 여러 식을 한 번에 푸는 언어</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/orthogonal-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">직교투영: 도달 가능한 것 중 가장 가까운 답</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Systems</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/systems/state-space.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">상태공간: 현재 상태로 다음 순간을 예측하는 모델</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">제어</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Control</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/control/feedback.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">피드백: 결과를 보고 다음 행동을 고치는 구조</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/control/pid.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PID 제어: 현재·누적·변화 추세로 오차를 고치기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">로봇공학</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">Robotics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/robotics/jacobian.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">확률·추정·몬테카를로(Monte Carlo)</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">Probability</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/bayes-filtering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bayes Filtering 재귀</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/bootstrap-particle-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap Particle Filter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/detailed-balance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Balance와 Reversibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/gaussian-conditioning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/importance-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Importance Sampling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/markov-chain.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Markov Chain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/mean-covariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">평균과 공분산: 추정값과 불확실성을 함께 표현하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/measure-probability-foundations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">확률·측도 기반: 이 트랙에서 어디까지 가정하는가</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/metropolis-hastings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Metropolis–Hastings 알고리즘</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/monte-carlo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monte Carlo 적분</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/resampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Particle Resampling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/sequential-importance-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sequential Importance Sampling (SIS)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false">
+ <span class="menu-text">Statistics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/statistics/maximum-likelihood-estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false">
+ <span class="menu-text">Estimation</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/estimation/kalman-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false">
+ <span class="menu-text">엄밀한 증명</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../proofs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명 지도</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false">
+ <span class="menu-text">Proofs</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: 유한상태 Bootstrap Particle Filter의 고정-Horizon 일관성</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/detailed-balance-implies-invariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Detailed Balance는 Invariance를 함의한다</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/elementary-finite-probability-lemmas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">보조정리: 유한 확률 증명에 쓰는 집중·합집합·Borel–Cantelli</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/finite-state-mh-convergence-ergodic-average.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: 유한상태 Metropolis–Hastings의 수렴과 Ergodic Average</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/importance-sampling-identity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Importance Sampling 항등식</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/metropolis-hastings-invariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Metropolis–Hastings Kernel의 Invariance</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/resampling-unbiasedness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Resampling의 조건부 Unbiasedness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/self-normalized-importance-sampling-consistency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Self-Normalized Importance Sampling의 일관성</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/sis-weight-recursion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: SIS Importance Weight 재귀</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false">
+ <span class="menu-text">파이썬(Python) 실험실</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험실</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/pid-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: PID의 세 항을 시간축에서 보기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/least-squares-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: 최소제곱의 투영과 조건수</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/kalman-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Kalman Filter의 예측–보정 순환</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/particle-filter-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Particle Filter의 가중치 퇴화와 재표본화</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/mcmc-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Metropolis proposal과 mixing</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false">
+ <span class="menu-text">읽을거리</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../stories.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">숨 고르기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false">
+ <span class="menu-text">Stories</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/stories/gauss-legendre-least-squares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">먼저 발표한 Legendre, 더 일찍 썼다고 주장한 Gauss</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/stories/minorsky-steering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자동조타선에서 태어난 PID의 시간 감각</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../future-scope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">향후 확장 노드: 로봇·AI·역학·센서·구동기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false">
+ <span class="menu-text">References</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/references/jacobian-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자코비안 장의 참고문헌과 근거</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/references/kalman-filter-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">칼만 필터 장의 참고문헌과 제품 근거</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/references/maximum-likelihood-estimation-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최대우도추정 장의 참고문헌과 제품 근거</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../design-system.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UI/UX 디자인 시스템</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../ui-ux-research.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UI/UX 레퍼런스 조사</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">교재 사용법</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">목차</h2>
+   
+  <ul>
+  <li><a href="#초-핵심" id="toc-초-핵심" class="nav-link active" data-scroll-target="#초-핵심">30초 핵심</a></li>
+  <li><a href="#엄밀히-말하면" id="toc-엄밀히-말하면" class="nav-link" data-scroll-target="#엄밀히-말하면">엄밀히 말하면</a></li>
+  <li><a href="#다음과-복귀" id="toc-다음과-복귀" class="nav-link" data-scroll-target="#다음과-복귀">다음과 복귀</a></li>
+  <li><a href="#회상-점검" id="toc-회상-점검" class="nav-link" data-scroll-target="#회상-점검">회상 점검</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/blob/main/content/concepts/control/feedback.qmd" class="toc-action"><i class="bi bi-github"></i>소스코드 보기</a></li><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/issues/new" class="toc-action"><i class="bi empty"></i>이슈 보고</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">제어</li><li class="breadcrumb-item"><a href="../../../content/concepts/control/feedback.html">Control</a></li><li class="breadcrumb-item"><a href="../../../content/concepts/control/feedback.html">피드백: 결과를 보고 다음 행동을 고치는 구조</a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">피드백: 결과를 보고 다음 행동을 고치는 구조</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> 코드</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="concept-meta" class="concept-meta" hidden="" aria-hidden="true" data-atlas-schema-version="1.0.0" data-concept-id="control.feedback" data-concept-domain="control" data-manifest-path="platform/generated/concept-manifest.json" data-manifest-url="../../../platform/generated/concept-manifest.json" data-project-offset="../../../"></div>
+<section id="초-핵심" class="level2 concept-hero">
+<h2 class="anchored" data-anchor-id="초-핵심">30초 핵심</h2>
+<p><span id="p-89655158" class="paragraph-anchor"></span><strong>피드백(feedback)은 “해 보고, 결과를 재고, 다음 행동을 고치는” 닫힌 고리다.</strong></p>
+<ul>
+<li>목표 <span class="math inline">\(r\)</span>와 실제 출력 <span class="math inline">\(y\)</span>를 비교해 오차 <span class="math inline">\(e=r-y\)</span>를 만든다.</li>
+<li>제어기(controller)는 오차를 보고 입력 <span class="math inline">\(u\)</span>를 고친다.</li>
+<li>피드백은 모델 오차와 외란을 줄일 수 있지만, 지연·과도한 이득·잘못된 부호가 있으면 오히려 진동하거나 불안정해질 수 있다.</li>
+</ul>
+</section>
+<div class="depth-intuition">
+<section id="먼저-떠올릴-이미지" class="level2">
+<h2 class="anchored" data-anchor-id="먼저-떠올릴-이미지">먼저 떠올릴 이미지</h2>
+<p><span id="p-e23a5feb" class="paragraph-anchor"></span>샤워기의 물이 차갑다면 온수 손잡이를 조금 돌리고, 결과를 느낀 뒤 다시 조정한다. 손잡이의 정확한 물리 모델을 몰라도 결과를 보면서 목표 온도에 접근할 수 있다. 다만 물이 늦게 반응하는데 계속 크게 돌리면 뜨거움과 차가움 사이를 왕복한다. <strong>보정 능력과 진동 위험이 같은 고리에서 나온다.</strong></p>
+<pre id="p-5c9b32b9" class="text"><code>목표 r ──▶ [비교] ──e──▶ [제어기] ──u──▶ [대상] ──▶ 출력 y
+           ▲                                      │
+           └──────────────── 측정 ────────────────┘</code></pre>
+</section>
+<section id="작동하는-정의" class="level2">
+<h2 class="anchored" data-anchor-id="작동하는-정의">작동하는 정의</h2>
+<p><span id="p-6046ab25" class="paragraph-anchor"></span>음의 피드백(negative feedback)의 기본 오차는</p>
+<p><span id="p-43d87140" class="paragraph-anchor"></span><span class="math display">\[
+e(t)=r(t)-y(t)
+\]</span> 이다. 제어 법칙 <span class="math inline">\(u=C(e)\)</span>가 입력을 만들고, 대상 <span class="math inline">\(P\)</span>가 <span class="math inline">\(y=P(u,d)\)</span>를 만든다. 여기서 <span class="math inline">\(d\)</span>는 외란(disturbance)이다.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="기호·단위">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">노트</span>기호·단위
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><span class="math inline">\(r,y,e\)</span>는 서로 비교하므로 같은 물리 단위를 가져야 한다.</li>
+<li><span class="math inline">\(u\)</span>는 전압, 토크, 힘처럼 다른 단위일 수 있다.</li>
+<li><span class="math inline">\(r-y\)</span>의 부호와 actuator의 작동 방향을 함께 확인해야 한다.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="가장-작은-예" class="level2">
+<h2 class="anchored" data-anchor-id="가장-작은-예">가장 작은 예</h2>
+<p><span id="p-5573ad65" class="paragraph-anchor"></span>현재 각도가 <span class="math inline">\(y=8^\circ\)</span>, 목표가 <span class="math inline">\(r=10^\circ\)</span>라면 <span class="math inline">\(e=2^\circ\)</span>다. 단순 제어기 <span class="math inline">\(u=K_pe\)</span>, <span class="math inline">\(K_p=0.5\,\mathrm{N\,m/deg}\)</span>를 쓰면</p>
+<p><span id="p-260a19d5" class="paragraph-anchor"></span><span class="math display">\[u=1\,\mathrm{N\,m}\]</span></p>
+<p><span id="p-66e8b748" class="paragraph-anchor"></span>의 토크 명령을 만든다. 이것은 “오차를 토크로 변환하는 비례 규칙”이다.</p>
+</section>
+<section id="전제-장부" class="level2">
+<h2 class="anchored" data-anchor-id="전제-장부">전제 장부</h2>
+<table id="p-f9cb6c0f" class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>구분</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>정확한 사실</td>
+<td>피드백 고리에는 측정과 비교가 포함된다.</td>
+</tr>
+<tr class="even">
+<td>모델 가정</td>
+<td>위 예에서는 양의 토크가 각도를 증가시킨다고 가정했다.</td>
+</tr>
+<tr class="odd">
+<td>근사</td>
+<td>센서 지연, 마찰, 포화, 양자화를 무시했다.</td>
+</tr>
+<tr class="even">
+<td>관례</td>
+<td>음의 피드백에서 <span class="math inline">\(e=r-y\)</span>로 썼다. 다른 부호 관례도 가능하다.</td>
+</tr>
+<tr class="odd">
+<td>비유</td>
+<td>샤워기 비유는 지연을 보여 주지만 로봇의 다축 결합은 표현하지 못한다.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</div>
+<section id="엄밀히-말하면" class="level2 depth-proof">
+<h2 class="anchored" data-anchor-id="엄밀히-말하면">엄밀히 말하면</h2>
+<p><span id="p-ea465e7c" class="paragraph-anchor"></span>“음의 피드백이면 안정하다”는 명제는 거짓이다. 고리의 부호뿐 아니라 대상 동역학, 제어기 이득, 시간 지연, sampling이 함께 폐루프 극점 또는 동역학을 결정한다. 안정성을 판정하려면 <a href="../../../content/concepts/systems/state-space.html">상태공간</a>이나 전달함수·주파수응답 같은 추가 도구가 필요하다.</p>
+</section>
+<div class="depth-application">
+<section id="어디에-쓰이는가" class="level2">
+<h2 class="anchored" data-anchor-id="어디에-쓰이는가">어디에 쓰이는가</h2>
+<ul>
+<li>모터의 각도·속도·전류 제어</li>
+<li>드론의 자세 유지</li>
+<li>로봇팔의 관절 제어와 impedance control</li>
+<li>온도·압력·유량 제어</li>
+<li>추정에서도 예측과 측정의 차이인 <strong>innovation</strong>으로 상태를 보정한다. 이 구조는 <a href="../../../content/concepts/estimation/kalman-filter.html">Kalman filter</a>와 닮았다.</li>
+</ul>
+</section>
+<section id="언제-실패하는가" class="level2">
+<h2 class="anchored" data-anchor-id="언제-실패하는가">언제 실패하는가</h2>
+<ul>
+<li>센서 또는 actuator 방향이 뒤집혀 양의 피드백이 됨</li>
+<li>지연을 무시하고 이득을 과도하게 높임</li>
+<li>actuator 포화로 명령을 실현하지 못함</li>
+<li>센서 잡음까지 과하게 따라감</li>
+<li>목표와 출력의 단위·좌표계를 섞음</li>
+</ul>
+</section>
+</div>
+<section id="다음과-복귀" class="level2">
+<h2 class="anchored" data-anchor-id="다음과-복귀">다음과 복귀</h2>
+<ul>
+<li>가장 짧은 다음 단계: <a href="../../../content/concepts/control/pid.html">PID 제어</a></li>
+<li>동역학 분석을 원하면: <a href="../../../content/concepts/systems/state-space.html">상태공간</a></li>
+<li>Kalman을 보다가 왔다면: <a href="../../../content/concepts/estimation/kalman-filter.html#sec-kf-correction">Kalman filter의 “보정 단계”</a>로 돌아간다.</li>
+</ul>
+</section>
+<section id="회상-점검" class="level2">
+<h2 class="anchored" data-anchor-id="회상-점검">회상 점검</h2>
+<ol type="1">
+<li>피드백을 “측정”이라는 단어를 포함해 한 문장으로 설명해 보라.</li>
+<li><span class="math inline">\(r=3\,\mathrm{m}\)</span>, <span class="math inline">\(y=3.4\,\mathrm{m}\)</span>일 때 <span class="math inline">\(e=r-y\)</span>는 얼마인가?</li>
+<li>음의 피드백이 언제나 안정하지 않은 이유를 두 가지 들어 보라.</li>
+</ol>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script>
+(function loadAtlasInterface() {
+  // 리뷰 프로필이 include 목록을 병합할 때 이 조각이 두 번 삽입되더라도
+  // atlas.js가 중복 로드되지 않도록 막는다.
+  if (window.__ATLAS_SCRIPTS_LOADED__) return;
+  window.__ATLAS_SCRIPTS_LOADED__ = true;
+  const resources = Array.from(document.querySelectorAll('link[href], script[src]'));
+  const siteLibrary = resources
+    .map((element) => element.href || element.src)
+    .find((url) => url && url.includes('/site_libs/'));
+  const fallback = new URL('./', document.baseURI).href;
+  const siteRoot = siteLibrary ? siteLibrary.split('/site_libs/')[0] + '/' : fallback;
+  window.__ROBOTICS_MATH_ATLAS_ROOT__ = siteRoot;
+
+  const script = document.createElement('script');
+  script.src = new URL('assets/js/atlas.js', siteRoot).href;
+  script.defer = true;
+  document.head.appendChild(script);
+})();
+</script>
+
+<style>
+  /* 리뷰 빌드 전용 UI. 독자 배포판(_site)에는 포함되지 않는다. */
+  .review-toolbar {
+    position: absolute;
+    z-index: 1090;
+    display: flex;
+    gap: 0.35rem;
+  }
+  .review-toolbar button,
+  .review-dialog button {
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--bs-border-color, #adb5bd);
+    border-radius: 999px;
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+  }
+  .review-toolbar button:focus-visible,
+  .review-dialog button:focus-visible,
+  .review-dialog textarea:focus-visible {
+    outline: 2px solid var(--bs-primary, #0d6efd);
+    outline-offset: 2px;
+  }
+  .review-dialog {
+    position: fixed;
+    z-index: 1100;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(34rem, calc(100vw - 2rem));
+    max-height: min(80vh, 40rem);
+    overflow-y: auto;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--bs-border-color, #adb5bd);
+    border-radius: 0.5rem;
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  .review-dialog h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+  }
+  .review-dialog label {
+    display: block;
+    margin: 0.6rem 0 0.2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .review-dialog blockquote {
+    margin: 0;
+    padding: 0.4rem 0.6rem;
+    border-left: 3px solid var(--bs-border-color, #adb5bd);
+    font-size: 0.85rem;
+    max-height: 8rem;
+    overflow-y: auto;
+  }
+  .review-dialog textarea {
+    width: 100%;
+    min-height: 4.5rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--bs-border-color, #adb5bd);
+    border-radius: 0.3rem;
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    font-size: 0.85rem;
+  }
+  .review-dialog .review-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.9rem;
+  }
+  .review-dialog .review-anchor-note {
+    margin-top: 0.6rem;
+    font-size: 0.72rem;
+    opacity: 0.7;
+  }
+  .review-dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1095;
+    background: rgba(0, 0, 0, 0.35);
+  }
+  .review-links {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1080;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: flex-end;
+  }
+  .review-links a {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--bs-border-color, #adb5bd);
+    border-radius: 999px;
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #212529);
+    font-size: 0.78rem;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  .review-history {
+    margin-top: 2.5rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px dashed var(--bs-border-color, #adb5bd);
+    border-radius: 0.5rem;
+    font-size: 0.82rem;
+  }
+  .review-history h2 {
+    margin: 0 0 0.4rem;
+    font-size: 0.85rem;
+  }
+  .review-history ul {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+  /* Quarto 다크 모드: 테마 토글이 body.quarto-dark를 붙인다.
+     --bs-* 변수가 토글에 따라 갱신되지 않아 명시적 다크 팔레트로 덮는다. */
+  body.quarto-dark .review-toolbar button,
+  body.quarto-dark .review-dialog,
+  body.quarto-dark .review-dialog button,
+  body.quarto-dark .review-dialog textarea,
+  body.quarto-dark .review-links a {
+    background: #212529;
+    color: #dee2e6;
+    border-color: #495057;
+  }
+  body.quarto-dark .review-dialog blockquote,
+  body.quarto-dark .review-history {
+    border-color: #495057;
+    color: inherit;
+  }
+  body.quarto-dark .review-dialog-backdrop {
+    background: rgba(0, 0, 0, 0.6);
+  }
+</style>
+<script>
+(function reviewTools() {
+  'use strict';
+  if (window.__REVIEW_SCRIPTS_LOADED__) return;
+  window.__REVIEW_SCRIPTS_LOADED__ = true;
+
+  // 수정 제안 이슈가 생성될 저장소 (Phase 1-3 브리지가 이 이슈를 수거한다).
+  const REPO = 'ycpiglet/linear_algebra_for_robotics';
+  const ISSUE_LABEL = 'editorial';
+
+  let toolbar = null;
+  let hideTimer = null;
+  let selectionInfo = null;
+
+  // ---------- 앵커·문맥 추출 ----------
+
+  function blockOf(node) {
+    const el = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+    return el ? el.closest('p, li, blockquote, div.sourceCode, table') : null;
+  }
+
+  function anchorIdOf(block) {
+    if (!block) return null;
+    if (/^p-[0-9a-f]{8}/.test(block.id)) return block.id;
+    const span = block.querySelector(':scope > span.paragraph-anchor');
+    if (span && span.id) return span.id;
+    const inherited = block.closest('[id^="p-"]');
+    return inherited ? inherited.id : null;
+  }
+
+  function contextOf(block, quote) {
+    if (!block) return { prefix: '', suffix: '' };
+    const full = block.textContent.replace(/\s+/g, ' ');
+    const clean = quote.replace(/\s+/g, ' ').trim();
+    const index = full.indexOf(clean);
+    if (index < 0) return { prefix: '', suffix: '' };
+    return {
+      prefix: full.slice(Math.max(0, index - 30), index).trim(),
+      suffix: full.slice(index + clean.length, index + clean.length + 30).trim(),
+    };
+  }
+
+  // 텍스트 프래그먼트(#:~:text=)용 인코딩: 구분자로 쓰이는 '-'까지 이스케이프한다.
+  const enc = (s) => encodeURIComponent(s).replace(/-/g, '%2D');
+
+  function fragmentFor(text) {
+    const clean = text.replace(/\s+/g, ' ').trim();
+    if (!clean) return '';
+    if (clean.length <= 120) return ':~:text=' + enc(clean);
+    const head = clean.slice(0, 60).replace(/\s+\S*$/, '');
+    const tail = clean.slice(-60).replace(/^\S*\s+/, '');
+    return ':~:text=' + enc(head) + ',' + enc(tail);
+  }
+
+  function quoteLink(info) {
+    // 문단 앵커가 있으면 요소 ID + 텍스트 프래그먼트를 겹쳐 쓴다 —
+    // 본문이 바뀌어 텍스트 매칭이 실패해도 문단 위치로는 도달한다.
+    const base = window.location.href.split('#')[0];
+    return base + '#' + (info.anchorId || '') + fragmentFor(info.quote);
+  }
+
+  // ---------- 선택 툴바 ----------
+
+  function removeToolbar() {
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+    if (toolbar) { toolbar.remove(); toolbar = null; }
+  }
+
+  function makeButton(label, onClick) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = label;
+    button.addEventListener('click', onClick);
+    return button;
+  }
+
+  function showToolbar(rect, info) {
+    removeToolbar();
+    toolbar = document.createElement('div');
+    toolbar.className = 'review-toolbar';
+    toolbar.style.left = window.scrollX + rect.left + 'px';
+    toolbar.style.top = window.scrollY + rect.bottom + 6 + 'px';
+
+    const copyButton = makeButton('이 문장 링크 복사', async () => {
+      const url = quoteLink(info);
+      try {
+        await navigator.clipboard.writeText(url);
+        copyButton.textContent = '복사됨 ✓';
+      } catch (error) {
+        copyButton.textContent = '복사 실패';
+        window.prompt('아래 링크를 복사하세요:', url);
+      }
+      hideTimer = setTimeout(removeToolbar, 1500);
+    });
+
+    toolbar.appendChild(copyButton);
+    toolbar.appendChild(makeButton('수정 제안', () => {
+      removeToolbar();
+      openDialog(info);
+    }));
+    document.body.appendChild(toolbar);
+  }
+
+  function onSelectionSettled() {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || selection.rangeCount === 0) {
+      removeToolbar();
+      return;
+    }
+    const quote = selection.toString();
+    if (!quote || !quote.trim()) { removeToolbar(); return; }
+    const range = selection.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+    const host = container.nodeType === Node.ELEMENT_NODE ? container : container.parentElement;
+    if (!host || !host.closest('main')) { removeToolbar(); return; }
+
+    const block = blockOf(range.startContainer);
+    const context = contextOf(block, quote);
+    selectionInfo = {
+      quote: quote.replace(/\s+/g, ' ').trim(),
+      anchorId: anchorIdOf(block),
+      prefix: context.prefix,
+      suffix: context.suffix,
+      isCode: !!(block && block.matches('div.sourceCode')),
+    };
+    showToolbar(range.getBoundingClientRect(), selectionInfo);
+  }
+
+  // ---------- 수정 제안 다이얼로그 ----------
+
+  let dialog = null;
+  let backdrop = null;
+  let lastFocused = null;
+
+  function closeDialog() {
+    if (dialog) { dialog.remove(); dialog = null; }
+    if (backdrop) { backdrop.remove(); backdrop = null; }
+    if (lastFocused && lastFocused.focus) lastFocused.focus();
+    lastFocused = null;
+  }
+
+  const clip = (s, n) => (s.length > n ? s.slice(0, n) + '…' : s);
+  // GitHub 이슈 프리필 URL의 실질 한도는 ~8KB — 초과하면 414이거나 본문이 잘린다.
+  const URL_BUDGET = 7500;
+
+  function issueUrl(info, suggestion, comment) {
+    const pageUrl = window.location.href.split('#')[0];
+    const pageTitle = document.title.replace(/\s*[–—-]\s*[^–—-]*$/, '').trim() || document.title;
+
+    const build = (quoteMax, textMax, clipped) => {
+      const quote = clip(info.quote, quoteMax);
+      const sections = [];
+      if (comment.trim()) sections.push('## 사유·코멘트\n\n' + clip(comment.trim(), textMax));
+      if (suggestion.trim() && suggestion.trim() !== info.quote) {
+        sections.push('## 수정안\n\n~~~\n' + clip(suggestion.trim(), textMax) + '\n~~~');
+      }
+      sections.push('## 원문\n\n> ' + quote);
+      if (clipped) {
+        sections.push('> ⚠ 길이 제한으로 축약된 내용입니다. 전체 원문은 아래 문단 앵커와 페이지 링크로 확인하세요.');
+      }
+      sections.push([
+        '## 위치',
+        '',
+        '- 페이지: ' + pageUrl,
+        '- 문단: `' + (info.anchorId || '(앵커 없음)') + '`',
+      ].join('\n'));
+      sections.push('<!-- editorial-anchor ' + JSON.stringify({
+        v: 1,
+        page: pageUrl,
+        paragraph: info.anchorId || null,
+        quote: quote,
+        prefix: clip(info.prefix, 60),
+        suffix: clip(info.suffix, 60),
+      }) + ' -->');
+
+      const title = '[교정] ' + clip(info.quote, 40) + ' (' + clip(pageTitle, 30) + ')';
+      return 'https://github.com/' + REPO + '/issues/new'
+        + '?title=' + encodeURIComponent(title)
+        + '&labels=' + encodeURIComponent(ISSUE_LABEL)
+        + '&body=' + encodeURIComponent(sections.join('\n\n'));
+    };
+
+    // 한도 안에 들 때까지 단계적으로 줄인다. 한글은 인코딩 시 글자당 9바이트로
+    // 불어나므로(%EC%88%98…) 마지막 단계는 아주 짧게 잡는다.
+    const tiers = [[600, 1500, false], [300, 800, true], [120, 400, true],
+                   [80, 150, true], [60, 60, true]];
+    let url = '';
+    for (const [quoteMax, textMax, clipped] of tiers) {
+      url = build(quoteMax, textMax, clipped);
+      if (url.length <= URL_BUDGET) return url;
+    }
+    return url;
+  }
+
+  function openDialog(info) {
+    closeDialog();
+    lastFocused = document.activeElement;
+
+    backdrop = document.createElement('div');
+    backdrop.className = 'review-dialog-backdrop';
+    backdrop.addEventListener('click', closeDialog);
+
+    dialog = document.createElement('div');
+    dialog.className = 'review-dialog';
+    dialog.setAttribute('role', 'dialog');
+    dialog.setAttribute('aria-modal', 'true');
+    dialog.setAttribute('aria-labelledby', 'review-dialog-title');
+
+    const heading = document.createElement('h2');
+    heading.id = 'review-dialog-title';
+    heading.textContent = '수정 제안';
+
+    const quoteLabel = document.createElement('label');
+    quoteLabel.textContent = '원문';
+    const quoteView = document.createElement('blockquote');
+    quoteView.textContent = info.quote;
+
+    const suggestionLabel = document.createElement('label');
+    suggestionLabel.textContent = '수정안 (그대로 두면 코멘트만 제출)';
+    suggestionLabel.htmlFor = 'review-suggestion';
+    const suggestionInput = document.createElement('textarea');
+    suggestionInput.id = 'review-suggestion';
+    suggestionInput.value = info.quote;
+
+    const commentLabel = document.createElement('label');
+    commentLabel.textContent = '사유·코멘트';
+    commentLabel.htmlFor = 'review-comment';
+    const commentInput = document.createElement('textarea');
+    commentInput.id = 'review-comment';
+
+    const note = document.createElement('p');
+    note.className = 'review-anchor-note';
+    let noteText = 'GitHub 이슈 작성 화면이 미리 채워져 열립니다. 내용 확인 후 제출하세요. 문단 앵커: '
+      + (info.anchorId || '없음(텍스트 인용으로만 추적)');
+    if (info.quote.length > 600) {
+      noteText += ' · ⚠ 선택이 깁니다 — 이슈에는 앞부분만 인용되고 전체 위치는 앵커로 추적됩니다.';
+    }
+    if (info.isCode) {
+      noteText += ' · 코드 블록 제안은 자동 반영되지 않고 사람 검토로 전달됩니다.';
+    }
+    note.textContent = noteText;
+
+    const actions = document.createElement('div');
+    actions.className = 'review-dialog-actions';
+    actions.appendChild(makeButton('취소', closeDialog));
+    actions.appendChild(makeButton('GitHub 이슈로 제출', () => {
+      window.open(issueUrl(info, suggestionInput.value, commentInput.value), '_blank', 'noopener');
+      closeDialog();
+    }));
+
+    dialog.append(heading, quoteLabel, quoteView, suggestionLabel, suggestionInput,
+      commentLabel, commentInput, note, actions);
+    // 포커스 트랩: Tab이 다이얼로그 밖 본문으로 탈출하지 않게 순환시킨다.
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+      const focusables = dialog.querySelectorAll('textarea, button');
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+    document.body.appendChild(backdrop);
+    document.body.appendChild(dialog);
+    suggestionInput.focus();
+  }
+
+  // ---------- 편집 데스크·페이지 편집 링크와 최근 변경 (리뷰 빌드 전용) ----------
+
+  function siteRoot() {
+    return window.__ROBOTICS_MATH_ATLAS_ROOT__ || new URL('./', document.baseURI).href;
+  }
+
+  // 현재 페이지의 .qmd 소스 경로 (사이트 루트 기준). 브리지의 page_to_source와 동일 규칙.
+  function pageSourcePath() {
+    const rootPath = new URL(siteRoot()).pathname;
+    let relative = window.location.pathname;
+    if (relative.startsWith(rootPath)) relative = relative.slice(rootPath.length);
+    if (relative === '' || relative.endsWith('/')) relative += 'index.html';
+    if (!relative.endsWith('.html')) return null;
+    return relative.slice(0, -'.html'.length) + '.qmd';
+  }
+
+  function addReviewChrome() {
+    const source = pageSourcePath();
+    const links = document.createElement('nav');
+    links.className = 'review-links';
+    links.setAttribute('aria-label', '편집 도구');
+
+    if (!/\/editorial-desk\.html$/.test(window.location.pathname)) {
+      const desk = document.createElement('a');
+      desk.href = new URL('editorial-desk.html', siteRoot()).href;
+      desk.textContent = '편집 데스크';
+      links.appendChild(desk);
+    }
+    if (source && source !== 'editorial-desk.qmd') {
+      const edit = document.createElement('a');
+      edit.href = 'https://github.dev/' + REPO + '/blob/main/' + source;
+      edit.target = '_blank';
+      edit.rel = 'noopener';
+      edit.textContent = '이 페이지 고치기';
+      links.appendChild(edit);
+    }
+    if (links.children.length) document.body.appendChild(links);
+    if (source) addPageHistory(source);
+  }
+
+  async function addPageHistory(source) {
+    const main = document.querySelector('main');
+    if (!main) return;
+    let entries;
+    try {
+      const response = await fetch(new URL('platform/generated/page-history.json', siteRoot()).href);
+      if (!response.ok) return;
+      entries = (await response.json())[source];
+    } catch (error) {
+      return;
+    }
+    if (!entries || !entries.length) return;
+    const box = document.createElement('section');
+    box.className = 'review-history';
+    const heading = document.createElement('h2');
+    heading.textContent = '최근 변경';
+    const list = document.createElement('ul');
+    for (const entry of entries) {
+      const item = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = 'https://github.com/' + REPO + '/commit/' + entry.sha;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = entry.subject;
+      item.append(entry.date + ' · ' + entry.author + ' — ');
+      item.appendChild(link);
+      list.appendChild(item);
+    }
+    const all = document.createElement('p');
+    all.style.margin = '0.4rem 0 0';
+    const allLink = document.createElement('a');
+    allLink.href = 'https://github.com/' + REPO + '/commits/main/' + source;
+    allLink.target = '_blank';
+    allLink.rel = 'noopener';
+    allLink.textContent = '이 페이지의 전체 이력 →';
+    all.appendChild(allLink);
+    box.append(heading, list, all);
+    main.appendChild(box);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addReviewChrome);
+  } else {
+    addReviewChrome();
+  }
+
+  // ---------- 이벤트 배선 ----------
+
+  document.addEventListener('mouseup', (event) => {
+    if (dialog || (toolbar && toolbar.contains(event.target))) return;
+    setTimeout(onSelectionSettled, 0);
+  });
+  // 터치 기기(모바일·태블릿)는 길게 눌러 선택해도 mouseup이 오지 않는다 —
+  // selectionchange를 디바운스해서 손가락 선택에도 툴바가 뜨게 한다.
+  let selectionDebounce = null;
+  document.addEventListener('selectionchange', () => {
+    if (dialog) return;
+    clearTimeout(selectionDebounce);
+    selectionDebounce = setTimeout(() => {
+      if (dialog) return;
+      if (toolbar && toolbar.contains(document.activeElement)) return;
+      onSelectionSettled();
+    }, 350);
+  });
+  document.addEventListener('keyup', (event) => {
+    if (event.key === 'Escape') {
+      if (dialog) { closeDialog(); return; }
+      removeToolbar();
+      return;
+    }
+    if (dialog) return;
+    if (event.shiftKey || event.key === 'Shift') setTimeout(onSelectionSettled, 0);
+  });
+  window.addEventListener('scroll', () => { if (!dialog) removeToolbar(); }, { passive: true });
+})();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "복사완료!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "복사완료!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">소스 코드</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="p-89131e2e" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="p-89131e2e-1"><a href="#p-89131e2e-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-89131e2e-2"><a href="#p-89131e2e-2" aria-hidden="true" tabindex="-1"></a><span class="an">id:</span><span class="co"> control.feedback</span></span>
+<span id="p-89131e2e-3"><a href="#p-89131e2e-3" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "피드백: 결과를 보고 다음 행동을 고치는 구조"</span></span>
+<span id="p-89131e2e-4"><a href="#p-89131e2e-4" aria-hidden="true" tabindex="-1"></a><span class="an">aliases:</span><span class="co"> ["feedback", "피드백 제어", "closed-loop feedback"]</span></span>
+<span id="p-89131e2e-5"><a href="#p-89131e2e-5" aria-hidden="true" tabindex="-1"></a><span class="an">domain:</span><span class="co"> control</span></span>
+<span id="p-89131e2e-6"><a href="#p-89131e2e-6" aria-hidden="true" tabindex="-1"></a><span class="an">one_line:</span><span class="co"> "피드백은 실제 결과를 목표와 비교하고, 그 오차로 다음 입력을 수정하는 구조다."</span></span>
+<span id="p-89131e2e-7"><a href="#p-89131e2e-7" aria-hidden="true" tabindex="-1"></a><span class="an">difficulty:</span><span class="co"> 1</span></span>
+<span id="p-89131e2e-8"><a href="#p-89131e2e-8" aria-hidden="true" tabindex="-1"></a><span class="an">summary:</span><span class="co"> "목표와 출력의 오차로 다음 입력을 수정하는 닫힌 고리를 일상적 비유, 최소 식, 단위와 실패 조건으로 설명한다."</span></span>
+<span id="p-89131e2e-9"><a href="#p-89131e2e-9" aria-hidden="true" tabindex="-1"></a><span class="an">reading_time:</span></span>
+<span id="p-89131e2e-10"><a href="#p-89131e2e-10" aria-hidden="true" tabindex="-1"></a><span class="co">  quick: "3분"</span></span>
+<span id="p-89131e2e-11"><a href="#p-89131e2e-11" aria-hidden="true" tabindex="-1"></a><span class="co">  core: "18분"</span></span>
+<span id="p-89131e2e-12"><a href="#p-89131e2e-12" aria-hidden="true" tabindex="-1"></a><span class="co">  full: "35분"</span></span>
+<span id="p-89131e2e-13"><a href="#p-89131e2e-13" aria-hidden="true" tabindex="-1"></a><span class="an">prerequisites:</span></span>
+<span id="p-89131e2e-14"><a href="#p-89131e2e-14" aria-hidden="true" tabindex="-1"></a><span class="co">  intuition:</span></span>
+<span id="p-89131e2e-15"><a href="#p-89131e2e-15" aria-hidden="true" tabindex="-1"></a><span class="co">    required: []</span></span>
+<span id="p-89131e2e-16"><a href="#p-89131e2e-16" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful: []</span></span>
+<span id="p-89131e2e-17"><a href="#p-89131e2e-17" aria-hidden="true" tabindex="-1"></a><span class="co">    not_required: [linalg.vector_space, probability.stochastic_process]</span></span>
+<span id="p-89131e2e-18"><a href="#p-89131e2e-18" aria-hidden="true" tabindex="-1"></a><span class="co">  application:</span></span>
+<span id="p-89131e2e-19"><a href="#p-89131e2e-19" aria-hidden="true" tabindex="-1"></a><span class="co">    required: []</span></span>
+<span id="p-89131e2e-20"><a href="#p-89131e2e-20" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful:</span></span>
+<span id="p-89131e2e-21"><a href="#p-89131e2e-21" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: foundations.change_accumulation</span></span>
+<span id="p-89131e2e-22"><a href="#p-89131e2e-22" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: explain</span></span>
+<span id="p-89131e2e-23"><a href="#p-89131e2e-23" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: "시간에 따라 오차가 변하는 모습을 읽는 데 도움이 된다."</span></span>
+<span id="p-89131e2e-24"><a href="#p-89131e2e-24" aria-hidden="true" tabindex="-1"></a><span class="co">  derivation:</span></span>
+<span id="p-89131e2e-25"><a href="#p-89131e2e-25" aria-hidden="true" tabindex="-1"></a><span class="co">    required: []</span></span>
+<span id="p-89131e2e-26"><a href="#p-89131e2e-26" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful: []</span></span>
+<span id="p-89131e2e-27"><a href="#p-89131e2e-27" aria-hidden="true" tabindex="-1"></a><span class="co">  proof:</span></span>
+<span id="p-89131e2e-28"><a href="#p-89131e2e-28" aria-hidden="true" tabindex="-1"></a><span class="co">    required: []</span></span>
+<span id="p-89131e2e-29"><a href="#p-89131e2e-29" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful: []</span></span>
+<span id="p-89131e2e-30"><a href="#p-89131e2e-30" aria-hidden="true" tabindex="-1"></a><span class="co">    not_required: []</span></span>
+<span id="p-89131e2e-31"><a href="#p-89131e2e-31" aria-hidden="true" tabindex="-1"></a><span class="co">  teaching:</span></span>
+<span id="p-89131e2e-32"><a href="#p-89131e2e-32" aria-hidden="true" tabindex="-1"></a><span class="co">    required: []</span></span>
+<span id="p-89131e2e-33"><a href="#p-89131e2e-33" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful: []</span></span>
+<span id="p-89131e2e-34"><a href="#p-89131e2e-34" aria-hidden="true" tabindex="-1"></a><span class="co">    not_required: []</span></span>
+<span id="p-89131e2e-35"><a href="#p-89131e2e-35" aria-hidden="true" tabindex="-1"></a><span class="an">relations:</span></span>
+<span id="p-89131e2e-36"><a href="#p-89131e2e-36" aria-hidden="true" tabindex="-1"></a><span class="co">  requires: []</span></span>
+<span id="p-89131e2e-37"><a href="#p-89131e2e-37" aria-hidden="true" tabindex="-1"></a><span class="co">  helpful: [foundations.change_accumulation]</span></span>
+<span id="p-89131e2e-38"><a href="#p-89131e2e-38" aria-hidden="true" tabindex="-1"></a><span class="co">  derived_from: []</span></span>
+<span id="p-89131e2e-39"><a href="#p-89131e2e-39" aria-hidden="true" tabindex="-1"></a><span class="co">  deepens: [control.pid, systems.state_space]</span></span>
+<span id="p-89131e2e-40"><a href="#p-89131e2e-40" aria-hidden="true" tabindex="-1"></a><span class="co">  contrasts_with: [control.feedforward]</span></span>
+<span id="p-89131e2e-41"><a href="#p-89131e2e-41" aria-hidden="true" tabindex="-1"></a><span class="co">  same_structure_as: [estimation.kalman_filter]</span></span>
+<span id="p-89131e2e-42"><a href="#p-89131e2e-42" aria-hidden="true" tabindex="-1"></a><span class="co">  used_in: [control.pid, robot.joint_control, estimation.kalman_filter]</span></span>
+<span id="p-89131e2e-43"><a href="#p-89131e2e-43" aria-hidden="true" tabindex="-1"></a><span class="an">review:</span></span>
+<span id="p-89131e2e-44"><a href="#p-89131e2e-44" aria-hidden="true" tabindex="-1"></a><span class="co">  prompts:</span></span>
+<span id="p-89131e2e-45"><a href="#p-89131e2e-45" aria-hidden="true" tabindex="-1"></a><span class="co">    - "목표·출력·오차·입력을 포함해 feedback loop를 설명할 수 있는가?"</span></span>
+<span id="p-89131e2e-46"><a href="#p-89131e2e-46" aria-hidden="true" tabindex="-1"></a><span class="co">    - "negative feedback이 자동으로 안정성을 보장하지 않는 이유를 말할 수 있는가?"</span></span>
+<span id="p-89131e2e-47"><a href="#p-89131e2e-47" aria-hidden="true" tabindex="-1"></a><span class="an">tags:</span><span class="co"> [feedback, closed-loop, error, control]</span></span>
+<span id="p-89131e2e-48"><a href="#p-89131e2e-48" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-89131e2e-49"><a href="#p-89131e2e-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-50"><a href="#p-89131e2e-50" aria-hidden="true" tabindex="-1"></a>::: {.concept-hero}</span>
+<span id="p-89131e2e-51"><a href="#p-89131e2e-51" aria-hidden="true" tabindex="-1"></a><span class="fu">## 30초 핵심</span></span>
+<span id="p-89131e2e-52"><a href="#p-89131e2e-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-53"><a href="#p-89131e2e-53" aria-hidden="true" tabindex="-1"></a>**피드백(feedback)은 “해 보고, 결과를 재고, 다음 행동을 고치는” 닫힌 고리다.**</span>
+<span id="p-89131e2e-54"><a href="#p-89131e2e-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-55"><a href="#p-89131e2e-55" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>목표 $r$와 실제 출력 $y$를 비교해 오차 $e=r-y$를 만든다.</span>
+<span id="p-89131e2e-56"><a href="#p-89131e2e-56" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>제어기(controller)는 오차를 보고 입력 $u$를 고친다.</span>
+<span id="p-89131e2e-57"><a href="#p-89131e2e-57" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>피드백은 모델 오차와 외란을 줄일 수 있지만, 지연·과도한 이득·잘못된 부호가 있으면 오히려 진동하거나 불안정해질 수 있다.</span>
+<span id="p-89131e2e-58"><a href="#p-89131e2e-58" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-89131e2e-59"><a href="#p-89131e2e-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-60"><a href="#p-89131e2e-60" aria-hidden="true" tabindex="-1"></a>:::: {.depth-intuition}</span>
+<span id="p-89131e2e-61"><a href="#p-89131e2e-61" aria-hidden="true" tabindex="-1"></a><span class="fu">## 먼저 떠올릴 이미지</span></span>
+<span id="p-89131e2e-62"><a href="#p-89131e2e-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-63"><a href="#p-89131e2e-63" aria-hidden="true" tabindex="-1"></a>샤워기의 물이 차갑다면 온수 손잡이를 조금 돌리고, 결과를 느낀 뒤 다시 조정한다. 손잡이의 정확한 물리 모델을 몰라도 결과를 보면서 목표 온도에 접근할 수 있다. 다만 물이 늦게 반응하는데 계속 크게 돌리면 뜨거움과 차가움 사이를 왕복한다. **보정 능력과 진동 위험이 같은 고리에서 나온다.**</span>
+<span id="p-89131e2e-64"><a href="#p-89131e2e-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-65"><a href="#p-89131e2e-65" aria-hidden="true" tabindex="-1"></a><span class="in">```text</span></span>
+<span id="p-89131e2e-66"><a href="#p-89131e2e-66" aria-hidden="true" tabindex="-1"></a><span class="in">목표 r ──▶ [비교] ──e──▶ [제어기] ──u──▶ [대상] ──▶ 출력 y</span></span>
+<span id="p-89131e2e-67"><a href="#p-89131e2e-67" aria-hidden="true" tabindex="-1"></a><span class="in">           ▲                                      │</span></span>
+<span id="p-89131e2e-68"><a href="#p-89131e2e-68" aria-hidden="true" tabindex="-1"></a><span class="in">           └──────────────── 측정 ────────────────┘</span></span>
+<span id="p-89131e2e-69"><a href="#p-89131e2e-69" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="p-89131e2e-70"><a href="#p-89131e2e-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-71"><a href="#p-89131e2e-71" aria-hidden="true" tabindex="-1"></a><span class="fu">## 작동하는 정의</span></span>
+<span id="p-89131e2e-72"><a href="#p-89131e2e-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-73"><a href="#p-89131e2e-73" aria-hidden="true" tabindex="-1"></a>음의 피드백(negative feedback)의 기본 오차는</span>
+<span id="p-89131e2e-74"><a href="#p-89131e2e-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-75"><a href="#p-89131e2e-75" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-89131e2e-76"><a href="#p-89131e2e-76" aria-hidden="true" tabindex="-1"></a>e(t)=r(t)-y(t)</span>
+<span id="p-89131e2e-77"><a href="#p-89131e2e-77" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-89131e2e-78"><a href="#p-89131e2e-78" aria-hidden="true" tabindex="-1"></a>이다. 제어 법칙 $u=C(e)$가 입력을 만들고, 대상 $P$가 $y=P(u,d)$를 만든다. 여기서 $d$는 외란(disturbance)이다.</span>
+<span id="p-89131e2e-79"><a href="#p-89131e2e-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-80"><a href="#p-89131e2e-80" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="기호·단위"}</span>
+<span id="p-89131e2e-81"><a href="#p-89131e2e-81" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$r,y,e$는 서로 비교하므로 같은 물리 단위를 가져야 한다.</span>
+<span id="p-89131e2e-82"><a href="#p-89131e2e-82" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$u$는 전압, 토크, 힘처럼 다른 단위일 수 있다.</span>
+<span id="p-89131e2e-83"><a href="#p-89131e2e-83" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$r-y$의 부호와 actuator의 작동 방향을 함께 확인해야 한다.</span>
+<span id="p-89131e2e-84"><a href="#p-89131e2e-84" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-89131e2e-85"><a href="#p-89131e2e-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-86"><a href="#p-89131e2e-86" aria-hidden="true" tabindex="-1"></a><span class="fu">## 가장 작은 예</span></span>
+<span id="p-89131e2e-87"><a href="#p-89131e2e-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-88"><a href="#p-89131e2e-88" aria-hidden="true" tabindex="-1"></a>현재 각도가 $y=8^\circ$, 목표가 $r=10^\circ$라면 $e=2^\circ$다. 단순 제어기 $u=K_pe$, $K_p=0.5\,\mathrm{N\,m/deg}$를 쓰면</span>
+<span id="p-89131e2e-89"><a href="#p-89131e2e-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-90"><a href="#p-89131e2e-90" aria-hidden="true" tabindex="-1"></a>$$u=1\,\mathrm{N\,m}$$</span>
+<span id="p-89131e2e-91"><a href="#p-89131e2e-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-92"><a href="#p-89131e2e-92" aria-hidden="true" tabindex="-1"></a>의 토크 명령을 만든다. 이것은 “오차를 토크로 변환하는 비례 규칙”이다.</span>
+<span id="p-89131e2e-93"><a href="#p-89131e2e-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-94"><a href="#p-89131e2e-94" aria-hidden="true" tabindex="-1"></a><span class="fu">## 전제 장부</span></span>
+<span id="p-89131e2e-95"><a href="#p-89131e2e-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-96"><a href="#p-89131e2e-96" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 구분 <span class="pp">|</span> 내용 <span class="pp">|</span></span>
+<span id="p-89131e2e-97"><a href="#p-89131e2e-97" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|</span></span>
+<span id="p-89131e2e-98"><a href="#p-89131e2e-98" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 정확한 사실 <span class="pp">|</span> 피드백 고리에는 측정과 비교가 포함된다. <span class="pp">|</span></span>
+<span id="p-89131e2e-99"><a href="#p-89131e2e-99" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 모델 가정 <span class="pp">|</span> 위 예에서는 양의 토크가 각도를 증가시킨다고 가정했다. <span class="pp">|</span></span>
+<span id="p-89131e2e-100"><a href="#p-89131e2e-100" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 근사 <span class="pp">|</span> 센서 지연, 마찰, 포화, 양자화를 무시했다. <span class="pp">|</span></span>
+<span id="p-89131e2e-101"><a href="#p-89131e2e-101" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 관례 <span class="pp">|</span> 음의 피드백에서 $e=r-y$로 썼다. 다른 부호 관례도 가능하다. <span class="pp">|</span></span>
+<span id="p-89131e2e-102"><a href="#p-89131e2e-102" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 비유 <span class="pp">|</span> 샤워기 비유는 지연을 보여 주지만 로봇의 다축 결합은 표현하지 못한다. <span class="pp">|</span></span>
+<span id="p-89131e2e-103"><a href="#p-89131e2e-103" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="p-89131e2e-104"><a href="#p-89131e2e-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-105"><a href="#p-89131e2e-105" aria-hidden="true" tabindex="-1"></a>:::: {.depth-proof}</span>
+<span id="p-89131e2e-106"><a href="#p-89131e2e-106" aria-hidden="true" tabindex="-1"></a><span class="fu">## 엄밀히 말하면</span></span>
+<span id="p-89131e2e-107"><a href="#p-89131e2e-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-108"><a href="#p-89131e2e-108" aria-hidden="true" tabindex="-1"></a>“음의 피드백이면 안정하다”는 명제는 거짓이다. 고리의 부호뿐 아니라 대상 동역학, 제어기 이득, 시간 지연, sampling이 함께 폐루프 극점 또는 동역학을 결정한다. 안정성을 판정하려면 <span class="co">[</span><span class="ot">상태공간</span><span class="co">](../systems/state-space.qmd)</span>이나 전달함수·주파수응답 같은 추가 도구가 필요하다.</span>
+<span id="p-89131e2e-109"><a href="#p-89131e2e-109" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="p-89131e2e-110"><a href="#p-89131e2e-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-111"><a href="#p-89131e2e-111" aria-hidden="true" tabindex="-1"></a>:::: {.depth-application}</span>
+<span id="p-89131e2e-112"><a href="#p-89131e2e-112" aria-hidden="true" tabindex="-1"></a><span class="fu">## 어디에 쓰이는가</span></span>
+<span id="p-89131e2e-113"><a href="#p-89131e2e-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-114"><a href="#p-89131e2e-114" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>모터의 각도·속도·전류 제어</span>
+<span id="p-89131e2e-115"><a href="#p-89131e2e-115" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>드론의 자세 유지</span>
+<span id="p-89131e2e-116"><a href="#p-89131e2e-116" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>로봇팔의 관절 제어와 impedance control</span>
+<span id="p-89131e2e-117"><a href="#p-89131e2e-117" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>온도·압력·유량 제어</span>
+<span id="p-89131e2e-118"><a href="#p-89131e2e-118" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>추정에서도 예측과 측정의 차이인 **innovation**으로 상태를 보정한다. 이 구조는 <span class="co">[</span><span class="ot">Kalman filter</span><span class="co">](../estimation/kalman-filter.qmd)</span>와 닮았다.</span>
+<span id="p-89131e2e-119"><a href="#p-89131e2e-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-120"><a href="#p-89131e2e-120" aria-hidden="true" tabindex="-1"></a><span class="fu">## 언제 실패하는가</span></span>
+<span id="p-89131e2e-121"><a href="#p-89131e2e-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-122"><a href="#p-89131e2e-122" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>센서 또는 actuator 방향이 뒤집혀 양의 피드백이 됨</span>
+<span id="p-89131e2e-123"><a href="#p-89131e2e-123" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>지연을 무시하고 이득을 과도하게 높임</span>
+<span id="p-89131e2e-124"><a href="#p-89131e2e-124" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>actuator 포화로 명령을 실현하지 못함</span>
+<span id="p-89131e2e-125"><a href="#p-89131e2e-125" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>센서 잡음까지 과하게 따라감</span>
+<span id="p-89131e2e-126"><a href="#p-89131e2e-126" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>목표와 출력의 단위·좌표계를 섞음</span>
+<span id="p-89131e2e-127"><a href="#p-89131e2e-127" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="p-89131e2e-128"><a href="#p-89131e2e-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-129"><a href="#p-89131e2e-129" aria-hidden="true" tabindex="-1"></a><span class="fu">## 다음과 복귀</span></span>
+<span id="p-89131e2e-130"><a href="#p-89131e2e-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-131"><a href="#p-89131e2e-131" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>가장 짧은 다음 단계: <span class="co">[</span><span class="ot">PID 제어</span><span class="co">](pid.qmd)</span></span>
+<span id="p-89131e2e-132"><a href="#p-89131e2e-132" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>동역학 분석을 원하면: <span class="co">[</span><span class="ot">상태공간</span><span class="co">](../systems/state-space.qmd)</span></span>
+<span id="p-89131e2e-133"><a href="#p-89131e2e-133" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Kalman을 보다가 왔다면: <span class="co">[</span><span class="ot">Kalman filter의 “보정 단계”</span><span class="co">](../estimation/kalman-filter.qmd#sec-kf-correction)</span>로 돌아간다.</span>
+<span id="p-89131e2e-134"><a href="#p-89131e2e-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-135"><a href="#p-89131e2e-135" aria-hidden="true" tabindex="-1"></a><span class="fu">## 회상 점검</span></span>
+<span id="p-89131e2e-136"><a href="#p-89131e2e-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-89131e2e-137"><a href="#p-89131e2e-137" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>피드백을 “측정”이라는 단어를 포함해 한 문장으로 설명해 보라.</span>
+<span id="p-89131e2e-138"><a href="#p-89131e2e-138" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$r=3\,\mathrm{m}$, $y=3.4\,\mathrm{m}$일 때 $e=r-y$는 얼마인가?</span>
+<span id="p-89131e2e-139"><a href="#p-89131e2e-139" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>음의 피드백이 언제나 안정하지 않은 이유를 두 가지 들어 보라.</span></code></pre></div><button title="클립보드 복사" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p><span id="p-34ab9566" class="paragraph-anchor"></span>© Robotics Math Atlas contributors · CC BY-NC-SA 4.0</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/blob/main/content/concepts/control/feedback.qmd" class="toc-action"><i class="bi bi-github"></i>소스코드 보기</a></li><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/issues/new" class="toc-action"><i class="bi empty"></i>이슈 보고</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="../../../about.html#progress-center">
+<p><span id="p-9341ed86" class="paragraph-anchor"></span>학습 기록 관리</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
