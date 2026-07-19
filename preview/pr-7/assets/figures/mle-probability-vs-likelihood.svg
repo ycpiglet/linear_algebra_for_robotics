@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 600" role="img" aria-labelledby="title desc">
+  <title id="title">확률과 우도는 같은 식에서 고정하는 대상이 반대다</title>
+  <desc id="desc">왼쪽은 모수 세타를 0.65로 고정하고 가능한 데이터 0과 1의 확률을 막대로 비교한다. 오른쪽은 성공 데이터 x=1을 고정하고 모수 후보 세타를 움직이며 우도 L(세타;1)=세타를 곡선으로 비교한다. 세타 0.8은 0.3보다 높은 우도를 준다.</desc>
+  <defs>
+    <style>
+      .ink{fill:#172033;font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif}.muted{fill:#536075;font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif}.panel{fill:#fff;stroke:#b9c6d8;stroke-width:2}.grid{stroke:#d7dfeb;stroke-width:1}.axis{stroke:#536075;stroke-width:2}.bar0{fill:#d7e6fa;stroke:#1459b8;stroke-width:3}.bar1{fill:#bce6df;stroke:#087f78;stroke-width:3}.curve{fill:none;stroke:#1459b8;stroke-width:5}.guide{stroke:#7a8699;stroke-width:2;stroke-dasharray:7 6}.candidate-low{fill:#fff;stroke:#8d2c49;stroke-width:4}.candidate-high{fill:#8d2c49;stroke:#681b34;stroke-width:2}.badge-fixed{fill:#e8f0fd;stroke:#1459b8;stroke-width:1.5}.badge-moving{fill:#e5f5f1;stroke:#087f78;stroke-width:1.5}
+    </style>
+    <pattern id="diagonalHatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="9" stroke="#1459b8" stroke-width="2" opacity=".35"/>
+    </pattern>
+  </defs>
+  <rect width="1120" height="600" rx="24" fill="#fbfcfe"/>
+  <text class="ink" x="40" y="46" font-size="27" font-weight="700">같은 p<tspan baseline-shift="sub" font-size="18">θ</tspan>(x)라도 무엇을 고정하는지가 질문을 바꾼다</text>
+  <text class="muted" x="40" y="77" font-size="17">동전의 성공확률 모형을 한쪽에서는 데이터 방향으로, 다른 쪽에서는 모수 방향으로 읽는다.</text>
+
+  <rect class="panel" x="35" y="100" width="510" height="450" rx="18"/>
+  <text class="ink" x="65" y="141" font-size="22" font-weight="700">A · 확률(probability): 데이터가 움직인다</text>
+  <rect class="badge-fixed" x="65" y="158" width="205" height="38" rx="19"/>
+  <text class="ink" x="83" y="183" font-size="16" font-weight="700">고정: 모수 θ = 0.65</text>
+  <rect class="badge-moving" x="281" y="158" width="225" height="38" rx="19"/>
+  <text class="ink" x="300" y="183" font-size="16" font-weight="700">변화: 데이터 x ∈ {0, 1}</text>
+
+  <g aria-hidden="true">
+    <line class="grid" x1="112" y1="273" x2="500" y2="273"/>
+    <line class="grid" x1="112" y1="342" x2="500" y2="342"/>
+    <line class="grid" x1="112" y1="411" x2="500" y2="411"/>
+    <line class="axis" x1="112" y1="480" x2="505" y2="480"/>
+    <line class="axis" x1="112" y1="480" x2="112" y2="226"/>
+    <rect class="bar0" x="184" y="383" width="90" height="97" rx="5"/>
+    <rect x="184" y="383" width="90" height="97" rx="5" fill="url(#diagonalHatch)"/>
+    <rect class="bar1" x="346" y="300" width="90" height="180" rx="5"/>
+    <text class="ink" x="229" y="371" text-anchor="middle" font-size="18" font-weight="700">0.35</text>
+    <text class="ink" x="391" y="288" text-anchor="middle" font-size="18" font-weight="700">0.65</text>
+    <text class="ink" x="229" y="506" text-anchor="middle" font-size="17">x = 0</text>
+    <text class="ink" x="391" y="506" text-anchor="middle" font-size="17">x = 1</text>
+    <text class="muted" x="93" y="417" text-anchor="end" font-size="14">0.25</text>
+    <text class="muted" x="93" y="348" text-anchor="end" font-size="14">0.50</text>
+    <text class="muted" x="93" y="279" text-anchor="end" font-size="14">0.75</text>
+    <text class="muted" x="73" y="365" font-size="15" transform="rotate(-90 73 365)">확률 P(X=x | θ)</text>
+  </g>
+  <text class="ink" x="290" y="532" text-anchor="middle" font-size="16" font-weight="700">“이 모형이면 어떤 데이터가 나올까?”</text>
+
+  <rect class="panel" x="575" y="100" width="510" height="450" rx="18"/>
+  <text class="ink" x="605" y="141" font-size="22" font-weight="700">B · 우도(likelihood): 모수가 움직인다</text>
+  <rect class="badge-fixed" x="605" y="158" width="190" height="38" rx="19"/>
+  <text class="ink" x="624" y="183" font-size="16" font-weight="700">고정: 관측 x = 1</text>
+  <rect class="badge-moving" x="806" y="158" width="240" height="38" rx="19"/>
+  <text class="ink" x="825" y="183" font-size="16" font-weight="700">변화: 모수 후보 0 ≤ θ ≤ 1</text>
+
+  <g aria-hidden="true">
+    <line class="grid" x1="650" y1="356" x2="1040" y2="356"/>
+    <line class="grid" x1="650" y1="246" x2="1040" y2="246"/>
+    <line class="axis" x1="650" y1="466" x2="1048" y2="466"/>
+    <line class="axis" x1="650" y1="466" x2="650" y2="226"/>
+    <path class="curve" d="M650 466 L1040 246"/>
+    <line class="guide" x1="767" y1="466" x2="767" y2="400"/>
+    <circle class="candidate-low" cx="767" cy="400" r="8"/>
+    <line class="guide" x1="962" y1="466" x2="962" y2="290"/>
+    <path class="candidate-high" d="M962 280 l10 10 -10 10 -10 -10 z"/>
+    <text class="ink" x="738" y="386" font-size="16" font-weight="700">θ=0.3 → 0.3</text>
+    <text class="ink" x="872" y="275" font-size="16" font-weight="700">θ=0.8 → 0.8</text>
+    <text class="muted" x="646" y="490" text-anchor="middle" font-size="14">0</text>
+    <text class="muted" x="1040" y="490" text-anchor="middle" font-size="14">1</text>
+    <text class="muted" x="630" y="472" text-anchor="end" font-size="14">0</text>
+    <text class="muted" x="630" y="251" text-anchor="end" font-size="14">1</text>
+    <text class="muted" x="844" y="512" text-anchor="middle" font-size="16">모수 후보 θ</text>
+    <text class="muted" x="611" y="365" font-size="15" transform="rotate(-90 611 365)">비교점수 L(θ; 1)=θ</text>
+  </g>
+  <text class="ink" x="830" y="532" text-anchor="middle" font-size="16" font-weight="700">“이 데이터를 어느 모수가 더 잘 설명할까?”</text>
+
+  <text class="muted" x="560" y="579" text-anchor="middle" font-size="16">우도 곡선은 모수 후보의 상대적 비교점수이며, 그 자체를 모수의 확률분포로 읽지 않는다.</text>
+</svg>
