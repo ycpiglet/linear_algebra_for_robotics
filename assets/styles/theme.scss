@@ -1,10 +1,30 @@
 /*-- scss:defaults --*/
-$font-family-sans-serif: "Pretendard Variable", Pretendard, "Noto Sans KR", "Noto Sans CJK KR", "Apple SD Gothic Neo", Inter, system-ui, -apple-system, sans-serif;
+$font-family-sans-serif: "Pretendard Variable", Pretendard, "Noto Sans KR", "Noto Sans CJK KR", "Apple SD Gothic Neo", "Atlas Sans KR", Inter, system-ui, -apple-system, sans-serif;
 $font-family-monospace: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 $border-radius: 0.85rem;
 
 /*-- scss:rules --*/
 @import "tokens";
+
+/* 번들 웹폰트(Noto Sans CJK KR 서브셋) — 로컬에 한국어 고품질 서체가 없는
+ * 환경(특히 Windows의 맑은 고딕 폴백)에서 마지막 안전망으로 쓴다.
+ * 로컬 서체가 있으면 브라우저가 다운로드하지 않는다.
+ * 경로는 컴파일된 CSS 위치(site_libs/bootstrap/) 기준이다. */
+@font-face {
+  font-family: "Atlas Sans KR";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../../assets/fonts/AtlasSansKR-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Atlas Sans KR";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../../assets/fonts/AtlasSansKR-Bold.woff2") format("woff2");
+}
 
 body {
   color: var(--atlas-ink);
@@ -61,7 +81,19 @@ h4 {
 }
 
 h1.title {
-  font-size: clamp(2rem, 4vw, 3.35rem);
+  /* 한국어 장 제목은 길다 — 3.35rem에서는 4줄까지 감겨 첫 화면을 다 먹는다. */
+  font-size: clamp(2rem, 3.4vw, 2.8rem);
+  text-wrap: balance;
+}
+
+/* 다크 모드에서 브레드크럼 현재 항목이 회색-온-회색으로 가라앉는다. */
+.quarto-dark .quarto-page-breadcrumbs .breadcrumb-item,
+.quarto-dark .quarto-page-breadcrumbs .breadcrumb-item::before {
+  color: var(--atlas-ink-soft);
+}
+
+.quarto-dark .quarto-page-breadcrumbs .breadcrumb-item a {
+  color: var(--atlas-blue);
 }
 
 p,
@@ -108,6 +140,29 @@ li {
 .hero-panel h2 {
   margin-top: 0;
   font-size: clamp(1.45rem, 3vw, 2.3rem);
+}
+
+/* 어두운 히어로 위에서는 전역 링크·강조 색이 배경에 묻힌다(측정 2.28:1).
+ * 패널 내부 인라인 요소는 밝은 변형으로 고정한다. */
+.hero-panel a {
+  color: #bfdaff;
+  text-decoration-color: rgb(191 218 255 / 55%);
+}
+
+.hero-panel a:hover,
+.hero-panel a:focus-visible {
+  color: #e8f2ff;
+}
+
+.hero-panel em {
+  color: #dcebff;
+  text-decoration-color: rgb(220 235 255 / 45%);
+}
+
+.hero-panel mark,
+.hero-panel .atlas-highlight {
+  color: #f7fbff;
+  background: linear-gradient(transparent 24%, rgb(255 229 143 / 26%) 24% 91%, transparent 91%);
 }
 
 .hero-panel p {
@@ -617,11 +672,11 @@ thead {
 
 .katex-display,
 .math.display {
-  margin: 1.25rem 0;
-  padding: 0.8rem;
+  /* 수식마다 색 배경을 깔면 수식 밀도가 높은 장이 줄무늬처럼 읽힌다 —
+   * 배경 없이 여백으로만 구분한다. */
+  margin: var(--atlas-math-gap) 0;
+  padding: 0.2rem 0;
   overflow-x: auto;
-  background: color-mix(in srgb, var(--atlas-surface) 95%, var(--atlas-blue));
-  border-radius: 0.55rem;
 }
 
 @import "content-blocks";
