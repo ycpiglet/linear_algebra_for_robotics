@@ -392,11 +392,18 @@
     };
     Object.entries(labels).forEach(([depth, label]) => {
       document.querySelectorAll(`.depth-${depth}`).forEach((section) => {
-        if (section.querySelector(':scope > .depth-marker')) return;
+        if (section.querySelector('.depth-marker')) return;
         const marker = document.createElement('span');
         marker.className = 'depth-marker';
         marker.textContent = label;
-        section.prepend(marker);
+        // 홀로 떠 있는 칩 대신 절 제목 옆의 배지로 붙인다 — 제목이 없을 때만 앞에 둔다.
+        const heading = section.querySelector('h2, h3, h4');
+        if (heading) {
+          marker.classList.add('depth-marker--heading');
+          heading.appendChild(marker);
+        } else {
+          section.prepend(marker);
+        }
       });
     });
   };
@@ -1081,6 +1088,7 @@
       });
     });
     const headings = [...headingMap.values()];
+
     const quickStart = article.querySelector('.concept-hero');
     if (quickStart && !quickStart.id) quickStart.id = 'concept-quick-start';
     const quickStartHref = quickStart ? `#${quickStart.id}` : '#';
@@ -1161,6 +1169,39 @@
       && heading.anchor.getClientRects().length > 0
     ));
 
+    // 우측 목차 재구성: 본문 절이 depth 게이팅 div 안에 있으면 Quarto TOC가
+    // 앞 몇 항목에서 끊긴다 — 지금 보이는 절 전체로 다시 채우고, 깊이가
+    // 바뀌면 다시 그린다. 현재 절 하이라이트는 스크롤 갱신 루프가 담당한다.
+    const originalTocCount = document.querySelector('nav#TOC')?.querySelectorAll('a').length ?? 0;
+    let outlineLinks = null;
+    const renderOutline = () => {
+      // Quarto가 모바일 내비용으로 목차를 복제하므로 모든 사본을 함께 갱신한다.
+      const navs = document.querySelectorAll('nav#TOC');
+      if (!navs.length) return;
+      const entries = visibleHeadings();
+      if (entries.length <= originalTocCount) return;
+      navs.forEach((nav) => {
+        const list = document.createElement('ul');
+        list.className = 'atlas-outline';
+        entries.forEach((heading) => {
+          const item = document.createElement('li');
+          item.className = heading.level === 'h3' ? 'toc-l3' : 'toc-l2';
+          const link = document.createElement('a');
+          link.href = `#${heading.id}`;
+          link.textContent = heading.title;
+          item.appendChild(link);
+          list.appendChild(item);
+        });
+        nav.querySelectorAll('ul').forEach((old) => old.remove());
+        nav.appendChild(list);
+      });
+      outlineLinks = true;
+    };
+    renderOutline();
+    document.addEventListener('atlas:depth', () => window.requestAnimationFrame(renderOutline));
+    // Quarto의 목차 복제가 우리 재구성보다 늦을 수 있어 한 번 더 동기화한다.
+    window.setTimeout(renderOutline, 1200);
+
     const renderToc = () => {
       const current = visibleHeadings();
       tocList.innerHTML = current
@@ -1239,6 +1280,22 @@
       positionLabel.textContent = currentHeadings.length
         ? `절 ${sectionIndex + 1}/${currentHeadings.length} · ${activeHeading.title}`
         : '읽기 위치';
+      // 우측 목차의 현재 절 하이라이트 + 접힌 도구막대에도 현재 절 표시
+      // (Quarto가 모바일용으로 목차를 복제하므로 모든 사본에 브로드캐스트)
+      if (outlineLinks && activeHeading) {
+        document.querySelectorAll('ul.atlas-outline a').forEach((link) => {
+          link.classList.toggle('active', link.getAttribute('href') === `#${activeHeading.id}`);
+        });
+      }
+      if (tools.classList.contains('reader-tools--collapsed')) {
+        const shortTitle = activeHeading && currentHeadings.length
+          ? `${activeHeading.title.slice(0, 14)}${activeHeading.title.length > 14 ? '…' : ''}`
+          : '읽기 도구';
+        collapseButton.querySelector('[data-collapse-label]').textContent =
+          currentHeadings.length
+            ? ` 절 ${sectionIndex + 1}/${currentHeadings.length} · ${shortTitle}`
+            : ' 읽기 도구';
+      }
       range.setAttribute(
         'aria-valuetext',
         currentHeadings.length
