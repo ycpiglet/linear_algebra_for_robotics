@@ -84,16 +84,46 @@ format:
       + '</td><td>' + state + '</td></tr>';
   }
 
+  // 이슈가 많아져도 총계가 틀리지 않게 최대 3페이지(300건)까지 수거한다.
+  async function ghPaged(path, maxPages = 3) {
+    const all = [];
+    for (let pageNo = 1; pageNo <= maxPages; pageNo += 1) {
+      const batch = await gh(path + '&per_page=100&page=' + pageNo);
+      all.push(...batch);
+      if (batch.length < 100) return { items: all, capped: false };
+    }
+    return { items: all, capped: true };
+  }
+
+  const PAGE_SIZE = 30;
+
   async function renderPending() {
-    const issues = (await gh('/repos/' + REPO + '/issues?labels=editorial&state=open&per_page=50'))
-      .filter((issue) => !issue.pull_request);
+    const { items, capped } = await ghPaged('/repos/' + REPO + '/issues?labels=editorial&state=open');
+    const issues = items.filter((issue) => !issue.pull_request);
     if (!issues.length) { $('desk-pending').innerHTML = '<p>열린 제안이 없습니다. ✨</p>'; return; }
     const fresh = issues.filter((i) => !i.labels.some((l) => l.name === 'bridged')).length;
-    $('desk-pending').innerHTML =
-      '<p>' + issues.length + '건 열림 (다음 다이제스트 대상 ' + fresh + '건 — 매일 06:00 KST 수거)</p>'
+    const container = $('desk-pending');
+    container.innerHTML =
+      '<p>' + issues.length + (capped ? '+' : '') + '건 열림 (다음 다이제스트 대상 '
+      + fresh + '건 — 매일 06:00 KST 수거)</p>'
       + '<div style="overflow-x:auto"><table class="table table-sm"><thead><tr>'
-      + '<th>이슈</th><th>제목</th><th>제안자</th><th>날짜</th><th>상태</th></tr></thead><tbody>'
-      + issues.map(issueRow).join('') + '</tbody></table></div>';
+      + '<th>이슈</th><th>제목</th><th>제안자</th><th>날짜</th><th>상태</th></tr></thead>'
+      + '<tbody id="desk-pending-rows"></tbody></table></div>';
+    const tbody = document.getElementById('desk-pending-rows');
+    const more = document.createElement('button');
+    more.type = 'button';
+    more.className = 'btn btn-sm btn-outline-secondary';
+    let shown = 0;
+    const showMore = () => {
+      tbody.insertAdjacentHTML('beforeend',
+        issues.slice(shown, shown + PAGE_SIZE).map(issueRow).join(''));
+      shown = Math.min(shown + PAGE_SIZE, issues.length);
+      if (shown >= issues.length) { more.remove(); return; }
+      more.textContent = '더 보기 (' + (issues.length - shown) + '건 남음)';
+    };
+    more.addEventListener('click', showMore);
+    container.appendChild(more);
+    showMore();
   }
 
   async function renderBatch() {
