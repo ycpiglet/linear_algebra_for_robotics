@@ -175,6 +175,12 @@
  ],
  "content/concepts/robotics/jacobian.qmd": [
   {
+   "sha": "e523db831a6aaaf38b3fd83269790e359def32ae",
+   "date": "2026-07-19",
+   "author": "Claude",
+   "subject": "Improve reading experience: chapter outline, figures, density, math boxes"
+  },
+  {
    "sha": "59ccfb55770f9268db965e4c1a26bb2a4399f651",
    "date": "2026-07-17",
    "author": "ITP OP PC(JYC)",
