@@ -432,6 +432,51 @@ li {
   border-radius: 999px;
 }
 
+/* 절 제목 옆에 붙는 깊이 배지 — 홀로 떠 있던 칩의 대체. */
+.depth-marker--heading {
+  margin-right: 0;
+  margin-left: 0.6rem;
+  vertical-align: 0.28em;
+}
+
+/* atlas.js가 재구성한 장 내 목차(전체 절 + 현재 절 하이라이트). */
+#TOC {
+  max-height: calc(100vh - 7rem);
+  overflow-y: auto;
+}
+
+#TOC ul.atlas-outline {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+#TOC ul.atlas-outline a {
+  display: block;
+  padding: 0.18rem 0.6rem;
+  color: var(--atlas-muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+}
+
+#TOC ul.atlas-outline .toc-l3 > a {
+  padding-left: 1.5rem;
+  font-size: 0.76rem;
+}
+
+#TOC ul.atlas-outline a:hover {
+  color: var(--atlas-ink);
+}
+
+#TOC ul.atlas-outline a.active {
+  color: var(--atlas-blue);
+  font-weight: 700;
+  background: color-mix(in srgb, var(--atlas-blue-soft) 55%, transparent);
+  border-left-color: var(--atlas-blue);
+}
+
 .atlas-controls {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
@@ -669,6 +714,36 @@ table {
 
 thead {
   background: var(--atlas-surface-2);
+}
+
+/* 표 밀도: 본문 행간(1.9)을 그대로 쓰면 셀이 세로로 부풀어
+ * 표 하나가 화면을 다 먹는다 — 셀 안은 컴팩트 행간과 얕은 패딩. */
+#quarto-document-content table th,
+#quarto-document-content table td {
+  padding: 0.55rem 0.8rem;
+  font-size: 0.95em;
+  line-height: var(--atlas-leading-compact);
+  vertical-align: top;
+}
+
+#quarto-document-content table th {
+  font-size: 0.88em;
+  white-space: nowrap;
+}
+
+/* 인라인 코드 칩 절제: 단위·기호 표기가 버튼처럼 보이지 않게. */
+#quarto-document-content :not(pre) > code {
+  padding: 0.08em 0.32em;
+  color: var(--atlas-ink-soft);
+  font-size: 0.86em;
+  background: color-mix(in srgb, var(--atlas-surface-2) 55%, transparent);
+  border-radius: 0.3em;
+}
+
+/* MathJax \boxed의 기본 검은 테두리를 브랜드 톤으로 부드럽게. */
+mjx-menclose > mjx-box {
+  border-color: color-mix(in srgb, var(--atlas-blue) 45%, var(--atlas-line)) !important;
+  border-radius: 0.35rem;
 }
 
 .katex-display,
