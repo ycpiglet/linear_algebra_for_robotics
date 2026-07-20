@@ -198,6 +198,7 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
     }
     assert digest["if"] == "${{ vars.EDITORIAL_FREEZE != 'true' }}"
     assert "pip install" not in text
+    assert "gh pr review" not in text
     assert "/actions/variables/EDITORIAL_FREEZE" not in text
 
     slot_guard = steps["Validate editorial batch key slot"]
