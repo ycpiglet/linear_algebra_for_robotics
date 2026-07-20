@@ -2,7 +2,7 @@ schema_version: 1
 id: PUB-016
 title: agent provenance trailer 형식 CI gate
 area: ci
-status: in_review
+status: done
 priority: P0
 change_class: toolchain
 version_impact: compatible
@@ -101,12 +101,19 @@ evidence:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29763626651
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764116665
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764399691
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764495191
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764495318
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764671197
   rendered_artifacts:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29763626651/artifacts/8469891042
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764116665/artifacts/8470141279
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764495191/artifacts/8470252556
   post_merge:
     - merge:aaaf2f73c87f7668969f904eabf6660ec5560e19
     - pages:aaaf2f73c87f7668969f904eabf6660ec5560e19
+    - "PR #24의 test-merge 3d45f14cc2d06748fe73ff8f702572cbfc4ed8be는 부모가 main aaaf2f73c87f7668969f904eabf6660ec5560e19와 head aa001ca4ee344010bc4bdf893b1db67090fa19d4로 정확히 고정됨"
+    - "pull_request_target 29764495318과 repository_dispatch 29764671197가 같은 test-merge SHA에 trusted-provenance success를 게시함"
+    - "main ruleset 19211454에는 source-contract와 publication-build만 required로 유지하고 PUB-017 전 trusted-provenance 승격을 보류함"
     - https://ycpiglet.github.io/linear_algebra_for_robotics/
     - https://ycpiglet.github.io/linear_algebra_for_robotics/review/
   last_known_good: aaaf2f73c87f7668969f904eabf6660ec5560e19
