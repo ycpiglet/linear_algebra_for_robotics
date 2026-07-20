@@ -294,6 +294,21 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
 
     runbook = (ROOT / "platform/editorial/README.md").read_text(encoding="utf-8")
     assert "queued" in runbook and "in_progress" in runbook and "terminal" in runbook
+    for rotation_contract in (
+        "pending 이슈가 0건",
+        "Checkout isolated batch push credential",
+        "Push batch branch",
+        "last_used",
+        "이전 key를 제거하지 말고",
+    ):
+        assert rotation_contract in runbook
+    for rollback_contract in (
+        "deploy-key-only ruleset을 비활성화",
+        "rollback PR",
+        "deploy key·secret과 비활성 ruleset을 철회",
+        "ruleset을 둔 채 workflow만 revert",
+    ):
+        assert rollback_contract in runbook
     runtime = tomllib.loads(
         (ROOT / "platform/editorial-runtime/pyproject.toml").read_text(encoding="utf-8")
     )
