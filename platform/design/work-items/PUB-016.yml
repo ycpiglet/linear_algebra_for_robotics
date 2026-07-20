@@ -2,13 +2,13 @@ schema_version: 1
 id: PUB-016
 title: agent provenance trailer 형식 CI gate
 area: ci
-status: planned
-priority: P1
+status: ready
+priority: P0
 change_class: toolchain
 version_impact: compatible
 owner_role: release-engineer
 review_roles: [publishing-ops-steward]
-branch: null
+branch: agent/pub-016-provenance-gate
 dependencies: [PUB-002]
 decision_refs:
   - platform/editorial/README.md

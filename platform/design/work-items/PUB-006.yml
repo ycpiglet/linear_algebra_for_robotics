@@ -9,7 +9,7 @@ version_impact: additive
 owner_role: publishing-ops-steward
 review_roles: [artifact-editor, math-domain-reviewer]
 branch: null
-dependencies: [PUB-002]
+dependencies: [PUB-002, PUB-016]
 decision_refs:
   - assets/README.md
   - AUTHORING_MANUAL.md#10-시각화-설계

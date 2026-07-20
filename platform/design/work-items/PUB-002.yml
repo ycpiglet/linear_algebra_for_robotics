@@ -106,6 +106,7 @@ evidence:
   pr: 16
   ci_runs:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29749197342
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29749499320
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29749915933
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29751854155
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29752160881
@@ -125,6 +126,7 @@ evidence:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29756234333
   rendered_artifacts:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29749197342/artifacts/8463814311
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29749499320/artifacts/8463994945
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29751854155/artifacts/8464959102
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29752936523/artifacts/8465428214
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29754164962/artifacts/8465971932
