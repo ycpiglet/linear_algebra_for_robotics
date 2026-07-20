@@ -138,6 +138,36 @@ class EditorialTestCase(unittest.TestCase):
             ("본문에 $x = 1$ 수식이 있다.\n", "x = 1"),
             ("<span>본문</span>\n", "본문"),
             ("<div>\n본문\n</div>\n", "본문"),
+            ('<script\n  src="https://trusted.example/app.js"\n></script>\n', "trusted.example"),
+            (
+                '<input\n  data-note="1 > 0"\n  onclick="trusted()"\n>\n',
+                "trusted()",
+            ),
+            (
+                '<input\n  data-note="1 > 0"\n\n  onclick="trusted()"\n\n>\n',
+                "trusted()",
+            ),
+            (
+                '<script data-note="1 < 2">\n\nconst trusted = 1\n\n</script>\n',
+                "const trusted = 1",
+            ),
+            ("<script / >\n\nconst trusted = 1\n\n</script>\n", "const trusted = 1"),
+            ("{{< include\n  chapter.qmd\n>}}\n", "chapter.qmd"),
+            ("[링크](\n  https://trusted.example\n)\n", "trusted.example"),
+            ("[링크](\n  https://trusted.example/a_(safe)\n)\n", "safe"),
+            ("[ref]:\n  https://trusted.example\n", "trusted.example"),
+            ('[링크](https://example.com){\n  onclick="trusted()"\n}\n', "trusted()"),
+            ('::: {\n  onclick="trusted()"\n}\n본문\n:::\n', "trusted()"),
+            ('[링크](https://example.com){\n\n  onclick="trusted()"\n\n}\n', "trusted()"),
+            (
+                "서론.\n\n---\ntitle: 안전\n\ndescription: trusted\n---\n\n본문.\n",
+                "trusted",
+            ),
+            (
+                "서론.\n\n---\n# metadata comment\n\n"
+                "include-in-header: /etc/passwd\n---\n\n본문.\n",
+                "/etc/passwd",
+            ),
             ("$$\nx = 1\n$$\n", "x = 1"),
             ("\\begin{equation}\nx = 1\n\\end{equation}\n", "x = 1"),
         ]

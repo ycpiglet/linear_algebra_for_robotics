@@ -194,15 +194,30 @@ _UNSAFE_LINE_CHARS = _UNSAFE_PROSE_CHARS - {"*", "_"}
 
 
 def _in_front_matter(source: str, offset: int) -> bool:
+    """Treat every paired YAML delimiter region as structural metadata.
+
+    Pandoc permits metadata blocks after the document start and allows comments,
+    directives, and blank lines before the first mapping key.  Protecting every
+    delimiter-bounded region is intentionally conservative and avoids guessing
+    which valid YAML form follows an opening delimiter.
+    """
     lines = source.splitlines(keepends=True)
-    if not lines or lines[0].lstrip("\ufeff").strip() != "---":
-        return False
-    cursor = len(lines[0])
-    for line in lines[1:]:
-        cursor += len(line)
-        if line.strip() in {"---", "..."}:
-            return offset < cursor
-    return True
+    delimiters: list[tuple[int, int]] = []
+    cursor = 0
+    for index, line in enumerate(lines):
+        line_end = cursor + len(line)
+        stripped = line.lstrip("\ufeff") if index == 0 else line
+        if stripped.strip() in {"---", "..."}:
+            delimiters.append((cursor, line_end))
+        cursor = line_end
+
+    if any(start <= offset < end for start, end in delimiters):
+        return True
+    preceding = [item for item in delimiters if item[1] <= offset]
+    following = [item for item in delimiters if item[0] > offset]
+    if preceding and following:
+        return True
+    return len(preceding) % 2 == 1
 
 
 def _in_fenced_block(source: str, offset: int) -> bool:
@@ -238,25 +253,86 @@ def _inside_inline_emphasis(prefix: str, marker: str) -> bool:
 
 
 def _in_html_block(source: str, offset: int) -> bool:
+    """Tokenize HTML through the target offset with quote-aware tag state."""
     prefix = source[:offset]
-    if prefix.rfind("<!--") > prefix.rfind("-->"):
-        return True
     void_tags = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta"}
     stack: list[str] = []
-    tag_pattern = re.compile(
-        r"<\s*(/?)\s*([A-Za-z][\w:-]*)(?:\s[^<>]*?)?\s*(/?)>", re.S
-    )
-    for match in tag_pattern.finditer(prefix):
-        closing, tag, self_closing = match.groups()
-        tag = tag.lower()
-        if self_closing or tag in void_tags:
+    in_comment = False
+    in_tag = False
+    quote: str | None = None
+    tag_start = 0
+    index = 0
+    while index < len(prefix):
+        if in_comment:
+            if prefix.startswith("-->", index):
+                in_comment = False
+                index += 3
+                continue
+        elif in_tag:
+            char = prefix[index]
+            if quote:
+                if char == quote:
+                    quote = None
+            elif char in {'"', "'"}:
+                quote = char
+            elif char == ">":
+                token = prefix[tag_start:index + 1]
+                match = re.match(r"<\s*(/?)\s*([A-Za-z][\w:-]*)", token)
+                if match:
+                    closing, tag = match.groups()
+                    tag = tag.lower()
+                    if closing and tag in stack:
+                        del stack[len(stack) - 1 - stack[::-1].index(tag):]
+                    elif not closing and tag not in void_tags:
+                        stack.append(tag)
+                in_tag = False
+        elif prefix.startswith("<!--", index):
+            in_comment = True
+            index += 4
             continue
-        if closing:
-            if tag in stack:
-                del stack[len(stack) - 1 - stack[::-1].index(tag):]
-        else:
-            stack.append(tag)
-    return bool(stack)
+        elif prefix[index] == "<" and re.match(
+            r"(?:/?[A-Za-z]|!|\?)", prefix[index + 1:]
+        ):
+            in_tag = True
+            tag_start = index
+        index += 1
+    return in_comment or in_tag or bool(stack)
+
+
+def _in_multiline_inline_structure(source: str, offset: int) -> bool:
+    prefix = source[:offset]
+    brace_depth = 0
+    link_depth = 0
+    index = 0
+    while index < len(prefix):
+        if prefix[index] == "\\":
+            index += 2
+            continue
+        if link_depth == 0 and prefix.startswith("](", index):
+            link_depth = 1
+            index += 2
+            continue
+        if link_depth:
+            if prefix[index] == "(":
+                link_depth += 1
+            elif prefix[index] == ")":
+                link_depth -= 1
+        if prefix[index] == "{":
+            brace_depth += 1
+        elif prefix[index] == "}" and brace_depth:
+            brace_depth -= 1
+        index += 1
+    return link_depth > 0 or brace_depth > 0
+
+
+def _block_has_structural_markup(source: str, offset: int) -> bool:
+    """Reject automation in a Markdown block that contains active syntax."""
+    blank_line = re.compile(r"(?:\r?\n)[ \t]*(?:\r?\n)")
+    preceding = list(blank_line.finditer(source, 0, offset))
+    block_start = preceding[-1].end() if preceding else 0
+    following = blank_line.search(source, offset)
+    block_end = following.start() if following else len(source)
+    return any(char in _UNSAFE_LINE_CHARS for char in source[block_start:block_end])
 
 
 def _in_math_block(source: str, offset: int) -> bool:
@@ -298,6 +374,8 @@ def replaceable(source: str, span: tuple[int, int], suggestion: str) -> bool:
         or _in_fenced_block(source, start)
         or _in_html_block(source, start)
         or _in_math_block(source, start)
+        or _in_multiline_inline_structure(source, start)
+        or _block_has_structural_markup(source, start)
     ):
         return False
 
