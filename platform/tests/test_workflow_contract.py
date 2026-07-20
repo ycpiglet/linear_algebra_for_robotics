@@ -167,7 +167,8 @@ def test_trusted_provenance_executes_only_base_side_code() -> None:
     )
     assert 'gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}"' in metadata["run"]
     assert 'test "$live_head" = "$DISPATCH_HEAD"' in metadata["run"]
-    assert 'echo "event_path=$event_path" >> "$GITHUB_OUTPUT"' in metadata["run"]
+    assert 'echo "event_path=$event_path"' in metadata["run"]
+    assert '} >> "$GITHUB_OUTPUT"' in metadata["run"]
     fetch = steps["Fetch untrusted PR head as Git data only"]
     assert fetch["id"] == "target"
     assert fetch["env"] == {
@@ -499,6 +500,7 @@ def test_every_uv_make_command_rejects_stale_lockfiles() -> None:
     for command in uv_commands:
         assert "--locked" in command, command
     workflow_lint = next(line for line in lines if "$(ACTIONLINT)" in line)
+    assert '-shellcheck "$(SHELLCHECK)"' in workflow_lint
     assert "*.yml" in workflow_lint and "*.yaml" in workflow_lint
 
 
@@ -510,6 +512,9 @@ def test_bootstrap_archives_have_reviewed_sha256_pins() -> None:
         "UV_SHA256": "e490a6464492183c5d4534a5527fb4440f7f2bb2f228162ad7e4afe076dc0224",
         "ACTIONLINT_SHA256": (
             "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+        ),
+        "SHELLCHECK_SHA256": (
+            "8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198"
         ),
     }
     for variable, digest in expected.items():

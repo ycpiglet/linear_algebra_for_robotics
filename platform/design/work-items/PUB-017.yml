@@ -19,6 +19,7 @@ decision_needed:
   - control-plane CODEOWNER가 agent PR 작성자와 다른 사람 계정 또는 team인지 확정
   - hardware-backed 서명 등 CODEOWNER와 동등한 대체 trust root 허용 여부 확정
   - required review와 trusted-provenance status를 ruleset에 적용·복구하는 승인자 확정
+  - PUB-017 전환 PR에 선행 적용할 1인 승인·stale 승인 무효화·last-push 승인 ruleset 확정
 blocker: null
 status_reason: null
 superseded_by: null
@@ -27,6 +28,7 @@ scope:
     - self-asserted actor label과 인증된 supervisor 권한의 분리
     - workflow·verifier 경로의 CODEOWNERS 또는 동등한 외부 trust root
     - stale review 무효화와 마지막 push 이후 승인 등 ruleset review 계약
+    - bot-authored PUB-017 exact head를 별도 사람이 승인하는 one-shot trust bootstrap
     - compliant canary 뒤 trusted-provenance integration ID 고정 required context 활성화
   out:
     - agent와 사람이 같은 GitHub credential을 공유한 채 라벨을 인증으로 간주
@@ -40,16 +42,20 @@ change_paths:
   write:
     - .github/CODEOWNERS
     - platform/editorial/README.md
+    - platform/scripts/verify_provenance.py
+    - platform/tests/test_provenance.py
     - platform/design/work-items/PUB-017.yml
   exclusive_locks: []
   generated: []
 verification:
   source_contract:
     - actor:supervisor 라벨만 붙인 무승인 control-plane PR은 merge 불가
+    - PUB-017 PR을 열기 전에 bot author와 다른 사람의 approving review를 ruleset이 요구함
     - agent identity가 만든 control-plane PR은 별도 CODEOWNER 승인 전 merge 불가
     - stale review와 승인 뒤 push가 승인을 무효화함
   rendered_contract: []
   post_merge:
+    - PUB-017 전환 중 base-side trusted-provenance failure는 informational이며 required가 아님
     - canary test-merge SHA에 trusted-provenance success와 기존 두 required check가 함께 충족됨
     - 새 canary commit에서도 세 required check가 다시 충족됨
 rollback:
@@ -65,6 +71,7 @@ rollback:
     - 콘텐츠·URL·기존 Git history는 바꾸지 않는다
 definition_of_done:
   - agent automation과 사람 supervisor가 서로 다른 GitHub authority를 사용한다
+  - PUB-017 transition PR은 bot이 만들고 exact reviewed head를 별도 사람이 승인한 뒤에만 병합된다
   - control-plane 변경은 agent PR 작성자와 다른 인증된 owner 승인 없이는 merge되지 않는다
   - trusted-provenance status source가 GitHub Actions integration ID에 고정된다
   - required context 활성화 전후 canary와 역패치가 검증된다

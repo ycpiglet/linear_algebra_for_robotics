@@ -52,6 +52,27 @@
 - agent/editorial branch의 수동 quality dispatch는 `trusted_main` exact SHA를 입력으로 받고,
   그 SHA가 현재 main first-parent history에 있으며 dispatch head의 조상일 때만 전체 범위를 검사한다.
 
+PUB-017의 최초 trust bootstrap은 현재 동결을 일반 라벨 예외로 풀지 않는다. 다음 순서를 하나의
+동결 창에서 수행한다.
+
+1. editorial을 freeze·drain하고 ruleset 전체 JSON, main SHA, 열린 PR을 보존한다.
+2. agent 작업에서 사용할 최소 권한 GitHub App/봇 identity를 사람 계정과 분리하고, 사람 admin
+   credential이 agent 실행 환경에 없음을 확인한다.
+3. PUB-017 branch 생성 전에 ruleset에 approving review 1건, stale approval 무효화, 마지막 push와
+   다른 주체의 승인을 먼저 요구한다. `trusted-provenance`는 아직 required로 추가하지 않는다.
+4. 봇 identity가 CODEOWNERS와 verifier transition만 담은 PUB-017 PR을 만들고, 별도 사람 owner가
+   exact head diff와 ruleset snapshot을 검토해 승인한다. 이 PR의 `source-contract`는 PR 버전
+   verifier를 실행한다. base-side 구 verifier의 failure는 이 전환 동안 informational로 남는다.
+5. reviewed head SHA를 `--match-head-commit`으로 고정해 병합하고 즉시 새 main push를 확인한다.
+   CODEOWNER review를 활성화한 뒤 compliant canary에서 기존 두 checks와 provenance status의
+   동시 충족을 두 번 확인해야만 `trusted-provenance`를 required context로 승격한다.
+6. 어느 단계든 실패하면 required provenance를 켜지 않고 ruleset의 review 변경만 역패치한다.
+   봇 identity·실패 SHA·승인·ruleset snapshot은 보존하고 control-plane 동결을 유지한다.
+
+즉 PUB-017의 PR-side verifier 변경은 독립적인 사람 승인 규칙이 먼저 생긴 뒤에만 허용되는
+one-shot transition이다. `source-contract`를 제거하거나 self-asserted `actor:supervisor` 라벨만으로
+동결을 해제하지 않는다.
+
 **병합과 사고 복구:** 최종 merge commit은 PR 검사 전에 존재하지 않으므로 UI 기본 병합이나
 auto-merge에 맡기지 않는다. 역할에 맞는 trailer를 stdin 파일로 전달하는 통제 명령만 사용한다.
 

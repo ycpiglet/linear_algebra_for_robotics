@@ -42,6 +42,8 @@ change_paths:
     - .github/workflows/publish-web.yml
     - .github/workflows/provenance.yml
     - .github/workflows/editorial-digest.yml
+    - Makefile
+    - scripts/bootstrap-tools.sh
     - platform/scripts/verify_provenance.py
     - platform/tests/test_provenance.py
     - platform/tests/test_workflow_contract.py
@@ -65,6 +67,7 @@ verification:
     - multiple merge-base로 control-plane path를 숨기지 못하고 latest-main sync는 허용하는 fixture
     - literal backslash-n과 본문 문자열만 있는 agent commit의 fail-closed test
     - make test와 make lint
+    - pinned ShellCheck가 로컬·CI Actionlint에서 동일하게 실행됨
   rendered_contract: []
   post_merge:
     - 유효한 agent trailer commit은 통과하고 의도적으로 잘못 만든 fixture는 차단됨

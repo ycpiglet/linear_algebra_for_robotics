@@ -77,10 +77,12 @@ jobs:
           esac
           test "${#base_sha}" -eq 40
           test "${#head_sha}" -eq 40
-          echo "number=$pr_number" >> "$GITHUB_OUTPUT"
-          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
-          echo "head_sha=$head_sha" >> "$GITHUB_OUTPUT"
-          echo "event_path=$event_path" >> "$GITHUB_OUTPUT"
+          {
+            echo "number=$pr_number"
+            echo "base_sha=$base_sha"
+            echo "head_sha=$head_sha"
+            echo "event_path=$event_path"
+          } >> "$GITHUB_OUTPUT"
 
       # Security boundary: fetch the PR objects as data, but never check out or execute them.
       - name: Fetch untrusted PR head as Git data only
@@ -98,10 +100,11 @@ jobs:
               fetched=true
               break
             fi
+            echo "PR ref fetch attempt ${attempt} failed" >&2
             sleep 2
           done
           test "$fetched" = "true"
-          actual=$(git rev-parse --verify refs/provenance/pr-head^{commit})
+          actual=$(git rev-parse --verify "refs/provenance/pr-head^{commit}")
           test "$actual" = "$EXPECTED_HEAD"
           read -r merge_sha first_parent second_parent extra \
             < <(git rev-list --parents -n 1 refs/provenance/pr-merge)
