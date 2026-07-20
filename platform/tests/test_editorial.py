@@ -111,6 +111,33 @@ class EditorialTestCase(unittest.TestCase):
         self.assertEqual(record["instruction"], "표기 통일")
         editorial.validate_event(record, self.root)
 
+    def test_retry_recovers_durable_applied_event_without_duplication(self) -> None:
+        body = issue_body(
+            self.page,
+            "필터는 상태를 업데이트한다.",
+            suggestion="필터는 측정 갱신으로 상태를 고쳐 쓴다.",
+        )
+        issue = make_issue(22, body)
+        first = self.apply([issue])[0]
+        events_file = self.root / editorial.EVENTS_DIR / "2026-07.jsonl"
+        original_events = events_file.read_text(encoding="utf-8").splitlines()
+
+        commit_sha = "7" * 40
+        with mock.patch.object(
+            editorial, "_commit_for_issue", return_value=commit_sha
+        ) as find_commit:
+            recovered = editorial.apply_issues(
+                [issue], self.root, git=True, dry_run=True, today="2026-07-18"
+            )[0]
+
+        self.assertEqual(first.action, "applied")
+        self.assertEqual(recovered.action, "applied")
+        self.assertIn("이전 digest", recovered.detail)
+        self.assertEqual(recovered.event_id, first.event_id)
+        self.assertEqual(recovered.extra["commit"], commit_sha)
+        find_commit.assert_called_once_with(self.root, 22)
+        self.assertEqual(events_file.read_text(encoding="utf-8").splitlines(), original_events)
+
     def test_markup_crossing_span_is_left_for_review(self) -> None:
         body = issue_body(self.page, "그리고 공분산도 함께",
                           suggestion="또한 공분산도 같이")
