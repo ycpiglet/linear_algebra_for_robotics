@@ -7,8 +7,8 @@
 #   3. 반영 불가(서식 걸침·모호·코멘트만)는 소스 위치를 이슈에 회신
 #   4. 배치 PR이 없으면 생성 — 병합은 사람(감독자)이 리뷰 후 결정
 #
-# GITHUB_TOKEN으로 만든 PR·label 이벤트는 새 workflow run을 시작하지 않으므로,
-# batch push 뒤 default-branch quality와 provenance controller를 명시적으로 dispatch한다.
+# GITHUB_TOKEN으로 만든 PR의 opened/synchronize/reopened run은 승인 대기 상태이고
+# labeled/edited run은 생성되지 않으므로, 무인 gate는 default-branch controller로 dispatch한다.
 name: editorial-digest
 
 on:

@@ -38,10 +38,13 @@
   object로만 fetch하며 checkout·import·build하지 않는다. verifier는 Python isolated mode로
   실행해 PR이 추가한 sibling module·환경 변수의 import shadowing도 막는다. workflow와 verifier는
   bootstrap 이후 PUB-017의 외부 supervisor 신뢰 결박이 끝날 때까지 모든 역할에 대해 동결한다.
-- `GITHUB_TOKEN`으로 만든 PR·label 이벤트는 다른 workflow run을 시작하지 않는다. 따라서 editorial
-  digest는 PR 생성 뒤 live `actor:agent` label과 원격 batch head를 확인하고 default-branch 전용
-  `repository_dispatch`에 exact PR 번호와 head SHA를 전달한다. controller는 live PR API의 head와
-  payload를 다시 대조하고 base/head/test-merge 두 부모를 검증한 뒤에만 같은 status context를 게시한다.
+- `GITHUB_TOKEN`으로 만든 PR의 opened·synchronize·reopened run은 사람의 실행 승인을 기다리고,
+  labeled·edited 같은 후속 activity는 run을 만들지 않는다. 따라서 이 일반 run을 무인 required
+  gate로 신뢰하지 않는다([GitHub GITHUB_TOKEN 문서](https://docs.github.com/en/actions/concepts/security/github_token)).
+  editorial digest는 PR 생성 뒤 live `actor:agent` label과 원격 batch
+  head를 확인하고 default-branch 전용 `repository_dispatch`에 exact PR 번호와 head SHA를 전달한다.
+  controller는 live PR API의 head와 payload를 다시 대조하고 base/head/test-merge 두 부모를 검증한
+  뒤에만 같은 status context를 게시한다.
 - `actor:supervisor` 라벨은 역할 주장이지 인증된 사람 신원은 아니다. 같은 GitHub 계정을 쓰는
   agent와 사람을 라벨만으로 구분하지 않는다. bootstrap 이후 `.github/workflows/**`, verifier,
   CODEOWNERS 후보 위치, write credential을 사용하는 editorial controller 의존성은 모든 역할에
