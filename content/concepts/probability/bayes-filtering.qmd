@@ -42,7 +42,7 @@ $$
 {\int g_t(y_t\mid u)p(u\mid y_{1:t-1})du}.
 $$
 
-Bayes filter는 특정 알고리즘이 아니라 모든 Bayesian filtering 방법이 근사하려는 정확한 재귀다.
+베이즈 필터는 특정 알고리즘 하나가 아니라, 모든 베이즈 필터링 방법이 근사하려는 정확한 재귀식이다.
 :::
 
 ::: {.depth-intuition}
