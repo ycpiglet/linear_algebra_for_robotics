@@ -486,6 +486,67 @@ def _git_commit(root: Path, paths: list[Path], message: str) -> str:
     return sha
 
 
+def _commit_for_issue(root: Path, issue: int) -> str | None:
+    result = subprocess.run(
+        [
+            "git",
+            "log",
+            "--max-count=1",
+            "--format=%H",
+            f"--grep=^Issue: #{issue}$",
+        ],
+        cwd=root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    commit = result.stdout.strip()
+    return commit or None
+
+
+def _recover_applied(
+    proposal: Proposal,
+    source: Path,
+    root: Path,
+    *,
+    git: bool,
+) -> Outcome | None:
+    """Recover an issue durably pushed by an earlier, partially failed digest."""
+    events = root / EVENTS_DIR
+    if not events.is_dir():
+        return None
+    relative = str(source.relative_to(root))
+    expected_link = f"issue:#{proposal.number}"
+    for path in sorted(events.glob("*.jsonl"), reverse=True):
+        records = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+        for record in reversed(records):
+            if (
+                record.get("status") != "applied"
+                or (record.get("links") or {}).get("source") != expected_link
+                or record.get("before") != proposal.quote
+                or record.get("after") != proposal.suggestion
+                or (record.get("target") or {}).get("file") != relative
+            ):
+                continue
+            text = source.read_text(encoding="utf-8")
+            spans = locate(text, proposal.suggestion, proposal.prefix, proposal.suffix)
+            if len(spans) != 1:
+                return None
+            commit = _commit_for_issue(root, proposal.number) if git else None
+            if git and commit is None:
+                return None
+            return Outcome(
+                proposal.number,
+                "applied",
+                file=relative,
+                line=line_of(text, spans[0][0]),
+                detail="이전 digest가 push한 교정·이벤트를 복구함",
+                event_id=record.get("id"),
+                extra={"commit": commit} if commit else {},
+            )
+    return None
+
+
 def apply_issues(
     issues: list[dict[str, Any]],
     root: Path = ROOT,
@@ -504,6 +565,10 @@ def apply_issues(
         if source is None:
             outcomes.append(Outcome(proposal.number, "unmapped",
                                     detail=f"페이지를 소스로 해석하지 못함: {proposal.page}"))
+            continue
+        recovered = _recover_applied(proposal, source, root, git=git)
+        if recovered is not None:
+            outcomes.append(recovered)
             continue
         text = source.read_text(encoding="utf-8")
         spans = locate(text, proposal.quote, proposal.prefix, proposal.suffix)

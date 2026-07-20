@@ -68,6 +68,7 @@ verification:
     - freeze switch가 새 editorial batch 생성을 막고 해제 후 정상 복귀함
     - editorial/batch는 전용 deploy key를 사용하는 GitHub Actions 외 직접 push가 ruleset으로 제한됨
     - 통제된 적용 가능 proposal이 새 Issue 트레일러 커밋과 실제 batch ref 변경을 만들고 write deploy key의 사용 시각을 갱신함
+    - Actions 기본 권한은 read로 유지하면서 trusted digest의 batch PR 생성 설정만 활성화됨
 rollback:
   triggers:
     - 정상 PR이 quality job 자체 오류로 실행되지 않음
@@ -97,6 +98,7 @@ definition_of_done:
   - key 회전은 활성 secret을 덮어쓰지 않는 primary·next 슬롯으로 수행하고 실패 시 기존 슬롯으로 복귀한다
   - key 회전은 Issue 트레일러가 있는 새 커밋, before_sha와 다른 head_sha, pushed=true, 원격 ref 일치, 새 key의 read_only=false·사용 시각을 검증한다
   - push credential checkout은 full history로 원격 batch ref가 예상 커밋의 조상인지 non-force push 전에 증명한다
+  - source push 뒤 PR·quality 단계가 실패해도 이벤트 원장과 Issue 트레일러로 재시도 결과를 복구하며 중복 교정·오확정하지 않는다
   - rollback은 workflow와 ruleset·deploy key·secret을 하나의 동결된 control-plane cutover로 되돌린다
   - front matter·코드·수식·HTML·shortcode·저장소 밖 경로 제안은 자동 반영되지 않는다
 evidence:
