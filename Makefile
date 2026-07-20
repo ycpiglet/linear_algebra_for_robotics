@@ -4,6 +4,7 @@ QUARTO := $(TOOLS)/quarto/bin/quarto
 TYPST := $(TOOLS)/typst/typst
 UV := $(TOOLS)/uv/uv
 ACTIONLINT := $(TOOLS)/actionlint/actionlint
+SHELLCHECK := $(TOOLS)/shellcheck/shellcheck
 
 .PHONY: bootstrap sync validate test lint workflow-lint web review book proof all preview clean
 
@@ -28,7 +29,7 @@ lint: sync workflow-lint
 	$(UV) run --locked ruff check platform courseware scripts
 
 workflow-lint: bootstrap
-	$(ACTIONLINT) $$(find .github/workflows -maxdepth 1 -type f \( -name '*.yml' -o -name '*.yaml' \) -print)
+	$(ACTIONLINT) -shellcheck "$(SHELLCHECK)" $$(find .github/workflows -maxdepth 1 -type f \( -name '*.yml' -o -name '*.yaml' \) -print)
 
 web: validate
 	rm -rf "$(CURDIR)/_site"

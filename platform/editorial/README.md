@@ -21,6 +21,90 @@
 - 에이전트 커밋은 트레일러를 붙인다: `Actor: agent`, 근거가 이슈면 `Issue: #N`
 - 감독자·편집자의 직접 커밋은 본인 GitHub 계정 author를 그대로 쓴다
   (그 자체가 주체 기록이다).
+- PR은 `actor:agent`·`actor:supervisor`·`actor:editor` 중 정확히 한 라벨을 가진다.
+  `actor:agent` PR이 새로 도입하는 모든 커밋(동기화 merge 포함)은 Git이 실제 trailer로
+  파싱하는 `Actor: agent`를 정확히 하나 가져야 한다. literal `\\n` 문자열은 줄바꿈이 아니다.
+- 보호된 `main`의 merge commit은 PR 주체와 같은 `Actor` trailer를 하나 갖는다. 사람의
+  branch commit은 author identity를 사용하므로 `Actor` trailer를 강제하지 않는다.
+- `publish-web`의 provenance gate는 네트워크 조회 없이 Actions event payload의 PR 라벨과
+  checked-out full Git graph만 검사한다. PR 라벨·base 변경도 quality check를 다시 실행한다.
+- `37289c06a3c7752ef09d5348f4bc7b5e15bae291`까지는 immutable trusted-through
+  cutline이다. 그 이전의 비정규 trailer는 history를 재작성하지 않고 보존하되, PR·main
+  first-parent integration·수동 dispatch가 새로 도입하는 전체 범위에는 같은 예외를 허용하지 않는다.
+  main 검사 범위는 매 push마다 이 cutline부터 다시 계산하므로 앞선 실패는 다음 push로
+  덮이지 않는다. 사고 복구 후 cutline 갱신은 별도 control-plane 변경으로 명시적으로 심사한다.
+- `trusted-provenance` 상태는 default branch의 base-side 코드만 실행해 PR test-merge SHA에
+  게시한다. token은 contents read·pull-requests read·statuses write로 제한하고, PR head는 read-only Git
+  object로만 fetch하며 checkout·import·build하지 않는다. verifier는 Python isolated mode로
+  실행해 PR이 추가한 sibling module·환경 변수의 import shadowing도 막는다. workflow와 verifier는
+  bootstrap 이후 PUB-017의 외부 supervisor 신뢰 결박이 끝날 때까지 모든 역할에 대해 동결한다.
+- `GITHUB_TOKEN`으로 만든 PR의 opened·synchronize·reopened run은 사람의 실행 승인을 기다리고,
+  labeled·edited 같은 후속 activity는 run을 만들지 않는다. 따라서 이 일반 run을 무인 required
+  gate로 신뢰하지 않는다([GitHub GITHUB_TOKEN 문서](https://docs.github.com/en/actions/concepts/security/github_token)).
+  editorial digest는 PR 생성 뒤 live `actor:agent` label과 원격 batch
+  head를 확인하고 default-branch 전용 `repository_dispatch`에 exact PR 번호와 head SHA를 전달한다.
+  controller는 live PR API의 head와 payload를 다시 대조하고 base/head/test-merge 두 부모를 검증한
+  뒤에만 같은 status context를 게시한다.
+- `actor:supervisor` 라벨은 역할 주장이지 인증된 사람 신원은 아니다. 같은 GitHub 계정을 쓰는
+  agent와 사람을 라벨만으로 구분하지 않는다. bootstrap 이후 `.github/workflows/**`, verifier,
+  CODEOWNERS 후보 위치, write credential을 사용하는 editorial controller 의존성은 모든 역할에
+  대해 동결하고, PUB-017에서 agent 전용 GitHub App/봇 identity와 별도 사람
+  CODEOWNER 승인(또는 동등한 외부 trust root)을 결박한 뒤에만 해제한다. 그전에는
+  `trusted-provenance`를 ruleset required context로 승격하지 않는다. YAML anchor·alias나 중첩 권한
+  표현을 텍스트 검사로 판별하지 않고 파일 경계 자체를 차단한다.
+- agent/editorial branch의 수동 quality dispatch는 `trusted_main` exact SHA를 입력으로 받고,
+  그 SHA가 현재 main first-parent history에 있으며 dispatch head의 조상일 때만 전체 범위를 검사한다.
+
+PUB-017의 최초 trust bootstrap은 현재 동결을 일반 라벨 예외로 풀지 않는다. 다음 순서를 하나의
+동결 창에서 수행한다.
+
+1. editorial을 freeze·drain하고 ruleset 전체 JSON, main SHA, 열린 PR을 보존한다.
+2. agent 작업에서 사용할 최소 권한 GitHub App/봇 identity를 사람 계정과 분리하고, 사람 admin
+   credential이 agent 실행 환경에 없음을 확인한다.
+3. PUB-017 branch 생성 전에 ruleset에 approving review 1건, stale approval 무효화, 마지막 push와
+   다른 주체의 승인을 먼저 요구한다. `trusted-provenance`는 아직 required로 추가하지 않는다.
+4. 봇 identity가 CODEOWNERS와 verifier transition만 담은 PUB-017 PR을 만들고, 별도 사람 owner가
+   exact head diff와 ruleset snapshot을 검토해 승인한다. 이 PR의 `source-contract`는 PR 버전
+   verifier를 실행한다. base-side 구 verifier의 failure는 이 전환 동안 informational로 남는다.
+5. reviewed head SHA를 `--match-head-commit`으로 고정해 병합하고 즉시 새 main push를 확인한다.
+   CODEOWNER review를 활성화한 뒤 compliant canary에서 기존 두 checks와 provenance status의
+   동시 충족을 두 번 확인해야만 `trusted-provenance`를 required context로 승격한다.
+6. 어느 단계든 실패하면 required provenance를 켜지 않고 ruleset의 review 변경만 역패치한다.
+   봇 identity·실패 SHA·승인·ruleset snapshot은 보존하고 control-plane 동결을 유지한다.
+
+즉 PUB-017의 PR-side verifier 변경은 독립적인 사람 승인 규칙이 먼저 생긴 뒤에만 허용되는
+one-shot transition이다. `source-contract`를 제거하거나 self-asserted `actor:supervisor` 라벨만으로
+동결을 해제하지 않는다.
+
+**병합과 사고 복구:** 최종 merge commit은 PR 검사 전에 존재하지 않으므로 UI 기본 병합이나
+auto-merge에 맡기지 않는다. 역할에 맞는 trailer를 stdin 파일로 전달하는 통제 명령만 사용한다.
+
+```bash
+printf '%s\n' 'Actor: agent' | gh pr merge <PR> --repo <owner/repo> --merge \
+  --match-head-commit '<reviewed head SHA>' --subject '<merge subject>' --body-file -
+```
+
+감독자·편집자 PR은 각각 `Actor: supervisor`, `Actor: editor`로 바꾼다. literal `\n`을 인자로
+조립하지 않는다. 병합 직후 main push의 provenance run이 성공하고 merge commit의 파싱된
+trailer가 PR 라벨 역할과 일치하는지 확인하기 전에는 다음 PR을 병합하지 않는다.
+`--match-head-commit`에는 required checks와 리뷰를 마친 exact head SHA를 넣어 검토 뒤 push와의
+경쟁을 차단한다.
+
+main에 잘못된 integration이 이미 들어가면 단순 revert merge만으로 복구되지 않는다. sticky
+검사는 잘못된 commit도 계속 보므로 다음 순서를 따른다.
+
+1. editorial을 freeze·drain하고 invalid SHA, push event/run, main ruleset 전체 JSON을 보존한다.
+2. ruleset에서 `trusted-provenance` context만 동시 변경 방지 절차로 잠시 제거한다. 기존
+   `source-contract`와 `publication-build`, merge-only 규칙은 유지한다.
+3. 인증된 supervisor 승인 경로의 recovery PR 하나에서 잘못된 내용을 revert하고
+   `TRUSTED_THROUGH`를 해당 incident SHA로 명시적으로 전진시킨다. source-contract가 새 cutline
+   이후 history와 recovery commit을 검증하게 한다.
+4. 위 통제 명령으로 `Actor: supervisor` merge commit을 만든 뒤 main push 성공을 확인한다.
+5. `trusted-provenance`를 integration ID까지 동일하게 복원하고 compliant canary의 test-merge
+   status, 세 required checks, 새 commit 재실행을 확인한 뒤 freeze를 해제한다.
+
+이 절차는 history를 지우는 rollback이 아니라 incident boundary를 감사 가능한 새 trust
+cutline으로 승인하는 복구다. ruleset snapshot·invalid/recovery SHA·승인 근거를 work-item evidence에 남긴다.
 
 **라벨** (`editorial.py setup-labels --repo <owner/repo>`로 일괄 생성):
 
@@ -53,7 +137,7 @@ privileged digest에는 임의 ref의 YAML을 실행할 수 있는 `workflow_dis
 예약 실행과 `repository_dispatch`는 모두 default branch의 신뢰된 workflow 정의만 사용한다.
 
 동결을 해제하기 전에 실패한 source push가 없는지 확인한다. 이슈의 댓글·`bridged` 라벨은
-source push, main 대상 batch PR 보장, read-only quality dispatch가 모두 성공한 뒤에만 붙는다.
+source push, main 대상 batch PR 보장, trusted quality·provenance dispatch가 모두 성공한 뒤에만 붙는다.
 저장소 Actions 기본 권한은 `read`로 유지하고, trusted digest가 batch PR을 만들 수 있도록
 `can_approve_pull_request_reviews=true`를 설정한다. PR write를 선언한 workflow는 default branch의
 `editorial-digest.yml` 하나이며, 이 workflow는 PR 승인 명령을 실행하지 않는다.
@@ -99,7 +183,7 @@ workflow를 구 `GITHUB_TOKEN` push 방식으로 rollback하는 일은 merge com
 않는다. 먼저 freeze·drain하고 main·batch ref, 열린 batch PR, pending 이슈와 외부 control-plane
 상태를 기록한다. 그다음 `editorial/batch`의 deploy-key-only ruleset을 비활성화하고 보호된 main의
 rollback PR로 workflow를 되돌린다. 적용 가능한 통제 proposal을 준비한 다음 freeze를 일시
-해제해 이전 source push→batch PR→read-only quality dispatch 경로와 실제 ref 변경을 검증한다.
+해제해 이전 source push→batch PR→trusted quality·provenance dispatch 경로와 실제 ref 변경을 검증한다.
 실패하면 즉시 재동결·drain한다. 성공한 경우에도 다시 동결·drain한 뒤 전용 deploy key·secret과
 비활성 ruleset을 철회하고, 마지막으로 freeze를 해제해 zero-pending dispatch를 확인한다.
 ruleset을 둔 채 workflow만 revert하거나, 동결 상태의 skipped run을 복귀 증거로 삼으면 rollback
