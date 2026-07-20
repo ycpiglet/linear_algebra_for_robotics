@@ -223,6 +223,7 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
         "steps.precheck.outputs.pending != '0' && vars.EDITORIAL_BATCH_KEY_SLOT != 'next'"
     )
     assert push_auth["with"] == {
+        "fetch-depth": "0",
         "ref": "${{ github.sha }}",
         "path": "push-auth",
         "ssh-key": "${{ secrets.EDITORIAL_BATCH_SSH_KEY }}",
@@ -233,6 +234,7 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
         "steps.precheck.outputs.pending != '0' && vars.EDITORIAL_BATCH_KEY_SLOT == 'next'"
     )
     assert push_auth_next["with"] == {
+        "fetch-depth": "0",
         "ref": "${{ github.sha }}",
         "path": "push-auth",
         "ssh-key": "${{ secrets.EDITORIAL_BATCH_SSH_KEY_NEXT }}",
