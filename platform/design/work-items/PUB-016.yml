@@ -8,7 +8,7 @@ change_class: toolchain
 version_impact: compatible
 owner_role: release-engineer
 review_roles: [publishing-ops-steward]
-branch: agent/pub-016-provenance-gate
+branch: agent/pub-016-canary-evidence
 dependencies: [PUB-002]
 decision_refs:
   - platform/editorial/README.md
@@ -99,10 +99,17 @@ evidence:
   pr: 23
   ci_runs:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29763626651
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764116665
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764399691
   rendered_artifacts:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29763626651/artifacts/8469891042
-  post_merge: []
-  last_known_good: 37289c06a3c7752ef09d5348f4bc7b5e15bae291
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764116665/artifacts/8470141279
+  post_merge:
+    - merge:aaaf2f73c87f7668969f904eabf6660ec5560e19
+    - pages:aaaf2f73c87f7668969f904eabf6660ec5560e19
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/review/
+  last_known_good: aaaf2f73c87f7668969f904eabf6660ec5560e19
   revert_ref: null
   follow_up: PUB-017
 last_reviewed: "2026-07-21"
