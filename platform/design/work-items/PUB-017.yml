@@ -1,0 +1,80 @@
+schema_version: 1
+id: PUB-017
+title: supervisor 신뢰 결박과 provenance required gate 활성화
+area: governance
+status: decision
+priority: P0
+change_class: governance
+version_impact: compatible
+owner_role: publishing-ops-steward
+review_roles: [release-engineer]
+branch: null
+dependencies: [PUB-016]
+decision_refs:
+  - platform/editorial/README.md
+  - .github/workflows/provenance.yml
+  - platform/scripts/verify_provenance.py
+decision_needed:
+  - agent PR을 사람 계정과 분리할 GitHub App 또는 bot identity 확정
+  - control-plane CODEOWNER가 agent PR 작성자와 다른 사람 계정 또는 team인지 확정
+  - hardware-backed 서명 등 CODEOWNER와 동등한 대체 trust root 허용 여부 확정
+  - required review와 trusted-provenance status를 ruleset에 적용·복구하는 승인자 확정
+blocker: null
+status_reason: null
+superseded_by: null
+scope:
+  in:
+    - self-asserted actor label과 인증된 supervisor 권한의 분리
+    - workflow·verifier 경로의 CODEOWNERS 또는 동등한 외부 trust root
+    - stale review 무효화와 마지막 push 이후 승인 등 ruleset review 계약
+    - compliant canary 뒤 trusted-provenance integration ID 고정 required context 활성화
+  out:
+    - agent와 사람이 같은 GitHub credential을 공유한 채 라벨을 인증으로 간주
+    - 사람 private key나 장기 token을 저장소·Actions secret에 복제
+change_paths:
+  read:
+    - .github/workflows/provenance.yml
+    - platform/scripts/verify_provenance.py
+    - platform/editorial/README.md
+    - platform/design/work-items/PUB-016.yml
+  write:
+    - .github/CODEOWNERS
+    - platform/editorial/README.md
+    - platform/design/work-items/PUB-017.yml
+  exclusive_locks: []
+  generated: []
+verification:
+  source_contract:
+    - actor:supervisor 라벨만 붙인 무승인 control-plane PR은 merge 불가
+    - agent identity가 만든 control-plane PR은 별도 CODEOWNER 승인 전 merge 불가
+    - stale review와 승인 뒤 push가 승인을 무효화함
+  rendered_contract: []
+  post_merge:
+    - canary test-merge SHA에 trusted-provenance success와 기존 두 required check가 함께 충족됨
+    - 새 canary commit에서도 세 required check가 다시 충족됨
+rollback:
+  triggers:
+    - 단일 사용자가 자기 agent PR을 승인할 수 있음
+    - test-merge status와 기존 PR head checks가 함께 ruleset을 만족하지 못함
+  unit: cutover
+  steps:
+    - trusted-provenance required context만 동시 변경 방지 역패치로 제거한다
+    - 기존 source-contract·publication-build와 merge-only 규칙은 유지한다
+    - identity·review 설정을 원복하고 실패 PR·SHA·ruleset snapshot을 보존한다
+  compatibility_preserved:
+    - 콘텐츠·URL·기존 Git history는 바꾸지 않는다
+definition_of_done:
+  - agent automation과 사람 supervisor가 서로 다른 GitHub authority를 사용한다
+  - control-plane 변경은 agent PR 작성자와 다른 인증된 owner 승인 없이는 merge되지 않는다
+  - trusted-provenance status source가 GitHub Actions integration ID에 고정된다
+  - required context 활성화 전후 canary와 역패치가 검증된다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  post_merge: []
+  last_known_good: null
+  revert_ref: null
+  follow_up: null
+last_reviewed: "2026-07-21"

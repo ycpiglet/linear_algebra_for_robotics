@@ -62,5 +62,9 @@
 
 - 개발 브랜치에서 작업 후 PR, **병합은 merge commit**. 병합된 PR 브랜치는 origin/main에서 재시작
 - 에이전트 커밋은 `Actor:`/`Issue:` 트레일러, PR에 `actor:agent` 라벨
+- PR은 `actor:agent`·`actor:supervisor`·`actor:editor` 중 정확히 한 라벨을 사용한다. agent PR의
+  모든 신규 커밋과 보호된 main merge commit은 literal escape가 아닌 canonical `Actor` trailer 필수
+- Actions workflow와 provenance verifier는 PUB-016 bootstrap 이후 PUB-017의 별도 agent identity·
+  사람 승인 신뢰 결박이 끝날 때까지 모든 역할에 대해 동결한다
 - 원고 수정은 `AUTHORING_MANUAL.md` 준수 + `make test`(30건)·`editorial.py lint` 통과 필수
 - 이벤트 원장(`platform/editorial/events/`)은 append 전용 — 직접 편집 금지, `ingest` 명령 사용

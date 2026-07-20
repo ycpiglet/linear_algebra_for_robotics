@@ -7,8 +7,8 @@
 #   3. 반영 불가(서식 걸침·모호·코멘트만)는 소스 위치를 이슈에 회신
 #   4. 배치 PR이 없으면 생성 — 병합은 사람(감독자)이 리뷰 후 결정
 #
-# GITHUB_TOKEN으로 만든 PR의 pull_request run은 승인 대기 상태가 될 수 있으므로,
-# batch push 뒤 publish-web의 즉시 실행 가능한 read-only workflow_dispatch도 시작한다.
+# GITHUB_TOKEN으로 만든 PR·label 이벤트는 새 workflow run을 시작하지 않으므로,
+# batch push 뒤 default-branch quality와 provenance controller를 명시적으로 dispatch한다.
 name: editorial-digest
 
 on:
@@ -96,7 +96,8 @@ jobs:
               git checkout -B editorial/batch "$trusted_main"
             else
               git checkout -B editorial/batch origin/editorial/batch
-              git merge --no-edit "$trusted_main"
+              git merge -m "$(printf "Merge commit '%s' into editorial/batch\n\nActor: agent" "$trusted_main")" \
+                "$trusted_main"
             fi
           else
             git checkout -B editorial/batch "$trusted_main"
@@ -204,36 +205,47 @@ jobs:
           fi
 
       - name: Ensure batch PR exists
+        id: batch-pr
         if: steps.precheck.outputs.pending != '0' && steps.batch.outputs.branch_ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           open_pr=$(gh pr list --repo "${{ github.repository }}" --head editorial/batch \
-            --base main --state open --json number --jq length)
-          if [ "$open_pr" = "0" ]; then
+            --base main --state open --json number --jq '.[0].number // empty')
+          if [ -z "$open_pr" ]; then
             gh pr create \
               --repo "${{ github.repository }}" \
               --head editorial/batch \
               --base main \
               --title "교정 배치: 리뷰 제안 자동 반영" \
-              --body "$(printf '리뷰 빌드의 수정 제안 이슈를 자동 반영한 배치 PR입니다 (EDITING_SYSTEM_PLAN.md §5.4).\n\n- 교정 1건 = 커밋 1개 — 특정 교정만 기각하려면 해당 커밋을 revert로 상쇄한 뒤 병합하세요.\n- 각 커밋에 편집 이벤트 레코드(platform/editorial/events/)가 동승합니다.\n- 병합은 merge commit으로 해주세요(squash 금지 — 교정별 이력·작성자 보존).\n- 미결 제안이 남아 있으면 병합하지 않습니다.')"
-            new_pr=$(gh pr list --repo "${{ github.repository }}" --head editorial/batch \
-              --base main --state open --json number --jq '.[0].number')
-            gh pr edit --repo "${{ github.repository }}" "$new_pr" \
-              --add-label "actor:agent" || echo "라벨 부여 생략(actor:agent 라벨 미생성?)"
+              --label "actor:agent" \
+              --body "$(printf '리뷰 빌드의 수정 제안 이슈를 자동 반영한 배치 PR입니다 (EDITING_SYSTEM_PLAN.md §5.4).\n\n- 교정 1건 = 커밋 1개 — 특정 교정만 기각하려면 해당 커밋을 revert로 상쇄한 뒤 병합하세요.\n- 각 커밋에 편집 이벤트 레코드(platform/editorial/events/)가 동승합니다.\n- 병합은 merge commit으로 해주세요(squash 금지 — 교정별 이력·작성자 보존).\n- merge commit 본문의 마지막 trailer 블록에 실제 줄바꿈으로 `Actor: agent`를 넣으세요.\n- 미결 제안이 남아 있으면 병합하지 않습니다.')"
+            open_pr=$(gh pr list --repo "${{ github.repository }}" --head editorial/batch \
+              --base main --state open --json number --jq '.[0].number // empty')
           fi
+          test -n "$open_pr"
+          actor_labels=$(gh pr view --repo "${{ github.repository }}" "$open_pr" \
+            --json labels --jq '[.labels[].name | select(startswith("actor:"))] | sort | join(",")')
+          test "$actor_labels" = "actor:agent"
+          echo "number=$open_pr" >> "$GITHUB_OUTPUT"
 
-      - name: Dispatch read-only batch quality
+      - name: Dispatch trusted batch quality and provenance
         if: steps.precheck.outputs.pending != '0' && steps.batch.outputs.branch_ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           expected="${{ steps.batch.outputs.head_sha }}"
+          pr_number="${{ steps.batch-pr.outputs.number }}"
+          trusted_main="${{ github.sha }}"
           remote=$(gh api "repos/${{ github.repository }}/git/ref/heads/editorial/batch" \
             --jq .object.sha)
           test "$remote" = "$expected"
           gh workflow run publish-web.yml --repo "${{ github.repository }}" \
-            --ref editorial/batch
+            --ref editorial/batch -f "trusted_main=$trusted_main"
+          gh api --method POST "repos/${{ github.repository }}/dispatches" \
+            -f event_type=trusted-provenance \
+            -F "client_payload[pr_number]=$pr_number" \
+            -f "client_payload[head_sha]=$expected"
 
       - name: Finalize processed issues after durable push
         if: success() && steps.precheck.outputs.pending != '0'

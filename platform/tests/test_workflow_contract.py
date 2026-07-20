@@ -60,8 +60,19 @@ def test_publish_triggers_and_quality_are_an_unconditional_read_only_gate() -> N
 
     assert workflow["on"] == {
         "push": {"branches": ["main"]},
-        "pull_request": {"branches": ["main"]},
-        "workflow_dispatch": "",
+        "pull_request": {
+            "branches": ["main"],
+            "types": ["opened", "synchronize", "reopened", "labeled", "unlabeled", "edited"],
+        },
+        "workflow_dispatch": {
+            "inputs": {
+                "trusted_main": {
+                    "description": "Exact trusted main SHA for an agent/editorial branch review",
+                    "required": "false",
+                    "type": "string",
+                }
+            }
+        },
     }
     assert "pull_request_target" not in workflow["on"]
     assert workflow["permissions"] == {"contents": "read"}
@@ -78,6 +89,7 @@ def test_publish_triggers_and_quality_are_an_unconditional_read_only_gate() -> N
     assert "secrets." not in json.dumps(quality)
 
     required_runs = {
+        "Verify commit provenance": "python3 -I platform/scripts/verify_provenance.py",
         "Test source contracts": "make test",
         "Lint Python and Actions workflows": "make lint",
         "Verify quality tools left a clean workspace": (
@@ -93,6 +105,102 @@ def test_publish_triggers_and_quality_are_an_unconditional_read_only_gate() -> N
         if step.get("uses", "").startswith("actions/checkout@")
     )
     assert checkout["with"] == {"fetch-depth": "0", "persist-credentials": "false"}
+    ordered_names = [step.get("name") for step in quality["steps"]]
+    assert quality["steps"].index(checkout) < ordered_names.index("Verify commit provenance")
+    assert ordered_names.index("Verify commit provenance") < ordered_names.index(
+        "Cache pinned toolchain"
+    )
+
+
+def test_trusted_provenance_executes_only_base_side_code() -> None:
+    workflow = load_workflow("provenance.yml")
+    job = workflow["jobs"]["provenance"]
+    steps = steps_by_name(job)
+    text = (WORKFLOWS / "provenance.yml").read_text(encoding="utf-8")
+
+    assert workflow["on"] == {
+        "pull_request_target": {
+            "branches": ["main"],
+            "types": ["opened", "synchronize", "reopened", "labeled", "unlabeled", "edited"],
+        },
+        "repository_dispatch": {"types": ["trusted-provenance"]},
+    }
+    assert workflow["permissions"] == {
+        "contents": "read",
+        "pull-requests": "read",
+        "statuses": "write",
+    }
+    assert job["name"] == "trusted-provenance-controller"
+    assert job["permissions"] == {
+        "contents": "read",
+        "pull-requests": "read",
+        "statuses": "write",
+    }
+    assert job["timeout-minutes"] == "5"
+    assert "secrets." not in text
+    assert "allow-unsafe-pr-checkout" not in text
+    assert "github.event.pull_request.head.ref" not in text
+
+    checkout = steps["Checkout trusted base-side verifier"]
+    assert checkout["with"] == {
+        "ref": (
+            "${{ github.event_name == 'pull_request_target' && "
+            "github.event.pull_request.base.sha || github.sha }}"
+        ),
+        "fetch-depth": "0",
+        "persist-credentials": "false",
+    }
+    metadata = steps["Resolve immutable PR metadata"]
+    assert metadata["id"] == "metadata"
+    assert metadata["env"] == {
+        "GH_TOKEN": "${{ github.token }}",
+        "EVENT_NAME": "${{ github.event_name }}",
+        "TARGET_PR": "${{ github.event.number }}",
+        "DISPATCH_PR": "${{ github.event.client_payload.pr_number }}",
+        "DISPATCH_HEAD": "${{ github.event.client_payload.head_sha }}",
+    }
+    assert 'if [ "$EVENT_NAME" = "pull_request_target" ]' in metadata["run"]
+    assert metadata["run"].count('""|*[!0-9]*) exit 1') == 2
+    assert metadata["run"].count('test "$pr_number" -ge 1') == 2
+    assert metadata["run"].index('test "$pr_number" -ge 1') < metadata["run"].index(
+        'gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}"'
+    )
+    assert 'gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}"' in metadata["run"]
+    assert 'test "$live_head" = "$DISPATCH_HEAD"' in metadata["run"]
+    assert 'echo "event_path=$event_path" >> "$GITHUB_OUTPUT"' in metadata["run"]
+    fetch = steps["Fetch untrusted PR head as Git data only"]
+    assert fetch["id"] == "target"
+    assert fetch["env"] == {
+        "PR_NUMBER": "${{ steps.metadata.outputs.number }}",
+        "EXPECTED_BASE": "${{ steps.metadata.outputs.base_sha }}",
+        "EXPECTED_HEAD": "${{ steps.metadata.outputs.head_sha }}",
+    }
+    assert "+refs/pull/${PR_NUMBER}/head:refs/provenance/pr-head" in fetch["run"]
+    assert "+refs/pull/${PR_NUMBER}/merge:refs/provenance/pr-merge" in fetch["run"]
+    assert 'test "$actual" = "$EXPECTED_HEAD"' in fetch["run"]
+    assert 'test "$first_parent" = "$EXPECTED_BASE"' in fetch["run"]
+    assert 'test "$second_parent" = "$EXPECTED_HEAD"' in fetch["run"]
+
+    pending = steps["Mark trusted provenance pending on the test merge"]
+    report = steps["Verify and report trusted provenance"]
+    assert pending["env"] == {
+        "GH_TOKEN": "${{ github.token }}",
+        "TARGET_SHA": "${{ steps.target.outputs.sha }}",
+    }
+    assert report["env"] == {
+        "GH_TOKEN": "${{ github.token }}",
+        "PROVENANCE_EVENT": "${{ steps.metadata.outputs.event_path }}",
+        "TARGET_SHA": "${{ steps.target.outputs.sha }}",
+    }
+    for step in (pending, report):
+        assert "statuses/${TARGET_SHA}" in step["run"]
+        assert "context=trusted-provenance" in step["run"]
+        assert step.get("continue-on-error") != "true"
+    assert "state=pending" in pending["run"]
+    assert "python3 -I platform/scripts/verify_provenance.py" in report["run"]
+    assert '--event-name pull_request --event-path "$PROVENANCE_EVENT"' in report["run"]
+    assert "state=success" in report["run"]
+    assert "state=failure" in report["run"]
 
 
 def test_publication_build_runs_for_forks_and_dispatch_without_write_credentials() -> None:
@@ -254,7 +362,8 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
     assert prepare["working-directory"] == "batch"
     assert 'trusted_main="${{ github.sha }}"' in prepare["run"]
     assert 'git merge-base --is-ancestor origin/editorial/batch "$trusted_main"' in prepare["run"]
-    assert 'git merge --no-edit "$trusted_main"' in prepare["run"]
+    assert "Actor: agent" in prepare["run"]
+    assert 'git merge -m "$(printf ' in prepare["run"]
     guard = steps["Reject untrusted batch control-plane changes"]
     assert guard["working-directory"] == "batch"
     for protected in (
@@ -289,7 +398,13 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
     assert 'echo "pushed=true" >> "$GITHUB_OUTPUT"' in push["run"]
     assert "--force" not in push["run"]
     ensure = steps["Ensure batch PR exists"]
+    assert ensure["id"] == "batch-pr"
     assert ensure["run"].count("--base main") == 3
+    assert '--label "actor:agent"' in ensure["run"]
+    assert "merge commit 본문의 마지막 trailer" in ensure["run"]
+    assert 'test "$actor_labels" = "actor:agent"' in ensure["run"]
+    assert 'echo "number=$open_pr" >> "$GITHUB_OUTPUT"' in ensure["run"]
+    assert "gh pr edit" not in ensure["run"]
 
     assert ordered_names.index("Fetch and apply proposals") < ordered_names.index(
         "Checkout isolated batch push credential (primary)"
@@ -302,17 +417,26 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
     assert next_auth_index < ordered_names.index("Push batch branch")
     assert ordered_names.index("Push batch branch") < ordered_names.index("Ensure batch PR exists")
     assert ordered_names.index("Ensure batch PR exists") < ordered_names.index(
-        "Dispatch read-only batch quality"
+        "Dispatch trusted batch quality and provenance"
     )
-    assert ordered_names.index("Dispatch read-only batch quality") < ordered_names.index(
+    trusted_dispatch_index = ordered_names.index(
+        "Dispatch trusted batch quality and provenance"
+    )
+    assert trusted_dispatch_index < ordered_names.index(
         "Finalize processed issues after durable push"
     )
-    dispatch = steps["Dispatch read-only batch quality"]
+    dispatch = steps["Dispatch trusted batch quality and provenance"]
     assert 'expected="${{ steps.batch.outputs.head_sha }}"' in dispatch["run"]
     assert "git/ref/heads/editorial/batch" in dispatch["run"]
     assert 'test "$remote" = "$expected"' in dispatch["run"]
     assert "gh workflow run publish-web.yml" in dispatch["run"]
     assert "--ref editorial/batch" in dispatch["run"]
+    assert 'trusted_main="${{ github.sha }}"' in dispatch["run"]
+    assert '-f "trusted_main=$trusted_main"' in dispatch["run"]
+    assert 'pr_number="${{ steps.batch-pr.outputs.number }}"' in dispatch["run"]
+    assert "event_type=trusted-provenance" in dispatch["run"]
+    assert 'client_payload[pr_number]=$pr_number' in dispatch["run"]
+    assert 'client_payload[head_sha]=$expected' in dispatch["run"]
     assert dispatch.get("continue-on-error") != "true"
     finalize = steps["Finalize processed issues after durable push"]
     assert finalize["if"] == "success() && steps.precheck.outputs.pending != '0'"
@@ -354,6 +478,7 @@ def test_every_workflow_remote_action_is_allowlisted_at_an_exact_commit() -> Non
     assert {path.name for path in paths} == {
         "deploy-pages.yml",
         "editorial-digest.yml",
+        "provenance.yml",
         "publish-web.yml",
     }
     seen: set[str] = set()

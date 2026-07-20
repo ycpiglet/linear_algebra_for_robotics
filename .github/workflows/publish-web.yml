@@ -14,7 +14,13 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, labeled, unlabeled, edited]
   workflow_dispatch:
+    inputs:
+      trusted_main:
+        description: Exact trusted main SHA for an agent/editorial branch review
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -35,6 +41,9 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Verify commit provenance
+        run: python3 -I platform/scripts/verify_provenance.py
 
       - name: Cache pinned toolchain
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0

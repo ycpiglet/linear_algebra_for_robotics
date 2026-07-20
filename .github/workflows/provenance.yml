@@ -1,0 +1,147 @@
+name: provenance-control-plane
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled, unlabeled, edited]
+  repository_dispatch:
+    types: [trusted-provenance]
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+
+concurrency:
+  group: trusted-provenance-pr-${{ github.event_name == 'pull_request_target' && github.event.number || github.event.client_payload.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  provenance:
+    name: trusted-provenance-controller
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      statuses: write
+    timeout-minutes: 5
+    steps:
+      - name: Checkout trusted base-side verifier
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve immutable PR metadata
+        id: metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          TARGET_PR: ${{ github.event.number }}
+          DISPATCH_PR: ${{ github.event.client_payload.pr_number }}
+          DISPATCH_HEAD: ${{ github.event.client_payload.head_sha }}
+        run: |
+          event_path="$RUNNER_TEMP/provenance-pull-request.json"
+          if [ "$EVENT_NAME" = "pull_request_target" ]; then
+            pr_number="$TARGET_PR"
+            case "$pr_number" in
+              ""|*[!0-9]*) exit 1 ;;
+            esac
+            test "$pr_number" -ge 1
+            jq '{pull_request: {
+              base: {sha: .pull_request.base.sha, ref: .pull_request.base.ref},
+              head: {sha: .pull_request.head.sha, ref: .pull_request.head.ref},
+              labels: [.pull_request.labels[] | {name: .name}]
+            }}' "$GITHUB_EVENT_PATH" > "$event_path"
+          else
+            pr_number="$DISPATCH_PR"
+            case "$pr_number" in
+              ""|*[!0-9]*) exit 1 ;;
+            esac
+            test "$pr_number" -ge 1
+            test "$DISPATCH_HEAD" != ""
+            gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" > "$RUNNER_TEMP/pull.json"
+            live_head=$(jq -r .head.sha "$RUNNER_TEMP/pull.json")
+            test "$live_head" = "$DISPATCH_HEAD"
+            jq '{pull_request: {
+              base: {sha: .base.sha, ref: .base.ref},
+              head: {sha: .head.sha, ref: .head.ref},
+              labels: [.labels[] | {name: .name}]
+            }}' "$RUNNER_TEMP/pull.json" > "$event_path"
+          fi
+          base_sha=$(jq -r .pull_request.base.sha "$event_path")
+          head_sha=$(jq -r .pull_request.head.sha "$event_path")
+          case "$base_sha:$head_sha" in
+            *[!0-9a-f:]*) exit 1 ;;
+          esac
+          test "${#base_sha}" -eq 40
+          test "${#head_sha}" -eq 40
+          echo "number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$head_sha" >> "$GITHUB_OUTPUT"
+          echo "event_path=$event_path" >> "$GITHUB_OUTPUT"
+
+      # Security boundary: fetch the PR objects as data, but never check out or execute them.
+      - name: Fetch untrusted PR head as Git data only
+        id: target
+        env:
+          PR_NUMBER: ${{ steps.metadata.outputs.number }}
+          EXPECTED_BASE: ${{ steps.metadata.outputs.base_sha }}
+          EXPECTED_HEAD: ${{ steps.metadata.outputs.head_sha }}
+        run: |
+          fetched=false
+          for attempt in 1 2 3 4 5; do
+            if git fetch --no-tags origin \
+              "+refs/pull/${PR_NUMBER}/head:refs/provenance/pr-head" \
+              "+refs/pull/${PR_NUMBER}/merge:refs/provenance/pr-merge"; then
+              fetched=true
+              break
+            fi
+            sleep 2
+          done
+          test "$fetched" = "true"
+          actual=$(git rev-parse --verify refs/provenance/pr-head^{commit})
+          test "$actual" = "$EXPECTED_HEAD"
+          read -r merge_sha first_parent second_parent extra \
+            < <(git rev-list --parents -n 1 refs/provenance/pr-merge)
+          test -z "${extra:-}"
+          test "$first_parent" = "$EXPECTED_BASE"
+          test "$second_parent" = "$EXPECTED_HEAD"
+          echo "sha=$merge_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Mark trusted provenance pending on the test merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          gh api --method POST \
+            "repos/${GITHUB_REPOSITORY}/statuses/${TARGET_SHA}" \
+            -f state=pending \
+            -f context=trusted-provenance \
+            -f description='Base-side provenance verification is running'
+
+      - name: Verify and report trusted provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROVENANCE_EVENT: ${{ steps.metadata.outputs.event_path }}
+          TARGET_SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          set +e
+          python3 -I platform/scripts/verify_provenance.py \
+            --event-name pull_request --event-path "$PROVENANCE_EVENT"
+          code=$?
+          set -e
+          if [ "$code" -eq 0 ]; then
+            state=success
+            description='Base-side provenance verification passed'
+          else
+            state=failure
+            description='Base-side provenance verification failed'
+          fi
+          gh api --method POST \
+            "repos/${GITHUB_REPOSITORY}/statuses/${TARGET_SHA}" \
+            -f "state=$state" \
+            -f context=trusted-provenance \
+            -f "description=$description"
+          exit "$code"
