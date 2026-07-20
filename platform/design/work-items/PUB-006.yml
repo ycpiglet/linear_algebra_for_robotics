@@ -1,0 +1,73 @@
+schema_version: 1
+id: PUB-006
+title: 저장소 소유 artifact inventory·manifest 기반
+area: artifact
+status: planned
+priority: P1
+change_class: toolchain
+version_impact: additive
+owner_role: publishing-ops-steward
+review_roles: [artifact-editor, math-domain-reviewer]
+branch: null
+dependencies: [PUB-002]
+decision_refs:
+  - assets/README.md
+  - AUTHORING_MANUAL.md#10-시각화-설계
+decision_needed: []
+blocker: null
+status_reason: null
+superseded_by: null
+scope:
+  in:
+    - repository-owned deterministic artifact inventory
+    - source·generator·output·consumer·license·stable ID manifest contract
+    - legacy baseline과 no-new-debt gate
+  out:
+    - 모든 legacy artifact 즉시 migration
+    - 수동 SVG에 억지 generator 추가
+change_paths:
+  read:
+    - content/**/*.qmd
+    - courseware/labs/*.qmd
+    - assets/figures/**
+    - scripts/generate_*figure.py
+  write:
+    - platform/scripts/*artifact*
+    - platform/tests/*artifact*
+    - platform/schemas/*artifact*
+    - assets의 artifact manifest 또는 sidecar metadata
+  exclusive_locks: [artifact-contract]
+  generated: [platform/generated/**]
+verification:
+  source_contract:
+    - deterministic inventory test
+    - make test
+    - make lint
+    - 생성 가능한 자산의 임시 디렉터리 재생성 비교
+  rendered_contract:
+    - 대표 자산의 source→generator/output→consumer 역추적
+  post_merge:
+    - 새 artifact의 ID·caption/alt·provenance 누락이 no-new-debt gate에서 실패
+rollback:
+  triggers:
+    - inventory가 같은 source에서 다른 결과를 냄
+    - 수동 source와 generated output을 잘못 분류함
+  unit: merge_commit
+  steps:
+    - script·schema·baseline을 같은 merge commit으로 revert한다
+  compatibility_preserved:
+    - 기존 공개 ID와 asset path를 제거하지 않는다
+definition_of_done:
+  - 임시 감사 수치를 저장소에서 재생성할 수 있다
+  - dependency와 artifact provenance를 검토 가능한 형태로 출력한다
+  - legacy baseline을 악화시키는 새 변경을 거부한다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  post_merge: []
+  last_known_good: null
+  revert_ref: null
+  follow_up: null
+last_reviewed: "2026-07-20"

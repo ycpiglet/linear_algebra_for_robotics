@@ -1,0 +1,84 @@
+schema_version: 1
+id: PUB-007
+title: 타이포그래피·font·token 계약과 대표 수직 조각
+area: design-system
+status: planned
+priority: P1
+change_class: foundation
+version_impact: compatible
+owner_role: design-system-steward
+review_roles: [math-domain-reviewer, render-qa]
+branch: null
+dependencies: [PUB-005]
+decision_refs:
+  - AUTHORING_MANUAL.md#0-이-매뉴얼을-사용하는-법
+  - design-system.qmd
+  - assets/README.md
+decision_needed: []
+blocker: null
+status_reason: null
+superseded_by: null
+scope:
+  in:
+    - body·heading·caption·label·code·math semantic type roles
+    - bundled font family·weight·glyph·license·embedding contract
+    - canonical token source와 Web/PDF/EPUB/plot adapter 결정
+    - design-system specimen·대표 개념 장·lab 각 1개
+  out:
+    - 전 장 typography migration
+    - pixel-identical cross-format output
+change_paths:
+  read:
+    - assets/fonts/**
+    - assets/styles/**
+    - _quarto-book.yml
+    - courseware/labs/*.qmd
+  write:
+    - assets/styles/_tokens.scss
+    - assets/styles/theme.scss
+    - assets/styles/_content-blocks.scss
+    - assets/styles/epub.css
+    - design-system.qmd
+    - font·token adapter와 contract tests
+    - 대표 개념 장 1개
+    - 대표 lab 1개
+  exclusive_locks: [design-foundations]
+  generated: [_site/**, _book/**, _proof/**]
+verification:
+  source_contract:
+    - make test
+    - make lint
+    - undefined local token 0
+    - 미분류 raw literal 증가 0
+  rendered_contract:
+    - make web
+    - make book
+    - proof Typst/config 영향 시 make proof
+    - 320·768·1280 px light/dark와 200% zoom
+    - mixed Korean·Latin·math, PDF font/pagination, EPUB reflow·font override
+  post_merge:
+    - main 출력에서 동일한 font metadata와 hierarchy 재확인
+rollback:
+  triggers:
+    - glyph 누락·synthetic weight 의존·page-level overflow
+    - 필수 contrast·keyboard·zoom 또는 PDF/EPUB verifier 실패
+  unit: merge_commit
+  steps:
+    - 기존 token·component alias를 유지한 채 slice merge commit을 revert한다
+  compatibility_preserved:
+    - 전체 migration 전 기존 token alias 유지
+    - 콘텐츠 의미·reading order 유지
+definition_of_done:
+  - 세 출력에서 동등한 위계와 가독성을 가진 real consumer가 있다
+  - author-facing type role과 금지 사용법이 specimen에 문서화되었다
+  - 폰트 실제 weight·glyph·license·embedding evidence가 있다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  post_merge: []
+  last_known_good: null
+  revert_ref: null
+  follow_up: null
+last_reviewed: "2026-07-20"

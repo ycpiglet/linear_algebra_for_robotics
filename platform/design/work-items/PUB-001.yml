@@ -1,0 +1,77 @@
+schema_version: 1
+id: PUB-001
+title: 디자인·출판 백로그 레지스트리와 충돌 검사
+area: governance
+status: in_review
+priority: P0
+change_class: governance
+version_impact: additive
+owner_role: publishing-ops-steward
+review_roles: [release-engineer]
+branch: agent/design-operations-backlog
+dependencies: []
+decision_refs:
+  - AUTHORING_MANUAL.md#0-이-매뉴얼을-사용하는-법
+  - EDITING_SYSTEM_PLAN.md#7-스타일-학습-루프
+decision_needed: []
+blocker: null
+status_reason: null
+superseded_by: null
+scope:
+  in:
+    - 작업별 YAML, schema, checker, dependency·lock·evidence 계약
+    - 작업 계획과 인수인계 문서 연결
+  out:
+    - 디자인 규범 변경
+    - CI lane·저장소 이름·콘텐츠 실제 변경
+change_paths:
+  read:
+    - AUTHORING_MANUAL.md
+    - EDITING_SYSTEM_PLAN.md
+    - design-system.qmd
+    - assets/README.md
+  write:
+    - platform/design/**
+    - platform/schemas/design-work-item.schema.json
+    - platform/scripts/design_backlog.py
+    - platform/tests/test_design_backlog.py
+    - Makefile
+    - CLAUDE.md
+  exclusive_locks:
+    - backlog-registry
+    - ci-control-plane
+  generated: []
+verification:
+  source_contract:
+    - .tools/uv/uv run python platform/scripts/design_backlog.py check
+    - .tools/uv/uv run pytest platform/tests/test_design_backlog.py
+    - .tools/uv/uv run ruff check platform/scripts/design_backlog.py platform/tests/test_design_backlog.py
+    - git diff --check
+  rendered_contract: []
+  post_merge:
+    - 최신 main에서 design_backlog.py list가 같은 의존 순서를 출력한다
+rollback:
+  triggers:
+    - 기존 validate 또는 test를 비결정적으로 깨뜨림
+    - 백로그가 기존 권위 문서를 대체하거나 복제함
+  unit: merge_commit
+  steps:
+    - PUB-001 merge commit을 revert한다
+    - Makefile의 backlog check 연결도 같은 revert에 포함한다
+  compatibility_preserved:
+    - 콘텐츠·렌더·배포 동작을 바꾸지 않는다
+definition_of_done:
+  - 모든 초기 work item이 schema와 cross-item 검사를 통과한다
+  - 중복 ID·순환 의존성·활성 lock 충돌을 자동으로 거부한다
+  - CLAUDE.md가 canonical backlog 위치를 안내한다
+evidence:
+  issue: null
+  pr: 15
+  ci_runs:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29741637916
+  rendered_artifacts: []
+  post_merge: []
+  last_known_good: 5a79cae
+  revert_ref: null
+  follow_up: null
+last_reviewed: "2026-07-20"

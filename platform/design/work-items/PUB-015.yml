@@ -1,0 +1,60 @@
+schema_version: 1
+id: PUB-015
+title: 디자인·아티팩트 정기 운영과 스킬 개선 루프
+area: governance
+status: planned
+priority: P3
+change_class: governance
+version_impact: none
+owner_role: publishing-ops-steward
+review_roles: [design-system-steward, artifact-editor, render-qa]
+branch: null
+dependencies: [PUB-014]
+decision_refs:
+  - platform/editorial/style-profile.md
+  - platform/design/README.md
+decision_needed: []
+blocker: null
+status_reason: null
+superseded_by: null
+scope:
+  in:
+    - PR·주간·월간·release 운영 주기와 지표
+    - visual feedback의 프로젝트 규칙·범용 skill 승격 분리
+  out:
+    - 단일 디자인 점수
+    - 상시 실행 디자인 에이전트
+change_paths:
+  read:
+    - platform/design/work-items/**
+    - platform/editorial/events/**
+    - CI·artifact audit 결과
+  write:
+    - work item evidence·상태
+    - 승인된 권위 문서·test·skill follow-up
+  exclusive_locks: [backlog-registry]
+  generated: []
+verification:
+  source_contract: [design_backlog.py check, 월간 지표 재현성 확인]
+  rendered_contract: [release candidate의 대표 Web/PDF/EPUB 검수]
+  post_merge: [fresh-agent routing·forward test 결과 기록]
+rollback:
+  triggers: [지표가 품질보다 token·component 수를 보상함, 근거 없는 규칙 자동 승격]
+  unit: merge_commit
+  steps: [문제 규칙·자동화를 revert하고 관찰 상태로 되돌림]
+  compatibility_preserved: [사람 승인 없는 규범·baseline 갱신 금지]
+definition_of_done:
+  - 매 PR T0·영향 T1, 단계 종료 T2가 운영된다
+  - 안정 ID·caption/alt·provenance·output 검증률 추세가 기록된다
+  - raw literal·deprecated use·CI time/flake·visual noise·예외 연령을 월간 검토한다
+  - 반복 3회와 사람 승인을 거친 규칙만 저장소 또는 skill에 승격한다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  post_merge: []
+  last_known_good: null
+  revert_ref: null
+  follow_up: null
+last_reviewed: "2026-07-20"

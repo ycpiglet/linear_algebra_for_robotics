@@ -1,0 +1,75 @@
+schema_version: 1
+id: PUB-004
+title: 저장소 rename 사전 호환 계층과 cutover runbook
+area: identity
+status: planned
+priority: P0
+change_class: breaking
+version_impact: compatible
+owner_role: release-engineer
+review_roles: [publishing-ops-steward, render-qa]
+branch: null
+dependencies: [PUB-002, PUB-003]
+decision_refs:
+  - platform/design/work-items/PUB-003.yml
+decision_needed: []
+blocker: null
+status_reason: null
+superseded_by: null
+scope:
+  in:
+    - old·new Pages prefix를 처리하는 editorial 회귀 테스트
+    - 즐겨찾기·책갈피·last-read saved path 일회성 migration
+    - hard-coded repo·Pages·외부 설정 inventory와 smoke runbook
+  out:
+    - GitHub repository actual rename
+    - JSON Schema identity의 미승인 변경
+change_paths:
+  read:
+    - _quarto-web.yml
+    - assets/includes/review-scripts.html
+    - editorial-desk.qmd
+    - assets/js/atlas.js
+    - platform/scripts/editorial.py
+  write:
+    - assets/js/atlas.js
+    - platform/tests/test_editorial.py
+    - 관련 사용자 상태 migration test
+    - cutover inventory 문서
+  exclusive_locks: [identity-cutover]
+  generated: []
+verification:
+  source_contract:
+    - make test
+    - make lint
+    - make web
+    - make review
+  rendered_contract:
+    - old·new URL fixture에서 페이지→source·issue prefill 확인
+    - 기존 진도 JSON·즐겨찾기·책갈피 보존 확인
+  post_merge:
+    - cutover 직전 patch와 last-known-good main·workflow·gh-pages 기록
+rollback:
+  triggers:
+    - 기존 저장 데이터가 사라지거나 old URL source mapping이 깨짐
+  unit: merge_commit
+  steps:
+    - compatibility merge commit을 revert한다
+    - storage key와 export format version은 유지한다
+  compatibility_preserved:
+    - robotics-math-atlas.progress.v1 key 유지
+    - 기존 진도 export import 유지
+definition_of_done:
+  - external rename 전에 old·new 경로 회귀 테스트가 통과한다
+  - 열린 PR과 editorial queue 처리 계획이 있다
+  - cutover 중단·rollback checklist가 검토되었다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  post_merge: []
+  last_known_good: null
+  revert_ref: null
+  follow_up: null
+last_reviewed: "2026-07-20"
