@@ -1,0 +1,240 @@
+---
+title: "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나"
+id: robot.rotation_representations
+kind: concept
+domain: robotics
+aliases:
+  - rotation representations
+  - 회전행렬
+  - quaternion
+  - 쿼터니언
+  - SO(3)
+one-line: "3차원 자세를 표현하는 네 방식의 자유도·특이점·연산 비용을 비교하고, 상황별 선택 기준과 상호 변환을 제공한다."
+difficulty: 3
+prerequisites:
+  intuition:
+    required:
+      - concept: linalg.linear_system
+        competency: explain
+        reason: 행렬을 선형사상으로 읽어야 회전행렬의 조건이 보인다.
+    helpful:
+      - concept: robot.jacobian
+        competency: recognize
+        reason: 자세의 미소 변화가 각속도와 연결되는 다음 단계를 예고한다.
+  application:
+    required:
+      - concept: linalg.linear_system
+        competency: calculate
+        reason: 회전행렬 곱과 전치, 벡터 변환을 손으로 계산한다.
+    helpful: []
+relations:
+  requires:
+    - linalg.linear_system
+  used-in:
+    - robot.jacobian
+    - estimation.extended_kalman_filter
+    - mechanics.rigid_body_kinematics
+---
+
+::: {.callout-note title="30초 핵심"}
+3차원 자세는 자유도가 3이지만, **특이점 없는 3성분 표현은 존재하지 않는다.** 그래서 로봇공학은 네 표현을 상황별로 바꿔 쓴다 — 벡터 변환·합성에는 회전행렬(rotation matrix), 사람과의 소통에는 오일러각(Euler angles), 오차·미소 회전에는 축각(axis–angle), 저장·적분·보간에는 단위 쿼터니언(unit quaternion). 각 표현의 한계(짐벌락, 수치 드리프트, 부호 이중성)를 알아야 변환 코드가 아니라 시스템을 설계할 수 있다.
+:::
+
+::: {.depth-intuition}
+
+## 해결하려는 문제: 자세에는 완벽한 좌표가 없다
+
+위치는 쉽다. 숫자 3개 $(x,y,z)$면 3차원 공간의 모든 점을 겹침도 빠짐도 없이 가리킨다. 자세(orientation)도 자유도는 3인데, 같은 방식이 통하지 않는다. 3차원 회전 전체의 집합 $SO(3)$는 평평한 공간이 아니라 휘어진 곡면(다양체)이어서, 지구 전체를 한 장의 종이 지도에 왜곡 없이 펼 수 없듯이 **어떤 3성분 좌표를 붙여도 반드시 어딘가 찢어지거나 겹치는 지점 — 특이점(singularity) — 이 생긴다.**
+
+선택지는 둘뿐이다. 성분 3개를 쓰고 특이점을 감수하거나(오일러각·축각), 성분을 더 쓰고 제약조건을 관리하거나(회전행렬 9개, 쿼터니언 4개). 이 장은 네 표현의 정의와 트레이드오프, 그리고 하나의 회전을 네 표기로 오가는 변환을 정리한다.
+
+:::
+
+::: {.depth-application}
+
+## 회전행렬: 제약이 많지만 연산이 투명하다
+
+회전행렬 $R$은 다음을 만족하는 $(3,3)$ 실행렬이다(성분은 무차원).
+
+$$
+R^\top R = I, \qquad \det R = +1.
+$$
+
+첫 조건(직교성)은 길이와 각을 보존한다는 뜻이고, $\det R=+1$은 반사(거울상)를 배제한다. $\det R=-1$인 직교행렬은 회전이 아니라 반사다. 성분 9개에서 직교성이 주는 독립 제약 6개(열들의 단위 길이 3개 + 서로 직교 3개)를 빼면 자유도 $9-6=3$이 남는다 — 자세의 자유도와 정확히 일치한다.
+
+가장 유용한 해석은 **열 읽기**다. $R$의 $i$번째 열은 물체 좌표계의 $i$번째 축을 세계 좌표계에서 본 방향벡터다. 연산 규칙은 선형대수 그대로다.
+
+- 합성: 회전 $R_1$ 후 $R_2$는 행렬곱 $R_2 R_1$ (모양 $(3,3)@(3,3)\to(3,3)$, 곱셈 27회).
+- 역회전: $R^{-1} = R^\top$ — 역행렬 계산이 전치 하나로 끝난다.
+- 벡터 변환: $v' = Rv$ (모양 $(3,3)@(3,)\to(3,)$).
+
+## 오일러각: 사람이 읽기 좋지만 특이점이 있다
+
+오일러각은 회전을 좌표축 둘레 회전 세 번의 합성으로 쓴다. 로봇·항공에서 흔한 ZYX 관례(convention)는 요(yaw) $\psi$ → 피치(pitch) $\theta$ → 롤(roll) $\phi$ 순서다.
+
+$$
+R = R_z(\psi)\,R_y(\theta)\,R_x(\phi).
+$$
+
+세 각의 단위는 rad(또는 deg — 문서에 반드시 명시)다. 함정은 관례가 하나가 아니라는 점이다: 축 순서만 12가지에, 물체 축 기준(intrinsic)이냐 세계 축 기준(extrinsic)이냐가 또 갈린다. **각 세 개를 받으면 먼저 관례를 물어야 한다.** 더 근본적인 한계는 $\theta = \pm 90^\circ$에서 생기는 짐벌락(gimbal lock)으로, 유도 절에서 구체 행렬로 확인한다.
+
+## 축각과 지수 좌표: 회전을 벡터 하나로 압축한다
+
+임의의 회전은 단위벡터 축 $k$ ($\|k\|=1$, 무차원) 둘레의 각 $\theta$ (rad) 회전 하나로 쓸 수 있다(오일러 회전 정리). 왜대칭행렬(skew-symmetric matrix)
+
+$$
+[k]_\times =
+\begin{bmatrix} 0 & -k_3 & k_2 \\ k_3 & 0 & -k_1 \\ -k_2 & k_1 & 0 \end{bmatrix}
+$$
+
+을 쓰면 ($[k]_\times v = k\times v$인 $(3,3)$ 행렬), 로드리게스 공식(Rodrigues' formula)이 축각을 회전행렬로 보낸다.
+
+$$
+R = I + \sin\theta\,[k]_\times + (1-\cos\theta)\,[k]_\times^2.
+$$
+
+$\theta\to 0$이면 $\sin\theta\approx\theta$, $1-\cos\theta\approx\theta^2/2$이므로 $R \approx I + \theta[k]_\times$ — 미소 회전은 왜대칭행렬 하나로 근사되고, 이것이 각속도와 자코비안으로 가는 다리다. 벡터 $\omega = \theta k$를 지수 좌표(exponential coordinates)라 한다. 유의점 둘: $(k,\theta)$와 $(-k,-\theta)$는 같은 회전이므로 보통 $\theta\in[0,\pi]$로 제한하며, $\theta=0$에서는 축 $k$가 정의되지 않는다(어느 축이든 0도 회전은 항등).
+
+## 단위 쿼터니언: 특이점 없이 성분 4개로
+
+단위 쿼터니언은 $\|q\|=1$인 4-벡터 $q=(w,\,x,\,y,\,z)=(w,\,\mathbf v)$로(성분 무차원), 축각 $(k,\theta)$와 다음처럼 대응한다.
+
+$$
+q = \Bigl(\cos\tfrac{\theta}{2},\ k\sin\tfrac{\theta}{2}\Bigr).
+$$
+
+성분 4개 $-$ 단위 노름 제약 1개 $=$ 자유도 3. 합성은 해밀턴 곱으로, $(w_1,\mathbf v_1)\otimes(w_2,\mathbf v_2) = (w_1 w_2 - \mathbf v_1\!\cdot\!\mathbf v_2,\ w_1\mathbf v_2 + w_2\mathbf v_1 + \mathbf v_1\!\times\!\mathbf v_2)$이며, 회전 $q_1$ 후 $q_2$는 $q_2\otimes q_1$이다(곱셈 16회 — 행렬곱 27회보다 싸다). 벡터 회전은 $v'=q\otimes(0,v)\otimes q^*$ ($q^*=(w,-\mathbf v)$는 켤레), 역회전은 켤레 하나다. 특이점이 없는 대신 두 대가를 치른다: $q$와 $-q$가 같은 회전이라는 이중 덮개(double cover) 문제(유도 절), 그리고 수치 적분을 반복하면 $\|q\|$가 1에서 벗어나므로 매 갱신 후 $q \leftarrow q/\|q\|$로 정규화해야 한다는 점이다.
+
+## 수치 예: 같은 회전, 네 가지 표기
+
+$z$축 둘레 $+90^\circ$ 회전 하나를 네 표현으로 쓴다.
+
+| 표현 | 값 |
+|---|---|
+| 회전행렬 | $R=\begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix}$ |
+| 오일러각 (ZYX) | $(\psi,\theta,\phi) = (90^\circ,\, 0^\circ,\, 0^\circ)$ |
+| 축각 | $k=(0,0,1)$, $\theta = \pi/2$ |
+| 단위 쿼터니언 | $q = \bigl(\tfrac{\sqrt2}{2},\, 0,\, 0,\, \tfrac{\sqrt2}{2}\bigr) \approx (0.7071, 0, 0, 0.7071)$ |
+
+상호 일치 검산 세 가지.
+
+1. **행렬 ← 오일러각**: $\theta=\phi=0$이므로 $R = R_z(90^\circ)$이고, $\cos 90^\circ = 0$, $\sin 90^\circ = 1$을 대입하면 위 행렬 그대로다. $\det R = 0\cdot 0 - (-1)\cdot 1 = 1$도 확인된다.
+2. **행렬 ← 축각**: $k=(0,0,1)$이면 $[k]_\times^2 = \operatorname{diag}(-1,-1,0)$이고, 로드리게스 공식에 $\sin\tfrac{\pi}{2}=1$, $1-\cos\tfrac{\pi}{2}=1$을 넣으면 $R = I + [k]_\times + [k]_\times^2$ — 성분을 더하면 위 행렬과 일치한다.
+3. **벡터 회전 ← 쿼터니언**: $x$축 단위벡터 $e_1$은 $Re_1 = (0,1,0)$로 가야 한다. $s=\tfrac{\sqrt2}{2}$로 두고 $q\otimes(0,e_1) = (0,\,s,\,s,\,0)$, 이어서 $(0,s,s,0)\otimes q^* = (0,\; 0,\; 2s^2,\; 0)$이고 $2s^2 = 1$이므로 $v'=(0,1,0)$ — 행렬 결과와 일치한다.
+
+## 선택 기준: 상황이 표현을 고른다
+
+| 축 | 회전행렬 | 오일러각 | 축각 | 단위 쿼터니언 |
+|---|---|---|---|---|
+| 성분 수 (자유도 3 대비) | 9 (+제약 6) | 3 | 3 | 4 (+제약 1) |
+| 특이점 | 없음 | 짐벌락 $\theta=\pm90^\circ$ | $\theta=0$에서 축 부정, $\theta=\pi$에서 $\pm k$ 겹침 | 없음 (단, $\pm q$ 이중성) |
+| 합성 | 행렬곱 (곱셈 27회) | 불가 — 행렬 경유 | 불가 — 행렬·쿼터니언 경유 | 해밀턴 곱 (곱셈 16회) |
+| 보간 | 어려움 (다양체 위 보간 필요) | 성분별 보간은 경로 왜곡 | $\theta$ 스케일링은 두 자세 사이만 | 구면 선형 보간으로 최단 경로 |
+| 사람 가독성 | 낮음 | **높음** | 중간 | 낮음 |
+
+실무 요약: 상태로 저장·적분·보간할 것은 쿼터니언, 벡터를 실제로 변환하는 안쪽 루프는 행렬로 변환해 사용, 사용자 인터페이스·로그 출력은 오일러각, 자세 **오차**와 미소 갱신은 축각(지수 좌표)이 기본값이다.
+
+:::
+
+::: {.depth-derivation}
+
+## 로드리게스 공식 유도: 축에 평행한 성분은 남고 수직 성분만 돈다
+
+벡터 $v$를 축 성분과 수직 성분으로 분해한다: $v_\parallel = k(k^\top v)$, $v_\perp = v - v_\parallel$. 축 둘레 회전에서 $v_\parallel$은 불변이고, $v_\perp$는 $v_\perp$와 $k\times v$가 이루는 평면 안에서 각 $\theta$만큼 돈다($k\times v = k\times v_\perp$는 $v_\perp$와 길이가 같고 수직이다).
+
+$$
+v' = v_\parallel + \cos\theta\, v_\perp + \sin\theta\,(k\times v).
+$$
+
+$v_\perp = v - k(k^\top v)$를 대입하고 $k(k^\top v)$로 정리하면
+
+$$
+v' = \cos\theta\, v + \sin\theta\,(k\times v) + (1-\cos\theta)\,k(k^\top v).
+$$
+
+마지막으로 왜대칭행렬의 항등식 $[k]_\times^2 = kk^\top - I$ ($\|k\|=1$일 때)를 쓰면 $k(k^\top v) = v + [k]_\times^2 v$이므로, $v$에 대한 선형사상으로 묶여 로드리게스 공식 $R = I + \sin\theta[k]_\times + (1-\cos\theta)[k]_\times^2$이 나온다.
+
+**검산**: 축 자신은 움직이지 않아야 한다. $[k]_\times k = k\times k = 0$이므로 $Rk = k + 0 + 0 = k$. 성립.
+
+## 짐벌락: 피치 90°에서 자유도 하나가 사라진다
+
+ZYX 관례에서 $\theta = +90^\circ$를 대입하면 $R_y(90^\circ)$의 성분이 $\cos 90^\circ=0$, $\sin 90^\circ=1$이 되고, $R = R_z(\psi)R_y(90^\circ)R_x(\phi)$를 곱해 정리하면 (삼각함수 합각 공식으로)
+
+$$
+R \;=\;
+\begin{bmatrix}
+0 & \sin(\phi-\psi) & \cos(\phi-\psi) \\
+0 & \cos(\phi-\psi) & -\sin(\phi-\psi) \\
+-1 & 0 & 0
+\end{bmatrix}.
+$$
+
+행렬이 $\psi$와 $\phi$에 **차 $\phi-\psi$를 통해서만** 의존한다. 입력 자유도는 $\psi,\phi$ 두 개인데 도달 가능한 자세는 1-매개변수 족뿐 — 자유도 하나가 사라졌고, 이 자세에서 요 축과 롤 축이 물리적으로 겹친 것이다. 역변환도 무너진다: 이 $R$에서 $(\psi,\phi)$를 복원하는 문제는 해가 무한히 많다.
+
+**검산**: $(\psi,\phi)=(30^\circ,0^\circ)$와 $(0^\circ,-30^\circ)$는 서로 다른 오일러각이지만 둘 다 $\phi-\psi=-30^\circ$이므로 같은 행렬 $\bigl[\begin{smallmatrix} 0 & -0.5 & 0.866 \\ 0 & 0.866 & 0.5 \\ -1 & 0 & 0\end{smallmatrix}\bigr]$을 준다. 성립.
+
+## 부호 이중성: $q$와 $-q$는 같은 회전이다
+
+$-q$의 반각을 읽으면 $-\cos\tfrac{\theta}{2} = \cos\tfrac{\theta+2\pi}{2}$, $-\sin\tfrac{\theta}{2} = \sin\tfrac{\theta+2\pi}{2}$이므로 $-q$는 같은 축 둘레 $\theta+2\pi$ 회전, 즉 같은 회전이다. 더 직접적으로, 쿼터니언→행렬 변환의 모든 성분($1-2(y^2+z^2)$, $2(xy-wz)$, …)이 성분의 **2차식**이어서 $q\mapsto -q$에 불변이다. 단위 쿼터니언의 구 $S^3$가 $SO(3)$를 정확히 두 겹으로 덮는다 — 이것이 이중 덮개다.
+
+**검산**: $q=(\tfrac{\sqrt2}{2},0,0,\tfrac{\sqrt2}{2})$에서 $w z = \tfrac12$, $z^2=\tfrac12$. 변환식은 $R_{11}=1-2z^2=0$, $R_{12}=-2wz=-1$, $R_{21}=2wz=1$, $R_{22}=0$, $R_{33}=1$ — 수치 예의 행렬과 일치하고, $-q$를 넣어도 부호가 짝수 번 곱해져 같은 행렬이다. 성립.
+
+:::
+
+::: {.depth-application}
+
+## 실패 조건 세 가지: 반례로 확인한다
+
+**오일러각 성분별 보간의 경로 왜곡.** 요 $179^\circ$에서 $-179^\circ$로 가는 실제 최단 회전은 $2^\circ$인데, 성분을 선형 보간하면 $358^\circ$를 반대로 돈다. 짐벌락 근처에서는 더 심해서, 이웃한 두 자세의 오일러각이 크게 다를 수 있어 중간 프레임이 요동친다. 보간은 쿼터니언에서 하라.
+
+**회전행렬의 수치 드리프트.** 부동소수점으로 행렬곱을 수천 번 반복하면 반올림 오차가 누적되어 $R^\top R \neq I$가 된다 — 더 이상 회전이 아니라 길이를 늘이고 각을 비트는 사상이다. 주기적 재직교화(re-orthogonalization)가 필요하다: $R$의 특이값 분해 $R=U\Sigma V^\top$에서 $R \leftarrow UV^\top$로 가장 가까운 회전행렬에 사영하거나, 쿼터니언으로 변환해 정규화 후 되돌린다. 쿼터니언 상태라면 같은 문제의 해가 $q/\|q\|$ 한 줄이다 — 제약 1개짜리 표현의 이점이다.
+
+**쿼터니언 부호 불연속.** 이중 덮개 탓에 인접 키프레임이 $q_0$, $q_1$인데 $\langle q_0,q_1\rangle<0$이면 구면 선형 보간(spherical linear interpolation, SLERP)
+
+$$
+\operatorname{slerp}(q_0,q_1;t) = \frac{\sin\bigl((1-t)\Omega\bigr)}{\sin\Omega}\,q_0 + \frac{\sin(t\Omega)}{\sin\Omega}\,q_1,
+\qquad \cos\Omega = \langle q_0, q_1\rangle
+$$
+
+이 $180^\circ$가 넘는 먼 길을 돈다. 처방은 보간 전에 $\langle q_0,q_1\rangle<0$이면 $q_1 \leftarrow -q_1$로 부호를 뒤집는 것 — 같은 회전이므로 결과 자세는 불변이고 경로만 최단이 된다. 시계열로 쿼터니언을 기록할 때도 직전 표본과의 내적이 음수면 부호를 맞춰 저장해야 불연속이 없다.
+
+## 전제 장부
+
+| 구분 | 내용 |
+|---|---|
+| 회전행렬 성립 조건 | $R^\top R=I$ **그리고** $\det R=+1$ — 직교성만으로는 반사($\det=-1$)를 배제하지 못한다 |
+| 오일러각 성립 조건 | 축 순서·intrinsic/extrinsic 관례가 선언되어야 세 각이 의미를 가진다 |
+| 축각 유일성 | $\theta\in(0,\pi)$에서 유일; $\theta=0$은 축 부정, $\theta=\pi$는 $\pm k$가 같은 회전 |
+| 쿼터니언 성립 조건 | $\|q\|=1$ 유지 — 노름이 깨지면 회전이 아니라 스케일링이 섞인다 |
+| 공통 한계 | 특이점 없는 3성분 대역(global) 좌표는 존재하지 않는다 (위상적 사실) |
+
+## 구현 안전 체크
+
+- 외부에서 받은 $R$은 사용 전 $\|R^\top R - I\|$와 $\det R$을 검사한다 (반사·비직교 데이터 검출).
+- 오일러각 입출력 함수에는 관례(예: `ZYX intrinsic, rad`)를 이름 또는 문서에 명시한다.
+- 쿼터니언은 매 적분·합성 뒤 정규화하고, 보간·기록 전 이웃과의 내적 부호를 맞춘다.
+- 축각 변환 코드는 $\theta\approx 0$ 분기(급수 근사)와 $\theta\approx\pi$ 분기를 별도 처리한다.
+- 자세 **오차**는 차가 아니라 상대 회전으로 계산한다: $R_{\text{err}} = R_{\text{meas}} R_{\text{est}}^\top$의 축각.
+- 단위 테스트에 본문의 $z$축 $90^\circ$ 사례처럼 네 표현 왕복 변환의 일치를 넣는다.
+
+## 다음 연결
+
+- 미소 회전 $I+\theta[k]_\times$가 각속도·말단 속도로: [자코비안](jacobian.qmd)
+- 자세를 상태로 추정하는 필터의 기초: [칼만 필터](../estimation/kalman-filter.qmd)와 비선형 확장 [확장 칼만 필터](../estimation/extended-kalman-filter.qmd)
+- $SO(3)/SE(3)$를 리 군으로 다루는 일반론: [예정 노드 목록](../../../future-scope.qmd)
+
+:::
+
+## 회상 점검
+
+1. 회전행렬의 두 조건 $R^\top R=I$, $\det R=+1$ 중 하나만 성립하면 무엇이 섞여 들어오는가?
+2. 짐벌락에서 "자유도가 사라진다"를 $\theta=90^\circ$ 대입 행렬의 어떤 구조가 보여주는가?
+3. $q$와 $-q$가 같은 회전인데도 SLERP 전에 부호를 맞춰야 하는 이유는 무엇인가?
+4. 쿼터니언을 수치 적분한 뒤 정규화를 생략하면 어떤 종류의 오차가 자세에 들어오는가?
+
+## 참고문헌
+
+- John Stuelpnagel, “On the Parametrization of the Three-Dimensional Rotation Group,” SIAM Review, 1964. (특이점 없는 3성분 표현의 불가능성)
+- Ken Shoemake, “Animating Rotation with Quaternion Curves,” SIGGRAPH, 1985. (SLERP)
+- Richard M. Murray, Zexiang Li, and S. Shankar Sastry, *A Mathematical Introduction to Robotic Manipulation*, CRC Press, 1994.
+- Kevin M. Lynch and Frank C. Park, *Modern Robotics: Mechanics, Planning, and Control*, Cambridge University Press, 2017.

@@ -1,0 +1,208 @@
+---
+title: "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기"
+id: probability.gibbs-sampling
+kind: concept
+domain: probability
+aliases:
+  - Gibbs sampling
+  - 깁스 샘플링
+  - full conditional
+one-line: "결합분포 대신 각 좌표의 완전조건부 분포에서 차례로 표본화해 목표분포를 불변으로 갖는 chain을 만든다."
+difficulty: 4
+prerequisites:
+  intuition:
+    required:
+      - concept: probability.metropolis-hastings
+        competency: explain
+        reason: Gibbs가 acceptance 1인 MH 특수형임을 이해한다.
+    helpful: []
+  application:
+    required:
+      - concept: probability.gaussian_conditioning
+        competency: calculate
+        reason: 가우스 완전조건부를 닫힌 형태로 계산한다.
+    helpful: []
+  proof:
+    required:
+      - concept: probability.markov-chain
+        competency: calculate
+        reason: 좌표별 kernel 합성의 불변성을 계산한다.
+    helpful: []
+relations:
+  requires:
+    - probability.metropolis-hastings
+    - probability.gaussian_conditioning
+  derived-from:
+    - probability.metropolis-hastings
+  used-in: []
+---
+
+::: {.callout-note title="30초 핵심"}
+목표 $\pi(x_1,\ldots,x_d)$에서 직접 뽑기 어려울 때, 각 좌표의 완전조건부 분포(full conditional distribution)
+
+$$
+x_i \sim \pi(x_i \mid x_{-i})
+$$
+
+에서 차례로 표본화하면 $\pi$를 불변으로 갖는 chain이 된다. proposal 조정이 필요 없고 거절도 없지만, 좌표축을 따라만 움직이므로 좌표들이 강하게 상관되면 mixing이 급격히 느려진다.
+:::
+
+::: {.depth-intuition}
+
+## 해결하려는 문제
+
+[Metropolis–Hastings](metropolis-hastings.qmd)(이하 MH)는 proposal 분포를 설계하고 step size를 조정해야 작동한다. 그런데 로봇의 posterior에서 흔한 구조가 하나 있다. **결합분포 전체에서는 못 뽑아도, 나머지 좌표를 고정하면 한 좌표의 조건부 분포는 아는 경우**다. 예컨대 [Gaussian 조건부](gaussian-conditioning.qmd)는 닫힌 형태이고, 켤레(conjugate) 사전분포를 쓰면 조건부가 표준 분포족으로 떨어진다.
+
+Gibbs 표본화(Gibbs sampling)는 이 구조를 그대로 이용한다. $d$차원 문제를 "한 번에 1차원 표본화" $d$번으로 쪼개고, 각 1차원 갱신은 정확한 조건부 분포에서 뽑는다. 좌표축 방향으로만 움직이는 대신 매 이동이 항상 받아들여진다.
+
+:::
+
+::: {.depth-application}
+
+## 알고리즘: 좌표를 차례로 조건부에서 갱신
+
+상태(state) $x=(x_1,\ldots,x_d)\in\mathbb R^d$이고 $x_{-i}$는 $i$번째 좌표를 뺀 나머지 $d-1$개다. 고정순서 주사(systematic scan)는 좌표 순서를 고정해 한 사이클을 돈다. 초기값 $X^{(0)}$에서 $n=0,1,\ldots$에 대해:
+
+1. $x_1^{(n+1)} \sim \pi\!\left(x_1 \mid x_2^{(n)},\ldots,x_d^{(n)}\right)$
+2. $x_2^{(n+1)} \sim \pi\!\left(x_2 \mid x_1^{(n+1)},x_3^{(n)},\ldots,x_d^{(n)}\right)$
+3. 같은 방식으로 $x_d^{(n+1)} \sim \pi\!\left(x_d \mid x_1^{(n+1)},\ldots,x_{d-1}^{(n+1)}\right)$까지.
+
+핵심은 **항상 최신 값으로 조건**을 건다는 것이다. 무작위 주사(random scan)는 매 스텝 좌표 $i$를 균등하게 뽑아 그 좌표만 갱신한다. 두 방식 모두 $\pi$를 불변으로 갖지만 성질이 다르다(뒤의 유도에서 구분한다).
+
+## 손 계산: 상관 0.8인 2차원 가우스 한 사이클
+
+표준화된 2차원 가우스, 즉 평균 $0$, 분산 $1$, 상관 $\rho$를 목표로 하자. [Gaussian 조건부](gaussian-conditioning.qmd)의 공식에서
+
+$$
+x_1 \mid x_2 \sim \mathcal N(\rho x_2,\; 1-\rho^2),
+\qquad
+x_2 \mid x_1 \sim \mathcal N(\rho x_1,\; 1-\rho^2).
+$$
+
+모양 점검: 조건부 평균은 스칼라 $\rho x_2$, 조건부 분산은 스칼라 $1-\rho^2$이며 조건값 $x_2$와 무관하게 일정하다. 검산은 전체 분산 법칙으로 한다. $\operatorname{Var}(x_1)=\mathbb E[1-\rho^2]+\operatorname{Var}(\rho x_2)=(1-\rho^2)+\rho^2=1$로 주변분산 $1$이 복원된다.
+
+$\rho=0.8$이면 조건부 분산은 $1-0.64=0.36$, 표준편차는 $0.6$이다. 초기값 $(x_1,x_2)=(2.0,\,2.0)$에서 표준정규 난수 $z_1=0.5$, $z_2=-1.0$을 썼다고 하자.
+
+1. $x_1 \mid x_2{=}2.0 \sim \mathcal N(1.6,\,0.36)$이므로 $x_1 = 1.6 + 0.6\times 0.5 = 1.90$.
+2. $x_2 \mid x_1{=}1.90 \sim \mathcal N(1.52,\,0.36)$이므로 $x_2 = 1.52 + 0.6\times(-1.0) = 0.92$.
+
+한 사이클 뒤 $(1.90,\,0.92)$다. 각 좌표가 상대 좌표의 $0.8$배 지점 주위로 끌려가며, 매 이동의 보폭은 표준편차 $0.6$을 넘기 어렵다. 이 "서로를 향해 당기는 좁은 보폭"이 아래 실패 조건의 씨앗이다.
+
+:::
+
+::: {.depth-derivation}
+
+## MH의 특수형: acceptance가 정확히 1이 되는 계산
+
+좌표 $i$의 Gibbs 갱신을 MH의 언어로 다시 쓰자. 현재 상태 $x$에서 proposal을
+
+$$
+q(y \mid x) = \pi(y_i \mid x_{-i})\,\mathbf 1\{y_{-i}=x_{-i}\}
+$$
+
+로 둔다. 즉 나머지 좌표는 그대로 두고 $i$번째만 완전조건부에서 뽑는다. MH acceptance ratio의 분자·분모를 한 단계씩 분해한다.
+
+**1단계** — 목표를 좌표 $i$ 기준으로 인수분해한다:
+
+$$
+\pi(x)=\pi(x_i \mid x_{-i})\,\pi(x_{-i}),
+\qquad
+\pi(y)=\pi(y_i \mid y_{-i})\,\pi(y_{-i}).
+$$
+
+**2단계** — proposal이 $y_{-i}=x_{-i}$를 강제하므로 $\pi(y_{-i})=\pi(x_{-i})$이고, 역방향 proposal density는 조건이 같은 $x_{-i}$가 되어
+
+$$
+q(x \mid y)=\pi(x_i \mid y_{-i})=\pi(x_i \mid x_{-i}).
+$$
+
+**3단계** — 비율에 대입한다:
+
+$$
+\frac{\pi(y)\,q(x\mid y)}{\pi(x)\,q(y\mid x)}
+=\frac{\pi(y_i\mid x_{-i})\,\pi(x_{-i})\;\cdot\;\pi(x_i\mid x_{-i})}
+       {\pi(x_i\mid x_{-i})\,\pi(x_{-i})\;\cdot\;\pi(y_i\mid x_{-i})}
+=1.
+$$
+
+따라서 $\alpha(x,y)=1\wedge 1=1$. **모든 제안이 받아들여진다.** 검산: $\alpha\equiv1$은 flow 등식 $\pi(x)q(y\mid x)=\pi(y)q(x\mid y)$와 동치인데, 양변 모두 $\pi(x_i\mid x_{-i})\,\pi(y_i\mid x_{-i})\,\pi(x_{-i})$로 같으므로 좌표별 kernel 하나하나는 $\pi$에 대해 detailed balance를 만족한다.
+
+## 사이클 합성은 invariance만 보장한다
+
+좌표 $i$의 kernel을 $K_i$라 하면 위 계산으로 각 $K_i$는 $\pi$-reversible이고, 특히 $\pi K_i=\pi$다. 고정순서 주사의 한 사이클은 합성 $K=K_1K_2\cdots K_d$이므로
+
+$$
+\pi K = (\pi K_1)K_2\cdots K_d = \pi K_2\cdots K_d = \cdots = \pi.
+$$
+
+즉 invariance는 각 인수에서 차례로 전달된다. 그러나 **합성 $K$ 자체는 일반적으로 detailed balance를 만족하지 않는다.** reversible kernel의 곱은 순서를 뒤집은 $K_d\cdots K_1$이 원래와 같을 때에만 reversible한데, 좌표 갱신은 보통 교환되지 않기 때문이다. 반면 무작위 주사의 kernel $\tfrac1d\sum_i K_i$는 reversible kernel의 혼합이므로 detailed balance까지 만족한다. "Gibbs는 detailed balance를 만족한다"고 뭉뚱그리면 고정순서 주사에서는 틀린 서술이다 — 필요한 것은 invariance이고, 그것은 위 합성 논리로 충분하다.
+
+MH와 마찬가지로 invariance는 수렴이 아니다. 목표 support를 실제로 탐색하는 irreducibility 등의 추가조건은 [MH 장](metropolis-hastings.qmd)의 구분을 그대로 상속한다.
+
+:::
+
+::: {.depth-application}
+
+## 실용 이점: 조정할 proposal이 없다
+
+MH의 주된 노동은 proposal의 step size 조정이다. Gibbs는 proposal이 목표 자신의 조건부로 고정되므로 조정할 자유변수가 없고, acceptance rate 관리도 사라진다. 대가는 완전조건부에서 **표본화가 가능해야** 한다는 조건이며, 켤레 구조가 이를 채워 준다.
+
+- **정규–정규**: 결합이 가우스이면 모든 완전조건부가 가우스 — 위 손 계산이 그 예다.
+- **베타–이항**: $\theta\sim\operatorname{Beta}(a,b)$, $y\mid\theta\sim\operatorname{Binomial}(n,\theta)$의 결합에서 완전조건부는 $\theta\mid y\sim\operatorname{Beta}(a+y,\;b+n-y)$와 $y\mid\theta\sim\operatorname{Binomial}(n,\theta)$로 둘 다 표준 분포족이다. 성공 횟수 $y$가 관측되면 앞의 베타에서 뽑는 한 줄이 posterior 갱신 전부다.
+
+조건부 일부만 닫힌 형태이면 그 좌표만 Gibbs로, 나머지는 MH 스텝으로 갱신하는 혼합(Metropolis-within-Gibbs)도 같은 합성 논리로 정당화된다.
+
+## 실패 조건: 강한 상관과 결정적 결합
+
+### 상관이 1에 가까우면 지그재그로 느려진다
+
+2차원 가우스 예에서 조건부 표준편차는 $\sqrt{1-\rho^2}$다. $\rho\to1$이면 chain은 대각선 능선 위의 목표를 폭 $\sqrt{1-\rho^2}$짜리 좌표축 보폭으로 지그재그하며 기어간다. 정량적으로, 한 사이클 뒤 $x_1$의 조건부 평균을 연쇄하면 $\mathbb E[x_1^{(n+1)}\mid x_1^{(n)}]=\rho^2 x_1^{(n)}$이므로 $x_1$의 궤적은 계수 $\rho^2$인 AR(1)처럼 감쇠한다. 자기상관이 $0.01$ 아래로 떨어지는 데 $\rho=0.8$이면 약 $10$ 사이클($0.64^{10}\approx0.012$), $\rho=0.99$이면 약 $229$ 사이클이 필요하다. 처방은 상관을 없애는 **좌표 변환**(예: 주성분 방향으로 회전)이나, 상관된 좌표 묶음을 한 블록으로 함께 뽑는 **블록화(blocking)**다 — 블록 조건부가 가우스면 [Gaussian 조건부](gaussian-conditioning.qmd)로 그대로 뽑을 수 있다.
+
+### 반례: 결정적으로 묶인 좌표는 reducible
+
+목표가 $\{(0,0),(1,1)\}$ 위의 균등분포라 하자. 완전조건부는 $x_1\mid x_2$가 $x_1=x_2$를 확률 $1$로 주는 퇴화 분포이고 $x_2\mid x_1$도 마찬가지다. Gibbs chain은 초기점에서 영원히 움직이지 못한다 — 두 점 각각에서 invariance는 성립하지만 chain이 reducible해서 어떤 초기값에서도 목표로 수렴하지 않는다. $\rho\to1$의 지그재그는 이 붕괴의 연속적 전조다.
+
+## 예고: collapsed Gibbs
+
+조건부에서 뽑는 대신 일부 좌표를 **적분으로 소거**할 수 있으면, 남은 좌표만의 주변 posterior 위에서 Gibbs를 돌리는 collapsed Gibbs가 된다. 소거된 방향의 상관이 chain에서 사라지므로 mixing이 대체로 개선된다. 켤레 구조가 적분을 닫힌 형태로 만들어 줄 때 쓸 수 있으며, 상세한 조건과 예는 별도 장으로 예정되어 있다.
+
+## 전제 장부
+
+| 구분 | 내용 |
+|---|---|
+| 계산 조건 | 모든 좌표(또는 블록)의 완전조건부에서 표본화 가능 |
+| invariance | 각 좌표 kernel의 detailed balance + 사이클 합성으로 보장 |
+| detailed balance | 무작위 주사는 만족, 고정순서 주사는 일반적으로 비만족(invariance만) |
+| convergence 추가조건 | irreducibility 필요 — 결정적으로 묶인 support에서 실패 |
+| mixing | 좌표 상관에 민감: 가우스에서 자기상관 계수 $\rho^2$, 보폭 $\sqrt{1-\rho^2}$ |
+
+## 구현 안전 체크
+
+- 갱신 직후의 최신 값으로 조건을 걸었는지 확인 — 사이클 내에서 옛 값을 쓰면 다른 chain이 된다
+- 완전조건부 유도를 결합밀도에서 "해당 좌표가 든 인수만 모으기"로 검산
+- 좌표 쌍의 산점도와 trace로 지그재그 정체를 눈으로 확인
+- 자기상관/ESS 보고는 MH와 동일 — acceptance rate는 항상 1이므로 아무 정보가 없다
+- 강한 상관이 보이면 좌표 변환 또는 블록화를 먼저 시도
+- 퇴화(결정적) 조건부가 있는지 모형 단계에서 점검 — reducibility는 표본을 아무리 모아도 안 고쳐진다
+
+## 다음 연결
+
+- acceptance ratio의 일반형과 invariance·수렴 구분: [Metropolis–Hastings](metropolis-hastings.qmd)
+- 가우스 완전조건부와 블록 조건부의 닫힌 형태: [Gaussian 조건부](gaussian-conditioning.qmd)
+- 지그재그 정체를 수치로 잡아내는 도구: [MCMC 수렴 진단](mcmc-diagnostics.qmd)
+- 전체 선수·증명 체크리스트: [MCMC 학습 경로](../../paths/mcmc.qmd)
+
+:::
+
+## 회상 점검
+
+1. Gibbs의 proposal을 완전조건부로 두면 acceptance ratio가 왜 정확히 1이 되는가?
+2. 고정순서 주사가 detailed balance 없이도 $\pi$를 불변으로 갖는 논리는 무엇인가?
+3. $\rho=0.99$인 2차원 가우스에서 Gibbs가 느린 이유를 $\sqrt{1-\rho^2}$와 $\rho^2$로 각각 설명하라.
+4. acceptance rate가 항상 1인데도 수렴 진단이 여전히 필요한 이유는 무엇인가?
+
+## 참고문헌
+
+- Stuart Geman and Donald Geman, “Stochastic Relaxation, Gibbs Distributions, and the Bayesian Restoration of Images,” 1984.
+- Alan E. Gelfand and Adrian F. M. Smith, “Sampling-Based Approaches to Calculating Marginal Densities,” 1990.
+- George Casella and Edward I. George, “Explaining the Gibbs Sampler,” 1992.

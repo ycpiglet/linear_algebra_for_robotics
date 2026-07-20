@@ -1,0 +1,234 @@
+---
+title: "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬"
+id: linalg.svd
+kind: concept
+domain: linear_algebra
+aliases:
+  - SVD
+  - singular value decomposition
+  - 특이값
+  - singular value
+one-line: "임의의 행렬을 입력 회전·축별 축척·출력 회전으로 분해해 계수·조건수·최저이득 방향·저계수 근사를 한 번에 읽는다."
+difficulty: 3
+prerequisites:
+  intuition:
+    required:
+      - concept: linalg.eigenvalues
+        competency: explain
+        reason: 특이값은 $A^\top A$ 고유값의 제곱근이라 고유값 언어가 먼저 필요하다.
+    helpful: []
+  application:
+    required:
+      - concept: linalg.least_squares
+        competency: calculate
+        reason: 의사역행렬 최소노름 해를 SVD로 계산한다.
+    helpful:
+      - concept: linalg.orthogonal_projection
+        competency: explain
+        reason: $U$·$V$ 열이 만드는 부분공간 투영으로 해를 해석한다.
+relations:
+  requires:
+    - linalg.eigenvalues
+    - linalg.least_squares
+  used-in:
+    - robot.jacobian
+    - estimation.kalman_filter
+---
+
+::: {.callout-note title="30초 핵심"}
+어떤 $m\times n$ 행렬 $A$도 $A=U\Sigma V^\top$로 쓸 수 있다. $V$는 입력 공간의 회전(직교), $\Sigma$는 축마다 다른 비율의 축척(대각, $\sigma_1\ge\cdots\ge0$), $U$는 출력 공간의 회전(직교)이다. 로봇에서는 자코비안의 특이값이 "이 자세에서 어느 방향으로 움직이기 쉬운가/어려운가"를 정량화한다. 가장 중요한 한계: $\sigma_{\min}\approx0$이면 역방향 계산의 이득이 $1/\sigma$로 폭주하므로, 분해 자체보다 **작은 특이값의 처리**가 실무의 승부처다.
+:::
+
+::: {.depth-intuition}
+
+## 해결하려는 문제: 행렬이 공간을 어떻게 찌그러뜨리는지 한눈에 보기
+
+행렬 $A$는 벡터를 다른 벡터로 보내는 지도다. 고유값 분해는 "$A$가 방향을 바꾸지 않는 특별한 방향"을 찾지만, 정방·대각화 가능이라는 조건이 붙고 비정방 행렬에는 아예 정의되지 않는다. 로봇 자코비안은 대개 비정방이고, 우리가 정말 알고 싶은 것은 불변 방향이 아니라 **어느 입력 방향이 얼마나 증폭되는가**다.
+
+특이값 분해(singular value decomposition, SVD)는 이 질문에 답한다. 단위원(unit circle) 위의 모든 입력 벡터를 $A$에 통과시키면 출력은 항상 **타원**(고차원에서는 타원체)이 된다. 타원의 반축 길이가 특이값 $\sigma_1,\sigma_2,\ldots$이고, 반축 방향이 출력 특이벡터 $u_1,u_2,\ldots$다. 그 반축으로 보내지는 입력 방향이 $v_1,v_2,\ldots$다. 즉
+
+$$
+Av_i=\sigma_i\,u_i
+$$
+
+가 SVD의 기하 전부다. "입력을 $v_i$ 좌표로 회전해 읽고($V^\top$), 축마다 $\sigma_i$배 늘리고($\Sigma$), 출력 좌표로 회전해 내보낸다($U$)" — 모든 행렬은 회전–축척–회전이다.
+
+:::
+
+::: {.depth-application}
+
+## 정의: 모양부터 확인한다
+
+$m\times n$ 실행렬 $A$에 대해
+
+$$
+A=U\Sigma V^\top,\qquad
+U\in\mathbb R^{m\times m},\ \Sigma\in\mathbb R^{m\times n},\ V\in\mathbb R^{n\times n}
+$$
+
+이고 $U^\top U=I_m$, $V^\top V=I_n$(직교), $\Sigma$는 대각 성분 $\sigma_1\ge\sigma_2\ge\cdots\ge\sigma_{\min(m,n)}\ge0$ 외에는 0이다. 모양 점검: $(m\times m)(m\times n)(n\times n)=m\times n$으로 $A$와 일치한다. $A$의 성분에 단위가 있으면(자코비안이라면 m/rad) 특이값이 그 단위를 그대로 가지며, $U,V$는 무차원 방향이다.
+
+$U$의 열을 좌특이벡터(left singular vector), $V$의 열을 우특이벡터(right singular vector)라 한다. 열 단위로 풀어 쓰면 $Av_i=\sigma_iu_i$, $A^\top u_i=\sigma_iv_i$다.
+
+## 손 계산: $A=\begin{bmatrix}3&0\\4&5\end{bmatrix}$
+
+**1단계 — $A^\top A$를 만든다.**
+
+$$
+A^\top A=\begin{bmatrix}3&4\\0&5\end{bmatrix}
+\begin{bmatrix}3&0\\4&5\end{bmatrix}
+=\begin{bmatrix}25&20\\20&25\end{bmatrix}.
+$$
+
+**2단계 — 고유값을 푼다.** 특성방정식 $(25-\lambda)^2-400=0$에서 $25-\lambda=\pm20$, 즉 $\lambda_1=45,\ \lambda_2=5$. 따라서
+
+$$
+\sigma_1=\sqrt{45}=3\sqrt5\approx6.7082,\qquad
+\sigma_2=\sqrt5\approx2.2361.
+$$
+
+**3단계 — 두 가지 검산.** 계산을 믿기 전에 반드시 확인한다.
+
+- 곱 검산: $\sigma_1\sigma_2=3\sqrt5\cdot\sqrt5=15=|\det A|=|3\cdot5-0\cdot4|$. 통과.
+- 제곱합 검산: $\sigma_1^2+\sigma_2^2=45+5=50=\|A\|_F^2=9+0+16+25$. 통과.
+
+**4단계 — 특이벡터.** $\lambda_1=45$의 고유벡터는 $(25-45)v_1+20v_2=0$에서 $v_1=v_2$, 정규화하면 $v_1=\tfrac1{\sqrt2}(1,1)^\top$. 마찬가지로 $v_2=\tfrac1{\sqrt2}(1,-1)^\top$. 좌특이벡터는 $u_i=Av_i/\sigma_i$로 얻는다.
+
+$$
+u_1=\frac{1}{3\sqrt5}\cdot\frac{1}{\sqrt2}\begin{bmatrix}3\\9\end{bmatrix}
+=\frac{1}{\sqrt{10}}\begin{bmatrix}1\\3\end{bmatrix},\qquad
+u_2=\frac{1}{\sqrt5}\cdot\frac{1}{\sqrt2}\begin{bmatrix}3\\-1\end{bmatrix}
+=\frac{1}{\sqrt{10}}\begin{bmatrix}3\\-1\end{bmatrix}.
+$$
+
+$u_1^\top u_2=(3-3)/10=0$으로 직교가 확인된다. 재조립 검산:
+
+$$
+U\Sigma V^\top
+=\frac12\begin{bmatrix}3&3\\9&-1\end{bmatrix}
+\begin{bmatrix}1&1\\1&-1\end{bmatrix}
+=\frac12\begin{bmatrix}6&0\\8&10\end{bmatrix}
+=\begin{bmatrix}3&0\\4&5\end{bmatrix}=A.
+$$
+
+단위원은 $u_1$ 방향 반축 $6.71$, $u_2$ 방향 반축 $2.24$의 타원으로 보내진다.
+
+## 계수·조건수·최저이득 방향: 세 숫자로 행렬을 진단한다
+
+- **계수(rank)** = 0이 아닌 특이값의 개수. 위 예는 $\sigma_2>0$이므로 계수 2.
+- **조건수** $\kappa=\sigma_1/\sigma_{\min}$. 위 예는 $\kappa=3\sqrt5/\sqrt5=3$으로 온순하다. $\kappa$가 크면 입력의 상대오차가 최대 $\kappa$배로 증폭될 수 있다.
+- **최저이득 방향** $v_{\min}$: 입력 노름 1당 출력이 가장 작은($\sigma_{\min}$) 방향. 로봇 자코비안에서는 관절이 아무리 노력해도 말단이 가장 느리게 움직이는 **조작성 최약 방향**이며, 특이점에 접근하면 $\sigma_{\min}\to0$으로 먼저 신호를 보낸다. [자코비안 장](../robotics/jacobian.qmd)의 조작성 타원이 정확히 이 그림이다.
+
+## 저계수 근사: 잘라낸 SVD가 최선이다 (Eckart–Young)
+
+$A_k=\sum_{i=1}^{k}\sigma_iu_iv_i^\top$ (앞쪽 $k$개 항만 유지)라 하면, 계수 $k$ 이하의 **모든** 행렬 $B$에 대해
+
+$$
+\|A-A_k\|_2=\sigma_{k+1}\le\|A-B\|_2
+$$
+
+가 성립한다(Frobenius 노름에서도 $A_k$가 최적). 위 예에서 $A_1=\tfrac32\begin{bmatrix}1&1\\3&3\end{bmatrix}$이고 $A-A_1=\begin{bmatrix}1.5&-1.5\\-0.5&0.5\end{bmatrix}=\sigma_2u_2v_2^\top$이므로 $\|A-A_1\|_2=\sigma_2=\sqrt5$. 검산 통과. 사용처: 큰 모델의 축약(관성·강성 행렬의 지배 모드만 유지), 측정 행렬에서 작은 특이값 성분을 잡음(noise)으로 보고 분리하는 전처리.
+
+## 의사역행렬과 감쇠 최소제곱: 이득 함수를 비교하라
+
+무어–펜로즈 의사역행렬(Moore–Penrose pseudoinverse)은
+
+$$
+A^{+}=V\Sigma^{+}U^\top,\qquad
+\Sigma^{+}=\operatorname{diag}\!\big(\sigma_i^{-1}\ (\sigma_i>0),\ 0\big)^\top
+$$
+
+으로, [최소제곱](least-squares.qmd) 문제의 **최소노름 해** $x^\star=A^{+}b$를 준다. 모양 점검: $A^{+}$는 $n\times m$으로 $A$의 전치와 같은 모양이다. 위 예에서 $V\Sigma^{+}U^\top$를 곱하면 $\tfrac1{15}\begin{bmatrix}5&0\\-4&3\end{bmatrix}=A^{-1}$이 나와 가역인 경우와 일치함이 확인된다.
+
+특이방향 하나에서 두 방법의 이득을 비교하면 정체가 드러난다.
+
+| 방법 | 특이방향 이득 | $\sigma\to0$ 극한 |
+|---|---|---|
+| 의사역행렬 | $1/\sigma$ | $\infty$로 폭주 |
+| 감쇠 최소제곱(damped least squares, DLS) | $\sigma/(\sigma^2+\lambda^2)$ | $0$으로 수렴, 최대 $1/(2\lambda)$ ($\sigma=\lambda$에서) |
+
+수치 예: $\sigma=0.01$, $\lambda=0.05$이면 의사역행렬 이득은 $100$, DLS 이득은 $0.01/0.0026\approx3.85$다. DLS는 폭주를 막는 대가로 약한 방향의 목표를 일부 포기한다 — [자코비안 장](../robotics/jacobian.qmd)의 특이점 근처 역기구학이 이 표 한 줄로 요약된다.
+
+## 실패 조건: SVD를 믿으면 안 되는 세 지점
+
+- **$\sigma_{\min}\approx0$에서의 역계산.** $A^{+}$의 이득 $1/\sigma$는 특이값이 작을수록 커진다. $\sigma=10^{-6}$이면 입력 오차가 백만 배로 증폭된다. 분해는 항상 존재하지만 역은 항상 안전하지 않다.
+- **부동소수점의 계수 판정은 임계값 문제다.** 유한 정밀도에서 특이값은 정확히 0이 되지 않는다. $\sigma_i>\varepsilon\cdot\max(m,n)\cdot\sigma_1$ 같은 상대 임계값으로 자르는데, 임계값 바로 근처의 특이값은 "계수 2인가 3인가"라는 질문 자체가 불량 조건임을 뜻한다. 계수는 이산값이지만 데이터는 연속으로 변한다.
+- **특이벡터의 부호(및 축퇴 시 방향)는 임의다.** $u_iv_i^\top$가 같으면 $(-u_i,-v_i)$도 유효한 분해라서, 라이브러리·실행마다 부호가 다를 수 있다. $\sigma_i=\sigma_{i+1}$(축퇴)이면 해당 부분공간 안의 어떤 직교기저도 유효하다. 특이벡터를 시계열로 추적하는 코드는 부호 정합을 직접 처리해야 한다.
+
+:::
+
+::: {.depth-derivation}
+
+## 유도: 특이값은 왜 $A^\top A$ 고유값의 제곱근인가
+
+**1단계 — $A^\top A$는 대칭이고 반양의 정부호다.** $(A^\top A)^\top=A^\top A$이고, 임의의 $v\in\mathbb R^n$에 대해
+
+$$
+v^\top(A^\top A)v=(Av)^\top(Av)=\|Av\|^2\ge0.
+$$
+
+따라서 스펙트럼 정리에 의해 정규직교 고유벡터 $v_1,\ldots,v_n$과 고유값 $\lambda_1\ge\cdots\ge\lambda_n\ge0$이 존재한다.
+
+**2단계 — 제곱근을 특이값으로 정의한다.** $\sigma_i=\sqrt{\lambda_i}$로 두면 1단계에서
+
+$$
+\|Av_i\|^2=v_i^\top(A^\top A)v_i=\lambda_i\|v_i\|^2=\sigma_i^2,
+$$
+
+즉 $\|Av_i\|=\sigma_i$: 각 고유방향에서 $A$의 증폭률이 정확히 $\sigma_i$다.
+
+**3단계 — 좌특이벡터를 만들고 직교성을 확인한다.** $\sigma_i>0$인 $i$에 대해 $u_i=Av_i/\sigma_i$로 정의하면
+
+$$
+u_i^\top u_j=\frac{v_i^\top A^\top A v_j}{\sigma_i\sigma_j}
+=\frac{\lambda_j\,v_i^\top v_j}{\sigma_i\sigma_j}
+=\begin{cases}1&i=j\\0&i\ne j\end{cases}
+$$
+
+로 자동으로 정규직교다. $\sigma_i=0$인 방향과 남는 출력 차원은 임의의 정규직교 벡터로 채워 $U$를 완성한다.
+
+**4단계 — 재조립.** 모든 $v_j$에 대해 $Av_j=\sigma_ju_j=U\Sigma V^\top v_j$가 성립하고, $\{v_j\}$가 $\mathbb R^n$의 기저이므로 $A=U\Sigma V^\top$다. 같은 논리를 $AA^\top=U\Sigma\Sigma^\top U^\top$에 적용하면 $u_i$가 $AA^\top$의 고유벡터임도 나온다 — 0이 아닌 고유값은 양쪽이 같다.
+
+**검산.** 손 계산 예에서 $AA^\top=\begin{bmatrix}9&12\\12&41\end{bmatrix}$의 특성방정식은 $\lambda^2-50\lambda+(369-144)=0$이고 근은 $\lambda=45,5$ — $A^\top A$의 고유값과 정확히 일치한다. 또한 $AA^\top(1,3)^\top=(45,135)^\top=45\,(1,3)^\top$으로 $u_1$이 실제 고유벡터임이 확인된다.
+
+:::
+
+## 전제 장부
+
+| 구분 | 내용 |
+|---|---|
+| 존재 조건 | 없음 — 임의의 실(복소) $m\times n$ 행렬에서 SVD는 항상 존재한다 |
+| 유일성 | 특이값은 유일, 특이벡터는 부호 임의·축퇴 시 부분공간 안에서 임의 |
+| $\sigma_i=\sqrt{\lambda_i(A^\top A)}$ | $A^\top A$의 대칭·반양의 정부호성(스펙트럼 정리)으로 보장 |
+| 계수·조건수 해석 | 정확 산술에서 성립, 부동소수점에서는 상대 임계값 필요 |
+| Eckart–Young | 스펙트럼·Frobenius 노름에서 성립, 임의 노름으로 일반화 금지 |
+| 단위 | 특이값은 $A$ 성분의 단위를 상속 — 행마다 단위가 다르면 먼저 척도를 선언 |
+
+## 구현 안전 체크
+
+- $A^\top A$를 직접 만들어 고유분해하지 말 것 — 조건수가 $\kappa^2$으로 제곱된다. 라이브러리 SVD(예: Golub–Kahan 이중대각화 기반)를 그대로 쓴다.
+- 계수 판정은 $\sigma_i>\varepsilon\cdot\max(m,n)\cdot\sigma_1$ 같은 **상대** 임계값으로. 절대 임계값은 행렬의 척도가 바뀌면 무의미해진다.
+- 역계산 전에 $\sigma_{\min}$과 $\kappa$를 로그로 남기고, 폭주 위험이 있으면 의사역행렬 대신 DLS나 절단 SVD로 전환한다.
+- 특이벡터를 프레임 간 추적한다면 $u_i^\top u_i^{\text{prev}}<0$일 때 $(u_i,v_i)$의 부호를 함께 뒤집는다.
+- 검산 두 개는 코드에서도 싸다: $\prod\sigma_i=|\det A|$(정방일 때), $\sum\sigma_i^2=\|A\|_F^2$.
+
+## 다음 연결
+
+- 특이점 감시·조작성 타원·DLS의 실전: [자코비안](../robotics/jacobian.qmd)
+- 최소노름 해와 정규방정식·QR과의 비교: [최소제곱](least-squares.qmd)
+- 공분산 갱신의 수치 안정화(제곱근 필터)에서 재등장: [칼만 필터](../estimation/kalman-filter.qmd)
+- $A^\top A$ 고유분해의 배경 언어: [고유값과 고유벡터](eigenvalues.qmd)
+
+## 회상 점검
+
+1. $Av_i=\sigma_iu_i$에서 네 기호의 모양과 서로의 관계를 그림 없이 말할 수 있는가?
+2. $\sigma_1\sigma_2=|\det A|$와 $\sigma_1^2+\sigma_2^2=\|A\|_F^2$는 각각 어떤 성질에서 나오는가?
+3. 조작성 최약 방향은 좌·우 특이벡터 중 어느 쪽의 어느 열인가? 그 방향의 이득은 얼마인가?
+4. $\sigma_{\min}=10^{-6}$인 자코비안에 의사역행렬과 DLS($\lambda=0.05$)를 각각 쓰면 특이방향 이득은 대략 얼마씩인가?
+
+## 참고문헌
+
+- Gene H. Golub and Charles F. Van Loan, *Matrix Computations*, Johns Hopkins University Press.
+- Lloyd N. Trefethen and David Bau III, *Numerical Linear Algebra*, SIAM, 1997.
+- Carl Eckart and Gale Young, "The Approximation of One Matrix by Another of Lower Rank," *Psychometrika*, 1936.
+- Gilbert Strang, *Introduction to Linear Algebra*, Wellesley-Cambridge Press.

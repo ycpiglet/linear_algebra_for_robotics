@@ -1,0 +1,234 @@
+---
+title: "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기"
+id: estimation.extended_kalman_filter
+kind: concept
+domain: estimation
+aliases:
+  - EKF
+  - extended Kalman filter
+  - 확장칼만필터
+one-line: "비선형 동역학·측정 모형을 현재 추정치에서 자코비안으로 선형화해 칼만 필터의 예측·측정 갱신을 재사용하는 가우스 상태추정기다."
+difficulty: 4
+prerequisites:
+  intuition:
+    required:
+      - concept: estimation.kalman_filter
+        competency: explain
+        reason: 예측과 측정을 불확실성으로 절충하는 구조가 동일하다.
+    helpful:
+      - concept: probability.gaussian_conditioning
+        competency: explain
+        reason: 갱신식이 가우스 조건부의 국소 근사임을 이해한다.
+  application:
+    required:
+      - concept: estimation.kalman_filter
+        competency: calculate
+        reason: 선형 KF의 예측·측정 갱신 식을 그대로 재사용한다.
+      - concept: robot.jacobian
+        competency: calculate
+        reason: f와 h의 자코비안 F, H를 현재 추정치에서 평가한다.
+    helpful: []
+relations:
+  requires:
+    - estimation.kalman_filter
+    - robot.jacobian
+  derived-from:
+    - estimation.kalman_filter
+  used-in:
+    - robot.state_estimation
+    - robot.sensor_fusion
+    - robot.localization
+---
+
+::: {.callout-note title="30초 핵심"}
+확장 칼만 필터(Extended Kalman Filter, EKF)는 비선형 동역학 $f$와 비선형 측정 $h$를 **현재 추정치에서 자코비안(Jacobian)으로 국소 선형화**해, 선형 칼만 필터의 예측–갱신 재귀를 그대로 재사용하는 가우스(Gaussian) 상태추정기다. 이동 로봇의 위치추정과 센서 융합에서 사실상의 기본기다. 단, 선형화는 추정치 주변에서만 유효하므로 **비선형성이 강하거나 공분산이 크면 근사가 깨져 발산할 수 있다** — 정확한 사후분포를 계산하는 필터가 아니라 국소 근사기다.
+:::
+
+::: {.depth-intuition}
+
+## 해결하려는 문제: 선형 가정이 깨지는 순간
+
+[칼만 필터](kalman-filter.qmd)는 동역학과 측정이 모두 선형 행렬 $F, H$로 쓰인다고 가정했다. 그러나 로봇의 모형은 대부분 비선형이다.
+
+$$
+x_{k+1} = f(x_k, u_k) + w_k, \qquad
+z_k = h(x_k) + v_k
+$$
+
+여기서 $w_k \sim \mathcal N(0, Q)$, $v_k \sim \mathcal N(0, R)$은 서로 독립인 잡음(noise)이다. 방향각 $\theta$가 $\cos\theta, \sin\theta$로 위치에 들어가는 이동 로봇의 동역학, 랜드마크까지의 거리 $\sqrt{\cdot}$와 방위각 $\operatorname{atan2}$로 이루어진 측정이 전형적인 예다. 이런 $f, h$에는 "행렬을 곱한다"는 칼만 필터의 두 식을 그대로 쓸 수 없고, 가우스 분포를 비선형 함수에 통과시키면 결과는 더 이상 가우스가 아니다.
+
+## 핵심 아이디어: 지금 있는 곳에서 1차 테일러 전개
+
+[자코비안](../robotics/jacobian.qmd) 장의 결론을 그대로 가져온다. 매끄러운 함수는 한 점 주변에서 자코비안이라는 선형 지도로 근사된다. EKF는 이 근사를 **가장 좋은 정보가 있는 점, 즉 현재 추정치**에서 수행한다.
+
+$$
+F_k = \left.\frac{\partial f}{\partial x}\right|_{\hat x_k^{+},\,u_k}, \qquad
+H_k = \left.\frac{\partial h}{\partial x}\right|_{\hat x_k^{-}}
+$$
+
+동역학의 자코비안 $F_k$는 갱신이 끝난 사후 추정 $\hat x_k^{+}$에서, 측정의 자코비안 $H_k$는 예측된 사전 추정 $\hat x_k^{-}$에서 평가한다 — 각 단계가 시작될 때 손에 쥔 최선의 상태가 그것이기 때문이다. 이렇게 만든 $F_k, H_k$를 선형 칼만 필터의 자리에 끼워 넣으면 나머지 재귀는 동일하다.
+
+:::
+
+::: {.depth-application}
+
+## 기호와 모양 점검
+
+상태 $x \in \mathbb R^n$, 입력 $u \in \mathbb R^p$, 측정 $z \in \mathbb R^m$일 때 $F_k$는 $n \times n$, $H_k$는 $m \times n$, $Q$는 $n \times n$, $R$은 $m \times m$이다. $F_k$의 $(i,j)$ 성분의 단위는 (상태 $i$의 단위)/(상태 $j$의 단위)로, 선형 필터의 $F, H$와 모양·단위 규칙이 완전히 같다. 자코비안이 아닌 $f, h$ 자체는 벡터를 벡터로 보내는 비선형 함수라는 점만 다르다.
+
+## 알고리즘: 평균은 비선형 그대로, 공분산만 자코비안
+
+**예측(prediction).** 사후 추정 $(\hat x_k^{+}, P_k^{+})$에서 출발한다.
+
+$$
+\hat x_{k+1}^{-} = f(\hat x_k^{+}, u_k), \qquad
+P_{k+1}^{-} = F_k P_k^{+} F_k^{\top} + Q
+$$
+
+**측정 갱신(measurement update).** 사전 추정 $(\hat x_k^{-}, P_k^{-})$과 측정 $z_k$를 결합한다.
+
+$$
+\nu_k = z_k - h(\hat x_k^{-}), \qquad
+S_k = H_k P_k^{-} H_k^{\top} + R, \qquad
+K_k = P_k^{-} H_k^{\top} S_k^{-1}
+$$
+
+$$
+\hat x_k^{+} = \hat x_k^{-} + K_k \nu_k, \qquad
+P_k^{+} = (I - K_k H_k)\, P_k^{-}
+$$
+
+혁신(innovation) $\nu_k$는 $m$차원, 혁신 공분산 $S_k$는 $m \times m$, 이득(gain) $K_k$는 $n \times m$으로 선형 필터와 모양이 같다. 수치 안정성을 위해 공분산 갱신은 조지프(Joseph) 형식 $P_k^{+} = (I - K_k H_k) P_k^{-} (I - K_k H_k)^{\top} + K_k R K_k^{\top}$을 권장한다 — 이득이 최적에서 조금 벗어나도 대칭·양의 준정부호가 유지된다.
+
+여기서 이 장에서 가장 중요한 구분 하나. **평균의 전파는 비선형 함수 $f, h$를 그대로 통과시키고, 공분산의 전파에만 자코비안 $F, H$를 쓴다.** 예측 평균을 $F \hat x^{+}$로, 혁신을 $z - H\hat x^{-}$로 쓰는 것은 흔하지만 명백한 오류다 — 자코비안은 "변화율"이지 함수값이 아니다.
+
+## 손으로 따라가는 수치 예: 제곱 측정 하나
+
+1차원 상태를 비선형 센서 $z = x^2 + v$로 관측한다. 사전 추정 $\hat x^{-} = 2$, $P^{-} = 0.25$, $R = 1$, 측정값 $z = 5$라 하자.
+
+1. 자코비안: $h(x) = x^2$이므로 $H = 2\hat x^{-} = 4$ (스칼라, $1\times1$).
+2. 혁신: $\nu = z - h(\hat x^{-}) = 5 - 2^2 = 1$. 예측 측정에 $H\hat x^{-} = 8$이 아니라 $h(\hat x^{-}) = 4$를 쓴 것에 주목하라.
+3. 혁신 공분산: $S = H P^{-} H + R = 4 \cdot 0.25 \cdot 4 + 1 = 5$.
+4. 이득: $K = P^{-} H / S = 0.25 \cdot 4 / 5 = 0.2$.
+5. 갱신: $\hat x^{+} = 2 + 0.2 \cdot 1 = 2.2$, $\quad P^{+} = (1 - 0.2 \cdot 4) \cdot 0.25 = 0.2 \cdot 0.25 = 0.05$.
+
+**검산.** 조지프 형식으로 다시 계산하면 $P^{+} = (1-0.8) \cdot 0.25 \cdot (1-0.8) + 0.2 \cdot 1 \cdot 0.2 = 0.01 + 0.04 = 0.05$로 일치한다. 갱신된 추정의 예측 측정은 $h(2.2) = 4.84$로, 갱신 전 $4$보다 측정값 $5$에 가까워졌다.
+
+## 로봇 예: 평면 자세와 레인지-베어링 측정
+
+상태를 평면 자세 $x = (x, y, \theta)^{\top}$, 입력을 속도 $v$와 각속도 $\omega$로 두면 흔한 동역학은
+
+$$
+f(x, u) =
+\begin{pmatrix}
+x + v\,\Delta t \cos\theta \\
+y + v\,\Delta t \sin\theta \\
+\theta + \omega\,\Delta t
+\end{pmatrix}
+$$
+
+이고, 자코비안은 $3 \times 3$으로
+
+$$
+F =
+\begin{pmatrix}
+1 & 0 & -v\,\Delta t \sin\theta \\
+0 & 1 & \phantom{-}v\,\Delta t \cos\theta \\
+0 & 0 & 1
+\end{pmatrix}
+$$
+
+이다. 항등행렬에서 벗어나는 곳은 셋째 열뿐 — "방향각의 오차가 위치 오차로 번진다"는 구조가 그대로 읽힌다. 알려진 랜드마크 $(\ell_x, \ell_y)$에 대한 레인지-베어링(range-bearing) 측정 $h(x) = \big(r,\ \operatorname{atan2}(\ell_y - y,\, \ell_x - x) - \theta\big)^{\top}$, $r = \sqrt{(\ell_x - x)^2 + (\ell_y - y)^2}$의 자코비안 $H$는 $2 \times 3$이며, 예를 들어 첫 행은 $\big({-(\ell_x - x)/r},\ {-(\ell_y - y)/r},\ 0\big)$, 둘째 행의 마지막 항은 $-1$이다(방위각은 로봇이 회전한 만큼 반대로 움직인다). 전체 유도는 연쇄법칙의 반복이므로 생략하지만, 각 항의 단위 — 첫 행은 무차원, 둘째 행의 위치 편미분은 rad/m — 를 확인하는 습관이 부호 실수를 잡아 준다.
+
+:::
+
+::: {.depth-derivation}
+
+## 공분산 전파 식의 유도: 오차에 대한 선형화
+
+한 단계에 한 변화만 준다. 사후 오차를 $e_k^{+} = x_k - \hat x_k^{+}$라 하고, 참 상태의 전파 $x_{k+1} = f(x_k, u_k) + w_k$에서 $f$를 $\hat x_k^{+}$ 주변에서 1차 테일러 전개한다.
+
+$$
+f(x_k, u_k) = f(\hat x_k^{+}, u_k) + F_k\, e_k^{+} + r(e_k^{+})
+$$
+
+나머지항 $r$은 $\|e_k^{+}\|$에 대해 2차 이상이다. 이를 예측 오차에 대입하면
+
+$$
+e_{k+1}^{-} = x_{k+1} - \hat x_{k+1}^{-}
+= F_k\, e_k^{+} + w_k + r(e_k^{+})
+$$
+
+이다. 나머지항을 버리는 것이 EKF의 유일한 근사다. 버린 뒤 양변의 공분산을 취하면, 오차와 잡음이 독립이므로
+
+$$
+P_{k+1}^{-} = \operatorname{Cov}(F_k e_k^{+} + w_k) = F_k P_k^{+} F_k^{\top} + Q
+$$
+
+를 얻는다. 측정 쪽도 동일하게 $h(x_k) \approx h(\hat x_k^{-}) + H_k e_k^{-}$로 전개하면 혁신이 $\nu_k \approx H_k e_k^{-} + v_k$가 되어, 선형 칼만 필터의 갱신 유도([가우스 조건부](kalman-filter.qmd) 관점)가 글자 그대로 재사용된다. 즉 EKF는 새 필터가 아니라 **"오차 좌표에서의 선형 칼만 필터"**다.
+
+**검산.** $f(x,u) = Fx + Bu$, $h(x) = Hx$인 선형 모형이면 자코비안이 상수 $F, H$이고 나머지항 $r \equiv 0$이므로, 위 식 전부가 선형 칼만 필터와 정확히 일치한다 — 근사가 근사 아닌 경우로 퇴화하는지 확인했다.
+
+:::
+
+::: {.depth-application}
+
+## 성립 조건과 실패 조건
+
+EKF가 잘 작동하는 조건은 한 문장으로 요약된다. **공분산 타원이 덮는 영역 안에서 $f, h$가 거의 선형이어야 한다.** 즉 선형화의 유효 반경이 $P$의 크기보다 커야 한다. 이 조건이 깨지는 대표적 상황들:
+
+- **강한 비선형 + 큰 초기 불확실성.** 위 수치 예에서 $P^{-}$가 커서 추정이 $x = 0$ 근처까지 걸치면 $h(x) = x^2$의 기울기가 $-4$에서 $+4$까지 변하고, 한 점에서 평가한 $H$는 대표성을 잃는다. 극단적으로 $\hat x^{-} = 0$이면 $H = 0$이 되어 측정이 완전히 무시된다 — 게다가 $z = x^2$은 $\pm x$를 구분하지 못하므로 참 사후분포는 쌍봉인데, EKF는 단봉 가우스만 표현할 수 있다.
+- **각도 잔차의 되감기(wrapping) 누락.** 방위각 혁신 $\nu = z - h(\hat x^{-})$를 $(-\pi, \pi]$로 되감지 않으면, 참 오차 $0.1$ rad가 $2\pi - 0.1 \approx 6.18$ rad로 계산되어 한 번의 갱신으로 필터가 튕겨 나간다. 각도가 포함된 모든 잔차·상태 차이에 되감기를 적용하라.
+- **자코비안의 부호·좌표계 실수.** $H$의 부호가 틀리면 이득이 오차를 키우는 방향으로 작동한다. 수치미분과의 대조(아래 체크)로 반드시 검증한다.
+- **과신에 의한 발산.** $Q, R$을 너무 작게 잡으면 $P$가 근거 없이 줄고, 이득이 0으로 수렴해 새 측정을 거부하는 "잠긴 필터"가 된다. 선형화 오차는 모형에 없는 오차이므로, 이를 흡수할 여유를 $Q$에 두는 것이 실무 관행이다.
+
+일관성 진단으로는 정규화 혁신제곱(Normalized Innovation Squared, NIS) $\nu^{\top} S^{-1} \nu$를 감시한다. 필터가 일관되면 이 값은 자유도 $m$인 카이제곱 분포를 따르므로, 지속적으로 큰 값은 과신 또는 모형 오류의 신호다.
+
+## 근사가 부족할 때의 대안 예고
+
+- **반복 EKF(Iterated EKF, IEKF)**: 갱신 후의 $\hat x^{+}$에서 $H$를 다시 평가해 갱신을 몇 번 반복한다 — 측정 비선형이 강할 때 저렴한 개선.
+- **무향 칼만 필터(Unscented Kalman Filter, UKF)**: 자코비안 대신 시그마 포인트(sigma point)들을 $f, h$에 직접 통과시켜 평균·공분산을 근사한다. 미분 불가능한 모형에도 쓸 수 있다.
+- **파티클 필터(particle filter)**: 가우스 가정 자체를 버리고 표본으로 사후분포를 표현한다. 쌍봉 사후분포처럼 EKF가 원리적으로 표현 못 하는 경우의 해법 — [Bootstrap Particle Filter](../probability/bootstrap-particle-filter.qmd) 참조.
+
+## 전제 장부
+
+| 구분 | 내용 |
+|---|---|
+| 모형 | $x_{k+1} = f(x_k,u_k) + w_k$, $z_k = h(x_k) + v_k$, $w \sim \mathcal N(0,Q)$, $v \sim \mathcal N(0,R)$, 상호 독립 |
+| 매끄러움 | $f, h$가 추정치 주변에서 미분 가능해 자코비안 $F, H$가 존재 |
+| 근사 유효성 | 공분산 타원 규모에서 1차 테일러 나머지항이 무시 가능 |
+| 최적성 | 선형·가우스로 퇴화할 때만 정확, 일반적으로는 근사기이며 무편향·일관성 보장 없음 |
+| 각도 상태 | 잔차·차이에 $(-\pi,\pi]$ 되감기 필요 (더 근본적 해법은 예정 노드 SO(3)/SE(3)의 매니폴드 표현) |
+
+## 구현 안전 체크
+
+- 평균 전파에 $f, h$를, 공분산 전파에만 $F, H$를 쓰는지 코드에서 직접 확인
+- 해석적 자코비안을 수치미분(유한차분)과 무작위 상태 여러 점에서 대조
+- 각도 혁신·상태 차이의 되감기 함수 단위 시험
+- 공분산 갱신은 조지프 형식, 대칭화 $P \leftarrow (P + P^{\top})/2$ 병행
+- $S$의 역행렬을 직접 만들지 말고 선형 시스템 풀이로 $K$ 계산
+- NIS 시계열을 카이제곱 구간과 함께 기록해 과신·발산 조기 탐지
+- $Q$에 선형화 오차 여유분을 반영하고, 조정 근거를 단위와 함께 문서화
+
+## 다음 연결
+
+- 재사용한 재귀의 원형과 유도: [칼만 필터](kalman-filter.qmd)
+- $F, H$를 계산하는 도구 그 자체: [자코비안](../robotics/jacobian.qmd)
+- 가우스 근사가 무너질 때: [Bootstrap Particle Filter](../probability/bootstrap-particle-filter.qmd)
+- 레인지-베어링 EKF의 완결된 응용: 예정 노드 로봇 위치추정(robot.localization)
+
+:::
+
+## 회상 점검
+
+1. 평균 전파와 공분산 전파에서 각각 무엇을 사용하는가? 이를 혼동하면 어떤 오류가 생기는가?
+2. $F_k$와 $H_k$는 각각 어느 점에서 평가하며, 왜 그 점인가?
+3. 수치 예에서 $\hat x^{-} = 0$이면 갱신에 무슨 일이 일어나는가? 이것이 드러내는 EKF의 원리적 한계는?
+4. NIS가 지속적으로 카이제곱 상한을 넘는다면 어떤 원인들을 순서대로 의심하겠는가?
+
+## 참고문헌
+
+- Andrew H. Jazwinski, *Stochastic Processes and Filtering Theory*, Academic Press, 1970.
+- Yaakov Bar-Shalom, X. Rong Li, and Thiagalingam Kirubarajan, *Estimation with Applications to Tracking and Navigation*, Wiley, 2001.
+- Sebastian Thrun, Wolfram Burgard, and Dieter Fox, *Probabilistic Robotics*, MIT Press, 2005.
+- Simon J. Julier and Jeffrey K. Uhlmann, "Unscented Filtering and Nonlinear Estimation," *Proceedings of the IEEE*, 2004.
