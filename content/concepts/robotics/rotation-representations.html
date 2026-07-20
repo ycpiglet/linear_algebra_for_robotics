@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나 – Robotics Math Atlas</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../assets/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-4a0610749eeff5ab924a4729b5181608.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-de927ec96a2411cf822331f71755f83e.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-4a0610749eeff5ab924a4729b5181608.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-8fda10884a6f451da35fe6393cc1b11f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-5c8c3b77b1f10f136d3d0b20cbd3bd22.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-8fda10884a6f451da35fe6393cc1b11f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "일치 없음",
+    "search-matching-documents-text": "일치된 문서",
+    "search-copy-link-title": "검색 링크 복사",
+    "search-hide-matches-text": "추가 검색 결과 숨기기",
+    "search-more-match-text": "추가 검색결과",
+    "search-more-matches-text": "추가 검색결과",
+    "search-clear-button-title": "제거",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "취소",
+    "search-submit-button-title": "검색",
+    "search-label": "검색"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Robotics Math Atlas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="검색"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="탐색 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../../index.html" aria-current="page"> 
+<span class="menu-text">홈</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../atlas.html"> 
+<span class="menu-text">아틀라스</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../paths.html"> 
+<span class="menu-text">학습 경로</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../curriculum.html"> 
+<span class="menu-text">전체 커리큘럼</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../proofs.html"> 
+<span class="menu-text">증명 지도</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../stories.html"> 
+<span class="menu-text">이야기</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../glossary.html"> 
+<span class="menu-text">용어집</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../about.html"> 
+<span class="menu-text">사용법</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ycpiglet/linear_algebra_for_robotics"> <i class="bi bi-github" role="img" aria-label="GitHub 저장소">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="다크 모드 전환"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="리더 모드 전환">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">로봇공학</li><li class="breadcrumb-item"><a href="../../../content/concepts/robotics/jacobian.html">Robotics</a></li><li class="breadcrumb-item"><a href="../../../content/concepts/robotics/rotation-representations.html">회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">빠른 시작</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robotics Math Atlas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../paths.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">목표별 학습 경로</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../atlas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">지식 아틀라스</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../curriculum.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">전체 커리큘럼 지도</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../software.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">시각화·시뮬레이션 도구</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">로봇공학 수학 용어집</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">수학 언어</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Foundations</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/foundations/change-and-accumulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">변화율과 누적량: 미분·적분의 공학적 직관</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Linalg</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/eigenvalues.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">고유값과 고유벡터: 동역학이 변하지 않는 방향</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/least-squares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/linear-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">선형 시스템 Ax=b: 여러 식을 한 번에 푸는 언어</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/orthogonal-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">직교투영: 도달 가능한 것 중 가장 가까운 답</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/svd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Systems</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/systems/state-space.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">상태공간: 현재 상태로 다음 순간을 예측하는 모델</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">제어</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">Control</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/control/feedback.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">피드백: 결과를 보고 다음 행동을 고치는 구조</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/control/pid.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PID 제어: 현재·누적·변화 추세로 오차를 고치기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">로봇공학</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">Robotics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/robotics/jacobian.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/robotics/rotation-representations.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">확률·추정·몬테카를로(Monte Carlo)</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">Probability</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/bayes-filtering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bayes Filtering 재귀</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/bootstrap-particle-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap Particle Filter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/detailed-balance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Balance와 Reversibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/gaussian-conditioning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/gibbs-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/importance-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Importance Sampling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/markov-chain.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Markov Chain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/mcmc-diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MCMC 수렴 진단: 언제 chain을 믿을 수 있나</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/mean-covariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">평균과 공분산: 추정값과 불확실성을 함께 표현하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/measure-probability-foundations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">확률·측도 기반: 이 트랙에서 어디까지 가정하는가</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/metropolis-hastings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Metropolis–Hastings 알고리즘</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/monte-carlo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monte Carlo 적분</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/resampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Particle Resampling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/sequential-importance-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sequential Importance Sampling (SIS)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false">
+ <span class="menu-text">Statistics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/statistics/maximum-likelihood-estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false">
+ <span class="menu-text">Estimation</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/estimation/extended-kalman-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/estimation/kalman-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false">
+ <span class="menu-text">엄밀한 증명</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../proofs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명 지도</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false">
+ <span class="menu-text">Proofs</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: 유한상태 Bootstrap Particle Filter의 고정-Horizon 일관성</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/detailed-balance-implies-invariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Detailed Balance는 Invariance를 함의한다</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/elementary-finite-probability-lemmas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">보조정리: 유한 확률 증명에 쓰는 집중·합집합·Borel–Cantelli</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/finite-state-mh-convergence-ergodic-average.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: 유한상태 Metropolis–Hastings의 수렴과 Ergodic Average</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/importance-sampling-identity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Importance Sampling 항등식</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/metropolis-hastings-invariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Metropolis–Hastings Kernel의 Invariance</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/resampling-unbiasedness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Resampling의 조건부 Unbiasedness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/self-normalized-importance-sampling-consistency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Self-Normalized Importance Sampling의 일관성</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/sis-weight-recursion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: SIS Importance Weight 재귀</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false">
+ <span class="menu-text">파이썬(Python) 실험실</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험실</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/pid-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: PID의 세 항을 시간축에서 보기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/least-squares-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: 최소제곱의 투영과 조건수</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/kalman-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Kalman Filter의 예측–보정 순환</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/particle-filter-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Particle Filter의 가중치 퇴화와 재표본화</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/mcmc-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Metropolis proposal과 mixing</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false">
+ <span class="menu-text">읽을거리</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../stories.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">숨 고르기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false">
+ <span class="menu-text">Stories</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/stories/gauss-legendre-least-squares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">먼저 발표한 Legendre, 더 일찍 썼다고 주장한 Gauss</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/stories/minorsky-steering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자동조타선에서 태어난 PID의 시간 감각</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../future-scope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">향후 확장 노드: 로봇·AI·역학·센서·구동기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false">
+ <span class="menu-text">References</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/references/jacobian-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자코비안 장의 참고문헌과 근거</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/references/kalman-filter-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">칼만 필터 장의 참고문헌과 제품 근거</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/references/maximum-likelihood-estimation-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최대우도추정 장의 참고문헌과 제품 근거</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../design-system.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UI/UX 디자인 시스템</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../ui-ux-research.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UI/UX 레퍼런스 조사</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">교재 사용법</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">목차</h2>
+   
+  <ul>
+  <li><a href="#해결하려는-문제-자세에는-완벽한-좌표가-없다" id="toc-해결하려는-문제-자세에는-완벽한-좌표가-없다" class="nav-link active" data-scroll-target="#해결하려는-문제-자세에는-완벽한-좌표가-없다">해결하려는 문제: 자세에는 완벽한 좌표가 없다</a></li>
+  <li><a href="#회상-점검" id="toc-회상-점검" class="nav-link" data-scroll-target="#회상-점검">회상 점검</a></li>
+  <li><a href="#참고문헌" id="toc-참고문헌" class="nav-link" data-scroll-target="#참고문헌">참고문헌</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/blob/main/content/concepts/robotics/rotation-representations.qmd" class="toc-action"><i class="bi bi-github"></i>소스코드 보기</a></li><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/issues/new" class="toc-action"><i class="bi empty"></i>이슈 보고</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">로봇공학</li><li class="breadcrumb-item"><a href="../../../content/concepts/robotics/jacobian.html">Robotics</a></li><li class="breadcrumb-item"><a href="../../../content/concepts/robotics/rotation-representations.html">회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나</a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> 코드</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="concept-meta" class="concept-meta" hidden="" aria-hidden="true" data-atlas-schema-version="1.0.0" data-concept-id="robot.rotation_representations" data-concept-domain="robotics" data-manifest-path="platform/generated/concept-manifest.json" data-manifest-url="../../../platform/generated/concept-manifest.json" data-project-offset="../../../"></div>
+<div class="callout callout-style-default callout-note callout-titled" title="30초 핵심">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">노트</span>30초 핵심
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span id="p-982fd1f7" class="paragraph-anchor"></span>3차원 자세는 자유도가 3이지만, <strong>특이점 없는 3성분 표현은 존재하지 않는다.</strong> 그래서 로봇공학은 네 표현을 상황별로 바꿔 쓴다 — 벡터 변환·합성에는 회전행렬(rotation matrix), 사람과의 소통에는 오일러각(Euler angles), 오차·미소 회전에는 축각(axis–angle), 저장·적분·보간에는 단위 쿼터니언(unit quaternion). 각 표현의 한계(짐벌락, 수치 드리프트, 부호 이중성)를 알아야 변환 코드가 아니라 시스템을 설계할 수 있다.</p>
+</div>
+</div>
+<section id="해결하려는-문제-자세에는-완벽한-좌표가-없다" class="level2 depth-intuition">
+<h2 class="anchored" data-anchor-id="해결하려는-문제-자세에는-완벽한-좌표가-없다">해결하려는 문제: 자세에는 완벽한 좌표가 없다</h2>
+<p><span id="p-e55acad3" class="paragraph-anchor"></span>위치는 쉽다. 숫자 3개 <span class="math inline">\((x,y,z)\)</span>면 3차원 공간의 모든 점을 겹침도 빠짐도 없이 가리킨다. 자세(orientation)도 자유도는 3인데, 같은 방식이 통하지 않는다. 3차원 회전 전체의 집합 <span class="math inline">\(SO(3)\)</span>는 평평한 공간이 아니라 휘어진 곡면(다양체)이어서, 지구 전체를 한 장의 종이 지도에 왜곡 없이 펼 수 없듯이 <strong>어떤 3성분 좌표를 붙여도 반드시 어딘가 찢어지거나 겹치는 지점 — 특이점(singularity) — 이 생긴다.</strong></p>
+<p><span id="p-fc4ab7d1" class="paragraph-anchor"></span>선택지는 둘뿐이다. 성분 3개를 쓰고 특이점을 감수하거나(오일러각·축각), 성분을 더 쓰고 제약조건을 관리하거나(회전행렬 9개, 쿼터니언 4개). 이 장은 네 표현의 정의와 트레이드오프, 그리고 하나의 회전을 네 표기로 오가는 변환을 정리한다.</p>
+</section>
+<div class="depth-application">
+<section id="회전행렬-제약이-많지만-연산이-투명하다" class="level2">
+<h2 class="anchored" data-anchor-id="회전행렬-제약이-많지만-연산이-투명하다">회전행렬: 제약이 많지만 연산이 투명하다</h2>
+<p><span id="p-81c775ec" class="paragraph-anchor"></span>회전행렬 <span class="math inline">\(R\)</span>은 다음을 만족하는 <span class="math inline">\((3,3)\)</span> 실행렬이다(성분은 무차원).</p>
+<p><span id="p-a0f7f4df" class="paragraph-anchor"></span><span class="math display">\[
+R^\top R = I, \qquad \det R = +1.
+\]</span></p>
+<p><span id="p-1b02f0a8" class="paragraph-anchor"></span>첫 조건(직교성)은 길이와 각을 보존한다는 뜻이고, <span class="math inline">\(\det R=+1\)</span>은 반사(거울상)를 배제한다. <span class="math inline">\(\det R=-1\)</span>인 직교행렬은 회전이 아니라 반사다. 성분 9개에서 직교성이 주는 독립 제약 6개(열들의 단위 길이 3개 + 서로 직교 3개)를 빼면 자유도 <span class="math inline">\(9-6=3\)</span>이 남는다 — 자세의 자유도와 정확히 일치한다.</p>
+<p><span id="p-a4ffdaf8" class="paragraph-anchor"></span>가장 유용한 해석은 <strong>열 읽기</strong>다. <span class="math inline">\(R\)</span>의 <span class="math inline">\(i\)</span>번째 열은 물체 좌표계의 <span class="math inline">\(i\)</span>번째 축을 세계 좌표계에서 본 방향벡터다. 연산 규칙은 선형대수 그대로다.</p>
+<ul>
+<li>합성: 회전 <span class="math inline">\(R_1\)</span> 후 <span class="math inline">\(R_2\)</span>는 행렬곱 <span class="math inline">\(R_2 R_1\)</span> (모양 <span class="math inline">\((3,3)@(3,3)\to(3,3)\)</span>, 곱셈 27회).</li>
+<li>역회전: <span class="math inline">\(R^{-1} = R^\top\)</span> — 역행렬 계산이 전치 하나로 끝난다.</li>
+<li>벡터 변환: <span class="math inline">\(v' = Rv\)</span> (모양 <span class="math inline">\((3,3)@(3,)\to(3,)\)</span>).</li>
+</ul>
+</section>
+<section id="오일러각-사람이-읽기-좋지만-특이점이-있다" class="level2">
+<h2 class="anchored" data-anchor-id="오일러각-사람이-읽기-좋지만-특이점이-있다">오일러각: 사람이 읽기 좋지만 특이점이 있다</h2>
+<p><span id="p-ecb36f6c" class="paragraph-anchor"></span>오일러각은 회전을 좌표축 둘레 회전 세 번의 합성으로 쓴다. 로봇·항공에서 흔한 ZYX 관례(convention)는 요(yaw) <span class="math inline">\(\psi\)</span> → 피치(pitch) <span class="math inline">\(\theta\)</span> → 롤(roll) <span class="math inline">\(\phi\)</span> 순서다.</p>
+<p><span id="p-10c97661" class="paragraph-anchor"></span><span class="math display">\[
+R = R_z(\psi)\,R_y(\theta)\,R_x(\phi).
+\]</span></p>
+<p><span id="p-10e1577e" class="paragraph-anchor"></span>세 각의 단위는 rad(또는 deg — 문서에 반드시 명시)다. 함정은 관례가 하나가 아니라는 점이다: 축 순서만 12가지에, 물체 축 기준(intrinsic)이냐 세계 축 기준(extrinsic)이냐가 또 갈린다. <strong>각 세 개를 받으면 먼저 관례를 물어야 한다.</strong> 더 근본적인 한계는 <span class="math inline">\(\theta = \pm 90^\circ\)</span>에서 생기는 짐벌락(gimbal lock)으로, 유도 절에서 구체 행렬로 확인한다.</p>
+</section>
+<section id="축각과-지수-좌표-회전을-벡터-하나로-압축한다" class="level2">
+<h2 class="anchored" data-anchor-id="축각과-지수-좌표-회전을-벡터-하나로-압축한다">축각과 지수 좌표: 회전을 벡터 하나로 압축한다</h2>
+<p><span id="p-7334ac83" class="paragraph-anchor"></span>임의의 회전은 단위벡터 축 <span class="math inline">\(k\)</span> (<span class="math inline">\(\|k\|=1\)</span>, 무차원) 둘레의 각 <span class="math inline">\(\theta\)</span> (rad) 회전 하나로 쓸 수 있다(오일러 회전 정리). 왜대칭행렬(skew-symmetric matrix)</p>
+<p><span id="p-2a67b0af" class="paragraph-anchor"></span><span class="math display">\[
+[k]_\times =
+\begin{bmatrix} 0 &amp; -k_3 &amp; k_2 \\ k_3 &amp; 0 &amp; -k_1 \\ -k_2 &amp; k_1 &amp; 0 \end{bmatrix}
+\]</span></p>
+<p><span id="p-513720c3" class="paragraph-anchor"></span>을 쓰면 (<span class="math inline">\([k]_\times v = k\times v\)</span>인 <span class="math inline">\((3,3)\)</span> 행렬), 로드리게스 공식(Rodrigues’ formula)이 축각을 회전행렬로 보낸다.</p>
+<p><span id="p-0d4f5da8" class="paragraph-anchor"></span><span class="math display">\[
+R = I + \sin\theta\,[k]_\times + (1-\cos\theta)\,[k]_\times^2.
+\]</span></p>
+<p><span id="p-fea90745" class="paragraph-anchor"></span><span class="math inline">\(\theta\to 0\)</span>이면 <span class="math inline">\(\sin\theta\approx\theta\)</span>, <span class="math inline">\(1-\cos\theta\approx\theta^2/2\)</span>이므로 <span class="math inline">\(R \approx I + \theta[k]_\times\)</span> — 미소 회전은 왜대칭행렬 하나로 근사되고, 이것이 각속도와 자코비안으로 가는 다리다. 벡터 <span class="math inline">\(\omega = \theta k\)</span>를 지수 좌표(exponential coordinates)라 한다. 유의점 둘: <span class="math inline">\((k,\theta)\)</span>와 <span class="math inline">\((-k,-\theta)\)</span>는 같은 회전이므로 보통 <span class="math inline">\(\theta\in[0,\pi]\)</span>로 제한하며, <span class="math inline">\(\theta=0\)</span>에서는 축 <span class="math inline">\(k\)</span>가 정의되지 않는다(어느 축이든 0도 회전은 항등).</p>
+</section>
+<section id="단위-쿼터니언-특이점-없이-성분-4개로" class="level2">
+<h2 class="anchored" data-anchor-id="단위-쿼터니언-특이점-없이-성분-4개로">단위 쿼터니언: 특이점 없이 성분 4개로</h2>
+<p><span id="p-9d75f9d3" class="paragraph-anchor"></span>단위 쿼터니언은 <span class="math inline">\(\|q\|=1\)</span>인 4-벡터 <span class="math inline">\(q=(w,\,x,\,y,\,z)=(w,\,\mathbf v)\)</span>로(성분 무차원), 축각 <span class="math inline">\((k,\theta)\)</span>와 다음처럼 대응한다.</p>
+<p><span id="p-8b8f2c47" class="paragraph-anchor"></span><span class="math display">\[
+q = \Bigl(\cos\tfrac{\theta}{2},\ k\sin\tfrac{\theta}{2}\Bigr).
+\]</span></p>
+<p><span id="p-f79b3387" class="paragraph-anchor"></span>성분 4개 <span class="math inline">\(-\)</span> 단위 노름 제약 1개 <span class="math inline">\(=\)</span> 자유도 3. 합성은 해밀턴 곱으로, <span class="math inline">\((w_1,\mathbf v_1)\otimes(w_2,\mathbf v_2) = (w_1 w_2 - \mathbf v_1\!\cdot\!\mathbf v_2,\ w_1\mathbf v_2 + w_2\mathbf v_1 + \mathbf v_1\!\times\!\mathbf v_2)\)</span>이며, 회전 <span class="math inline">\(q_1\)</span> 후 <span class="math inline">\(q_2\)</span>는 <span class="math inline">\(q_2\otimes q_1\)</span>이다(곱셈 16회 — 행렬곱 27회보다 싸다). 벡터 회전은 <span class="math inline">\(v'=q\otimes(0,v)\otimes q^*\)</span> (<span class="math inline">\(q^*=(w,-\mathbf v)\)</span>는 켤레), 역회전은 켤레 하나다. 특이점이 없는 대신 두 대가를 치른다: <span class="math inline">\(q\)</span>와 <span class="math inline">\(-q\)</span>가 같은 회전이라는 이중 덮개(double cover) 문제(유도 절), 그리고 수치 적분을 반복하면 <span class="math inline">\(\|q\|\)</span>가 1에서 벗어나므로 매 갱신 후 <span class="math inline">\(q \leftarrow q/\|q\|\)</span>로 정규화해야 한다는 점이다.</p>
+</section>
+<section id="수치-예-같은-회전-네-가지-표기" class="level2">
+<h2 class="anchored" data-anchor-id="수치-예-같은-회전-네-가지-표기">수치 예: 같은 회전, 네 가지 표기</h2>
+<p><span id="p-b5a0dce2" class="paragraph-anchor"></span><span class="math inline">\(z\)</span>축 둘레 <span class="math inline">\(+90^\circ\)</span> 회전 하나를 네 표현으로 쓴다.</p>
+<table id="p-f9cb6c0f" class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>표현</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>회전행렬</td>
+<td><span class="math inline">\(R=\begin{bmatrix} 0 &amp; -1 &amp; 0 \\ 1 &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix}\)</span></td>
+</tr>
+<tr class="even">
+<td>오일러각 (ZYX)</td>
+<td><span class="math inline">\((\psi,\theta,\phi) = (90^\circ,\, 0^\circ,\, 0^\circ)\)</span></td>
+</tr>
+<tr class="odd">
+<td>축각</td>
+<td><span class="math inline">\(k=(0,0,1)\)</span>, <span class="math inline">\(\theta = \pi/2\)</span></td>
+</tr>
+<tr class="even">
+<td>단위 쿼터니언</td>
+<td><span class="math inline">\(q = \bigl(\tfrac{\sqrt2}{2},\, 0,\, 0,\, \tfrac{\sqrt2}{2}\bigr) \approx (0.7071, 0, 0, 0.7071)\)</span></td>
+</tr>
+</tbody>
+</table>
+<p><span id="p-4f6487b7" class="paragraph-anchor"></span>상호 일치 검산 세 가지.</p>
+<ol type="1">
+<li><strong>행렬 ← 오일러각</strong>: <span class="math inline">\(\theta=\phi=0\)</span>이므로 <span class="math inline">\(R = R_z(90^\circ)\)</span>이고, <span class="math inline">\(\cos 90^\circ = 0\)</span>, <span class="math inline">\(\sin 90^\circ = 1\)</span>을 대입하면 위 행렬 그대로다. <span class="math inline">\(\det R = 0\cdot 0 - (-1)\cdot 1 = 1\)</span>도 확인된다.</li>
+<li><strong>행렬 ← 축각</strong>: <span class="math inline">\(k=(0,0,1)\)</span>이면 <span class="math inline">\([k]_\times^2 = \operatorname{diag}(-1,-1,0)\)</span>이고, 로드리게스 공식에 <span class="math inline">\(\sin\tfrac{\pi}{2}=1\)</span>, <span class="math inline">\(1-\cos\tfrac{\pi}{2}=1\)</span>을 넣으면 <span class="math inline">\(R = I + [k]_\times + [k]_\times^2\)</span> — 성분을 더하면 위 행렬과 일치한다.</li>
+<li><strong>벡터 회전 ← 쿼터니언</strong>: <span class="math inline">\(x\)</span>축 단위벡터 <span class="math inline">\(e_1\)</span>은 <span class="math inline">\(Re_1 = (0,1,0)\)</span>로 가야 한다. <span class="math inline">\(s=\tfrac{\sqrt2}{2}\)</span>로 두고 <span class="math inline">\(q\otimes(0,e_1) = (0,\,s,\,s,\,0)\)</span>, 이어서 <span class="math inline">\((0,s,s,0)\otimes q^* = (0,\; 0,\; 2s^2,\; 0)\)</span>이고 <span class="math inline">\(2s^2 = 1\)</span>이므로 <span class="math inline">\(v'=(0,1,0)\)</span> — 행렬 결과와 일치한다.</li>
+</ol>
+</section>
+<section id="선택-기준-상황이-표현을-고른다" class="level2">
+<h2 class="anchored" data-anchor-id="선택-기준-상황이-표현을-고른다">선택 기준: 상황이 표현을 고른다</h2>
+<table id="p-f9cb6c0f-2" class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>축</th>
+<th>회전행렬</th>
+<th>오일러각</th>
+<th>축각</th>
+<th>단위 쿼터니언</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>성분 수 (자유도 3 대비)</td>
+<td>9 (+제약 6)</td>
+<td>3</td>
+<td>3</td>
+<td>4 (+제약 1)</td>
+</tr>
+<tr class="even">
+<td>특이점</td>
+<td>없음</td>
+<td>짐벌락 <span class="math inline">\(\theta=\pm90^\circ\)</span></td>
+<td><span class="math inline">\(\theta=0\)</span>에서 축 부정, <span class="math inline">\(\theta=\pi\)</span>에서 <span class="math inline">\(\pm k\)</span> 겹침</td>
+<td>없음 (단, <span class="math inline">\(\pm q\)</span> 이중성)</td>
+</tr>
+<tr class="odd">
+<td>합성</td>
+<td>행렬곱 (곱셈 27회)</td>
+<td>불가 — 행렬 경유</td>
+<td>불가 — 행렬·쿼터니언 경유</td>
+<td>해밀턴 곱 (곱셈 16회)</td>
+</tr>
+<tr class="even">
+<td>보간</td>
+<td>어려움 (다양체 위 보간 필요)</td>
+<td>성분별 보간은 경로 왜곡</td>
+<td><span class="math inline">\(\theta\)</span> 스케일링은 두 자세 사이만</td>
+<td>구면 선형 보간으로 최단 경로</td>
+</tr>
+<tr class="odd">
+<td>사람 가독성</td>
+<td>낮음</td>
+<td><strong>높음</strong></td>
+<td>중간</td>
+<td>낮음</td>
+</tr>
+</tbody>
+</table>
+<p><span id="p-c0459da5" class="paragraph-anchor"></span>실무 요약: 상태로 저장·적분·보간할 것은 쿼터니언, 벡터를 실제로 변환하는 안쪽 루프는 행렬로 변환해 사용, 사용자 인터페이스·로그 출력은 오일러각, 자세 <strong>오차</strong>와 미소 갱신은 축각(지수 좌표)이 기본값이다.</p>
+</section>
+</div>
+<div class="depth-derivation">
+<section id="로드리게스-공식-유도-축에-평행한-성분은-남고-수직-성분만-돈다" class="level2">
+<h2 class="anchored" data-anchor-id="로드리게스-공식-유도-축에-평행한-성분은-남고-수직-성분만-돈다">로드리게스 공식 유도: 축에 평행한 성분은 남고 수직 성분만 돈다</h2>
+<p><span id="p-0c5525f4" class="paragraph-anchor"></span>벡터 <span class="math inline">\(v\)</span>를 축 성분과 수직 성분으로 분해한다: <span class="math inline">\(v_\parallel = k(k^\top v)\)</span>, <span class="math inline">\(v_\perp = v - v_\parallel\)</span>. 축 둘레 회전에서 <span class="math inline">\(v_\parallel\)</span>은 불변이고, <span class="math inline">\(v_\perp\)</span>는 <span class="math inline">\(v_\perp\)</span>와 <span class="math inline">\(k\times v\)</span>가 이루는 평면 안에서 각 <span class="math inline">\(\theta\)</span>만큼 돈다(<span class="math inline">\(k\times v = k\times v_\perp\)</span>는 <span class="math inline">\(v_\perp\)</span>와 길이가 같고 수직이다).</p>
+<p><span id="p-bddb0b8f" class="paragraph-anchor"></span><span class="math display">\[
+v' = v_\parallel + \cos\theta\, v_\perp + \sin\theta\,(k\times v).
+\]</span></p>
+<p><span id="p-bffbf770" class="paragraph-anchor"></span><span class="math inline">\(v_\perp = v - k(k^\top v)\)</span>를 대입하고 <span class="math inline">\(k(k^\top v)\)</span>로 정리하면</p>
+<p><span id="p-5d2b6239" class="paragraph-anchor"></span><span class="math display">\[
+v' = \cos\theta\, v + \sin\theta\,(k\times v) + (1-\cos\theta)\,k(k^\top v).
+\]</span></p>
+<p><span id="p-08aa6847" class="paragraph-anchor"></span>마지막으로 왜대칭행렬의 항등식 <span class="math inline">\([k]_\times^2 = kk^\top - I\)</span> (<span class="math inline">\(\|k\|=1\)</span>일 때)를 쓰면 <span class="math inline">\(k(k^\top v) = v + [k]_\times^2 v\)</span>이므로, <span class="math inline">\(v\)</span>에 대한 선형사상으로 묶여 로드리게스 공식 <span class="math inline">\(R = I + \sin\theta[k]_\times + (1-\cos\theta)[k]_\times^2\)</span>이 나온다.</p>
+<p><span id="p-34c27b12" class="paragraph-anchor"></span><strong>검산</strong>: 축 자신은 움직이지 않아야 한다. <span class="math inline">\([k]_\times k = k\times k = 0\)</span>이므로 <span class="math inline">\(Rk = k + 0 + 0 = k\)</span>. 성립.</p>
+</section>
+<section id="짐벌락-피치-90에서-자유도-하나가-사라진다" class="level2">
+<h2 class="anchored" data-anchor-id="짐벌락-피치-90에서-자유도-하나가-사라진다">짐벌락: 피치 90°에서 자유도 하나가 사라진다</h2>
+<p><span id="p-7bf86bbf" class="paragraph-anchor"></span>ZYX 관례에서 <span class="math inline">\(\theta = +90^\circ\)</span>를 대입하면 <span class="math inline">\(R_y(90^\circ)\)</span>의 성분이 <span class="math inline">\(\cos 90^\circ=0\)</span>, <span class="math inline">\(\sin 90^\circ=1\)</span>이 되고, <span class="math inline">\(R = R_z(\psi)R_y(90^\circ)R_x(\phi)\)</span>를 곱해 정리하면 (삼각함수 합각 공식으로)</p>
+<p><span id="p-c2b1a980" class="paragraph-anchor"></span><span class="math display">\[
+R \;=\;
+\begin{bmatrix}
+0 &amp; \sin(\phi-\psi) &amp; \cos(\phi-\psi) \\
+0 &amp; \cos(\phi-\psi) &amp; -\sin(\phi-\psi) \\
+-1 &amp; 0 &amp; 0
+\end{bmatrix}.
+\]</span></p>
+<p><span id="p-cbe68081" class="paragraph-anchor"></span>행렬이 <span class="math inline">\(\psi\)</span>와 <span class="math inline">\(\phi\)</span>에 <strong>차 <span class="math inline">\(\phi-\psi\)</span>를 통해서만</strong> 의존한다. 입력 자유도는 <span class="math inline">\(\psi,\phi\)</span> 두 개인데 도달 가능한 자세는 1-매개변수 족뿐 — 자유도 하나가 사라졌고, 이 자세에서 요 축과 롤 축이 물리적으로 겹친 것이다. 역변환도 무너진다: 이 <span class="math inline">\(R\)</span>에서 <span class="math inline">\((\psi,\phi)\)</span>를 복원하는 문제는 해가 무한히 많다.</p>
+<p><span id="p-78af1654" class="paragraph-anchor"></span><strong>검산</strong>: <span class="math inline">\((\psi,\phi)=(30^\circ,0^\circ)\)</span>와 <span class="math inline">\((0^\circ,-30^\circ)\)</span>는 서로 다른 오일러각이지만 둘 다 <span class="math inline">\(\phi-\psi=-30^\circ\)</span>이므로 같은 행렬 <span class="math inline">\(\bigl[\begin{smallmatrix} 0 &amp; -0.5 &amp; 0.866 \\ 0 &amp; 0.866 &amp; 0.5 \\ -1 &amp; 0 &amp; 0\end{smallmatrix}\bigr]\)</span>을 준다. 성립.</p>
+</section>
+<section id="부호-이중성-q와--q는-같은-회전이다" class="level2">
+<h2 class="anchored" data-anchor-id="부호-이중성-q와--q는-같은-회전이다">부호 이중성: <span class="math inline">\(q\)</span>와 <span class="math inline">\(-q\)</span>는 같은 회전이다</h2>
+<p><span id="p-01572cc1" class="paragraph-anchor"></span><span class="math inline">\(-q\)</span>의 반각을 읽으면 <span class="math inline">\(-\cos\tfrac{\theta}{2} = \cos\tfrac{\theta+2\pi}{2}\)</span>, <span class="math inline">\(-\sin\tfrac{\theta}{2} = \sin\tfrac{\theta+2\pi}{2}\)</span>이므로 <span class="math inline">\(-q\)</span>는 같은 축 둘레 <span class="math inline">\(\theta+2\pi\)</span> 회전, 즉 같은 회전이다. 더 직접적으로, 쿼터니언→행렬 변환의 모든 성분(<span class="math inline">\(1-2(y^2+z^2)\)</span>, <span class="math inline">\(2(xy-wz)\)</span>, …)이 성분의 <strong>2차식</strong>이어서 <span class="math inline">\(q\mapsto -q\)</span>에 불변이다. 단위 쿼터니언의 구 <span class="math inline">\(S^3\)</span>가 <span class="math inline">\(SO(3)\)</span>를 정확히 두 겹으로 덮는다 — 이것이 이중 덮개다.</p>
+<p><span id="p-b693d315" class="paragraph-anchor"></span><strong>검산</strong>: <span class="math inline">\(q=(\tfrac{\sqrt2}{2},0,0,\tfrac{\sqrt2}{2})\)</span>에서 <span class="math inline">\(w z = \tfrac12\)</span>, <span class="math inline">\(z^2=\tfrac12\)</span>. 변환식은 <span class="math inline">\(R_{11}=1-2z^2=0\)</span>, <span class="math inline">\(R_{12}=-2wz=-1\)</span>, <span class="math inline">\(R_{21}=2wz=1\)</span>, <span class="math inline">\(R_{22}=0\)</span>, <span class="math inline">\(R_{33}=1\)</span> — 수치 예의 행렬과 일치하고, <span class="math inline">\(-q\)</span>를 넣어도 부호가 짝수 번 곱해져 같은 행렬이다. 성립.</p>
+</section>
+</div>
+<div class="depth-application">
+<section id="실패-조건-세-가지-반례로-확인한다" class="level2">
+<h2 class="anchored" data-anchor-id="실패-조건-세-가지-반례로-확인한다">실패 조건 세 가지: 반례로 확인한다</h2>
+<p><span id="p-891c3dde" class="paragraph-anchor"></span><strong>오일러각 성분별 보간의 경로 왜곡.</strong> 요 <span class="math inline">\(179^\circ\)</span>에서 <span class="math inline">\(-179^\circ\)</span>로 가는 실제 최단 회전은 <span class="math inline">\(2^\circ\)</span>인데, 성분을 선형 보간하면 <span class="math inline">\(358^\circ\)</span>를 반대로 돈다. 짐벌락 근처에서는 더 심해서, 이웃한 두 자세의 오일러각이 크게 다를 수 있어 중간 프레임이 요동친다. 보간은 쿼터니언에서 하라.</p>
+<p><span id="p-cb813f12" class="paragraph-anchor"></span><strong>회전행렬의 수치 드리프트.</strong> 부동소수점으로 행렬곱을 수천 번 반복하면 반올림 오차가 누적되어 <span class="math inline">\(R^\top R \neq I\)</span>가 된다 — 더 이상 회전이 아니라 길이를 늘이고 각을 비트는 사상이다. 주기적 재직교화(re-orthogonalization)가 필요하다: <span class="math inline">\(R\)</span>의 특이값 분해 <span class="math inline">\(R=U\Sigma V^\top\)</span>에서 <span class="math inline">\(R \leftarrow UV^\top\)</span>로 가장 가까운 회전행렬에 사영하거나, 쿼터니언으로 변환해 정규화 후 되돌린다. 쿼터니언 상태라면 같은 문제의 해가 <span class="math inline">\(q/\|q\|\)</span> 한 줄이다 — 제약 1개짜리 표현의 이점이다.</p>
+<p><span id="p-a94f23b2" class="paragraph-anchor"></span><strong>쿼터니언 부호 불연속.</strong> 이중 덮개 탓에 인접 키프레임이 <span class="math inline">\(q_0\)</span>, <span class="math inline">\(q_1\)</span>인데 <span class="math inline">\(\langle q_0,q_1\rangle&lt;0\)</span>이면 구면 선형 보간(spherical linear interpolation, SLERP)</p>
+<p><span id="p-444eb28a" class="paragraph-anchor"></span><span class="math display">\[
+\operatorname{slerp}(q_0,q_1;t) = \frac{\sin\bigl((1-t)\Omega\bigr)}{\sin\Omega}\,q_0 + \frac{\sin(t\Omega)}{\sin\Omega}\,q_1,
+\qquad \cos\Omega = \langle q_0, q_1\rangle
+\]</span></p>
+<p><span id="p-c646cfcf" class="paragraph-anchor"></span>이 <span class="math inline">\(180^\circ\)</span>가 넘는 먼 길을 돈다. 처방은 보간 전에 <span class="math inline">\(\langle q_0,q_1\rangle&lt;0\)</span>이면 <span class="math inline">\(q_1 \leftarrow -q_1\)</span>로 부호를 뒤집는 것 — 같은 회전이므로 결과 자세는 불변이고 경로만 최단이 된다. 시계열로 쿼터니언을 기록할 때도 직전 표본과의 내적이 음수면 부호를 맞춰 저장해야 불연속이 없다.</p>
+</section>
+<section id="전제-장부" class="level2">
+<h2 class="anchored" data-anchor-id="전제-장부">전제 장부</h2>
+<table id="p-f9cb6c0f-3" class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>구분</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>회전행렬 성립 조건</td>
+<td><span class="math inline">\(R^\top R=I\)</span> <strong>그리고</strong> <span class="math inline">\(\det R=+1\)</span> — 직교성만으로는 반사(<span class="math inline">\(\det=-1\)</span>)를 배제하지 못한다</td>
+</tr>
+<tr class="even">
+<td>오일러각 성립 조건</td>
+<td>축 순서·intrinsic/extrinsic 관례가 선언되어야 세 각이 의미를 가진다</td>
+</tr>
+<tr class="odd">
+<td>축각 유일성</td>
+<td><span class="math inline">\(\theta\in(0,\pi)\)</span>에서 유일; <span class="math inline">\(\theta=0\)</span>은 축 부정, <span class="math inline">\(\theta=\pi\)</span>는 <span class="math inline">\(\pm k\)</span>가 같은 회전</td>
+</tr>
+<tr class="even">
+<td>쿼터니언 성립 조건</td>
+<td><span class="math inline">\(\|q\|=1\)</span> 유지 — 노름이 깨지면 회전이 아니라 스케일링이 섞인다</td>
+</tr>
+<tr class="odd">
+<td>공통 한계</td>
+<td>특이점 없는 3성분 대역(global) 좌표는 존재하지 않는다 (위상적 사실)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="구현-안전-체크" class="level2">
+<h2 class="anchored" data-anchor-id="구현-안전-체크">구현 안전 체크</h2>
+<ul>
+<li>외부에서 받은 <span class="math inline">\(R\)</span>은 사용 전 <span class="math inline">\(\|R^\top R - I\|\)</span>와 <span class="math inline">\(\det R\)</span>을 검사한다 (반사·비직교 데이터 검출).</li>
+<li>오일러각 입출력 함수에는 관례(예: <code>ZYX intrinsic, rad</code>)를 이름 또는 문서에 명시한다.</li>
+<li>쿼터니언은 매 적분·합성 뒤 정규화하고, 보간·기록 전 이웃과의 내적 부호를 맞춘다.</li>
+<li>축각 변환 코드는 <span class="math inline">\(\theta\approx 0\)</span> 분기(급수 근사)와 <span class="math inline">\(\theta\approx\pi\)</span> 분기를 별도 처리한다.</li>
+<li>자세 <strong>오차</strong>는 차가 아니라 상대 회전으로 계산한다: <span class="math inline">\(R_{\text{err}} = R_{\text{meas}} R_{\text{est}}^\top\)</span>의 축각.</li>
+<li>단위 테스트에 본문의 <span class="math inline">\(z\)</span>축 <span class="math inline">\(90^\circ\)</span> 사례처럼 네 표현 왕복 변환의 일치를 넣는다.</li>
+</ul>
+</section>
+<section id="다음-연결" class="level2">
+<h2 class="anchored" data-anchor-id="다음-연결">다음 연결</h2>
+<ul>
+<li>미소 회전 <span class="math inline">\(I+\theta[k]_\times\)</span>가 각속도·말단 속도로: <a href="../../../content/concepts/robotics/jacobian.html">자코비안</a></li>
+<li>자세를 상태로 추정하는 필터의 기초: <a href="../../../content/concepts/estimation/kalman-filter.html">칼만 필터</a>와 비선형 확장 <a href="../../../content/concepts/estimation/extended-kalman-filter.html">확장 칼만 필터</a></li>
+<li><span class="math inline">\(SO(3)/SE(3)\)</span>를 리 군으로 다루는 일반론: <a href="../../../future-scope.html">예정 노드 목록</a></li>
+</ul>
+</section>
+</div>
+<section id="회상-점검" class="level2">
+<h2 class="anchored" data-anchor-id="회상-점검">회상 점검</h2>
+<ol type="1">
+<li>회전행렬의 두 조건 <span class="math inline">\(R^\top R=I\)</span>, <span class="math inline">\(\det R=+1\)</span> 중 하나만 성립하면 무엇이 섞여 들어오는가?</li>
+<li>짐벌락에서 “자유도가 사라진다”를 <span class="math inline">\(\theta=90^\circ\)</span> 대입 행렬의 어떤 구조가 보여주는가?</li>
+<li><span class="math inline">\(q\)</span>와 <span class="math inline">\(-q\)</span>가 같은 회전인데도 SLERP 전에 부호를 맞춰야 하는 이유는 무엇인가?</li>
+<li>쿼터니언을 수치 적분한 뒤 정규화를 생략하면 어떤 종류의 오차가 자세에 들어오는가?</li>
+</ol>
+</section>
+<section id="참고문헌" class="level2">
+<h2 class="anchored" data-anchor-id="참고문헌">참고문헌</h2>
+<ul>
+<li>John Stuelpnagel, “On the Parametrization of the Three-Dimensional Rotation Group,” SIAM Review, 1964. (특이점 없는 3성분 표현의 불가능성)</li>
+<li>Ken Shoemake, “Animating Rotation with Quaternion Curves,” SIGGRAPH, 1985. (SLERP)</li>
+<li>Richard M. Murray, Zexiang Li, and S. Shankar Sastry, <em>A Mathematical Introduction to Robotic Manipulation</em>, CRC Press, 1994.</li>
+<li>Kevin M. Lynch and Frank C. Park, <em>Modern Robotics: Mechanics, Planning, and Control</em>, Cambridge University Press, 2017.</li>
+</ul>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script>
+(function loadAtlasInterface() {
+  // 리뷰 프로필이 include 목록을 병합할 때 이 조각이 두 번 삽입되더라도
+  // atlas.js가 중복 로드되지 않도록 막는다.
+  if (window.__ATLAS_SCRIPTS_LOADED__) return;
+  window.__ATLAS_SCRIPTS_LOADED__ = true;
+  const resources = Array.from(document.querySelectorAll('link[href], script[src]'));
+  const siteLibrary = resources
+    .map((element) => element.href || element.src)
+    .find((url) => url && url.includes('/site_libs/'));
+  const fallback = new URL('./', document.baseURI).href;
+  const siteRoot = siteLibrary ? siteLibrary.split('/site_libs/')[0] + '/' : fallback;
+  window.__ROBOTICS_MATH_ATLAS_ROOT__ = siteRoot;
+
+  const script = document.createElement('script');
+  script.src = new URL('assets/js/atlas.js', siteRoot).href;
+  script.defer = true;
+  document.head.appendChild(script);
+})();
+</script>
+
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "복사완료!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "복사완료!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">소스 코드</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="p-f48cd511" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="p-f48cd511-1"><a href="#p-f48cd511-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-f48cd511-2"><a href="#p-f48cd511-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나"</span></span>
+<span id="p-f48cd511-3"><a href="#p-f48cd511-3" aria-hidden="true" tabindex="-1"></a><span class="an">id:</span><span class="co"> robot.rotation_representations</span></span>
+<span id="p-f48cd511-4"><a href="#p-f48cd511-4" aria-hidden="true" tabindex="-1"></a><span class="an">kind:</span><span class="co"> concept</span></span>
+<span id="p-f48cd511-5"><a href="#p-f48cd511-5" aria-hidden="true" tabindex="-1"></a><span class="an">domain:</span><span class="co"> robotics</span></span>
+<span id="p-f48cd511-6"><a href="#p-f48cd511-6" aria-hidden="true" tabindex="-1"></a><span class="an">aliases:</span></span>
+<span id="p-f48cd511-7"><a href="#p-f48cd511-7" aria-hidden="true" tabindex="-1"></a><span class="co">  - rotation representations</span></span>
+<span id="p-f48cd511-8"><a href="#p-f48cd511-8" aria-hidden="true" tabindex="-1"></a><span class="co">  - 회전행렬</span></span>
+<span id="p-f48cd511-9"><a href="#p-f48cd511-9" aria-hidden="true" tabindex="-1"></a><span class="co">  - quaternion</span></span>
+<span id="p-f48cd511-10"><a href="#p-f48cd511-10" aria-hidden="true" tabindex="-1"></a><span class="co">  - 쿼터니언</span></span>
+<span id="p-f48cd511-11"><a href="#p-f48cd511-11" aria-hidden="true" tabindex="-1"></a><span class="co">  - SO(3)</span></span>
+<span id="p-f48cd511-12"><a href="#p-f48cd511-12" aria-hidden="true" tabindex="-1"></a><span class="an">one-line:</span><span class="co"> "3차원 자세를 표현하는 네 방식의 자유도·특이점·연산 비용을 비교하고, 상황별 선택 기준과 상호 변환을 제공한다."</span></span>
+<span id="p-f48cd511-13"><a href="#p-f48cd511-13" aria-hidden="true" tabindex="-1"></a><span class="an">difficulty:</span><span class="co"> 3</span></span>
+<span id="p-f48cd511-14"><a href="#p-f48cd511-14" aria-hidden="true" tabindex="-1"></a><span class="an">prerequisites:</span></span>
+<span id="p-f48cd511-15"><a href="#p-f48cd511-15" aria-hidden="true" tabindex="-1"></a><span class="co">  intuition:</span></span>
+<span id="p-f48cd511-16"><a href="#p-f48cd511-16" aria-hidden="true" tabindex="-1"></a><span class="co">    required:</span></span>
+<span id="p-f48cd511-17"><a href="#p-f48cd511-17" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: linalg.linear_system</span></span>
+<span id="p-f48cd511-18"><a href="#p-f48cd511-18" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: explain</span></span>
+<span id="p-f48cd511-19"><a href="#p-f48cd511-19" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: 행렬을 선형사상으로 읽어야 회전행렬의 조건이 보인다.</span></span>
+<span id="p-f48cd511-20"><a href="#p-f48cd511-20" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful:</span></span>
+<span id="p-f48cd511-21"><a href="#p-f48cd511-21" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: robot.jacobian</span></span>
+<span id="p-f48cd511-22"><a href="#p-f48cd511-22" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: recognize</span></span>
+<span id="p-f48cd511-23"><a href="#p-f48cd511-23" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: 자세의 미소 변화가 각속도와 연결되는 다음 단계를 예고한다.</span></span>
+<span id="p-f48cd511-24"><a href="#p-f48cd511-24" aria-hidden="true" tabindex="-1"></a><span class="co">  application:</span></span>
+<span id="p-f48cd511-25"><a href="#p-f48cd511-25" aria-hidden="true" tabindex="-1"></a><span class="co">    required:</span></span>
+<span id="p-f48cd511-26"><a href="#p-f48cd511-26" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: linalg.linear_system</span></span>
+<span id="p-f48cd511-27"><a href="#p-f48cd511-27" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: calculate</span></span>
+<span id="p-f48cd511-28"><a href="#p-f48cd511-28" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: 회전행렬 곱과 전치, 벡터 변환을 손으로 계산한다.</span></span>
+<span id="p-f48cd511-29"><a href="#p-f48cd511-29" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful: []</span></span>
+<span id="p-f48cd511-30"><a href="#p-f48cd511-30" aria-hidden="true" tabindex="-1"></a><span class="an">relations:</span></span>
+<span id="p-f48cd511-31"><a href="#p-f48cd511-31" aria-hidden="true" tabindex="-1"></a><span class="co">  requires:</span></span>
+<span id="p-f48cd511-32"><a href="#p-f48cd511-32" aria-hidden="true" tabindex="-1"></a><span class="co">    - linalg.linear_system</span></span>
+<span id="p-f48cd511-33"><a href="#p-f48cd511-33" aria-hidden="true" tabindex="-1"></a><span class="co">  used-in:</span></span>
+<span id="p-f48cd511-34"><a href="#p-f48cd511-34" aria-hidden="true" tabindex="-1"></a><span class="co">    - robot.jacobian</span></span>
+<span id="p-f48cd511-35"><a href="#p-f48cd511-35" aria-hidden="true" tabindex="-1"></a><span class="co">    - estimation.extended_kalman_filter</span></span>
+<span id="p-f48cd511-36"><a href="#p-f48cd511-36" aria-hidden="true" tabindex="-1"></a><span class="co">    - mechanics.rigid_body_kinematics</span></span>
+<span id="p-f48cd511-37"><a href="#p-f48cd511-37" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-f48cd511-38"><a href="#p-f48cd511-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-39"><a href="#p-f48cd511-39" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="30초 핵심"}</span>
+<span id="p-f48cd511-40"><a href="#p-f48cd511-40" aria-hidden="true" tabindex="-1"></a>3차원 자세는 자유도가 3이지만, **특이점 없는 3성분 표현은 존재하지 않는다.** 그래서 로봇공학은 네 표현을 상황별로 바꿔 쓴다 — 벡터 변환·합성에는 회전행렬(rotation matrix), 사람과의 소통에는 오일러각(Euler angles), 오차·미소 회전에는 축각(axis–angle), 저장·적분·보간에는 단위 쿼터니언(unit quaternion). 각 표현의 한계(짐벌락, 수치 드리프트, 부호 이중성)를 알아야 변환 코드가 아니라 시스템을 설계할 수 있다.</span>
+<span id="p-f48cd511-41"><a href="#p-f48cd511-41" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-f48cd511-42"><a href="#p-f48cd511-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-43"><a href="#p-f48cd511-43" aria-hidden="true" tabindex="-1"></a>::: {.depth-intuition}</span>
+<span id="p-f48cd511-44"><a href="#p-f48cd511-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-45"><a href="#p-f48cd511-45" aria-hidden="true" tabindex="-1"></a><span class="fu">## 해결하려는 문제: 자세에는 완벽한 좌표가 없다</span></span>
+<span id="p-f48cd511-46"><a href="#p-f48cd511-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-47"><a href="#p-f48cd511-47" aria-hidden="true" tabindex="-1"></a>위치는 쉽다. 숫자 3개 $(x,y,z)$면 3차원 공간의 모든 점을 겹침도 빠짐도 없이 가리킨다. 자세(orientation)도 자유도는 3인데, 같은 방식이 통하지 않는다. 3차원 회전 전체의 집합 $SO(3)$는 평평한 공간이 아니라 휘어진 곡면(다양체)이어서, 지구 전체를 한 장의 종이 지도에 왜곡 없이 펼 수 없듯이 **어떤 3성분 좌표를 붙여도 반드시 어딘가 찢어지거나 겹치는 지점 — 특이점(singularity) — 이 생긴다.**</span>
+<span id="p-f48cd511-48"><a href="#p-f48cd511-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-49"><a href="#p-f48cd511-49" aria-hidden="true" tabindex="-1"></a>선택지는 둘뿐이다. 성분 3개를 쓰고 특이점을 감수하거나(오일러각·축각), 성분을 더 쓰고 제약조건을 관리하거나(회전행렬 9개, 쿼터니언 4개). 이 장은 네 표현의 정의와 트레이드오프, 그리고 하나의 회전을 네 표기로 오가는 변환을 정리한다.</span>
+<span id="p-f48cd511-50"><a href="#p-f48cd511-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-51"><a href="#p-f48cd511-51" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-f48cd511-52"><a href="#p-f48cd511-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-53"><a href="#p-f48cd511-53" aria-hidden="true" tabindex="-1"></a>::: {.depth-application}</span>
+<span id="p-f48cd511-54"><a href="#p-f48cd511-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-55"><a href="#p-f48cd511-55" aria-hidden="true" tabindex="-1"></a><span class="fu">## 회전행렬: 제약이 많지만 연산이 투명하다</span></span>
+<span id="p-f48cd511-56"><a href="#p-f48cd511-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-57"><a href="#p-f48cd511-57" aria-hidden="true" tabindex="-1"></a>회전행렬 $R$은 다음을 만족하는 $(3,3)$ 실행렬이다(성분은 무차원).</span>
+<span id="p-f48cd511-58"><a href="#p-f48cd511-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-59"><a href="#p-f48cd511-59" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-60"><a href="#p-f48cd511-60" aria-hidden="true" tabindex="-1"></a>R^\top R = I, \qquad \det R = +1.</span>
+<span id="p-f48cd511-61"><a href="#p-f48cd511-61" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-62"><a href="#p-f48cd511-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-63"><a href="#p-f48cd511-63" aria-hidden="true" tabindex="-1"></a>첫 조건(직교성)은 길이와 각을 보존한다는 뜻이고, $\det R=+1$은 반사(거울상)를 배제한다. $\det R=-1$인 직교행렬은 회전이 아니라 반사다. 성분 9개에서 직교성이 주는 독립 제약 6개(열들의 단위 길이 3개 + 서로 직교 3개)를 빼면 자유도 $9-6=3$이 남는다 — 자세의 자유도와 정확히 일치한다.</span>
+<span id="p-f48cd511-64"><a href="#p-f48cd511-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-65"><a href="#p-f48cd511-65" aria-hidden="true" tabindex="-1"></a>가장 유용한 해석은 **열 읽기**다. $R$의 $i$번째 열은 물체 좌표계의 $i$번째 축을 세계 좌표계에서 본 방향벡터다. 연산 규칙은 선형대수 그대로다.</span>
+<span id="p-f48cd511-66"><a href="#p-f48cd511-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-67"><a href="#p-f48cd511-67" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>합성: 회전 $R_1$ 후 $R_2$는 행렬곱 $R_2 R_1$ (모양 $(3,3)@(3,3)\to(3,3)$, 곱셈 27회).</span>
+<span id="p-f48cd511-68"><a href="#p-f48cd511-68" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>역회전: $R^{-1} = R^\top$ — 역행렬 계산이 전치 하나로 끝난다.</span>
+<span id="p-f48cd511-69"><a href="#p-f48cd511-69" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>벡터 변환: $v' = Rv$ (모양 $(3,3)@(3,)\to(3,)$).</span>
+<span id="p-f48cd511-70"><a href="#p-f48cd511-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-71"><a href="#p-f48cd511-71" aria-hidden="true" tabindex="-1"></a><span class="fu">## 오일러각: 사람이 읽기 좋지만 특이점이 있다</span></span>
+<span id="p-f48cd511-72"><a href="#p-f48cd511-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-73"><a href="#p-f48cd511-73" aria-hidden="true" tabindex="-1"></a>오일러각은 회전을 좌표축 둘레 회전 세 번의 합성으로 쓴다. 로봇·항공에서 흔한 ZYX 관례(convention)는 요(yaw) $\psi$ → 피치(pitch) $\theta$ → 롤(roll) $\phi$ 순서다.</span>
+<span id="p-f48cd511-74"><a href="#p-f48cd511-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-75"><a href="#p-f48cd511-75" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-76"><a href="#p-f48cd511-76" aria-hidden="true" tabindex="-1"></a>R = R_z(\psi)\,R_y(\theta)\,R_x(\phi).</span>
+<span id="p-f48cd511-77"><a href="#p-f48cd511-77" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-78"><a href="#p-f48cd511-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-79"><a href="#p-f48cd511-79" aria-hidden="true" tabindex="-1"></a>세 각의 단위는 rad(또는 deg — 문서에 반드시 명시)다. 함정은 관례가 하나가 아니라는 점이다: 축 순서만 12가지에, 물체 축 기준(intrinsic)이냐 세계 축 기준(extrinsic)이냐가 또 갈린다. **각 세 개를 받으면 먼저 관례를 물어야 한다.** 더 근본적인 한계는 $\theta = \pm 90^\circ$에서 생기는 짐벌락(gimbal lock)으로, 유도 절에서 구체 행렬로 확인한다.</span>
+<span id="p-f48cd511-80"><a href="#p-f48cd511-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-81"><a href="#p-f48cd511-81" aria-hidden="true" tabindex="-1"></a><span class="fu">## 축각과 지수 좌표: 회전을 벡터 하나로 압축한다</span></span>
+<span id="p-f48cd511-82"><a href="#p-f48cd511-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-83"><a href="#p-f48cd511-83" aria-hidden="true" tabindex="-1"></a>임의의 회전은 단위벡터 축 $k$ ($<span class="sc">\|</span>k<span class="sc">\|</span>=1$, 무차원) 둘레의 각 $\theta$ (rad) 회전 하나로 쓸 수 있다(오일러 회전 정리). 왜대칭행렬(skew-symmetric matrix)</span>
+<span id="p-f48cd511-84"><a href="#p-f48cd511-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-85"><a href="#p-f48cd511-85" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-86"><a href="#p-f48cd511-86" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">k</span><span class="co">]</span>_\times =</span>
+<span id="p-f48cd511-87"><a href="#p-f48cd511-87" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix} 0 &amp; -k_3 &amp; k_2 <span class="sc">\\</span> k_3 &amp; 0 &amp; -k_1 <span class="sc">\\</span> -k_2 &amp; k_1 &amp; 0 \end{bmatrix}</span>
+<span id="p-f48cd511-88"><a href="#p-f48cd511-88" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-89"><a href="#p-f48cd511-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-90"><a href="#p-f48cd511-90" aria-hidden="true" tabindex="-1"></a>을 쓰면 ($<span class="co">[</span><span class="ot">k</span><span class="co">]</span>_\times v = k\times v$인 $(3,3)$ 행렬), 로드리게스 공식(Rodrigues' formula)이 축각을 회전행렬로 보낸다.</span>
+<span id="p-f48cd511-91"><a href="#p-f48cd511-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-92"><a href="#p-f48cd511-92" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-93"><a href="#p-f48cd511-93" aria-hidden="true" tabindex="-1"></a>R = I + \sin\theta\,<span class="co">[</span><span class="ot">k</span><span class="co">]</span>_\times + (1-\cos\theta)\,[k]_\times^2.</span>
+<span id="p-f48cd511-94"><a href="#p-f48cd511-94" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-95"><a href="#p-f48cd511-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-96"><a href="#p-f48cd511-96" aria-hidden="true" tabindex="-1"></a>$\theta\to 0$이면 $\sin\theta\approx\theta$, $1-\cos\theta\approx\theta^2/2$이므로 $R \approx I + \theta<span class="co">[</span><span class="ot">k</span><span class="co">]</span>_\times$ — 미소 회전은 왜대칭행렬 하나로 근사되고, 이것이 각속도와 자코비안으로 가는 다리다. 벡터 $\omega = \theta k$를 지수 좌표(exponential coordinates)라 한다. 유의점 둘: $(k,\theta)$와 $(-k,-\theta)$는 같은 회전이므로 보통 $\theta\in<span class="co">[</span><span class="ot">0,\pi</span><span class="co">]</span>$로 제한하며, $\theta=0$에서는 축 $k$가 정의되지 않는다(어느 축이든 0도 회전은 항등).</span>
+<span id="p-f48cd511-97"><a href="#p-f48cd511-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-98"><a href="#p-f48cd511-98" aria-hidden="true" tabindex="-1"></a><span class="fu">## 단위 쿼터니언: 특이점 없이 성분 4개로</span></span>
+<span id="p-f48cd511-99"><a href="#p-f48cd511-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-100"><a href="#p-f48cd511-100" aria-hidden="true" tabindex="-1"></a>단위 쿼터니언은 $<span class="sc">\|</span>q<span class="sc">\|</span>=1$인 4-벡터 $q=(w,\,x,\,y,\,z)=(w,\,\mathbf v)$로(성분 무차원), 축각 $(k,\theta)$와 다음처럼 대응한다.</span>
+<span id="p-f48cd511-101"><a href="#p-f48cd511-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-102"><a href="#p-f48cd511-102" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-103"><a href="#p-f48cd511-103" aria-hidden="true" tabindex="-1"></a>q = \Bigl(\cos\tfrac{\theta}{2},\ k\sin\tfrac{\theta}{2}\Bigr).</span>
+<span id="p-f48cd511-104"><a href="#p-f48cd511-104" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-105"><a href="#p-f48cd511-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-106"><a href="#p-f48cd511-106" aria-hidden="true" tabindex="-1"></a>성분 4개 $-$ 단위 노름 제약 1개 $=$ 자유도 3. 합성은 해밀턴 곱으로, $(w_1,\mathbf v_1)\otimes(w_2,\mathbf v_2) = (w_1 w_2 - \mathbf v_1<span class="sc">\!</span>\cdot<span class="sc">\!</span>\mathbf v_2,\ w_1\mathbf v_2 + w_2\mathbf v_1 + \mathbf v_1<span class="sc">\!</span>\times<span class="sc">\!</span>\mathbf v_2)$이며, 회전 $q_1$ 후 $q_2$는 $q_2\otimes q_1$이다(곱셈 16회 — 행렬곱 27회보다 싸다). 벡터 회전은 $v'=q\otimes(0,v)\otimes q^*$ ($q^*=(w,-\mathbf v)$는 켤레), 역회전은 켤레 하나다. 특이점이 없는 대신 두 대가를 치른다: $q$와 $-q$가 같은 회전이라는 이중 덮개(double cover) 문제(유도 절), 그리고 수치 적분을 반복하면 $<span class="sc">\|</span>q<span class="sc">\|</span>$가 1에서 벗어나므로 매 갱신 후 $q \leftarrow q/<span class="sc">\|</span>q<span class="sc">\|</span>$로 정규화해야 한다는 점이다.</span>
+<span id="p-f48cd511-107"><a href="#p-f48cd511-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-108"><a href="#p-f48cd511-108" aria-hidden="true" tabindex="-1"></a><span class="fu">## 수치 예: 같은 회전, 네 가지 표기</span></span>
+<span id="p-f48cd511-109"><a href="#p-f48cd511-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-110"><a href="#p-f48cd511-110" aria-hidden="true" tabindex="-1"></a>$z$축 둘레 $+90^\circ$ 회전 하나를 네 표현으로 쓴다.</span>
+<span id="p-f48cd511-111"><a href="#p-f48cd511-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-112"><a href="#p-f48cd511-112" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 표현 <span class="pp">|</span> 값 <span class="pp">|</span></span>
+<span id="p-f48cd511-113"><a href="#p-f48cd511-113" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|</span></span>
+<span id="p-f48cd511-114"><a href="#p-f48cd511-114" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 회전행렬 <span class="pp">|</span> $R=\begin{bmatrix} 0 &amp; -1 &amp; 0 <span class="sc">\\</span> 1 &amp; 0 &amp; 0 <span class="sc">\\</span> 0 &amp; 0 &amp; 1 \end{bmatrix}$ <span class="pp">|</span></span>
+<span id="p-f48cd511-115"><a href="#p-f48cd511-115" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 오일러각 (ZYX) <span class="pp">|</span> $(\psi,\theta,\phi) = (90^\circ,\, 0^\circ,\, 0^\circ)$ <span class="pp">|</span></span>
+<span id="p-f48cd511-116"><a href="#p-f48cd511-116" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 축각 <span class="pp">|</span> $k=(0,0,1)$, $\theta = \pi/2$ <span class="pp">|</span></span>
+<span id="p-f48cd511-117"><a href="#p-f48cd511-117" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 단위 쿼터니언 <span class="pp">|</span> $q = \bigl(\tfrac{\sqrt2}{2},\, 0,\, 0,\, \tfrac{\sqrt2}{2}\bigr) \approx (0.7071, 0, 0, 0.7071)$ <span class="pp">|</span></span>
+<span id="p-f48cd511-118"><a href="#p-f48cd511-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-119"><a href="#p-f48cd511-119" aria-hidden="true" tabindex="-1"></a>상호 일치 검산 세 가지.</span>
+<span id="p-f48cd511-120"><a href="#p-f48cd511-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-121"><a href="#p-f48cd511-121" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**행렬 ← 오일러각**: $\theta=\phi=0$이므로 $R = R_z(90^\circ)$이고, $\cos 90^\circ = 0$, $\sin 90^\circ = 1$을 대입하면 위 행렬 그대로다. $\det R = 0\cdot 0 - (-1)\cdot 1 = 1$도 확인된다.</span>
+<span id="p-f48cd511-122"><a href="#p-f48cd511-122" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**행렬 ← 축각**: $k=(0,0,1)$이면 $<span class="co">[</span><span class="ot">k</span><span class="co">]</span>_\times^2 = \operatorname{diag}(-1,-1,0)$이고, 로드리게스 공식에 $\sin\tfrac{\pi}{2}=1$, $1-\cos\tfrac{\pi}{2}=1$을 넣으면 $R = I + [k]_\times + [k]_\times^2$ — 성분을 더하면 위 행렬과 일치한다.</span>
+<span id="p-f48cd511-123"><a href="#p-f48cd511-123" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**벡터 회전 ← 쿼터니언**: $x$축 단위벡터 $e_1$은 $Re_1 = (0,1,0)$로 가야 한다. $s=\tfrac{\sqrt2}{2}$로 두고 $q\otimes(0,e_1) = (0,\,s,\,s,\,0)$, 이어서 $(0,s,s,0)\otimes q^* = (0,\; 0,\; 2s^2,\; 0)$이고 $2s^2 = 1$이므로 $v'=(0,1,0)$ — 행렬 결과와 일치한다.</span>
+<span id="p-f48cd511-124"><a href="#p-f48cd511-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-125"><a href="#p-f48cd511-125" aria-hidden="true" tabindex="-1"></a><span class="fu">## 선택 기준: 상황이 표현을 고른다</span></span>
+<span id="p-f48cd511-126"><a href="#p-f48cd511-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-127"><a href="#p-f48cd511-127" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 축 <span class="pp">|</span> 회전행렬 <span class="pp">|</span> 오일러각 <span class="pp">|</span> 축각 <span class="pp">|</span> 단위 쿼터니언 <span class="pp">|</span></span>
+<span id="p-f48cd511-128"><a href="#p-f48cd511-128" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|---|</span></span>
+<span id="p-f48cd511-129"><a href="#p-f48cd511-129" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 성분 수 (자유도 3 대비) <span class="pp">|</span> 9 (+제약 6) <span class="pp">|</span> 3 <span class="pp">|</span> 3 <span class="pp">|</span> 4 (+제약 1) <span class="pp">|</span></span>
+<span id="p-f48cd511-130"><a href="#p-f48cd511-130" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 특이점 <span class="pp">|</span> 없음 <span class="pp">|</span> 짐벌락 $\theta=\pm90^\circ$ <span class="pp">|</span> $\theta=0$에서 축 부정, $\theta=\pi$에서 $\pm k$ 겹침 <span class="pp">|</span> 없음 (단, $\pm q$ 이중성) <span class="pp">|</span></span>
+<span id="p-f48cd511-131"><a href="#p-f48cd511-131" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 합성 <span class="pp">|</span> 행렬곱 (곱셈 27회) <span class="pp">|</span> 불가 — 행렬 경유 <span class="pp">|</span> 불가 — 행렬·쿼터니언 경유 <span class="pp">|</span> 해밀턴 곱 (곱셈 16회) <span class="pp">|</span></span>
+<span id="p-f48cd511-132"><a href="#p-f48cd511-132" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 보간 <span class="pp">|</span> 어려움 (다양체 위 보간 필요) <span class="pp">|</span> 성분별 보간은 경로 왜곡 <span class="pp">|</span> $\theta$ 스케일링은 두 자세 사이만 <span class="pp">|</span> 구면 선형 보간으로 최단 경로 <span class="pp">|</span></span>
+<span id="p-f48cd511-133"><a href="#p-f48cd511-133" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 사람 가독성 <span class="pp">|</span> 낮음 <span class="pp">|</span> **높음** <span class="pp">|</span> 중간 <span class="pp">|</span> 낮음 <span class="pp">|</span></span>
+<span id="p-f48cd511-134"><a href="#p-f48cd511-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-135"><a href="#p-f48cd511-135" aria-hidden="true" tabindex="-1"></a>실무 요약: 상태로 저장·적분·보간할 것은 쿼터니언, 벡터를 실제로 변환하는 안쪽 루프는 행렬로 변환해 사용, 사용자 인터페이스·로그 출력은 오일러각, 자세 **오차**와 미소 갱신은 축각(지수 좌표)이 기본값이다.</span>
+<span id="p-f48cd511-136"><a href="#p-f48cd511-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-137"><a href="#p-f48cd511-137" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-f48cd511-138"><a href="#p-f48cd511-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-139"><a href="#p-f48cd511-139" aria-hidden="true" tabindex="-1"></a>::: {.depth-derivation}</span>
+<span id="p-f48cd511-140"><a href="#p-f48cd511-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-141"><a href="#p-f48cd511-141" aria-hidden="true" tabindex="-1"></a><span class="fu">## 로드리게스 공식 유도: 축에 평행한 성분은 남고 수직 성분만 돈다</span></span>
+<span id="p-f48cd511-142"><a href="#p-f48cd511-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-143"><a href="#p-f48cd511-143" aria-hidden="true" tabindex="-1"></a>벡터 $v$를 축 성분과 수직 성분으로 분해한다: $v_\parallel = k(k^\top v)$, $v_\perp = v - v_\parallel$. 축 둘레 회전에서 $v_\parallel$은 불변이고, $v_\perp$는 $v_\perp$와 $k\times v$가 이루는 평면 안에서 각 $\theta$만큼 돈다($k\times v = k\times v_\perp$는 $v_\perp$와 길이가 같고 수직이다).</span>
+<span id="p-f48cd511-144"><a href="#p-f48cd511-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-145"><a href="#p-f48cd511-145" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-146"><a href="#p-f48cd511-146" aria-hidden="true" tabindex="-1"></a>v' = v_\parallel + \cos\theta\, v_\perp + \sin\theta\,(k\times v).</span>
+<span id="p-f48cd511-147"><a href="#p-f48cd511-147" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-148"><a href="#p-f48cd511-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-149"><a href="#p-f48cd511-149" aria-hidden="true" tabindex="-1"></a>$v_\perp = v - k(k^\top v)$를 대입하고 $k(k^\top v)$로 정리하면</span>
+<span id="p-f48cd511-150"><a href="#p-f48cd511-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-151"><a href="#p-f48cd511-151" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-152"><a href="#p-f48cd511-152" aria-hidden="true" tabindex="-1"></a>v' = \cos\theta\, v + \sin\theta\,(k\times v) + (1-\cos\theta)\,k(k^\top v).</span>
+<span id="p-f48cd511-153"><a href="#p-f48cd511-153" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-154"><a href="#p-f48cd511-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-155"><a href="#p-f48cd511-155" aria-hidden="true" tabindex="-1"></a>마지막으로 왜대칭행렬의 항등식 $<span class="co">[</span><span class="ot">k</span><span class="co">]</span>_\times^2 = kk^\top - I$ ($\|k\|=1$일 때)를 쓰면 $k(k^\top v) = v + [k]_\times^2 v$이므로, $v$에 대한 선형사상으로 묶여 로드리게스 공식 $R = I + \sin\theta[k]_\times + (1-\cos\theta)[k]_\times^2$이 나온다.</span>
+<span id="p-f48cd511-156"><a href="#p-f48cd511-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-157"><a href="#p-f48cd511-157" aria-hidden="true" tabindex="-1"></a>**검산**: 축 자신은 움직이지 않아야 한다. $<span class="co">[</span><span class="ot">k</span><span class="co">]</span>_\times k = k\times k = 0$이므로 $Rk = k + 0 + 0 = k$. 성립.</span>
+<span id="p-f48cd511-158"><a href="#p-f48cd511-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-159"><a href="#p-f48cd511-159" aria-hidden="true" tabindex="-1"></a><span class="fu">## 짐벌락: 피치 90°에서 자유도 하나가 사라진다</span></span>
+<span id="p-f48cd511-160"><a href="#p-f48cd511-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-161"><a href="#p-f48cd511-161" aria-hidden="true" tabindex="-1"></a>ZYX 관례에서 $\theta = +90^\circ$를 대입하면 $R_y(90^\circ)$의 성분이 $\cos 90^\circ=0$, $\sin 90^\circ=1$이 되고, $R = R_z(\psi)R_y(90^\circ)R_x(\phi)$를 곱해 정리하면 (삼각함수 합각 공식으로)</span>
+<span id="p-f48cd511-162"><a href="#p-f48cd511-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-163"><a href="#p-f48cd511-163" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-164"><a href="#p-f48cd511-164" aria-hidden="true" tabindex="-1"></a>R \;=\;</span>
+<span id="p-f48cd511-165"><a href="#p-f48cd511-165" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
+<span id="p-f48cd511-166"><a href="#p-f48cd511-166" aria-hidden="true" tabindex="-1"></a>0 &amp; \sin(\phi-\psi) &amp; \cos(\phi-\psi) <span class="sc">\\</span></span>
+<span id="p-f48cd511-167"><a href="#p-f48cd511-167" aria-hidden="true" tabindex="-1"></a>0 &amp; \cos(\phi-\psi) &amp; -\sin(\phi-\psi) <span class="sc">\\</span></span>
+<span id="p-f48cd511-168"><a href="#p-f48cd511-168" aria-hidden="true" tabindex="-1"></a>-1 &amp; 0 &amp; 0</span>
+<span id="p-f48cd511-169"><a href="#p-f48cd511-169" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}.</span>
+<span id="p-f48cd511-170"><a href="#p-f48cd511-170" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-171"><a href="#p-f48cd511-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-172"><a href="#p-f48cd511-172" aria-hidden="true" tabindex="-1"></a>행렬이 $\psi$와 $\phi$에 **차 $\phi-\psi$를 통해서만** 의존한다. 입력 자유도는 $\psi,\phi$ 두 개인데 도달 가능한 자세는 1-매개변수 족뿐 — 자유도 하나가 사라졌고, 이 자세에서 요 축과 롤 축이 물리적으로 겹친 것이다. 역변환도 무너진다: 이 $R$에서 $(\psi,\phi)$를 복원하는 문제는 해가 무한히 많다.</span>
+<span id="p-f48cd511-173"><a href="#p-f48cd511-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-174"><a href="#p-f48cd511-174" aria-hidden="true" tabindex="-1"></a>**검산**: $(\psi,\phi)=(30^\circ,0^\circ)$와 $(0^\circ,-30^\circ)$는 서로 다른 오일러각이지만 둘 다 $\phi-\psi=-30^\circ$이므로 같은 행렬 $\bigl<span class="co">[</span><span class="ot">\begin{smallmatrix} 0 &amp; -0.5 &amp; 0.866 \\ 0 &amp; 0.866 &amp; 0.5 \\ -1 &amp; 0 &amp; 0\end{smallmatrix}\bigr</span><span class="co">]</span>$을 준다. 성립.</span>
+<span id="p-f48cd511-175"><a href="#p-f48cd511-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-176"><a href="#p-f48cd511-176" aria-hidden="true" tabindex="-1"></a><span class="fu">## 부호 이중성: $q$와 $-q$는 같은 회전이다</span></span>
+<span id="p-f48cd511-177"><a href="#p-f48cd511-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-178"><a href="#p-f48cd511-178" aria-hidden="true" tabindex="-1"></a>$-q$의 반각을 읽으면 $-\cos\tfrac{\theta}{2} = \cos\tfrac{\theta+2\pi}{2}$, $-\sin\tfrac{\theta}{2} = \sin\tfrac{\theta+2\pi}{2}$이므로 $-q$는 같은 축 둘레 $\theta+2\pi$ 회전, 즉 같은 회전이다. 더 직접적으로, 쿼터니언→행렬 변환의 모든 성분($1-2(y^2+z^2)$, $2(xy-wz)$, …)이 성분의 **2차식**이어서 $q\mapsto -q$에 불변이다. 단위 쿼터니언의 구 $S^3$가 $SO(3)$를 정확히 두 겹으로 덮는다 — 이것이 이중 덮개다.</span>
+<span id="p-f48cd511-179"><a href="#p-f48cd511-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-180"><a href="#p-f48cd511-180" aria-hidden="true" tabindex="-1"></a>**검산**: $q=(\tfrac{\sqrt2}{2},0,0,\tfrac{\sqrt2}{2})$에서 $w z = \tfrac12$, $z^2=\tfrac12$. 변환식은 $R_{11}=1-2z^2=0$, $R_{12}=-2wz=-1$, $R_{21}=2wz=1$, $R_{22}=0$, $R_{33}=1$ — 수치 예의 행렬과 일치하고, $-q$를 넣어도 부호가 짝수 번 곱해져 같은 행렬이다. 성립.</span>
+<span id="p-f48cd511-181"><a href="#p-f48cd511-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-182"><a href="#p-f48cd511-182" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-f48cd511-183"><a href="#p-f48cd511-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-184"><a href="#p-f48cd511-184" aria-hidden="true" tabindex="-1"></a>::: {.depth-application}</span>
+<span id="p-f48cd511-185"><a href="#p-f48cd511-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-186"><a href="#p-f48cd511-186" aria-hidden="true" tabindex="-1"></a><span class="fu">## 실패 조건 세 가지: 반례로 확인한다</span></span>
+<span id="p-f48cd511-187"><a href="#p-f48cd511-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-188"><a href="#p-f48cd511-188" aria-hidden="true" tabindex="-1"></a>**오일러각 성분별 보간의 경로 왜곡.** 요 $179^\circ$에서 $-179^\circ$로 가는 실제 최단 회전은 $2^\circ$인데, 성분을 선형 보간하면 $358^\circ$를 반대로 돈다. 짐벌락 근처에서는 더 심해서, 이웃한 두 자세의 오일러각이 크게 다를 수 있어 중간 프레임이 요동친다. 보간은 쿼터니언에서 하라.</span>
+<span id="p-f48cd511-189"><a href="#p-f48cd511-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-190"><a href="#p-f48cd511-190" aria-hidden="true" tabindex="-1"></a>**회전행렬의 수치 드리프트.** 부동소수점으로 행렬곱을 수천 번 반복하면 반올림 오차가 누적되어 $R^\top R \neq I$가 된다 — 더 이상 회전이 아니라 길이를 늘이고 각을 비트는 사상이다. 주기적 재직교화(re-orthogonalization)가 필요하다: $R$의 특이값 분해 $R=U\Sigma V^\top$에서 $R \leftarrow UV^\top$로 가장 가까운 회전행렬에 사영하거나, 쿼터니언으로 변환해 정규화 후 되돌린다. 쿼터니언 상태라면 같은 문제의 해가 $q/<span class="sc">\|</span>q<span class="sc">\|</span>$ 한 줄이다 — 제약 1개짜리 표현의 이점이다.</span>
+<span id="p-f48cd511-191"><a href="#p-f48cd511-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-192"><a href="#p-f48cd511-192" aria-hidden="true" tabindex="-1"></a>**쿼터니언 부호 불연속.** 이중 덮개 탓에 인접 키프레임이 $q_0$, $q_1$인데 $\langle q_0,q_1\rangle&lt;0$이면 구면 선형 보간(spherical linear interpolation, SLERP)</span>
+<span id="p-f48cd511-193"><a href="#p-f48cd511-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-194"><a href="#p-f48cd511-194" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-195"><a href="#p-f48cd511-195" aria-hidden="true" tabindex="-1"></a>\operatorname{slerp}(q_0,q_1;t) = \frac{\sin\bigl((1-t)\Omega\bigr)}{\sin\Omega}\,q_0 + \frac{\sin(t\Omega)}{\sin\Omega}\,q_1,</span>
+<span id="p-f48cd511-196"><a href="#p-f48cd511-196" aria-hidden="true" tabindex="-1"></a>\qquad \cos\Omega = \langle q_0, q_1\rangle</span>
+<span id="p-f48cd511-197"><a href="#p-f48cd511-197" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-f48cd511-198"><a href="#p-f48cd511-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-199"><a href="#p-f48cd511-199" aria-hidden="true" tabindex="-1"></a>이 $180^\circ$가 넘는 먼 길을 돈다. 처방은 보간 전에 $\langle q_0,q_1\rangle&lt;0$이면 $q_1 \leftarrow -q_1$로 부호를 뒤집는 것 — 같은 회전이므로 결과 자세는 불변이고 경로만 최단이 된다. 시계열로 쿼터니언을 기록할 때도 직전 표본과의 내적이 음수면 부호를 맞춰 저장해야 불연속이 없다.</span>
+<span id="p-f48cd511-200"><a href="#p-f48cd511-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-201"><a href="#p-f48cd511-201" aria-hidden="true" tabindex="-1"></a><span class="fu">## 전제 장부</span></span>
+<span id="p-f48cd511-202"><a href="#p-f48cd511-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-203"><a href="#p-f48cd511-203" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 구분 <span class="pp">|</span> 내용 <span class="pp">|</span></span>
+<span id="p-f48cd511-204"><a href="#p-f48cd511-204" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|</span></span>
+<span id="p-f48cd511-205"><a href="#p-f48cd511-205" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 회전행렬 성립 조건 <span class="pp">|</span> $R^\top R=I$ **그리고** $\det R=+1$ — 직교성만으로는 반사($\det=-1$)를 배제하지 못한다 <span class="pp">|</span></span>
+<span id="p-f48cd511-206"><a href="#p-f48cd511-206" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 오일러각 성립 조건 <span class="pp">|</span> 축 순서·intrinsic/extrinsic 관례가 선언되어야 세 각이 의미를 가진다 <span class="pp">|</span></span>
+<span id="p-f48cd511-207"><a href="#p-f48cd511-207" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 축각 유일성 <span class="pp">|</span> $\theta\in(0,\pi)$에서 유일; $\theta=0$은 축 부정, $\theta=\pi$는 $\pm k$가 같은 회전 <span class="pp">|</span></span>
+<span id="p-f48cd511-208"><a href="#p-f48cd511-208" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 쿼터니언 성립 조건 <span class="pp">|</span> $<span class="sc">\|</span>q<span class="sc">\|</span>=1$ 유지 — 노름이 깨지면 회전이 아니라 스케일링이 섞인다 <span class="pp">|</span></span>
+<span id="p-f48cd511-209"><a href="#p-f48cd511-209" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 공통 한계 <span class="pp">|</span> 특이점 없는 3성분 대역(global) 좌표는 존재하지 않는다 (위상적 사실) <span class="pp">|</span></span>
+<span id="p-f48cd511-210"><a href="#p-f48cd511-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-211"><a href="#p-f48cd511-211" aria-hidden="true" tabindex="-1"></a><span class="fu">## 구현 안전 체크</span></span>
+<span id="p-f48cd511-212"><a href="#p-f48cd511-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-213"><a href="#p-f48cd511-213" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>외부에서 받은 $R$은 사용 전 $<span class="sc">\|</span>R^\top R - I<span class="sc">\|</span>$와 $\det R$을 검사한다 (반사·비직교 데이터 검출).</span>
+<span id="p-f48cd511-214"><a href="#p-f48cd511-214" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>오일러각 입출력 함수에는 관례(예: <span class="in">`ZYX intrinsic, rad`</span>)를 이름 또는 문서에 명시한다.</span>
+<span id="p-f48cd511-215"><a href="#p-f48cd511-215" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>쿼터니언은 매 적분·합성 뒤 정규화하고, 보간·기록 전 이웃과의 내적 부호를 맞춘다.</span>
+<span id="p-f48cd511-216"><a href="#p-f48cd511-216" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>축각 변환 코드는 $\theta\approx 0$ 분기(급수 근사)와 $\theta\approx\pi$ 분기를 별도 처리한다.</span>
+<span id="p-f48cd511-217"><a href="#p-f48cd511-217" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>자세 **오차**는 차가 아니라 상대 회전으로 계산한다: $R_{\text{err}} = R_{\text{meas}} R_{\text{est}}^\top$의 축각.</span>
+<span id="p-f48cd511-218"><a href="#p-f48cd511-218" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>단위 테스트에 본문의 $z$축 $90^\circ$ 사례처럼 네 표현 왕복 변환의 일치를 넣는다.</span>
+<span id="p-f48cd511-219"><a href="#p-f48cd511-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-220"><a href="#p-f48cd511-220" aria-hidden="true" tabindex="-1"></a><span class="fu">## 다음 연결</span></span>
+<span id="p-f48cd511-221"><a href="#p-f48cd511-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-222"><a href="#p-f48cd511-222" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>미소 회전 $I+\theta<span class="co">[</span><span class="ot">k</span><span class="co">]</span>_\times$가 각속도·말단 속도로: <span class="co">[</span><span class="ot">자코비안</span><span class="co">](jacobian.qmd)</span></span>
+<span id="p-f48cd511-223"><a href="#p-f48cd511-223" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>자세를 상태로 추정하는 필터의 기초: <span class="co">[</span><span class="ot">칼만 필터</span><span class="co">](../estimation/kalman-filter.qmd)</span>와 비선형 확장 <span class="co">[</span><span class="ot">확장 칼만 필터</span><span class="co">](../estimation/extended-kalman-filter.qmd)</span></span>
+<span id="p-f48cd511-224"><a href="#p-f48cd511-224" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$SO(3)/SE(3)$를 리 군으로 다루는 일반론: <span class="co">[</span><span class="ot">예정 노드 목록</span><span class="co">](../../../future-scope.qmd)</span></span>
+<span id="p-f48cd511-225"><a href="#p-f48cd511-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-226"><a href="#p-f48cd511-226" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-f48cd511-227"><a href="#p-f48cd511-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-228"><a href="#p-f48cd511-228" aria-hidden="true" tabindex="-1"></a><span class="fu">## 회상 점검</span></span>
+<span id="p-f48cd511-229"><a href="#p-f48cd511-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-230"><a href="#p-f48cd511-230" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>회전행렬의 두 조건 $R^\top R=I$, $\det R=+1$ 중 하나만 성립하면 무엇이 섞여 들어오는가?</span>
+<span id="p-f48cd511-231"><a href="#p-f48cd511-231" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>짐벌락에서 "자유도가 사라진다"를 $\theta=90^\circ$ 대입 행렬의 어떤 구조가 보여주는가?</span>
+<span id="p-f48cd511-232"><a href="#p-f48cd511-232" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>$q$와 $-q$가 같은 회전인데도 SLERP 전에 부호를 맞춰야 하는 이유는 무엇인가?</span>
+<span id="p-f48cd511-233"><a href="#p-f48cd511-233" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>쿼터니언을 수치 적분한 뒤 정규화를 생략하면 어떤 종류의 오차가 자세에 들어오는가?</span>
+<span id="p-f48cd511-234"><a href="#p-f48cd511-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-235"><a href="#p-f48cd511-235" aria-hidden="true" tabindex="-1"></a><span class="fu">## 참고문헌</span></span>
+<span id="p-f48cd511-236"><a href="#p-f48cd511-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-f48cd511-237"><a href="#p-f48cd511-237" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>John Stuelpnagel, “On the Parametrization of the Three-Dimensional Rotation Group,” SIAM Review, 1964. (특이점 없는 3성분 표현의 불가능성)</span>
+<span id="p-f48cd511-238"><a href="#p-f48cd511-238" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Ken Shoemake, “Animating Rotation with Quaternion Curves,” SIGGRAPH, 1985. (SLERP)</span>
+<span id="p-f48cd511-239"><a href="#p-f48cd511-239" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Richard M. Murray, Zexiang Li, and S. Shankar Sastry, *A Mathematical Introduction to Robotic Manipulation*, CRC Press, 1994.</span>
+<span id="p-f48cd511-240"><a href="#p-f48cd511-240" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Kevin M. Lynch and Frank C. Park, *Modern Robotics: Mechanics, Planning, and Control*, Cambridge University Press, 2017.</span></code></pre></div><button title="클립보드 복사" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p><span id="p-34ab9566" class="paragraph-anchor"></span>© Robotics Math Atlas contributors · CC BY-NC-SA 4.0</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/blob/main/content/concepts/robotics/rotation-representations.qmd" class="toc-action"><i class="bi bi-github"></i>소스코드 보기</a></li><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/issues/new" class="toc-action"><i class="bi empty"></i>이슈 보고</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="../../../about.html#progress-center">
+<p><span id="p-9341ed86" class="paragraph-anchor"></span>학습 기록 관리</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

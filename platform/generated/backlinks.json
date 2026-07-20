@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-19T14:30:25Z",
-  "content_hash": "sha256:9079a37cd9b2bdfd9840c68e5347bbfe8ca4cb0f274a7fa62322fecb3b404eae",
+  "generated_at": "2026-07-20T02:59:26Z",
+  "content_hash": "sha256:0f548c28a3d4dbb393d378b3e638a688bc310a1a715031c8d9fb81814d4e1d3d",
   "concepts": {
     "control.feedback": {
       "required_by": [
@@ -291,8 +291,53 @@
         }
       ]
     },
-    "estimation.kalman_filter": {
+    "estimation.extended_kalman_filter": {
       "required_by": [],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "relation": "deepens",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "relation": "same_structure_as",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "robot.rotation_representations",
+          "title": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+          "relation": "used_in",
+          "url": "/content/concepts/robotics/rotation-representations.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
+    },
+    "estimation.kalman_filter": {
+      "required_by": [
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "선형 KF의 예측·측정 갱신 식을 그대로 재사용한다.",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
+        },
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "예측과 측정을 불확실성으로 절충하는 구조가 동일하다.",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
+        }
+      ],
       "helpful_for": [],
       "explicitly_not_required_by": [],
       "relations": [
@@ -307,6 +352,18 @@
           "title": "피드백: 결과를 보고 다음 행동을 고치는 구조",
           "relation": "used_in",
           "url": "/content/concepts/control/feedback.html"
+        },
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "relation": "derived_from",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
+        },
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "relation": "requires",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
         },
         {
           "concept": "foundations.change_accumulation",
@@ -337,6 +394,12 @@
           "title": "직교투영: 도달 가능한 것 중 가장 가까운 답",
           "relation": "used_in",
           "url": "/content/concepts/linalg/orthogonal-projection.html"
+        },
+        {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/svd.html"
         },
         {
           "concept": "probability.gaussian_conditioning",
@@ -728,8 +791,41 @@
         }
       ]
     },
+    "linalg.eigenvalues": {
+      "required_by": [
+        {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "특이값은 $A^\\top A$ 고유값의 제곱근이라 고유값 언어가 먼저 필요하다.",
+          "url": "/content/concepts/linalg/svd.html"
+        }
+      ],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "relation": "requires",
+          "url": "/content/concepts/linalg/svd.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
+    },
     "linalg.least_squares": {
       "required_by": [
+        {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "의사역행렬 최소노름 해를 SVD로 계산한다.",
+          "url": "/content/concepts/linalg/svd.html"
+        },
         {
           "concept": "estimation.kalman_filter",
           "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
@@ -880,6 +976,12 @@
           "title": "직교투영: 도달 가능한 것 중 가장 가까운 답",
           "relation": "used_in",
           "url": "/content/concepts/linalg/orthogonal-projection.html"
+        },
+        {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "relation": "requires",
+          "url": "/content/concepts/linalg/svd.html"
         },
         {
           "concept": "probability.gaussian_conditioning",
@@ -1051,6 +1153,14 @@
           "url": "/content/concepts/systems/state-space.html"
         },
         {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "고유벡터 계산은 $(A-\\lambda I)v=0$이라는 동차 선형계 풀이로 귀결된다.",
+          "url": "/content/concepts/linalg/eigenvalues.html"
+        },
+        {
           "concept": "linalg.least_squares",
           "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
           "depth": "application",
@@ -1091,6 +1201,14 @@
           "url": "/content/concepts/robotics/jacobian.html"
         },
         {
+          "concept": "robot.rotation_representations",
+          "title": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "회전행렬 곱과 전치, 벡터 변환을 손으로 계산한다.",
+          "url": "/content/concepts/robotics/rotation-representations.html"
+        },
+        {
           "concept": "statistics.maximum_likelihood_estimation",
           "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
           "depth": "implementation",
@@ -1115,6 +1233,14 @@
           "url": "/content/concepts/robotics/jacobian.html"
         },
         {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "행렬을 사상으로 읽어야 불변 방향이라는 질문이 성립한다.",
+          "url": "/content/concepts/linalg/eigenvalues.html"
+        },
+        {
           "concept": "linalg.least_squares",
           "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
           "depth": "intuition",
@@ -1130,6 +1256,14 @@
           "competency": "explain",
           "reason": "column space를 행렬의 도달 가능한 출력으로 해석한다.",
           "url": "/content/concepts/linalg/orthogonal-projection.html"
+        },
+        {
+          "concept": "robot.rotation_representations",
+          "title": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "행렬을 선형사상으로 읽어야 회전행렬의 조건이 보인다.",
+          "url": "/content/concepts/robotics/rotation-representations.html"
         },
         {
           "concept": "linalg.least_squares",
@@ -1183,6 +1317,12 @@
           "url": "/content/concepts/estimation/kalman-filter.html"
         },
         {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "relation": "requires",
+          "url": "/content/concepts/linalg/eigenvalues.html"
+        },
+        {
           "concept": "linalg.least_squares",
           "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
           "relation": "requires",
@@ -1211,6 +1351,12 @@
           "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
           "relation": "requires",
           "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "robot.rotation_representations",
+          "title": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+          "relation": "requires",
+          "url": "/content/concepts/robotics/rotation-representations.html"
         },
         {
           "concept": "systems.state_space",
@@ -1284,6 +1430,14 @@
           "url": "/content/concepts/linalg/least-squares.html"
         },
         {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "depth": "application",
+          "competency": "explain",
+          "reason": "$U$·$V$ 열이 만드는 부분공간 투영으로 해를 해석한다.",
+          "url": "/content/concepts/linalg/svd.html"
+        },
+        {
           "concept": "linalg.least_squares",
           "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
           "depth": "intuition",
@@ -1350,6 +1504,22 @@
           "optional": false
         }
       ]
+    },
+    "linalg.svd": {
+      "required_by": [],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/eigenvalues.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
     },
     "probability.detailed-balance": {
       "required_by": [
@@ -1435,6 +1605,14 @@
     "probability.gaussian_conditioning": {
       "required_by": [
         {
+          "concept": "probability.gibbs-sampling",
+          "title": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "가우스 완전조건부를 닫힌 형태로 계산한다.",
+          "url": "/content/concepts/probability/gibbs-sampling.html"
+        },
+        {
           "concept": "estimation.kalman_filter",
           "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
           "depth": "derivation",
@@ -1459,7 +1637,16 @@
           "url": "/content/concepts/estimation/kalman-filter.html"
         }
       ],
-      "helpful_for": [],
+      "helpful_for": [
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "갱신식이 가우스 조건부의 국소 근사임을 이해한다.",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
+        }
+      ],
       "explicitly_not_required_by": [],
       "relations": [
         {
@@ -1487,6 +1674,12 @@
           "url": "/content/concepts/linalg/linear-systems.html"
         },
         {
+          "concept": "probability.gibbs-sampling",
+          "title": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+          "relation": "requires",
+          "url": "/content/concepts/probability/gibbs-sampling.html"
+        },
+        {
           "concept": "probability.mean_covariance",
           "title": "평균과 공분산: 추정값과 불확실성을 함께 표현하기",
           "relation": "deepens",
@@ -1512,6 +1705,22 @@
           "optional": false
         }
       ]
+    },
+    "probability.gibbs-sampling": {
+      "required_by": [],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "probability.mcmc-diagnostics",
+          "title": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/mcmc-diagnostics.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
     },
     "probability.importance-sampling": {
       "required_by": [
@@ -1632,6 +1841,14 @@
           "url": "/content/concepts/probability/detailed-balance.html"
         },
         {
+          "concept": "probability.gibbs-sampling",
+          "title": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+          "depth": "proof",
+          "competency": "calculate",
+          "reason": "좌표별 kernel 합성의 불변성을 계산한다.",
+          "url": "/content/concepts/probability/gibbs-sampling.html"
+        },
+        {
           "concept": "probability.metropolis-hastings",
           "title": "Metropolis–Hastings 알고리즘",
           "depth": "proof",
@@ -1656,7 +1873,16 @@
           "url": "/content/concepts/probability/metropolis-hastings.html"
         }
       ],
-      "helpful_for": [],
+      "helpful_for": [
+        {
+          "concept": "probability.mcmc-diagnostics",
+          "title": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "ergodic average의 수렴 대상이 무엇인지 정의한다.",
+          "url": "/content/concepts/probability/mcmc-diagnostics.html"
+        }
+      ],
       "explicitly_not_required_by": [],
       "relations": [
         {
@@ -1725,6 +1951,15 @@
           "optional": false
         }
       ]
+    },
+    "probability.mcmc-diagnostics": {
+      "required_by": [],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
     },
     "probability.mean_covariance": {
       "required_by": [
@@ -1850,6 +2085,12 @@
           "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
           "relation": "requires",
           "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/eigenvalues.html"
         },
         {
           "concept": "linalg.least_squares",
@@ -2038,7 +2279,24 @@
       ]
     },
     "probability.metropolis-hastings": {
-      "required_by": [],
+      "required_by": [
+        {
+          "concept": "probability.gibbs-sampling",
+          "title": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "Gibbs가 acceptance 1인 MH 특수형임을 이해한다.",
+          "url": "/content/concepts/probability/gibbs-sampling.html"
+        },
+        {
+          "concept": "probability.mcmc-diagnostics",
+          "title": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "무엇이 chain을 만들고 왜 표본이 상관되는지 알아야 한다.",
+          "url": "/content/concepts/probability/mcmc-diagnostics.html"
+        }
+      ],
       "helpful_for": [],
       "explicitly_not_required_by": [],
       "relations": [
@@ -2049,10 +2307,28 @@
           "url": "/content/concepts/probability/detailed-balance.html"
         },
         {
+          "concept": "probability.gibbs-sampling",
+          "title": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+          "relation": "derived_from",
+          "url": "/content/concepts/probability/gibbs-sampling.html"
+        },
+        {
+          "concept": "probability.gibbs-sampling",
+          "title": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+          "relation": "requires",
+          "url": "/content/concepts/probability/gibbs-sampling.html"
+        },
+        {
           "concept": "probability.markov-chain",
           "title": "Markov Chain",
           "relation": "used_in",
           "url": "/content/concepts/probability/markov-chain.html"
+        },
+        {
+          "concept": "probability.mcmc-diagnostics",
+          "title": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+          "relation": "requires",
+          "url": "/content/concepts/probability/mcmc-diagnostics.html"
         }
       ],
       "proofs": [
@@ -2109,6 +2385,14 @@
           "url": "/content/concepts/probability/importance-sampling.html"
         },
         {
+          "concept": "probability.mcmc-diagnostics",
+          "title": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "i.i.d. 몬테카를로 오차 $N^{-1/2}$를 기준선으로 쓴다.",
+          "url": "/content/concepts/probability/mcmc-diagnostics.html"
+        },
+        {
           "concept": "estimation.resampling",
           "title": "Particle Resampling",
           "depth": "intuition",
@@ -2139,6 +2423,12 @@
           "title": "Importance Sampling",
           "relation": "requires",
           "url": "/content/concepts/probability/importance-sampling.html"
+        },
+        {
+          "concept": "probability.mcmc-diagnostics",
+          "title": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+          "relation": "requires",
+          "url": "/content/concepts/probability/mcmc-diagnostics.html"
         },
         {
           "concept": "probability.measure-foundations",
@@ -2181,6 +2471,52 @@
       ]
     },
     "robot.jacobian": {
+      "required_by": [
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "f와 h의 자코비안 F, H를 현재 추정치에서 평가한다.",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "robot.rotation_representations",
+          "title": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+          "depth": "intuition",
+          "competency": "recognize",
+          "reason": "자세의 미소 변화가 각속도와 연결되는 다음 단계를 예고한다.",
+          "url": "/content/concepts/robotics/rotation-representations.html"
+        }
+      ],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "relation": "requires",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
+        },
+        {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/svd.html"
+        },
+        {
+          "concept": "robot.rotation_representations",
+          "title": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+          "relation": "used_in",
+          "url": "/content/concepts/robotics/rotation-representations.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
+    },
+    "robot.rotation_representations": {
       "required_by": [],
       "helpful_for": [],
       "explicitly_not_required_by": [],
@@ -2263,6 +2599,14 @@
           "competency": "explain",
           "reason": "대상 동역학과 내부 적분 상태를 함께 표현한다.",
           "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "depth": "intuition",
+          "competency": "recognize",
+          "reason": "상태방정식의 안정성이 고유값 위치로 결정된다.",
+          "url": "/content/concepts/linalg/eigenvalues.html"
         }
       ],
       "explicitly_not_required_by": [],
@@ -2296,6 +2640,12 @@
           "title": "변화율과 누적량: 미분·적분의 공학적 직관",
           "relation": "used_in",
           "url": "/content/concepts/foundations/change-and-accumulation.html"
+        },
+        {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/eigenvalues.html"
         },
         {
           "concept": "linalg.linear_system",

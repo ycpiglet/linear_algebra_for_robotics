@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬 – Robotics Math Atlas</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../assets/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-4a0610749eeff5ab924a4729b5181608.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-de927ec96a2411cf822331f71755f83e.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-4a0610749eeff5ab924a4729b5181608.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-8fda10884a6f451da35fe6393cc1b11f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-5c8c3b77b1f10f136d3d0b20cbd3bd22.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-8fda10884a6f451da35fe6393cc1b11f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "일치 없음",
+    "search-matching-documents-text": "일치된 문서",
+    "search-copy-link-title": "검색 링크 복사",
+    "search-hide-matches-text": "추가 검색 결과 숨기기",
+    "search-more-match-text": "추가 검색결과",
+    "search-more-matches-text": "추가 검색결과",
+    "search-clear-button-title": "제거",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "취소",
+    "search-submit-button-title": "검색",
+    "search-label": "검색"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Robotics Math Atlas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="검색"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="탐색 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../../index.html" aria-current="page"> 
+<span class="menu-text">홈</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../atlas.html"> 
+<span class="menu-text">아틀라스</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../paths.html"> 
+<span class="menu-text">학습 경로</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../curriculum.html"> 
+<span class="menu-text">전체 커리큘럼</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../proofs.html"> 
+<span class="menu-text">증명 지도</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../stories.html"> 
+<span class="menu-text">이야기</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../glossary.html"> 
+<span class="menu-text">용어집</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../about.html"> 
+<span class="menu-text">사용법</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ycpiglet/linear_algebra_for_robotics"> <i class="bi bi-github" role="img" aria-label="GitHub 저장소">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="다크 모드 전환"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="리더 모드 전환">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">수학 언어</li><li class="breadcrumb-item"><a href="../../../content/concepts/linalg/eigenvalues.html">Linalg</a></li><li class="breadcrumb-item"><a href="../../../content/concepts/linalg/svd.html">특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">빠른 시작</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robotics Math Atlas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../paths.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">목표별 학습 경로</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../atlas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">지식 아틀라스</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../curriculum.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">전체 커리큘럼 지도</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../software.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">시각화·시뮬레이션 도구</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">로봇공학 수학 용어집</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">수학 언어</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Foundations</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/foundations/change-and-accumulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">변화율과 누적량: 미분·적분의 공학적 직관</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Linalg</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/eigenvalues.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">고유값과 고유벡터: 동역학이 변하지 않는 방향</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/least-squares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/linear-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">선형 시스템 Ax=b: 여러 식을 한 번에 푸는 언어</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/orthogonal-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">직교투영: 도달 가능한 것 중 가장 가까운 답</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/svd.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Systems</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/systems/state-space.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">상태공간: 현재 상태로 다음 순간을 예측하는 모델</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">제어</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">Control</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/control/feedback.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">피드백: 결과를 보고 다음 행동을 고치는 구조</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/control/pid.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PID 제어: 현재·누적·변화 추세로 오차를 고치기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">로봇공학</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">Robotics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/robotics/jacobian.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/robotics/rotation-representations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">확률·추정·몬테카를로(Monte Carlo)</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">Probability</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/bayes-filtering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bayes Filtering 재귀</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/bootstrap-particle-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap Particle Filter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/detailed-balance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Balance와 Reversibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/gaussian-conditioning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/gibbs-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/importance-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Importance Sampling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/markov-chain.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Markov Chain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/mcmc-diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MCMC 수렴 진단: 언제 chain을 믿을 수 있나</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/mean-covariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">평균과 공분산: 추정값과 불확실성을 함께 표현하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/measure-probability-foundations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">확률·측도 기반: 이 트랙에서 어디까지 가정하는가</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/metropolis-hastings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Metropolis–Hastings 알고리즘</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/monte-carlo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monte Carlo 적분</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/resampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Particle Resampling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/sequential-importance-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sequential Importance Sampling (SIS)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false">
+ <span class="menu-text">Statistics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/statistics/maximum-likelihood-estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false">
+ <span class="menu-text">Estimation</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/estimation/extended-kalman-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/estimation/kalman-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false">
+ <span class="menu-text">엄밀한 증명</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../proofs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명 지도</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false">
+ <span class="menu-text">Proofs</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: 유한상태 Bootstrap Particle Filter의 고정-Horizon 일관성</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/detailed-balance-implies-invariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Detailed Balance는 Invariance를 함의한다</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/elementary-finite-probability-lemmas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">보조정리: 유한 확률 증명에 쓰는 집중·합집합·Borel–Cantelli</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/finite-state-mh-convergence-ergodic-average.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: 유한상태 Metropolis–Hastings의 수렴과 Ergodic Average</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/importance-sampling-identity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Importance Sampling 항등식</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/metropolis-hastings-invariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Metropolis–Hastings Kernel의 Invariance</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/resampling-unbiasedness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Resampling의 조건부 Unbiasedness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/self-normalized-importance-sampling-consistency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Self-Normalized Importance Sampling의 일관성</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/sis-weight-recursion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: SIS Importance Weight 재귀</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false">
+ <span class="menu-text">파이썬(Python) 실험실</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험실</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/pid-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: PID의 세 항을 시간축에서 보기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/least-squares-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: 최소제곱의 투영과 조건수</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/kalman-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Kalman Filter의 예측–보정 순환</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/particle-filter-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Particle Filter의 가중치 퇴화와 재표본화</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/mcmc-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Metropolis proposal과 mixing</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false">
+ <span class="menu-text">읽을거리</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../stories.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">숨 고르기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false">
+ <span class="menu-text">Stories</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/stories/gauss-legendre-least-squares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">먼저 발표한 Legendre, 더 일찍 썼다고 주장한 Gauss</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/stories/minorsky-steering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자동조타선에서 태어난 PID의 시간 감각</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../future-scope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">향후 확장 노드: 로봇·AI·역학·센서·구동기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false">
+ <span class="menu-text">References</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/references/jacobian-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자코비안 장의 참고문헌과 근거</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/references/kalman-filter-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">칼만 필터 장의 참고문헌과 제품 근거</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/references/maximum-likelihood-estimation-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최대우도추정 장의 참고문헌과 제품 근거</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../design-system.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UI/UX 디자인 시스템</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../ui-ux-research.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UI/UX 레퍼런스 조사</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">교재 사용법</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">목차</h2>
+   
+  <ul>
+  <li><a href="#해결하려는-문제-행렬이-공간을-어떻게-찌그러뜨리는지-한눈에-보기" id="toc-해결하려는-문제-행렬이-공간을-어떻게-찌그러뜨리는지-한눈에-보기" class="nav-link active" data-scroll-target="#해결하려는-문제-행렬이-공간을-어떻게-찌그러뜨리는지-한눈에-보기">해결하려는 문제: 행렬이 공간을 어떻게 찌그러뜨리는지 한눈에 보기</a></li>
+  <li><a href="#유도-특이값은-왜-atop-a-고유값의-제곱근인가" id="toc-유도-특이값은-왜-atop-a-고유값의-제곱근인가" class="nav-link" data-scroll-target="#유도-특이값은-왜-atop-a-고유값의-제곱근인가">유도: 특이값은 왜 <span class="math inline">\(A^\top A\)</span> 고유값의 제곱근인가</a></li>
+  <li><a href="#전제-장부" id="toc-전제-장부" class="nav-link" data-scroll-target="#전제-장부">전제 장부</a></li>
+  <li><a href="#구현-안전-체크" id="toc-구현-안전-체크" class="nav-link" data-scroll-target="#구현-안전-체크">구현 안전 체크</a></li>
+  <li><a href="#다음-연결" id="toc-다음-연결" class="nav-link" data-scroll-target="#다음-연결">다음 연결</a></li>
+  <li><a href="#회상-점검" id="toc-회상-점검" class="nav-link" data-scroll-target="#회상-점검">회상 점검</a></li>
+  <li><a href="#참고문헌" id="toc-참고문헌" class="nav-link" data-scroll-target="#참고문헌">참고문헌</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/blob/main/content/concepts/linalg/svd.qmd" class="toc-action"><i class="bi bi-github"></i>소스코드 보기</a></li><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/issues/new" class="toc-action"><i class="bi empty"></i>이슈 보고</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">수학 언어</li><li class="breadcrumb-item"><a href="../../../content/concepts/linalg/eigenvalues.html">Linalg</a></li><li class="breadcrumb-item"><a href="../../../content/concepts/linalg/svd.html">특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬</a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> 코드</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="concept-meta" class="concept-meta" hidden="" aria-hidden="true" data-atlas-schema-version="1.0.0" data-concept-id="linalg.svd" data-concept-domain="linear_algebra" data-manifest-path="platform/generated/concept-manifest.json" data-manifest-url="../../../platform/generated/concept-manifest.json" data-project-offset="../../../"></div>
+<div class="callout callout-style-default callout-note callout-titled" title="30초 핵심">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">노트</span>30초 핵심
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span id="p-06a76fe8" class="paragraph-anchor"></span>어떤 <span class="math inline">\(m\times n\)</span> 행렬 <span class="math inline">\(A\)</span>도 <span class="math inline">\(A=U\Sigma V^\top\)</span>로 쓸 수 있다. <span class="math inline">\(V\)</span>는 입력 공간의 회전(직교), <span class="math inline">\(\Sigma\)</span>는 축마다 다른 비율의 축척(대각, <span class="math inline">\(\sigma_1\ge\cdots\ge0\)</span>), <span class="math inline">\(U\)</span>는 출력 공간의 회전(직교)이다. 로봇에서는 자코비안의 특이값이 “이 자세에서 어느 방향으로 움직이기 쉬운가/어려운가”를 정량화한다. 가장 중요한 한계: <span class="math inline">\(\sigma_{\min}\approx0\)</span>이면 역방향 계산의 이득이 <span class="math inline">\(1/\sigma\)</span>로 폭주하므로, 분해 자체보다 <strong>작은 특이값의 처리</strong>가 실무의 승부처다.</p>
+</div>
+</div>
+<section id="해결하려는-문제-행렬이-공간을-어떻게-찌그러뜨리는지-한눈에-보기" class="level2 depth-intuition">
+<h2 class="anchored" data-anchor-id="해결하려는-문제-행렬이-공간을-어떻게-찌그러뜨리는지-한눈에-보기">해결하려는 문제: 행렬이 공간을 어떻게 찌그러뜨리는지 한눈에 보기</h2>
+<p><span id="p-8f0852ba" class="paragraph-anchor"></span>행렬 <span class="math inline">\(A\)</span>는 벡터를 다른 벡터로 보내는 지도다. 고유값 분해는 “<span class="math inline">\(A\)</span>가 방향을 바꾸지 않는 특별한 방향”을 찾지만, 정방·대각화 가능이라는 조건이 붙고 비정방 행렬에는 아예 정의되지 않는다. 로봇 자코비안은 대개 비정방이고, 우리가 정말 알고 싶은 것은 불변 방향이 아니라 <strong>어느 입력 방향이 얼마나 증폭되는가</strong>다.</p>
+<p><span id="p-69c89132" class="paragraph-anchor"></span>특이값 분해(singular value decomposition, SVD)는 이 질문에 답한다. 단위원(unit circle) 위의 모든 입력 벡터를 <span class="math inline">\(A\)</span>에 통과시키면 출력은 항상 <strong>타원</strong>(고차원에서는 타원체)이 된다. 타원의 반축 길이가 특이값 <span class="math inline">\(\sigma_1,\sigma_2,\ldots\)</span>이고, 반축 방향이 출력 특이벡터 <span class="math inline">\(u_1,u_2,\ldots\)</span>다. 그 반축으로 보내지는 입력 방향이 <span class="math inline">\(v_1,v_2,\ldots\)</span>다. 즉</p>
+<p><span id="p-94ab79d5" class="paragraph-anchor"></span><span class="math display">\[
+Av_i=\sigma_i\,u_i
+\]</span></p>
+<p><span id="p-2248002c" class="paragraph-anchor"></span>가 SVD의 기하 전부다. “입력을 <span class="math inline">\(v_i\)</span> 좌표로 회전해 읽고(<span class="math inline">\(V^\top\)</span>), 축마다 <span class="math inline">\(\sigma_i\)</span>배 늘리고(<span class="math inline">\(\Sigma\)</span>), 출력 좌표로 회전해 내보낸다(<span class="math inline">\(U\)</span>)” — 모든 행렬은 회전–축척–회전이다.</p>
+</section>
+<div class="depth-application">
+<section id="정의-모양부터-확인한다" class="level2">
+<h2 class="anchored" data-anchor-id="정의-모양부터-확인한다">정의: 모양부터 확인한다</h2>
+<p><span id="p-1d185bd9" class="paragraph-anchor"></span><span class="math inline">\(m\times n\)</span> 실행렬 <span class="math inline">\(A\)</span>에 대해</p>
+<p><span id="p-b17e8cb6" class="paragraph-anchor"></span><span class="math display">\[
+A=U\Sigma V^\top,\qquad
+U\in\mathbb R^{m\times m},\ \Sigma\in\mathbb R^{m\times n},\ V\in\mathbb R^{n\times n}
+\]</span></p>
+<p><span id="p-c6a3340d" class="paragraph-anchor"></span>이고 <span class="math inline">\(U^\top U=I_m\)</span>, <span class="math inline">\(V^\top V=I_n\)</span>(직교), <span class="math inline">\(\Sigma\)</span>는 대각 성분 <span class="math inline">\(\sigma_1\ge\sigma_2\ge\cdots\ge\sigma_{\min(m,n)}\ge0\)</span> 외에는 0이다. 모양 점검: <span class="math inline">\((m\times m)(m\times n)(n\times n)=m\times n\)</span>으로 <span class="math inline">\(A\)</span>와 일치한다. <span class="math inline">\(A\)</span>의 성분에 단위가 있으면(자코비안이라면 m/rad) 특이값이 그 단위를 그대로 가지며, <span class="math inline">\(U,V\)</span>는 무차원 방향이다.</p>
+<p><span id="p-a1e41d4e" class="paragraph-anchor"></span><span class="math inline">\(U\)</span>의 열을 좌특이벡터(left singular vector), <span class="math inline">\(V\)</span>의 열을 우특이벡터(right singular vector)라 한다. 열 단위로 풀어 쓰면 <span class="math inline">\(Av_i=\sigma_iu_i\)</span>, <span class="math inline">\(A^\top u_i=\sigma_iv_i\)</span>다.</p>
+</section>
+<section id="손-계산-abeginbmatrix3045endbmatrix" class="level2">
+<h2 class="anchored" data-anchor-id="손-계산-abeginbmatrix3045endbmatrix">손 계산: <span class="math inline">\(A=\begin{bmatrix}3&amp;0\\4&amp;5\end{bmatrix}\)</span></h2>
+<p><span id="p-7d71738f" class="paragraph-anchor"></span><strong>1단계 — <span class="math inline">\(A^\top A\)</span>를 만든다.</strong></p>
+<p><span id="p-7541e79d" class="paragraph-anchor"></span><span class="math display">\[
+A^\top A=\begin{bmatrix}3&amp;4\\0&amp;5\end{bmatrix}
+\begin{bmatrix}3&amp;0\\4&amp;5\end{bmatrix}
+=\begin{bmatrix}25&amp;20\\20&amp;25\end{bmatrix}.
+\]</span></p>
+<p><span id="p-d51aee80" class="paragraph-anchor"></span><strong>2단계 — 고유값을 푼다.</strong> 특성방정식 <span class="math inline">\((25-\lambda)^2-400=0\)</span>에서 <span class="math inline">\(25-\lambda=\pm20\)</span>, 즉 <span class="math inline">\(\lambda_1=45,\ \lambda_2=5\)</span>. 따라서</p>
+<p><span id="p-6627fabe" class="paragraph-anchor"></span><span class="math display">\[
+\sigma_1=\sqrt{45}=3\sqrt5\approx6.7082,\qquad
+\sigma_2=\sqrt5\approx2.2361.
+\]</span></p>
+<p><span id="p-d533e45a" class="paragraph-anchor"></span><strong>3단계 — 두 가지 검산.</strong> 계산을 믿기 전에 반드시 확인한다.</p>
+<ul>
+<li>곱 검산: <span class="math inline">\(\sigma_1\sigma_2=3\sqrt5\cdot\sqrt5=15=|\det A|=|3\cdot5-0\cdot4|\)</span>. 통과.</li>
+<li>제곱합 검산: <span class="math inline">\(\sigma_1^2+\sigma_2^2=45+5=50=\|A\|_F^2=9+0+16+25\)</span>. 통과.</li>
+</ul>
+<p><span id="p-9f2d8cea" class="paragraph-anchor"></span><strong>4단계 — 특이벡터.</strong> <span class="math inline">\(\lambda_1=45\)</span>의 고유벡터는 <span class="math inline">\((25-45)v_1+20v_2=0\)</span>에서 <span class="math inline">\(v_1=v_2\)</span>, 정규화하면 <span class="math inline">\(v_1=\tfrac1{\sqrt2}(1,1)^\top\)</span>. 마찬가지로 <span class="math inline">\(v_2=\tfrac1{\sqrt2}(1,-1)^\top\)</span>. 좌특이벡터는 <span class="math inline">\(u_i=Av_i/\sigma_i\)</span>로 얻는다.</p>
+<p><span id="p-21f7b751" class="paragraph-anchor"></span><span class="math display">\[
+u_1=\frac{1}{3\sqrt5}\cdot\frac{1}{\sqrt2}\begin{bmatrix}3\\9\end{bmatrix}
+=\frac{1}{\sqrt{10}}\begin{bmatrix}1\\3\end{bmatrix},\qquad
+u_2=\frac{1}{\sqrt5}\cdot\frac{1}{\sqrt2}\begin{bmatrix}3\\-1\end{bmatrix}
+=\frac{1}{\sqrt{10}}\begin{bmatrix}3\\-1\end{bmatrix}.
+\]</span></p>
+<p><span id="p-dd2ca746" class="paragraph-anchor"></span><span class="math inline">\(u_1^\top u_2=(3-3)/10=0\)</span>으로 직교가 확인된다. 재조립 검산:</p>
+<p><span id="p-bb3e8bb0" class="paragraph-anchor"></span><span class="math display">\[
+U\Sigma V^\top
+=\frac12\begin{bmatrix}3&amp;3\\9&amp;-1\end{bmatrix}
+\begin{bmatrix}1&amp;1\\1&amp;-1\end{bmatrix}
+=\frac12\begin{bmatrix}6&amp;0\\8&amp;10\end{bmatrix}
+=\begin{bmatrix}3&amp;0\\4&amp;5\end{bmatrix}=A.
+\]</span></p>
+<p><span id="p-986eb7a7" class="paragraph-anchor"></span>단위원은 <span class="math inline">\(u_1\)</span> 방향 반축 <span class="math inline">\(6.71\)</span>, <span class="math inline">\(u_2\)</span> 방향 반축 <span class="math inline">\(2.24\)</span>의 타원으로 보내진다.</p>
+</section>
+<section id="계수조건수최저이득-방향-세-숫자로-행렬을-진단한다" class="level2">
+<h2 class="anchored" data-anchor-id="계수조건수최저이득-방향-세-숫자로-행렬을-진단한다">계수·조건수·최저이득 방향: 세 숫자로 행렬을 진단한다</h2>
+<ul>
+<li><strong>계수(rank)</strong> = 0이 아닌 특이값의 개수. 위 예는 <span class="math inline">\(\sigma_2&gt;0\)</span>이므로 계수 2.</li>
+<li><strong>조건수</strong> <span class="math inline">\(\kappa=\sigma_1/\sigma_{\min}\)</span>. 위 예는 <span class="math inline">\(\kappa=3\sqrt5/\sqrt5=3\)</span>으로 온순하다. <span class="math inline">\(\kappa\)</span>가 크면 입력의 상대오차가 최대 <span class="math inline">\(\kappa\)</span>배로 증폭될 수 있다.</li>
+<li><strong>최저이득 방향</strong> <span class="math inline">\(v_{\min}\)</span>: 입력 노름 1당 출력이 가장 작은(<span class="math inline">\(\sigma_{\min}\)</span>) 방향. 로봇 자코비안에서는 관절이 아무리 노력해도 말단이 가장 느리게 움직이는 <strong>조작성 최약 방향</strong>이며, 특이점에 접근하면 <span class="math inline">\(\sigma_{\min}\to0\)</span>으로 먼저 신호를 보낸다. <a href="../../../content/concepts/robotics/jacobian.html">자코비안 장</a>의 조작성 타원이 정확히 이 그림이다.</li>
+</ul>
+</section>
+<section id="저계수-근사-잘라낸-svd가-최선이다-eckartyoung" class="level2">
+<h2 class="anchored" data-anchor-id="저계수-근사-잘라낸-svd가-최선이다-eckartyoung">저계수 근사: 잘라낸 SVD가 최선이다 (Eckart–Young)</h2>
+<p><span id="p-7b4a26e2" class="paragraph-anchor"></span><span class="math inline">\(A_k=\sum_{i=1}^{k}\sigma_iu_iv_i^\top\)</span> (앞쪽 <span class="math inline">\(k\)</span>개 항만 유지)라 하면, 계수 <span class="math inline">\(k\)</span> 이하의 <strong>모든</strong> 행렬 <span class="math inline">\(B\)</span>에 대해</p>
+<p><span id="p-99d2f279" class="paragraph-anchor"></span><span class="math display">\[
+\|A-A_k\|_2=\sigma_{k+1}\le\|A-B\|_2
+\]</span></p>
+<p><span id="p-73f0afe0" class="paragraph-anchor"></span>가 성립한다(Frobenius 노름에서도 <span class="math inline">\(A_k\)</span>가 최적). 위 예에서 <span class="math inline">\(A_1=\tfrac32\begin{bmatrix}1&amp;1\\3&amp;3\end{bmatrix}\)</span>이고 <span class="math inline">\(A-A_1=\begin{bmatrix}1.5&amp;-1.5\\-0.5&amp;0.5\end{bmatrix}=\sigma_2u_2v_2^\top\)</span>이므로 <span class="math inline">\(\|A-A_1\|_2=\sigma_2=\sqrt5\)</span>. 검산 통과. 사용처: 큰 모델의 축약(관성·강성 행렬의 지배 모드만 유지), 측정 행렬에서 작은 특이값 성분을 잡음(noise)으로 보고 분리하는 전처리.</p>
+</section>
+<section id="의사역행렬과-감쇠-최소제곱-이득-함수를-비교하라" class="level2">
+<h2 class="anchored" data-anchor-id="의사역행렬과-감쇠-최소제곱-이득-함수를-비교하라">의사역행렬과 감쇠 최소제곱: 이득 함수를 비교하라</h2>
+<p><span id="p-f3b48356" class="paragraph-anchor"></span>무어–펜로즈 의사역행렬(Moore–Penrose pseudoinverse)은</p>
+<p><span id="p-be37a95c" class="paragraph-anchor"></span><span class="math display">\[
+A^{+}=V\Sigma^{+}U^\top,\qquad
+\Sigma^{+}=\operatorname{diag}\!\big(\sigma_i^{-1}\ (\sigma_i&gt;0),\ 0\big)^\top
+\]</span></p>
+<p><span id="p-142dd55e" class="paragraph-anchor"></span>으로, <a href="../../../content/concepts/linalg/least-squares.html">최소제곱</a> 문제의 <strong>최소노름 해</strong> <span class="math inline">\(x^\star=A^{+}b\)</span>를 준다. 모양 점검: <span class="math inline">\(A^{+}\)</span>는 <span class="math inline">\(n\times m\)</span>으로 <span class="math inline">\(A\)</span>의 전치와 같은 모양이다. 위 예에서 <span class="math inline">\(V\Sigma^{+}U^\top\)</span>를 곱하면 <span class="math inline">\(\tfrac1{15}\begin{bmatrix}5&amp;0\\-4&amp;3\end{bmatrix}=A^{-1}\)</span>이 나와 가역인 경우와 일치함이 확인된다.</p>
+<p><span id="p-b9ef35b3" class="paragraph-anchor"></span>특이방향 하나에서 두 방법의 이득을 비교하면 정체가 드러난다.</p>
+<table id="p-f9cb6c0f" class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>방법</th>
+<th>특이방향 이득</th>
+<th><span class="math inline">\(\sigma\to0\)</span> 극한</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>의사역행렬</td>
+<td><span class="math inline">\(1/\sigma\)</span></td>
+<td><span class="math inline">\(\infty\)</span>로 폭주</td>
+</tr>
+<tr class="even">
+<td>감쇠 최소제곱(damped least squares, DLS)</td>
+<td><span class="math inline">\(\sigma/(\sigma^2+\lambda^2)\)</span></td>
+<td><span class="math inline">\(0\)</span>으로 수렴, 최대 <span class="math inline">\(1/(2\lambda)\)</span> (<span class="math inline">\(\sigma=\lambda\)</span>에서)</td>
+</tr>
+</tbody>
+</table>
+<p><span id="p-331d20ec" class="paragraph-anchor"></span>수치 예: <span class="math inline">\(\sigma=0.01\)</span>, <span class="math inline">\(\lambda=0.05\)</span>이면 의사역행렬 이득은 <span class="math inline">\(100\)</span>, DLS 이득은 <span class="math inline">\(0.01/0.0026\approx3.85\)</span>다. DLS는 폭주를 막는 대가로 약한 방향의 목표를 일부 포기한다 — <a href="../../../content/concepts/robotics/jacobian.html">자코비안 장</a>의 특이점 근처 역기구학이 이 표 한 줄로 요약된다.</p>
+</section>
+<section id="실패-조건-svd를-믿으면-안-되는-세-지점" class="level2">
+<h2 class="anchored" data-anchor-id="실패-조건-svd를-믿으면-안-되는-세-지점">실패 조건: SVD를 믿으면 안 되는 세 지점</h2>
+<ul>
+<li><strong><span class="math inline">\(\sigma_{\min}\approx0\)</span>에서의 역계산.</strong> <span class="math inline">\(A^{+}\)</span>의 이득 <span class="math inline">\(1/\sigma\)</span>는 특이값이 작을수록 커진다. <span class="math inline">\(\sigma=10^{-6}\)</span>이면 입력 오차가 백만 배로 증폭된다. 분해는 항상 존재하지만 역은 항상 안전하지 않다.</li>
+<li><strong>부동소수점의 계수 판정은 임계값 문제다.</strong> 유한 정밀도에서 특이값은 정확히 0이 되지 않는다. <span class="math inline">\(\sigma_i&gt;\varepsilon\cdot\max(m,n)\cdot\sigma_1\)</span> 같은 상대 임계값으로 자르는데, 임계값 바로 근처의 특이값은 “계수 2인가 3인가”라는 질문 자체가 불량 조건임을 뜻한다. 계수는 이산값이지만 데이터는 연속으로 변한다.</li>
+<li><strong>특이벡터의 부호(및 축퇴 시 방향)는 임의다.</strong> <span class="math inline">\(u_iv_i^\top\)</span>가 같으면 <span class="math inline">\((-u_i,-v_i)\)</span>도 유효한 분해라서, 라이브러리·실행마다 부호가 다를 수 있다. <span class="math inline">\(\sigma_i=\sigma_{i+1}\)</span>(축퇴)이면 해당 부분공간 안의 어떤 직교기저도 유효하다. 특이벡터를 시계열로 추적하는 코드는 부호 정합을 직접 처리해야 한다.</li>
+</ul>
+</section>
+</div>
+<section id="유도-특이값은-왜-atop-a-고유값의-제곱근인가" class="level2 depth-derivation">
+<h2 class="anchored" data-anchor-id="유도-특이값은-왜-atop-a-고유값의-제곱근인가">유도: 특이값은 왜 <span class="math inline">\(A^\top A\)</span> 고유값의 제곱근인가</h2>
+<p><span id="p-6b30da31" class="paragraph-anchor"></span><strong>1단계 — <span class="math inline">\(A^\top A\)</span>는 대칭이고 반양의 정부호다.</strong> <span class="math inline">\((A^\top A)^\top=A^\top A\)</span>이고, 임의의 <span class="math inline">\(v\in\mathbb R^n\)</span>에 대해</p>
+<p><span id="p-04a37317" class="paragraph-anchor"></span><span class="math display">\[
+v^\top(A^\top A)v=(Av)^\top(Av)=\|Av\|^2\ge0.
+\]</span></p>
+<p><span id="p-da7d50e4" class="paragraph-anchor"></span>따라서 스펙트럼 정리에 의해 정규직교 고유벡터 <span class="math inline">\(v_1,\ldots,v_n\)</span>과 고유값 <span class="math inline">\(\lambda_1\ge\cdots\ge\lambda_n\ge0\)</span>이 존재한다.</p>
+<p><span id="p-121dbc73" class="paragraph-anchor"></span><strong>2단계 — 제곱근을 특이값으로 정의한다.</strong> <span class="math inline">\(\sigma_i=\sqrt{\lambda_i}\)</span>로 두면 1단계에서</p>
+<p><span id="p-9c641448" class="paragraph-anchor"></span><span class="math display">\[
+\|Av_i\|^2=v_i^\top(A^\top A)v_i=\lambda_i\|v_i\|^2=\sigma_i^2,
+\]</span></p>
+<p><span id="p-b3e8b8bc" class="paragraph-anchor"></span>즉 <span class="math inline">\(\|Av_i\|=\sigma_i\)</span>: 각 고유방향에서 <span class="math inline">\(A\)</span>의 증폭률이 정확히 <span class="math inline">\(\sigma_i\)</span>다.</p>
+<p><span id="p-6eed0890" class="paragraph-anchor"></span><strong>3단계 — 좌특이벡터를 만들고 직교성을 확인한다.</strong> <span class="math inline">\(\sigma_i&gt;0\)</span>인 <span class="math inline">\(i\)</span>에 대해 <span class="math inline">\(u_i=Av_i/\sigma_i\)</span>로 정의하면</p>
+<p><span id="p-83543358" class="paragraph-anchor"></span><span class="math display">\[
+u_i^\top u_j=\frac{v_i^\top A^\top A v_j}{\sigma_i\sigma_j}
+=\frac{\lambda_j\,v_i^\top v_j}{\sigma_i\sigma_j}
+=\begin{cases}1&amp;i=j\\0&amp;i\ne j\end{cases}
+\]</span></p>
+<p><span id="p-937d76f0" class="paragraph-anchor"></span>로 자동으로 정규직교다. <span class="math inline">\(\sigma_i=0\)</span>인 방향과 남는 출력 차원은 임의의 정규직교 벡터로 채워 <span class="math inline">\(U\)</span>를 완성한다.</p>
+<p><span id="p-3b028d9d" class="paragraph-anchor"></span><strong>4단계 — 재조립.</strong> 모든 <span class="math inline">\(v_j\)</span>에 대해 <span class="math inline">\(Av_j=\sigma_ju_j=U\Sigma V^\top v_j\)</span>가 성립하고, <span class="math inline">\(\{v_j\}\)</span>가 <span class="math inline">\(\mathbb R^n\)</span>의 기저이므로 <span class="math inline">\(A=U\Sigma V^\top\)</span>다. 같은 논리를 <span class="math inline">\(AA^\top=U\Sigma\Sigma^\top U^\top\)</span>에 적용하면 <span class="math inline">\(u_i\)</span>가 <span class="math inline">\(AA^\top\)</span>의 고유벡터임도 나온다 — 0이 아닌 고유값은 양쪽이 같다.</p>
+<p><span id="p-8381a54a" class="paragraph-anchor"></span><strong>검산.</strong> 손 계산 예에서 <span class="math inline">\(AA^\top=\begin{bmatrix}9&amp;12\\12&amp;41\end{bmatrix}\)</span>의 특성방정식은 <span class="math inline">\(\lambda^2-50\lambda+(369-144)=0\)</span>이고 근은 <span class="math inline">\(\lambda=45,5\)</span> — <span class="math inline">\(A^\top A\)</span>의 고유값과 정확히 일치한다. 또한 <span class="math inline">\(AA^\top(1,3)^\top=(45,135)^\top=45\,(1,3)^\top\)</span>으로 <span class="math inline">\(u_1\)</span>이 실제 고유벡터임이 확인된다.</p>
+</section>
+<section id="전제-장부" class="level2">
+<h2 class="anchored" data-anchor-id="전제-장부">전제 장부</h2>
+<table id="p-f9cb6c0f-2" class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>구분</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>존재 조건</td>
+<td>없음 — 임의의 실(복소) <span class="math inline">\(m\times n\)</span> 행렬에서 SVD는 항상 존재한다</td>
+</tr>
+<tr class="even">
+<td>유일성</td>
+<td>특이값은 유일, 특이벡터는 부호 임의·축퇴 시 부분공간 안에서 임의</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\sigma_i=\sqrt{\lambda_i(A^\top A)}\)</span></td>
+<td><span class="math inline">\(A^\top A\)</span>의 대칭·반양의 정부호성(스펙트럼 정리)으로 보장</td>
+</tr>
+<tr class="even">
+<td>계수·조건수 해석</td>
+<td>정확 산술에서 성립, 부동소수점에서는 상대 임계값 필요</td>
+</tr>
+<tr class="odd">
+<td>Eckart–Young</td>
+<td>스펙트럼·Frobenius 노름에서 성립, 임의 노름으로 일반화 금지</td>
+</tr>
+<tr class="even">
+<td>단위</td>
+<td>특이값은 <span class="math inline">\(A\)</span> 성분의 단위를 상속 — 행마다 단위가 다르면 먼저 척도를 선언</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="구현-안전-체크" class="level2">
+<h2 class="anchored" data-anchor-id="구현-안전-체크">구현 안전 체크</h2>
+<ul>
+<li><span class="math inline">\(A^\top A\)</span>를 직접 만들어 고유분해하지 말 것 — 조건수가 <span class="math inline">\(\kappa^2\)</span>으로 제곱된다. 라이브러리 SVD(예: Golub–Kahan 이중대각화 기반)를 그대로 쓴다.</li>
+<li>계수 판정은 <span class="math inline">\(\sigma_i&gt;\varepsilon\cdot\max(m,n)\cdot\sigma_1\)</span> 같은 <strong>상대</strong> 임계값으로. 절대 임계값은 행렬의 척도가 바뀌면 무의미해진다.</li>
+<li>역계산 전에 <span class="math inline">\(\sigma_{\min}\)</span>과 <span class="math inline">\(\kappa\)</span>를 로그로 남기고, 폭주 위험이 있으면 의사역행렬 대신 DLS나 절단 SVD로 전환한다.</li>
+<li>특이벡터를 프레임 간 추적한다면 <span class="math inline">\(u_i^\top u_i^{\text{prev}}&lt;0\)</span>일 때 <span class="math inline">\((u_i,v_i)\)</span>의 부호를 함께 뒤집는다.</li>
+<li>검산 두 개는 코드에서도 싸다: <span class="math inline">\(\prod\sigma_i=|\det A|\)</span>(정방일 때), <span class="math inline">\(\sum\sigma_i^2=\|A\|_F^2\)</span>.</li>
+</ul>
+</section>
+<section id="다음-연결" class="level2">
+<h2 class="anchored" data-anchor-id="다음-연결">다음 연결</h2>
+<ul>
+<li>특이점 감시·조작성 타원·DLS의 실전: <a href="../../../content/concepts/robotics/jacobian.html">자코비안</a></li>
+<li>최소노름 해와 정규방정식·QR과의 비교: <a href="../../../content/concepts/linalg/least-squares.html">최소제곱</a></li>
+<li>공분산 갱신의 수치 안정화(제곱근 필터)에서 재등장: <a href="../../../content/concepts/estimation/kalman-filter.html">칼만 필터</a></li>
+<li><span class="math inline">\(A^\top A\)</span> 고유분해의 배경 언어: <a href="../../../content/concepts/linalg/eigenvalues.html">고유값과 고유벡터</a></li>
+</ul>
+</section>
+<section id="회상-점검" class="level2">
+<h2 class="anchored" data-anchor-id="회상-점검">회상 점검</h2>
+<ol type="1">
+<li><span class="math inline">\(Av_i=\sigma_iu_i\)</span>에서 네 기호의 모양과 서로의 관계를 그림 없이 말할 수 있는가?</li>
+<li><span class="math inline">\(\sigma_1\sigma_2=|\det A|\)</span>와 <span class="math inline">\(\sigma_1^2+\sigma_2^2=\|A\|_F^2\)</span>는 각각 어떤 성질에서 나오는가?</li>
+<li>조작성 최약 방향은 좌·우 특이벡터 중 어느 쪽의 어느 열인가? 그 방향의 이득은 얼마인가?</li>
+<li><span class="math inline">\(\sigma_{\min}=10^{-6}\)</span>인 자코비안에 의사역행렬과 DLS(<span class="math inline">\(\lambda=0.05\)</span>)를 각각 쓰면 특이방향 이득은 대략 얼마씩인가?</li>
+</ol>
+</section>
+<section id="참고문헌" class="level2">
+<h2 class="anchored" data-anchor-id="참고문헌">참고문헌</h2>
+<ul>
+<li>Gene H. Golub and Charles F. Van Loan, <em>Matrix Computations</em>, Johns Hopkins University Press.</li>
+<li>Lloyd N. Trefethen and David Bau III, <em>Numerical Linear Algebra</em>, SIAM, 1997.</li>
+<li>Carl Eckart and Gale Young, “The Approximation of One Matrix by Another of Lower Rank,” <em>Psychometrika</em>, 1936.</li>
+<li>Gilbert Strang, <em>Introduction to Linear Algebra</em>, Wellesley-Cambridge Press.</li>
+</ul>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script>
+(function loadAtlasInterface() {
+  // 리뷰 프로필이 include 목록을 병합할 때 이 조각이 두 번 삽입되더라도
+  // atlas.js가 중복 로드되지 않도록 막는다.
+  if (window.__ATLAS_SCRIPTS_LOADED__) return;
+  window.__ATLAS_SCRIPTS_LOADED__ = true;
+  const resources = Array.from(document.querySelectorAll('link[href], script[src]'));
+  const siteLibrary = resources
+    .map((element) => element.href || element.src)
+    .find((url) => url && url.includes('/site_libs/'));
+  const fallback = new URL('./', document.baseURI).href;
+  const siteRoot = siteLibrary ? siteLibrary.split('/site_libs/')[0] + '/' : fallback;
+  window.__ROBOTICS_MATH_ATLAS_ROOT__ = siteRoot;
+
+  const script = document.createElement('script');
+  script.src = new URL('assets/js/atlas.js', siteRoot).href;
+  script.defer = true;
+  document.head.appendChild(script);
+})();
+</script>
+
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "복사완료!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "복사완료!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">소스 코드</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="p-18212699" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="p-18212699-1"><a href="#p-18212699-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-18212699-2"><a href="#p-18212699-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬"</span></span>
+<span id="p-18212699-3"><a href="#p-18212699-3" aria-hidden="true" tabindex="-1"></a><span class="an">id:</span><span class="co"> linalg.svd</span></span>
+<span id="p-18212699-4"><a href="#p-18212699-4" aria-hidden="true" tabindex="-1"></a><span class="an">kind:</span><span class="co"> concept</span></span>
+<span id="p-18212699-5"><a href="#p-18212699-5" aria-hidden="true" tabindex="-1"></a><span class="an">domain:</span><span class="co"> linear_algebra</span></span>
+<span id="p-18212699-6"><a href="#p-18212699-6" aria-hidden="true" tabindex="-1"></a><span class="an">aliases:</span></span>
+<span id="p-18212699-7"><a href="#p-18212699-7" aria-hidden="true" tabindex="-1"></a><span class="co">  - SVD</span></span>
+<span id="p-18212699-8"><a href="#p-18212699-8" aria-hidden="true" tabindex="-1"></a><span class="co">  - singular value decomposition</span></span>
+<span id="p-18212699-9"><a href="#p-18212699-9" aria-hidden="true" tabindex="-1"></a><span class="co">  - 특이값</span></span>
+<span id="p-18212699-10"><a href="#p-18212699-10" aria-hidden="true" tabindex="-1"></a><span class="co">  - singular value</span></span>
+<span id="p-18212699-11"><a href="#p-18212699-11" aria-hidden="true" tabindex="-1"></a><span class="an">one-line:</span><span class="co"> "임의의 행렬을 입력 회전·축별 축척·출력 회전으로 분해해 계수·조건수·최저이득 방향·저계수 근사를 한 번에 읽는다."</span></span>
+<span id="p-18212699-12"><a href="#p-18212699-12" aria-hidden="true" tabindex="-1"></a><span class="an">difficulty:</span><span class="co"> 3</span></span>
+<span id="p-18212699-13"><a href="#p-18212699-13" aria-hidden="true" tabindex="-1"></a><span class="an">prerequisites:</span></span>
+<span id="p-18212699-14"><a href="#p-18212699-14" aria-hidden="true" tabindex="-1"></a><span class="co">  intuition:</span></span>
+<span id="p-18212699-15"><a href="#p-18212699-15" aria-hidden="true" tabindex="-1"></a><span class="co">    required:</span></span>
+<span id="p-18212699-16"><a href="#p-18212699-16" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: linalg.eigenvalues</span></span>
+<span id="p-18212699-17"><a href="#p-18212699-17" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: explain</span></span>
+<span id="p-18212699-18"><a href="#p-18212699-18" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: 특이값은 $A^\top A$ 고유값의 제곱근이라 고유값 언어가 먼저 필요하다.</span></span>
+<span id="p-18212699-19"><a href="#p-18212699-19" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful: []</span></span>
+<span id="p-18212699-20"><a href="#p-18212699-20" aria-hidden="true" tabindex="-1"></a><span class="co">  application:</span></span>
+<span id="p-18212699-21"><a href="#p-18212699-21" aria-hidden="true" tabindex="-1"></a><span class="co">    required:</span></span>
+<span id="p-18212699-22"><a href="#p-18212699-22" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: linalg.least_squares</span></span>
+<span id="p-18212699-23"><a href="#p-18212699-23" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: calculate</span></span>
+<span id="p-18212699-24"><a href="#p-18212699-24" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: 의사역행렬 최소노름 해를 SVD로 계산한다.</span></span>
+<span id="p-18212699-25"><a href="#p-18212699-25" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful:</span></span>
+<span id="p-18212699-26"><a href="#p-18212699-26" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: linalg.orthogonal_projection</span></span>
+<span id="p-18212699-27"><a href="#p-18212699-27" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: explain</span></span>
+<span id="p-18212699-28"><a href="#p-18212699-28" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: $U$·$V$ 열이 만드는 부분공간 투영으로 해를 해석한다.</span></span>
+<span id="p-18212699-29"><a href="#p-18212699-29" aria-hidden="true" tabindex="-1"></a><span class="an">relations:</span></span>
+<span id="p-18212699-30"><a href="#p-18212699-30" aria-hidden="true" tabindex="-1"></a><span class="co">  requires:</span></span>
+<span id="p-18212699-31"><a href="#p-18212699-31" aria-hidden="true" tabindex="-1"></a><span class="co">    - linalg.eigenvalues</span></span>
+<span id="p-18212699-32"><a href="#p-18212699-32" aria-hidden="true" tabindex="-1"></a><span class="co">    - linalg.least_squares</span></span>
+<span id="p-18212699-33"><a href="#p-18212699-33" aria-hidden="true" tabindex="-1"></a><span class="co">  used-in:</span></span>
+<span id="p-18212699-34"><a href="#p-18212699-34" aria-hidden="true" tabindex="-1"></a><span class="co">    - robot.jacobian</span></span>
+<span id="p-18212699-35"><a href="#p-18212699-35" aria-hidden="true" tabindex="-1"></a><span class="co">    - estimation.kalman_filter</span></span>
+<span id="p-18212699-36"><a href="#p-18212699-36" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-18212699-37"><a href="#p-18212699-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-38"><a href="#p-18212699-38" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="30초 핵심"}</span>
+<span id="p-18212699-39"><a href="#p-18212699-39" aria-hidden="true" tabindex="-1"></a>어떤 $m\times n$ 행렬 $A$도 $A=U\Sigma V^\top$로 쓸 수 있다. $V$는 입력 공간의 회전(직교), $\Sigma$는 축마다 다른 비율의 축척(대각, $\sigma_1\ge\cdots\ge0$), $U$는 출력 공간의 회전(직교)이다. 로봇에서는 자코비안의 특이값이 "이 자세에서 어느 방향으로 움직이기 쉬운가/어려운가"를 정량화한다. 가장 중요한 한계: $\sigma_{\min}\approx0$이면 역방향 계산의 이득이 $1/\sigma$로 폭주하므로, 분해 자체보다 **작은 특이값의 처리**가 실무의 승부처다.</span>
+<span id="p-18212699-40"><a href="#p-18212699-40" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-18212699-41"><a href="#p-18212699-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-42"><a href="#p-18212699-42" aria-hidden="true" tabindex="-1"></a>::: {.depth-intuition}</span>
+<span id="p-18212699-43"><a href="#p-18212699-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-44"><a href="#p-18212699-44" aria-hidden="true" tabindex="-1"></a><span class="fu">## 해결하려는 문제: 행렬이 공간을 어떻게 찌그러뜨리는지 한눈에 보기</span></span>
+<span id="p-18212699-45"><a href="#p-18212699-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-46"><a href="#p-18212699-46" aria-hidden="true" tabindex="-1"></a>행렬 $A$는 벡터를 다른 벡터로 보내는 지도다. 고유값 분해는 "$A$가 방향을 바꾸지 않는 특별한 방향"을 찾지만, 정방·대각화 가능이라는 조건이 붙고 비정방 행렬에는 아예 정의되지 않는다. 로봇 자코비안은 대개 비정방이고, 우리가 정말 알고 싶은 것은 불변 방향이 아니라 **어느 입력 방향이 얼마나 증폭되는가**다.</span>
+<span id="p-18212699-47"><a href="#p-18212699-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-48"><a href="#p-18212699-48" aria-hidden="true" tabindex="-1"></a>특이값 분해(singular value decomposition, SVD)는 이 질문에 답한다. 단위원(unit circle) 위의 모든 입력 벡터를 $A$에 통과시키면 출력은 항상 **타원**(고차원에서는 타원체)이 된다. 타원의 반축 길이가 특이값 $\sigma_1,\sigma_2,\ldots$이고, 반축 방향이 출력 특이벡터 $u_1,u_2,\ldots$다. 그 반축으로 보내지는 입력 방향이 $v_1,v_2,\ldots$다. 즉</span>
+<span id="p-18212699-49"><a href="#p-18212699-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-50"><a href="#p-18212699-50" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-51"><a href="#p-18212699-51" aria-hidden="true" tabindex="-1"></a>Av_i=\sigma_i\,u_i</span>
+<span id="p-18212699-52"><a href="#p-18212699-52" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-53"><a href="#p-18212699-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-54"><a href="#p-18212699-54" aria-hidden="true" tabindex="-1"></a>가 SVD의 기하 전부다. "입력을 $v_i$ 좌표로 회전해 읽고($V^\top$), 축마다 $\sigma_i$배 늘리고($\Sigma$), 출력 좌표로 회전해 내보낸다($U$)" — 모든 행렬은 회전–축척–회전이다.</span>
+<span id="p-18212699-55"><a href="#p-18212699-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-56"><a href="#p-18212699-56" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-18212699-57"><a href="#p-18212699-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-58"><a href="#p-18212699-58" aria-hidden="true" tabindex="-1"></a>::: {.depth-application}</span>
+<span id="p-18212699-59"><a href="#p-18212699-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-60"><a href="#p-18212699-60" aria-hidden="true" tabindex="-1"></a><span class="fu">## 정의: 모양부터 확인한다</span></span>
+<span id="p-18212699-61"><a href="#p-18212699-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-62"><a href="#p-18212699-62" aria-hidden="true" tabindex="-1"></a>$m\times n$ 실행렬 $A$에 대해</span>
+<span id="p-18212699-63"><a href="#p-18212699-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-64"><a href="#p-18212699-64" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-65"><a href="#p-18212699-65" aria-hidden="true" tabindex="-1"></a>A=U\Sigma V^\top,\qquad</span>
+<span id="p-18212699-66"><a href="#p-18212699-66" aria-hidden="true" tabindex="-1"></a>U\in\mathbb R^{m\times m},\ \Sigma\in\mathbb R^{m\times n},\ V\in\mathbb R^{n\times n}</span>
+<span id="p-18212699-67"><a href="#p-18212699-67" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-68"><a href="#p-18212699-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-69"><a href="#p-18212699-69" aria-hidden="true" tabindex="-1"></a>이고 $U^\top U=I_m$, $V^\top V=I_n$(직교), $\Sigma$는 대각 성분 $\sigma_1\ge\sigma_2\ge\cdots\ge\sigma_{\min(m,n)}\ge0$ 외에는 0이다. 모양 점검: $(m\times m)(m\times n)(n\times n)=m\times n$으로 $A$와 일치한다. $A$의 성분에 단위가 있으면(자코비안이라면 m/rad) 특이값이 그 단위를 그대로 가지며, $U,V$는 무차원 방향이다.</span>
+<span id="p-18212699-70"><a href="#p-18212699-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-71"><a href="#p-18212699-71" aria-hidden="true" tabindex="-1"></a>$U$의 열을 좌특이벡터(left singular vector), $V$의 열을 우특이벡터(right singular vector)라 한다. 열 단위로 풀어 쓰면 $Av_i=\sigma_iu_i$, $A^\top u_i=\sigma_iv_i$다.</span>
+<span id="p-18212699-72"><a href="#p-18212699-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-73"><a href="#p-18212699-73" aria-hidden="true" tabindex="-1"></a><span class="fu">## 손 계산: $A=\begin{bmatrix}3&amp;0\\4&amp;5\end{bmatrix}$</span></span>
+<span id="p-18212699-74"><a href="#p-18212699-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-75"><a href="#p-18212699-75" aria-hidden="true" tabindex="-1"></a>**1단계 — $A^\top A$를 만든다.**</span>
+<span id="p-18212699-76"><a href="#p-18212699-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-77"><a href="#p-18212699-77" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-78"><a href="#p-18212699-78" aria-hidden="true" tabindex="-1"></a>A^\top A=\begin{bmatrix}3&amp;4<span class="sc">\\</span>0&amp;5\end{bmatrix}</span>
+<span id="p-18212699-79"><a href="#p-18212699-79" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}3&amp;0<span class="sc">\\</span>4&amp;5\end{bmatrix}</span>
+<span id="p-18212699-80"><a href="#p-18212699-80" aria-hidden="true" tabindex="-1"></a>=\begin{bmatrix}25&amp;20<span class="sc">\\</span>20&amp;25\end{bmatrix}.</span>
+<span id="p-18212699-81"><a href="#p-18212699-81" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-82"><a href="#p-18212699-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-83"><a href="#p-18212699-83" aria-hidden="true" tabindex="-1"></a>**2단계 — 고유값을 푼다.** 특성방정식 $(25-\lambda)^2-400=0$에서 $25-\lambda=\pm20$, 즉 $\lambda_1=45,\ \lambda_2=5$. 따라서</span>
+<span id="p-18212699-84"><a href="#p-18212699-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-85"><a href="#p-18212699-85" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-86"><a href="#p-18212699-86" aria-hidden="true" tabindex="-1"></a>\sigma_1=\sqrt{45}=3\sqrt5\approx6.7082,\qquad</span>
+<span id="p-18212699-87"><a href="#p-18212699-87" aria-hidden="true" tabindex="-1"></a>\sigma_2=\sqrt5\approx2.2361.</span>
+<span id="p-18212699-88"><a href="#p-18212699-88" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-89"><a href="#p-18212699-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-90"><a href="#p-18212699-90" aria-hidden="true" tabindex="-1"></a>**3단계 — 두 가지 검산.** 계산을 믿기 전에 반드시 확인한다.</span>
+<span id="p-18212699-91"><a href="#p-18212699-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-92"><a href="#p-18212699-92" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>곱 검산: $\sigma_1\sigma_2=3\sqrt5\cdot\sqrt5=15=|\det A|=|3\cdot5-0\cdot4|$. 통과.</span>
+<span id="p-18212699-93"><a href="#p-18212699-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>제곱합 검산: $\sigma_1^2+\sigma_2^2=45+5=50=<span class="sc">\|</span>A<span class="sc">\|</span>_F^2=9+0+16+25$. 통과.</span>
+<span id="p-18212699-94"><a href="#p-18212699-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-95"><a href="#p-18212699-95" aria-hidden="true" tabindex="-1"></a>**4단계 — 특이벡터.** $\lambda_1=45$의 고유벡터는 $(25-45)v_1+20v_2=0$에서 $v_1=v_2$, 정규화하면 $v_1=\tfrac1{\sqrt2}(1,1)^\top$. 마찬가지로 $v_2=\tfrac1{\sqrt2}(1,-1)^\top$. 좌특이벡터는 $u_i=Av_i/\sigma_i$로 얻는다.</span>
+<span id="p-18212699-96"><a href="#p-18212699-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-97"><a href="#p-18212699-97" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-98"><a href="#p-18212699-98" aria-hidden="true" tabindex="-1"></a>u_1=\frac{1}{3\sqrt5}\cdot\frac{1}{\sqrt2}\begin{bmatrix}3<span class="sc">\\</span>9\end{bmatrix}</span>
+<span id="p-18212699-99"><a href="#p-18212699-99" aria-hidden="true" tabindex="-1"></a>=\frac{1}{\sqrt{10}}\begin{bmatrix}1<span class="sc">\\</span>3\end{bmatrix},\qquad</span>
+<span id="p-18212699-100"><a href="#p-18212699-100" aria-hidden="true" tabindex="-1"></a>u_2=\frac{1}{\sqrt5}\cdot\frac{1}{\sqrt2}\begin{bmatrix}3<span class="sc">\\</span>-1\end{bmatrix}</span>
+<span id="p-18212699-101"><a href="#p-18212699-101" aria-hidden="true" tabindex="-1"></a>=\frac{1}{\sqrt{10}}\begin{bmatrix}3<span class="sc">\\</span>-1\end{bmatrix}.</span>
+<span id="p-18212699-102"><a href="#p-18212699-102" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-103"><a href="#p-18212699-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-104"><a href="#p-18212699-104" aria-hidden="true" tabindex="-1"></a>$u_1^\top u_2=(3-3)/10=0$으로 직교가 확인된다. 재조립 검산:</span>
+<span id="p-18212699-105"><a href="#p-18212699-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-106"><a href="#p-18212699-106" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-107"><a href="#p-18212699-107" aria-hidden="true" tabindex="-1"></a>U\Sigma V^\top</span>
+<span id="p-18212699-108"><a href="#p-18212699-108" aria-hidden="true" tabindex="-1"></a>=\frac12\begin{bmatrix}3&amp;3<span class="sc">\\</span>9&amp;-1\end{bmatrix}</span>
+<span id="p-18212699-109"><a href="#p-18212699-109" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}1&amp;1<span class="sc">\\</span>1&amp;-1\end{bmatrix}</span>
+<span id="p-18212699-110"><a href="#p-18212699-110" aria-hidden="true" tabindex="-1"></a>=\frac12\begin{bmatrix}6&amp;0<span class="sc">\\</span>8&amp;10\end{bmatrix}</span>
+<span id="p-18212699-111"><a href="#p-18212699-111" aria-hidden="true" tabindex="-1"></a>=\begin{bmatrix}3&amp;0<span class="sc">\\</span>4&amp;5\end{bmatrix}=A.</span>
+<span id="p-18212699-112"><a href="#p-18212699-112" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-113"><a href="#p-18212699-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-114"><a href="#p-18212699-114" aria-hidden="true" tabindex="-1"></a>단위원은 $u_1$ 방향 반축 $6.71$, $u_2$ 방향 반축 $2.24$의 타원으로 보내진다.</span>
+<span id="p-18212699-115"><a href="#p-18212699-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-116"><a href="#p-18212699-116" aria-hidden="true" tabindex="-1"></a><span class="fu">## 계수·조건수·최저이득 방향: 세 숫자로 행렬을 진단한다</span></span>
+<span id="p-18212699-117"><a href="#p-18212699-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-118"><a href="#p-18212699-118" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**계수(rank)** = 0이 아닌 특이값의 개수. 위 예는 $\sigma_2&gt;0$이므로 계수 2.</span>
+<span id="p-18212699-119"><a href="#p-18212699-119" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**조건수** $\kappa=\sigma_1/\sigma_{\min}$. 위 예는 $\kappa=3\sqrt5/\sqrt5=3$으로 온순하다. $\kappa$가 크면 입력의 상대오차가 최대 $\kappa$배로 증폭될 수 있다.</span>
+<span id="p-18212699-120"><a href="#p-18212699-120" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**최저이득 방향** $v_{\min}$: 입력 노름 1당 출력이 가장 작은($\sigma_{\min}$) 방향. 로봇 자코비안에서는 관절이 아무리 노력해도 말단이 가장 느리게 움직이는 **조작성 최약 방향**이며, 특이점에 접근하면 $\sigma_{\min}\to0$으로 먼저 신호를 보낸다. <span class="co">[</span><span class="ot">자코비안 장</span><span class="co">](../robotics/jacobian.qmd)</span>의 조작성 타원이 정확히 이 그림이다.</span>
+<span id="p-18212699-121"><a href="#p-18212699-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-122"><a href="#p-18212699-122" aria-hidden="true" tabindex="-1"></a><span class="fu">## 저계수 근사: 잘라낸 SVD가 최선이다 (Eckart–Young)</span></span>
+<span id="p-18212699-123"><a href="#p-18212699-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-124"><a href="#p-18212699-124" aria-hidden="true" tabindex="-1"></a>$A_k=\sum_{i=1}^{k}\sigma_iu_iv_i^\top$ (앞쪽 $k$개 항만 유지)라 하면, 계수 $k$ 이하의 **모든** 행렬 $B$에 대해</span>
+<span id="p-18212699-125"><a href="#p-18212699-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-126"><a href="#p-18212699-126" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-127"><a href="#p-18212699-127" aria-hidden="true" tabindex="-1"></a><span class="sc">\|</span>A-A_k<span class="sc">\|</span>_2=\sigma_{k+1}\le<span class="sc">\|</span>A-B<span class="sc">\|</span>_2</span>
+<span id="p-18212699-128"><a href="#p-18212699-128" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-129"><a href="#p-18212699-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-130"><a href="#p-18212699-130" aria-hidden="true" tabindex="-1"></a>가 성립한다(Frobenius 노름에서도 $A_k$가 최적). 위 예에서 $A_1=\tfrac32\begin{bmatrix}1&amp;1<span class="sc">\\</span>3&amp;3\end{bmatrix}$이고 $A-A_1=\begin{bmatrix}1.5&amp;-1.5<span class="sc">\\</span>-0.5&amp;0.5\end{bmatrix}=\sigma_2u_2v_2^\top$이므로 $<span class="sc">\|</span>A-A_1<span class="sc">\|</span>_2=\sigma_2=\sqrt5$. 검산 통과. 사용처: 큰 모델의 축약(관성·강성 행렬의 지배 모드만 유지), 측정 행렬에서 작은 특이값 성분을 잡음(noise)으로 보고 분리하는 전처리.</span>
+<span id="p-18212699-131"><a href="#p-18212699-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-132"><a href="#p-18212699-132" aria-hidden="true" tabindex="-1"></a><span class="fu">## 의사역행렬과 감쇠 최소제곱: 이득 함수를 비교하라</span></span>
+<span id="p-18212699-133"><a href="#p-18212699-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-134"><a href="#p-18212699-134" aria-hidden="true" tabindex="-1"></a>무어–펜로즈 의사역행렬(Moore–Penrose pseudoinverse)은</span>
+<span id="p-18212699-135"><a href="#p-18212699-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-136"><a href="#p-18212699-136" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-137"><a href="#p-18212699-137" aria-hidden="true" tabindex="-1"></a>A^{+}=V\Sigma^{+}U^\top,\qquad</span>
+<span id="p-18212699-138"><a href="#p-18212699-138" aria-hidden="true" tabindex="-1"></a>\Sigma^{+}=\operatorname{diag}<span class="sc">\!</span>\big(\sigma_i^{-1}\ (\sigma_i&gt;0),\ 0\big)^\top</span>
+<span id="p-18212699-139"><a href="#p-18212699-139" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-140"><a href="#p-18212699-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-141"><a href="#p-18212699-141" aria-hidden="true" tabindex="-1"></a>으로, <span class="co">[</span><span class="ot">최소제곱</span><span class="co">](least-squares.qmd)</span> 문제의 **최소노름 해** $x^\star=A^{+}b$를 준다. 모양 점검: $A^{+}$는 $n\times m$으로 $A$의 전치와 같은 모양이다. 위 예에서 $V\Sigma^{+}U^\top$를 곱하면 $\tfrac1{15}\begin{bmatrix}5&amp;0<span class="sc">\\</span>-4&amp;3\end{bmatrix}=A^{-1}$이 나와 가역인 경우와 일치함이 확인된다.</span>
+<span id="p-18212699-142"><a href="#p-18212699-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-143"><a href="#p-18212699-143" aria-hidden="true" tabindex="-1"></a>특이방향 하나에서 두 방법의 이득을 비교하면 정체가 드러난다.</span>
+<span id="p-18212699-144"><a href="#p-18212699-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-145"><a href="#p-18212699-145" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 방법 <span class="pp">|</span> 특이방향 이득 <span class="pp">|</span> $\sigma\to0$ 극한 <span class="pp">|</span></span>
+<span id="p-18212699-146"><a href="#p-18212699-146" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|</span></span>
+<span id="p-18212699-147"><a href="#p-18212699-147" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 의사역행렬 <span class="pp">|</span> $1/\sigma$ <span class="pp">|</span> $\infty$로 폭주 <span class="pp">|</span></span>
+<span id="p-18212699-148"><a href="#p-18212699-148" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 감쇠 최소제곱(damped least squares, DLS) <span class="pp">|</span> $\sigma/(\sigma^2+\lambda^2)$ <span class="pp">|</span> $0$으로 수렴, 최대 $1/(2\lambda)$ ($\sigma=\lambda$에서) <span class="pp">|</span></span>
+<span id="p-18212699-149"><a href="#p-18212699-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-150"><a href="#p-18212699-150" aria-hidden="true" tabindex="-1"></a>수치 예: $\sigma=0.01$, $\lambda=0.05$이면 의사역행렬 이득은 $100$, DLS 이득은 $0.01/0.0026\approx3.85$다. DLS는 폭주를 막는 대가로 약한 방향의 목표를 일부 포기한다 — <span class="co">[</span><span class="ot">자코비안 장</span><span class="co">](../robotics/jacobian.qmd)</span>의 특이점 근처 역기구학이 이 표 한 줄로 요약된다.</span>
+<span id="p-18212699-151"><a href="#p-18212699-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-152"><a href="#p-18212699-152" aria-hidden="true" tabindex="-1"></a><span class="fu">## 실패 조건: SVD를 믿으면 안 되는 세 지점</span></span>
+<span id="p-18212699-153"><a href="#p-18212699-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-154"><a href="#p-18212699-154" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**$\sigma_{\min}\approx0$에서의 역계산.** $A^{+}$의 이득 $1/\sigma$는 특이값이 작을수록 커진다. $\sigma=10^{-6}$이면 입력 오차가 백만 배로 증폭된다. 분해는 항상 존재하지만 역은 항상 안전하지 않다.</span>
+<span id="p-18212699-155"><a href="#p-18212699-155" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**부동소수점의 계수 판정은 임계값 문제다.** 유한 정밀도에서 특이값은 정확히 0이 되지 않는다. $\sigma_i&gt;\varepsilon\cdot\max(m,n)\cdot\sigma_1$ 같은 상대 임계값으로 자르는데, 임계값 바로 근처의 특이값은 "계수 2인가 3인가"라는 질문 자체가 불량 조건임을 뜻한다. 계수는 이산값이지만 데이터는 연속으로 변한다.</span>
+<span id="p-18212699-156"><a href="#p-18212699-156" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**특이벡터의 부호(및 축퇴 시 방향)는 임의다.** $u_iv_i^\top$가 같으면 $(-u_i,-v_i)$도 유효한 분해라서, 라이브러리·실행마다 부호가 다를 수 있다. $\sigma_i=\sigma_{i+1}$(축퇴)이면 해당 부분공간 안의 어떤 직교기저도 유효하다. 특이벡터를 시계열로 추적하는 코드는 부호 정합을 직접 처리해야 한다.</span>
+<span id="p-18212699-157"><a href="#p-18212699-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-158"><a href="#p-18212699-158" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-18212699-159"><a href="#p-18212699-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-160"><a href="#p-18212699-160" aria-hidden="true" tabindex="-1"></a>::: {.depth-derivation}</span>
+<span id="p-18212699-161"><a href="#p-18212699-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-162"><a href="#p-18212699-162" aria-hidden="true" tabindex="-1"></a><span class="fu">## 유도: 특이값은 왜 $A^\top A$ 고유값의 제곱근인가</span></span>
+<span id="p-18212699-163"><a href="#p-18212699-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-164"><a href="#p-18212699-164" aria-hidden="true" tabindex="-1"></a>**1단계 — $A^\top A$는 대칭이고 반양의 정부호다.** $(A^\top A)^\top=A^\top A$이고, 임의의 $v\in\mathbb R^n$에 대해</span>
+<span id="p-18212699-165"><a href="#p-18212699-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-166"><a href="#p-18212699-166" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-167"><a href="#p-18212699-167" aria-hidden="true" tabindex="-1"></a>v^\top(A^\top A)v=(Av)^\top(Av)=<span class="sc">\|</span>Av<span class="sc">\|</span>^2\ge0.</span>
+<span id="p-18212699-168"><a href="#p-18212699-168" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-169"><a href="#p-18212699-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-170"><a href="#p-18212699-170" aria-hidden="true" tabindex="-1"></a>따라서 스펙트럼 정리에 의해 정규직교 고유벡터 $v_1,\ldots,v_n$과 고유값 $\lambda_1\ge\cdots\ge\lambda_n\ge0$이 존재한다.</span>
+<span id="p-18212699-171"><a href="#p-18212699-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-172"><a href="#p-18212699-172" aria-hidden="true" tabindex="-1"></a>**2단계 — 제곱근을 특이값으로 정의한다.** $\sigma_i=\sqrt{\lambda_i}$로 두면 1단계에서</span>
+<span id="p-18212699-173"><a href="#p-18212699-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-174"><a href="#p-18212699-174" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-175"><a href="#p-18212699-175" aria-hidden="true" tabindex="-1"></a><span class="sc">\|</span>Av_i<span class="sc">\|</span>^2=v_i^\top(A^\top A)v_i=\lambda_i<span class="sc">\|</span>v_i<span class="sc">\|</span>^2=\sigma_i^2,</span>
+<span id="p-18212699-176"><a href="#p-18212699-176" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-177"><a href="#p-18212699-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-178"><a href="#p-18212699-178" aria-hidden="true" tabindex="-1"></a>즉 $<span class="sc">\|</span>Av_i<span class="sc">\|</span>=\sigma_i$: 각 고유방향에서 $A$의 증폭률이 정확히 $\sigma_i$다.</span>
+<span id="p-18212699-179"><a href="#p-18212699-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-180"><a href="#p-18212699-180" aria-hidden="true" tabindex="-1"></a>**3단계 — 좌특이벡터를 만들고 직교성을 확인한다.** $\sigma_i&gt;0$인 $i$에 대해 $u_i=Av_i/\sigma_i$로 정의하면</span>
+<span id="p-18212699-181"><a href="#p-18212699-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-182"><a href="#p-18212699-182" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-183"><a href="#p-18212699-183" aria-hidden="true" tabindex="-1"></a>u_i^\top u_j=\frac{v_i^\top A^\top A v_j}{\sigma_i\sigma_j}</span>
+<span id="p-18212699-184"><a href="#p-18212699-184" aria-hidden="true" tabindex="-1"></a>=\frac{\lambda_j\,v_i^\top v_j}{\sigma_i\sigma_j}</span>
+<span id="p-18212699-185"><a href="#p-18212699-185" aria-hidden="true" tabindex="-1"></a>=\begin{cases}1&amp;i=j<span class="sc">\\</span>0&amp;i\ne j\end{cases}</span>
+<span id="p-18212699-186"><a href="#p-18212699-186" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-18212699-187"><a href="#p-18212699-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-188"><a href="#p-18212699-188" aria-hidden="true" tabindex="-1"></a>로 자동으로 정규직교다. $\sigma_i=0$인 방향과 남는 출력 차원은 임의의 정규직교 벡터로 채워 $U$를 완성한다.</span>
+<span id="p-18212699-189"><a href="#p-18212699-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-190"><a href="#p-18212699-190" aria-hidden="true" tabindex="-1"></a>**4단계 — 재조립.** 모든 $v_j$에 대해 $Av_j=\sigma_ju_j=U\Sigma V^\top v_j$가 성립하고, $<span class="sc">\{</span>v_j<span class="sc">\}</span>$가 $\mathbb R^n$의 기저이므로 $A=U\Sigma V^\top$다. 같은 논리를 $AA^\top=U\Sigma\Sigma^\top U^\top$에 적용하면 $u_i$가 $AA^\top$의 고유벡터임도 나온다 — 0이 아닌 고유값은 양쪽이 같다.</span>
+<span id="p-18212699-191"><a href="#p-18212699-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-192"><a href="#p-18212699-192" aria-hidden="true" tabindex="-1"></a>**검산.** 손 계산 예에서 $AA^\top=\begin{bmatrix}9&amp;12<span class="sc">\\</span>12&amp;41\end{bmatrix}$의 특성방정식은 $\lambda^2-50\lambda+(369-144)=0$이고 근은 $\lambda=45,5$ — $A^\top A$의 고유값과 정확히 일치한다. 또한 $AA^\top(1,3)^\top=(45,135)^\top=45\,(1,3)^\top$으로 $u_1$이 실제 고유벡터임이 확인된다.</span>
+<span id="p-18212699-193"><a href="#p-18212699-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-194"><a href="#p-18212699-194" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-18212699-195"><a href="#p-18212699-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-196"><a href="#p-18212699-196" aria-hidden="true" tabindex="-1"></a><span class="fu">## 전제 장부</span></span>
+<span id="p-18212699-197"><a href="#p-18212699-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-198"><a href="#p-18212699-198" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 구분 <span class="pp">|</span> 내용 <span class="pp">|</span></span>
+<span id="p-18212699-199"><a href="#p-18212699-199" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|</span></span>
+<span id="p-18212699-200"><a href="#p-18212699-200" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 존재 조건 <span class="pp">|</span> 없음 — 임의의 실(복소) $m\times n$ 행렬에서 SVD는 항상 존재한다 <span class="pp">|</span></span>
+<span id="p-18212699-201"><a href="#p-18212699-201" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 유일성 <span class="pp">|</span> 특이값은 유일, 특이벡터는 부호 임의·축퇴 시 부분공간 안에서 임의 <span class="pp">|</span></span>
+<span id="p-18212699-202"><a href="#p-18212699-202" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $\sigma_i=\sqrt{\lambda_i(A^\top A)}$ <span class="pp">|</span> $A^\top A$의 대칭·반양의 정부호성(스펙트럼 정리)으로 보장 <span class="pp">|</span></span>
+<span id="p-18212699-203"><a href="#p-18212699-203" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 계수·조건수 해석 <span class="pp">|</span> 정확 산술에서 성립, 부동소수점에서는 상대 임계값 필요 <span class="pp">|</span></span>
+<span id="p-18212699-204"><a href="#p-18212699-204" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Eckart–Young <span class="pp">|</span> 스펙트럼·Frobenius 노름에서 성립, 임의 노름으로 일반화 금지 <span class="pp">|</span></span>
+<span id="p-18212699-205"><a href="#p-18212699-205" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 단위 <span class="pp">|</span> 특이값은 $A$ 성분의 단위를 상속 — 행마다 단위가 다르면 먼저 척도를 선언 <span class="pp">|</span></span>
+<span id="p-18212699-206"><a href="#p-18212699-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-207"><a href="#p-18212699-207" aria-hidden="true" tabindex="-1"></a><span class="fu">## 구현 안전 체크</span></span>
+<span id="p-18212699-208"><a href="#p-18212699-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-209"><a href="#p-18212699-209" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$A^\top A$를 직접 만들어 고유분해하지 말 것 — 조건수가 $\kappa^2$으로 제곱된다. 라이브러리 SVD(예: Golub–Kahan 이중대각화 기반)를 그대로 쓴다.</span>
+<span id="p-18212699-210"><a href="#p-18212699-210" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>계수 판정은 $\sigma_i&gt;\varepsilon\cdot\max(m,n)\cdot\sigma_1$ 같은 **상대** 임계값으로. 절대 임계값은 행렬의 척도가 바뀌면 무의미해진다.</span>
+<span id="p-18212699-211"><a href="#p-18212699-211" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>역계산 전에 $\sigma_{\min}$과 $\kappa$를 로그로 남기고, 폭주 위험이 있으면 의사역행렬 대신 DLS나 절단 SVD로 전환한다.</span>
+<span id="p-18212699-212"><a href="#p-18212699-212" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>특이벡터를 프레임 간 추적한다면 $u_i^\top u_i^{\text{prev}}&lt;0$일 때 $(u_i,v_i)$의 부호를 함께 뒤집는다.</span>
+<span id="p-18212699-213"><a href="#p-18212699-213" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>검산 두 개는 코드에서도 싸다: $\prod\sigma_i=|\det A|$(정방일 때), $\sum\sigma_i^2=<span class="sc">\|</span>A<span class="sc">\|</span>_F^2$.</span>
+<span id="p-18212699-214"><a href="#p-18212699-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-215"><a href="#p-18212699-215" aria-hidden="true" tabindex="-1"></a><span class="fu">## 다음 연결</span></span>
+<span id="p-18212699-216"><a href="#p-18212699-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-217"><a href="#p-18212699-217" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>특이점 감시·조작성 타원·DLS의 실전: <span class="co">[</span><span class="ot">자코비안</span><span class="co">](../robotics/jacobian.qmd)</span></span>
+<span id="p-18212699-218"><a href="#p-18212699-218" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>최소노름 해와 정규방정식·QR과의 비교: <span class="co">[</span><span class="ot">최소제곱</span><span class="co">](least-squares.qmd)</span></span>
+<span id="p-18212699-219"><a href="#p-18212699-219" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>공분산 갱신의 수치 안정화(제곱근 필터)에서 재등장: <span class="co">[</span><span class="ot">칼만 필터</span><span class="co">](../estimation/kalman-filter.qmd)</span></span>
+<span id="p-18212699-220"><a href="#p-18212699-220" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$A^\top A$ 고유분해의 배경 언어: <span class="co">[</span><span class="ot">고유값과 고유벡터</span><span class="co">](eigenvalues.qmd)</span></span>
+<span id="p-18212699-221"><a href="#p-18212699-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-222"><a href="#p-18212699-222" aria-hidden="true" tabindex="-1"></a><span class="fu">## 회상 점검</span></span>
+<span id="p-18212699-223"><a href="#p-18212699-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-224"><a href="#p-18212699-224" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$Av_i=\sigma_iu_i$에서 네 기호의 모양과 서로의 관계를 그림 없이 말할 수 있는가?</span>
+<span id="p-18212699-225"><a href="#p-18212699-225" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$\sigma_1\sigma_2=|\det A|$와 $\sigma_1^2+\sigma_2^2=<span class="sc">\|</span>A<span class="sc">\|</span>_F^2$는 각각 어떤 성질에서 나오는가?</span>
+<span id="p-18212699-226"><a href="#p-18212699-226" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>조작성 최약 방향은 좌·우 특이벡터 중 어느 쪽의 어느 열인가? 그 방향의 이득은 얼마인가?</span>
+<span id="p-18212699-227"><a href="#p-18212699-227" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>$\sigma_{\min}=10^{-6}$인 자코비안에 의사역행렬과 DLS($\lambda=0.05$)를 각각 쓰면 특이방향 이득은 대략 얼마씩인가?</span>
+<span id="p-18212699-228"><a href="#p-18212699-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-229"><a href="#p-18212699-229" aria-hidden="true" tabindex="-1"></a><span class="fu">## 참고문헌</span></span>
+<span id="p-18212699-230"><a href="#p-18212699-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-18212699-231"><a href="#p-18212699-231" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Gene H. Golub and Charles F. Van Loan, *Matrix Computations*, Johns Hopkins University Press.</span>
+<span id="p-18212699-232"><a href="#p-18212699-232" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Lloyd N. Trefethen and David Bau III, *Numerical Linear Algebra*, SIAM, 1997.</span>
+<span id="p-18212699-233"><a href="#p-18212699-233" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Carl Eckart and Gale Young, "The Approximation of One Matrix by Another of Lower Rank," *Psychometrika*, 1936.</span>
+<span id="p-18212699-234"><a href="#p-18212699-234" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Gilbert Strang, *Introduction to Linear Algebra*, Wellesley-Cambridge Press.</span></code></pre></div><button title="클립보드 복사" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p><span id="p-34ab9566" class="paragraph-anchor"></span>© Robotics Math Atlas contributors · CC BY-NC-SA 4.0</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/blob/main/content/concepts/linalg/svd.qmd" class="toc-action"><i class="bi bi-github"></i>소스코드 보기</a></li><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/issues/new" class="toc-action"><i class="bi empty"></i>이슈 보고</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="../../../about.html#progress-center">
+<p><span id="p-9341ed86" class="paragraph-anchor"></span>학습 기록 관리</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

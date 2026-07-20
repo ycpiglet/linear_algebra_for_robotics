@@ -392,7 +392,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">확률·추정·몬테카를로(Monte Carlo)</li><li class="breadcrumb-item"><a href="../../../content/concepts/estimation/kalman-filter.html">Estimation</a></li><li class="breadcrumb-item"><a href="../../../content/concepts/estimation/kalman-filter.html">칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">확률·추정·몬테카를로(Monte Carlo)</li><li class="breadcrumb-item"><a href="../../../content/concepts/estimation/extended-kalman-filter.html">Estimation</a></li><li class="breadcrumb-item"><a href="../../../content/concepts/estimation/kalman-filter.html">칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -488,6 +488,12 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/eigenvalues.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">고유값과 고유벡터: 동역학이 변하지 않는 방향</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../../content/concepts/linalg/least-squares.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기</span></a>
   </div>
@@ -502,6 +508,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="../../../content/concepts/linalg/orthogonal-projection.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">직교투영: 도달 가능한 것 중 가장 가까운 답</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/svd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬</span></a>
   </div>
 </li>
       </ul>
@@ -583,6 +595,12 @@ window.Quarto = {
  <span class="menu-text">자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/robotics/rotation-representations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나</span></a>
+  </div>
+</li>
       </ul>
   </li>
       </ul>
@@ -631,6 +649,12 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/gibbs-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../../content/concepts/probability/importance-sampling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Importance Sampling</span></a>
   </div>
@@ -639,6 +663,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="../../../content/concepts/probability/markov-chain.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Markov Chain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/mcmc-diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MCMC 수렴 진단: 언제 chain을 믿을 수 있나</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -705,6 +735,12 @@ window.Quarto = {
           </a> 
       </div>
       <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/estimation/extended-kalman-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기</span></a>
+  </div>
+</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../content/concepts/estimation/kalman-filter.html" class="sidebar-item-text sidebar-link active">
@@ -962,7 +998,7 @@ window.Quarto = {
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">확률·추정·몬테카를로(Monte Carlo)</li><li class="breadcrumb-item"><a href="../../../content/concepts/estimation/kalman-filter.html">Estimation</a></li><li class="breadcrumb-item"><a href="../../../content/concepts/estimation/kalman-filter.html">칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">확률·추정·몬테카를로(Monte Carlo)</li><li class="breadcrumb-item"><a href="../../../content/concepts/estimation/extended-kalman-filter.html">Estimation</a></li><li class="breadcrumb-item"><a href="../../../content/concepts/estimation/kalman-filter.html">칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기</a></li></ol></nav>
 <div class="quarto-title">
 <div class="quarto-title-block"><div><h1 class="title">칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> 코드</button></div></div>
 </div>

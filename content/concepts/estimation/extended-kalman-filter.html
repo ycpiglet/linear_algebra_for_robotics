@@ -1,0 +1,1965 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기 – Robotics Math Atlas</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../assets/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-4a0610749eeff5ab924a4729b5181608.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-de927ec96a2411cf822331f71755f83e.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-4a0610749eeff5ab924a4729b5181608.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-8fda10884a6f451da35fe6393cc1b11f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-5c8c3b77b1f10f136d3d0b20cbd3bd22.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-8fda10884a6f451da35fe6393cc1b11f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "일치 없음",
+    "search-matching-documents-text": "일치된 문서",
+    "search-copy-link-title": "검색 링크 복사",
+    "search-hide-matches-text": "추가 검색 결과 숨기기",
+    "search-more-match-text": "추가 검색결과",
+    "search-more-matches-text": "추가 검색결과",
+    "search-clear-button-title": "제거",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "취소",
+    "search-submit-button-title": "검색",
+    "search-label": "검색"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Robotics Math Atlas</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="검색"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="탐색 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../../index.html" aria-current="page"> 
+<span class="menu-text">홈</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../atlas.html"> 
+<span class="menu-text">아틀라스</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../paths.html"> 
+<span class="menu-text">학습 경로</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../curriculum.html"> 
+<span class="menu-text">전체 커리큘럼</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../proofs.html"> 
+<span class="menu-text">증명 지도</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../stories.html"> 
+<span class="menu-text">이야기</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../glossary.html"> 
+<span class="menu-text">용어집</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../about.html"> 
+<span class="menu-text">사용법</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ycpiglet/linear_algebra_for_robotics"> <i class="bi bi-github" role="img" aria-label="GitHub 저장소">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="다크 모드 전환"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="리더 모드 전환">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">확률·추정·몬테카를로(Monte Carlo)</li><li class="breadcrumb-item"><a href="../../../content/concepts/estimation/extended-kalman-filter.html">Estimation</a></li><li class="breadcrumb-item"><a href="../../../content/concepts/estimation/extended-kalman-filter.html">확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="사이드바 전환" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">빠른 시작</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robotics Math Atlas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../paths.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">목표별 학습 경로</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../atlas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">지식 아틀라스</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../curriculum.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">전체 커리큘럼 지도</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../software.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">시각화·시뮬레이션 도구</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">로봇공학 수학 용어집</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">수학 언어</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Foundations</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/foundations/change-and-accumulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">변화율과 누적량: 미분·적분의 공학적 직관</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Linalg</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/eigenvalues.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">고유값과 고유벡터: 동역학이 변하지 않는 방향</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/least-squares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/linear-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">선형 시스템 Ax=b: 여러 식을 한 번에 푸는 언어</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/orthogonal-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">직교투영: 도달 가능한 것 중 가장 가까운 답</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/linalg/svd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Systems</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/systems/state-space.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">상태공간: 현재 상태로 다음 순간을 예측하는 모델</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">제어</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">Control</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/control/feedback.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">피드백: 결과를 보고 다음 행동을 고치는 구조</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/control/pid.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PID 제어: 현재·누적·변화 추세로 오차를 고치기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">로봇공학</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">Robotics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/robotics/jacobian.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/robotics/rotation-representations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+ <span class="menu-text">확률·추정·몬테카를로(Monte Carlo)</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">Probability</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/bayes-filtering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bayes Filtering 재귀</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/bootstrap-particle-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bootstrap Particle Filter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/detailed-balance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Balance와 Reversibility</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/gaussian-conditioning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/gibbs-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/importance-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Importance Sampling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/markov-chain.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Markov Chain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/mcmc-diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MCMC 수렴 진단: 언제 chain을 믿을 수 있나</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/mean-covariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">평균과 공분산: 추정값과 불확실성을 함께 표현하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/measure-probability-foundations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">확률·측도 기반: 이 트랙에서 어디까지 가정하는가</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/metropolis-hastings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Metropolis–Hastings 알고리즘</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/monte-carlo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monte Carlo 적분</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/resampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Particle Resampling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/probability/sequential-importance-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sequential Importance Sampling (SIS)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false">
+ <span class="menu-text">Statistics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/statistics/maximum-likelihood-estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
+ <span class="menu-text">Estimation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/estimation/extended-kalman-filter.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/concepts/estimation/kalman-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false">
+ <span class="menu-text">엄밀한 증명</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../proofs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명 지도</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false">
+ <span class="menu-text">Proofs</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: 유한상태 Bootstrap Particle Filter의 고정-Horizon 일관성</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/detailed-balance-implies-invariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Detailed Balance는 Invariance를 함의한다</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/elementary-finite-probability-lemmas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">보조정리: 유한 확률 증명에 쓰는 집중·합집합·Borel–Cantelli</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/finite-state-mh-convergence-ergodic-average.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: 유한상태 Metropolis–Hastings의 수렴과 Ergodic Average</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/importance-sampling-identity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Importance Sampling 항등식</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/metropolis-hastings-invariance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Metropolis–Hastings Kernel의 Invariance</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/resampling-unbiasedness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Resampling의 조건부 Unbiasedness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/self-normalized-importance-sampling-consistency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: Self-Normalized Importance Sampling의 일관성</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/proofs/sis-weight-recursion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">증명: SIS Importance Weight 재귀</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false">
+ <span class="menu-text">파이썬(Python) 실험실</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험실</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/pid-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: PID의 세 항을 시간축에서 보기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/least-squares-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: 최소제곱의 투영과 조건수</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/kalman-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Kalman Filter의 예측–보정 순환</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/particle-filter-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Particle Filter의 가중치 퇴화와 재표본화</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courseware/labs/mcmc-lab.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">실험: Metropolis proposal과 mixing</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false">
+ <span class="menu-text">읽을거리</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../stories.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">숨 고르기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false">
+ <span class="menu-text">Stories</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/stories/gauss-legendre-least-squares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">먼저 발표한 Legendre, 더 일찍 썼다고 주장한 Gauss</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/stories/minorsky-steering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자동조타선에서 태어난 PID의 시간 감각</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../future-scope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">향후 확장 노드: 로봇·AI·역학·센서·구동기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false">
+ <span class="menu-text">References</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false" aria-label="토글 섹션">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/references/jacobian-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">자코비안 장의 참고문헌과 근거</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/references/kalman-filter-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">칼만 필터 장의 참고문헌과 제품 근거</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../content/references/maximum-likelihood-estimation-references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">최대우도추정 장의 참고문헌과 제품 근거</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../design-system.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UI/UX 디자인 시스템</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../ui-ux-research.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UI/UX 레퍼런스 조사</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">교재 사용법</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">목차</h2>
+   
+  <ul>
+  <li><a href="#공분산-전파-식의-유도-오차에-대한-선형화" id="toc-공분산-전파-식의-유도-오차에-대한-선형화" class="nav-link active" data-scroll-target="#공분산-전파-식의-유도-오차에-대한-선형화">공분산 전파 식의 유도: 오차에 대한 선형화</a></li>
+  <li><a href="#회상-점검" id="toc-회상-점검" class="nav-link" data-scroll-target="#회상-점검">회상 점검</a></li>
+  <li><a href="#참고문헌" id="toc-참고문헌" class="nav-link" data-scroll-target="#참고문헌">참고문헌</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/blob/main/content/concepts/estimation/extended-kalman-filter.qmd" class="toc-action"><i class="bi bi-github"></i>소스코드 보기</a></li><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/issues/new" class="toc-action"><i class="bi empty"></i>이슈 보고</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">확률·추정·몬테카를로(Monte Carlo)</li><li class="breadcrumb-item"><a href="../../../content/concepts/estimation/extended-kalman-filter.html">Estimation</a></li><li class="breadcrumb-item"><a href="../../../content/concepts/estimation/extended-kalman-filter.html">확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기</a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> 코드</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="concept-meta" class="concept-meta" hidden="" aria-hidden="true" data-atlas-schema-version="1.0.0" data-concept-id="estimation.extended_kalman_filter" data-concept-domain="estimation" data-manifest-path="platform/generated/concept-manifest.json" data-manifest-url="../../../platform/generated/concept-manifest.json" data-project-offset="../../../"></div>
+<div class="callout callout-style-default callout-note callout-titled" title="30초 핵심">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">노트</span>30초 핵심
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span id="p-0415cedc" class="paragraph-anchor"></span>확장 칼만 필터(Extended Kalman Filter, EKF)는 비선형 동역학 <span class="math inline">\(f\)</span>와 비선형 측정 <span class="math inline">\(h\)</span>를 <strong>현재 추정치에서 자코비안(Jacobian)으로 국소 선형화</strong>해, 선형 칼만 필터의 예측–갱신 재귀를 그대로 재사용하는 가우스(Gaussian) 상태추정기다. 이동 로봇의 위치추정과 센서 융합에서 사실상의 기본기다. 단, 선형화는 추정치 주변에서만 유효하므로 <strong>비선형성이 강하거나 공분산이 크면 근사가 깨져 발산할 수 있다</strong> — 정확한 사후분포를 계산하는 필터가 아니라 국소 근사기다.</p>
+</div>
+</div>
+<div class="depth-intuition">
+<section id="해결하려는-문제-선형-가정이-깨지는-순간" class="level2">
+<h2 class="anchored" data-anchor-id="해결하려는-문제-선형-가정이-깨지는-순간">해결하려는 문제: 선형 가정이 깨지는 순간</h2>
+<p><span id="p-9bb8eba4" class="paragraph-anchor"></span><a href="../../../content/concepts/estimation/kalman-filter.html">칼만 필터</a>는 동역학과 측정이 모두 선형 행렬 <span class="math inline">\(F, H\)</span>로 쓰인다고 가정했다. 그러나 로봇의 모형은 대부분 비선형이다.</p>
+<p><span id="p-c5baed66" class="paragraph-anchor"></span><span class="math display">\[
+x_{k+1} = f(x_k, u_k) + w_k, \qquad
+z_k = h(x_k) + v_k
+\]</span></p>
+<p><span id="p-ea7e473c" class="paragraph-anchor"></span>여기서 <span class="math inline">\(w_k \sim \mathcal N(0, Q)\)</span>, <span class="math inline">\(v_k \sim \mathcal N(0, R)\)</span>은 서로 독립인 잡음(noise)이다. 방향각 <span class="math inline">\(\theta\)</span>가 <span class="math inline">\(\cos\theta, \sin\theta\)</span>로 위치에 들어가는 이동 로봇의 동역학, 랜드마크까지의 거리 <span class="math inline">\(\sqrt{\cdot}\)</span>와 방위각 <span class="math inline">\(\operatorname{atan2}\)</span>로 이루어진 측정이 전형적인 예다. 이런 <span class="math inline">\(f, h\)</span>에는 “행렬을 곱한다”는 칼만 필터의 두 식을 그대로 쓸 수 없고, 가우스 분포를 비선형 함수에 통과시키면 결과는 더 이상 가우스가 아니다.</p>
+</section>
+<section id="핵심-아이디어-지금-있는-곳에서-1차-테일러-전개" class="level2">
+<h2 class="anchored" data-anchor-id="핵심-아이디어-지금-있는-곳에서-1차-테일러-전개">핵심 아이디어: 지금 있는 곳에서 1차 테일러 전개</h2>
+<p><span id="p-bffcd6b8" class="paragraph-anchor"></span><a href="../../../content/concepts/robotics/jacobian.html">자코비안</a> 장의 결론을 그대로 가져온다. 매끄러운 함수는 한 점 주변에서 자코비안이라는 선형 지도로 근사된다. EKF는 이 근사를 <strong>가장 좋은 정보가 있는 점, 즉 현재 추정치</strong>에서 수행한다.</p>
+<p><span id="p-9b757e4c" class="paragraph-anchor"></span><span class="math display">\[
+F_k = \left.\frac{\partial f}{\partial x}\right|_{\hat x_k^{+},\,u_k}, \qquad
+H_k = \left.\frac{\partial h}{\partial x}\right|_{\hat x_k^{-}}
+\]</span></p>
+<p><span id="p-3cb1ef7b" class="paragraph-anchor"></span>동역학의 자코비안 <span class="math inline">\(F_k\)</span>는 갱신이 끝난 사후 추정 <span class="math inline">\(\hat x_k^{+}\)</span>에서, 측정의 자코비안 <span class="math inline">\(H_k\)</span>는 예측된 사전 추정 <span class="math inline">\(\hat x_k^{-}\)</span>에서 평가한다 — 각 단계가 시작될 때 손에 쥔 최선의 상태가 그것이기 때문이다. 이렇게 만든 <span class="math inline">\(F_k, H_k\)</span>를 선형 칼만 필터의 자리에 끼워 넣으면 나머지 재귀는 동일하다.</p>
+</section>
+</div>
+<div class="depth-application">
+<section id="기호와-모양-점검" class="level2">
+<h2 class="anchored" data-anchor-id="기호와-모양-점검">기호와 모양 점검</h2>
+<p><span id="p-8baaf249" class="paragraph-anchor"></span>상태 <span class="math inline">\(x \in \mathbb R^n\)</span>, 입력 <span class="math inline">\(u \in \mathbb R^p\)</span>, 측정 <span class="math inline">\(z \in \mathbb R^m\)</span>일 때 <span class="math inline">\(F_k\)</span>는 <span class="math inline">\(n \times n\)</span>, <span class="math inline">\(H_k\)</span>는 <span class="math inline">\(m \times n\)</span>, <span class="math inline">\(Q\)</span>는 <span class="math inline">\(n \times n\)</span>, <span class="math inline">\(R\)</span>은 <span class="math inline">\(m \times m\)</span>이다. <span class="math inline">\(F_k\)</span>의 <span class="math inline">\((i,j)\)</span> 성분의 단위는 (상태 <span class="math inline">\(i\)</span>의 단위)/(상태 <span class="math inline">\(j\)</span>의 단위)로, 선형 필터의 <span class="math inline">\(F, H\)</span>와 모양·단위 규칙이 완전히 같다. 자코비안이 아닌 <span class="math inline">\(f, h\)</span> 자체는 벡터를 벡터로 보내는 비선형 함수라는 점만 다르다.</p>
+</section>
+<section id="알고리즘-평균은-비선형-그대로-공분산만-자코비안" class="level2">
+<h2 class="anchored" data-anchor-id="알고리즘-평균은-비선형-그대로-공분산만-자코비안">알고리즘: 평균은 비선형 그대로, 공분산만 자코비안</h2>
+<p><span id="p-b2beb221" class="paragraph-anchor"></span><strong>예측(prediction).</strong> 사후 추정 <span class="math inline">\((\hat x_k^{+}, P_k^{+})\)</span>에서 출발한다.</p>
+<p><span id="p-417ef1b0" class="paragraph-anchor"></span><span class="math display">\[
+\hat x_{k+1}^{-} = f(\hat x_k^{+}, u_k), \qquad
+P_{k+1}^{-} = F_k P_k^{+} F_k^{\top} + Q
+\]</span></p>
+<p><span id="p-51d858dc" class="paragraph-anchor"></span><strong>측정 갱신(measurement update).</strong> 사전 추정 <span class="math inline">\((\hat x_k^{-}, P_k^{-})\)</span>과 측정 <span class="math inline">\(z_k\)</span>를 결합한다.</p>
+<p><span id="p-b78df3fd" class="paragraph-anchor"></span><span class="math display">\[
+\nu_k = z_k - h(\hat x_k^{-}), \qquad
+S_k = H_k P_k^{-} H_k^{\top} + R, \qquad
+K_k = P_k^{-} H_k^{\top} S_k^{-1}
+\]</span></p>
+<p><span id="p-57050945" class="paragraph-anchor"></span><span class="math display">\[
+\hat x_k^{+} = \hat x_k^{-} + K_k \nu_k, \qquad
+P_k^{+} = (I - K_k H_k)\, P_k^{-}
+\]</span></p>
+<p><span id="p-b1dc76e5" class="paragraph-anchor"></span>혁신(innovation) <span class="math inline">\(\nu_k\)</span>는 <span class="math inline">\(m\)</span>차원, 혁신 공분산 <span class="math inline">\(S_k\)</span>는 <span class="math inline">\(m \times m\)</span>, 이득(gain) <span class="math inline">\(K_k\)</span>는 <span class="math inline">\(n \times m\)</span>으로 선형 필터와 모양이 같다. 수치 안정성을 위해 공분산 갱신은 조지프(Joseph) 형식 <span class="math inline">\(P_k^{+} = (I - K_k H_k) P_k^{-} (I - K_k H_k)^{\top} + K_k R K_k^{\top}\)</span>을 권장한다 — 이득이 최적에서 조금 벗어나도 대칭·양의 준정부호가 유지된다.</p>
+<p><span id="p-84288125" class="paragraph-anchor"></span>여기서 이 장에서 가장 중요한 구분 하나. <strong>평균의 전파는 비선형 함수 <span class="math inline">\(f, h\)</span>를 그대로 통과시키고, 공분산의 전파에만 자코비안 <span class="math inline">\(F, H\)</span>를 쓴다.</strong> 예측 평균을 <span class="math inline">\(F \hat x^{+}\)</span>로, 혁신을 <span class="math inline">\(z - H\hat x^{-}\)</span>로 쓰는 것은 흔하지만 명백한 오류다 — 자코비안은 “변화율”이지 함수값이 아니다.</p>
+</section>
+<section id="손으로-따라가는-수치-예-제곱-측정-하나" class="level2">
+<h2 class="anchored" data-anchor-id="손으로-따라가는-수치-예-제곱-측정-하나">손으로 따라가는 수치 예: 제곱 측정 하나</h2>
+<p><span id="p-807634a7" class="paragraph-anchor"></span>1차원 상태를 비선형 센서 <span class="math inline">\(z = x^2 + v\)</span>로 관측한다. 사전 추정 <span class="math inline">\(\hat x^{-} = 2\)</span>, <span class="math inline">\(P^{-} = 0.25\)</span>, <span class="math inline">\(R = 1\)</span>, 측정값 <span class="math inline">\(z = 5\)</span>라 하자.</p>
+<ol type="1">
+<li>자코비안: <span class="math inline">\(h(x) = x^2\)</span>이므로 <span class="math inline">\(H = 2\hat x^{-} = 4\)</span> (스칼라, <span class="math inline">\(1\times1\)</span>).</li>
+<li>혁신: <span class="math inline">\(\nu = z - h(\hat x^{-}) = 5 - 2^2 = 1\)</span>. 예측 측정에 <span class="math inline">\(H\hat x^{-} = 8\)</span>이 아니라 <span class="math inline">\(h(\hat x^{-}) = 4\)</span>를 쓴 것에 주목하라.</li>
+<li>혁신 공분산: <span class="math inline">\(S = H P^{-} H + R = 4 \cdot 0.25 \cdot 4 + 1 = 5\)</span>.</li>
+<li>이득: <span class="math inline">\(K = P^{-} H / S = 0.25 \cdot 4 / 5 = 0.2\)</span>.</li>
+<li>갱신: <span class="math inline">\(\hat x^{+} = 2 + 0.2 \cdot 1 = 2.2\)</span>, <span class="math inline">\(\quad P^{+} = (1 - 0.2 \cdot 4) \cdot 0.25 = 0.2 \cdot 0.25 = 0.05\)</span>.</li>
+</ol>
+<p><span id="p-7c2f4d1d" class="paragraph-anchor"></span><strong>검산.</strong> 조지프 형식으로 다시 계산하면 <span class="math inline">\(P^{+} = (1-0.8) \cdot 0.25 \cdot (1-0.8) + 0.2 \cdot 1 \cdot 0.2 = 0.01 + 0.04 = 0.05\)</span>로 일치한다. 갱신된 추정의 예측 측정은 <span class="math inline">\(h(2.2) = 4.84\)</span>로, 갱신 전 <span class="math inline">\(4\)</span>보다 측정값 <span class="math inline">\(5\)</span>에 가까워졌다.</p>
+</section>
+<section id="로봇-예-평면-자세와-레인지-베어링-측정" class="level2">
+<h2 class="anchored" data-anchor-id="로봇-예-평면-자세와-레인지-베어링-측정">로봇 예: 평면 자세와 레인지-베어링 측정</h2>
+<p><span id="p-5a13b588" class="paragraph-anchor"></span>상태를 평면 자세 <span class="math inline">\(x = (x, y, \theta)^{\top}\)</span>, 입력을 속도 <span class="math inline">\(v\)</span>와 각속도 <span class="math inline">\(\omega\)</span>로 두면 흔한 동역학은</p>
+<p><span id="p-c840bd40" class="paragraph-anchor"></span><span class="math display">\[
+f(x, u) =
+\begin{pmatrix}
+x + v\,\Delta t \cos\theta \\
+y + v\,\Delta t \sin\theta \\
+\theta + \omega\,\Delta t
+\end{pmatrix}
+\]</span></p>
+<p><span id="p-92c07219" class="paragraph-anchor"></span>이고, 자코비안은 <span class="math inline">\(3 \times 3\)</span>으로</p>
+<p><span id="p-05f2c655" class="paragraph-anchor"></span><span class="math display">\[
+F =
+\begin{pmatrix}
+1 &amp; 0 &amp; -v\,\Delta t \sin\theta \\
+0 &amp; 1 &amp; \phantom{-}v\,\Delta t \cos\theta \\
+0 &amp; 0 &amp; 1
+\end{pmatrix}
+\]</span></p>
+<p><span id="p-96acca48" class="paragraph-anchor"></span>이다. 항등행렬에서 벗어나는 곳은 셋째 열뿐 — “방향각의 오차가 위치 오차로 번진다”는 구조가 그대로 읽힌다. 알려진 랜드마크 <span class="math inline">\((\ell_x, \ell_y)\)</span>에 대한 레인지-베어링(range-bearing) 측정 <span class="math inline">\(h(x) = \big(r,\ \operatorname{atan2}(\ell_y - y,\, \ell_x - x) - \theta\big)^{\top}\)</span>, <span class="math inline">\(r = \sqrt{(\ell_x - x)^2 + (\ell_y - y)^2}\)</span>의 자코비안 <span class="math inline">\(H\)</span>는 <span class="math inline">\(2 \times 3\)</span>이며, 예를 들어 첫 행은 <span class="math inline">\(\big({-(\ell_x - x)/r},\ {-(\ell_y - y)/r},\ 0\big)\)</span>, 둘째 행의 마지막 항은 <span class="math inline">\(-1\)</span>이다(방위각은 로봇이 회전한 만큼 반대로 움직인다). 전체 유도는 연쇄법칙의 반복이므로 생략하지만, 각 항의 단위 — 첫 행은 무차원, 둘째 행의 위치 편미분은 rad/m — 를 확인하는 습관이 부호 실수를 잡아 준다.</p>
+</section>
+</div>
+<section id="공분산-전파-식의-유도-오차에-대한-선형화" class="level2 depth-derivation">
+<h2 class="anchored" data-anchor-id="공분산-전파-식의-유도-오차에-대한-선형화">공분산 전파 식의 유도: 오차에 대한 선형화</h2>
+<p><span id="p-c2f1b81b" class="paragraph-anchor"></span>한 단계에 한 변화만 준다. 사후 오차를 <span class="math inline">\(e_k^{+} = x_k - \hat x_k^{+}\)</span>라 하고, 참 상태의 전파 <span class="math inline">\(x_{k+1} = f(x_k, u_k) + w_k\)</span>에서 <span class="math inline">\(f\)</span>를 <span class="math inline">\(\hat x_k^{+}\)</span> 주변에서 1차 테일러 전개한다.</p>
+<p><span id="p-651dd15e" class="paragraph-anchor"></span><span class="math display">\[
+f(x_k, u_k) = f(\hat x_k^{+}, u_k) + F_k\, e_k^{+} + r(e_k^{+})
+\]</span></p>
+<p><span id="p-92aca6c5" class="paragraph-anchor"></span>나머지항 <span class="math inline">\(r\)</span>은 <span class="math inline">\(\|e_k^{+}\|\)</span>에 대해 2차 이상이다. 이를 예측 오차에 대입하면</p>
+<p><span id="p-6bbfea9e" class="paragraph-anchor"></span><span class="math display">\[
+e_{k+1}^{-} = x_{k+1} - \hat x_{k+1}^{-}
+= F_k\, e_k^{+} + w_k + r(e_k^{+})
+\]</span></p>
+<p><span id="p-e78fd60d" class="paragraph-anchor"></span>이다. 나머지항을 버리는 것이 EKF의 유일한 근사다. 버린 뒤 양변의 공분산을 취하면, 오차와 잡음이 독립이므로</p>
+<p><span id="p-5caba4d9" class="paragraph-anchor"></span><span class="math display">\[
+P_{k+1}^{-} = \operatorname{Cov}(F_k e_k^{+} + w_k) = F_k P_k^{+} F_k^{\top} + Q
+\]</span></p>
+<p><span id="p-ebde205f" class="paragraph-anchor"></span>를 얻는다. 측정 쪽도 동일하게 <span class="math inline">\(h(x_k) \approx h(\hat x_k^{-}) + H_k e_k^{-}\)</span>로 전개하면 혁신이 <span class="math inline">\(\nu_k \approx H_k e_k^{-} + v_k\)</span>가 되어, 선형 칼만 필터의 갱신 유도(<a href="../../../content/concepts/estimation/kalman-filter.html">가우스 조건부</a> 관점)가 글자 그대로 재사용된다. 즉 EKF는 새 필터가 아니라 <strong>“오차 좌표에서의 선형 칼만 필터”</strong>다.</p>
+<p><span id="p-c75938a1" class="paragraph-anchor"></span><strong>검산.</strong> <span class="math inline">\(f(x,u) = Fx + Bu\)</span>, <span class="math inline">\(h(x) = Hx\)</span>인 선형 모형이면 자코비안이 상수 <span class="math inline">\(F, H\)</span>이고 나머지항 <span class="math inline">\(r \equiv 0\)</span>이므로, 위 식 전부가 선형 칼만 필터와 정확히 일치한다 — 근사가 근사 아닌 경우로 퇴화하는지 확인했다.</p>
+</section>
+<div class="depth-application">
+<section id="성립-조건과-실패-조건" class="level2">
+<h2 class="anchored" data-anchor-id="성립-조건과-실패-조건">성립 조건과 실패 조건</h2>
+<p><span id="p-5aaa4bc7" class="paragraph-anchor"></span>EKF가 잘 작동하는 조건은 한 문장으로 요약된다. <strong>공분산 타원이 덮는 영역 안에서 <span class="math inline">\(f, h\)</span>가 거의 선형이어야 한다.</strong> 즉 선형화의 유효 반경이 <span class="math inline">\(P\)</span>의 크기보다 커야 한다. 이 조건이 깨지는 대표적 상황들:</p>
+<ul>
+<li><strong>강한 비선형 + 큰 초기 불확실성.</strong> 위 수치 예에서 <span class="math inline">\(P^{-}\)</span>가 커서 추정이 <span class="math inline">\(x = 0\)</span> 근처까지 걸치면 <span class="math inline">\(h(x) = x^2\)</span>의 기울기가 <span class="math inline">\(-4\)</span>에서 <span class="math inline">\(+4\)</span>까지 변하고, 한 점에서 평가한 <span class="math inline">\(H\)</span>는 대표성을 잃는다. 극단적으로 <span class="math inline">\(\hat x^{-} = 0\)</span>이면 <span class="math inline">\(H = 0\)</span>이 되어 측정이 완전히 무시된다 — 게다가 <span class="math inline">\(z = x^2\)</span>은 <span class="math inline">\(\pm x\)</span>를 구분하지 못하므로 참 사후분포는 쌍봉인데, EKF는 단봉 가우스만 표현할 수 있다.</li>
+<li><strong>각도 잔차의 되감기(wrapping) 누락.</strong> 방위각 혁신 <span class="math inline">\(\nu = z - h(\hat x^{-})\)</span>를 <span class="math inline">\((-\pi, \pi]\)</span>로 되감지 않으면, 참 오차 <span class="math inline">\(0.1\)</span> rad가 <span class="math inline">\(2\pi - 0.1 \approx 6.18\)</span> rad로 계산되어 한 번의 갱신으로 필터가 튕겨 나간다. 각도가 포함된 모든 잔차·상태 차이에 되감기를 적용하라.</li>
+<li><strong>자코비안의 부호·좌표계 실수.</strong> <span class="math inline">\(H\)</span>의 부호가 틀리면 이득이 오차를 키우는 방향으로 작동한다. 수치미분과의 대조(아래 체크)로 반드시 검증한다.</li>
+<li><strong>과신에 의한 발산.</strong> <span class="math inline">\(Q, R\)</span>을 너무 작게 잡으면 <span class="math inline">\(P\)</span>가 근거 없이 줄고, 이득이 0으로 수렴해 새 측정을 거부하는 “잠긴 필터”가 된다. 선형화 오차는 모형에 없는 오차이므로, 이를 흡수할 여유를 <span class="math inline">\(Q\)</span>에 두는 것이 실무 관행이다.</li>
+</ul>
+<p><span id="p-e099a06c" class="paragraph-anchor"></span>일관성 진단으로는 정규화 혁신제곱(Normalized Innovation Squared, NIS) <span class="math inline">\(\nu^{\top} S^{-1} \nu\)</span>를 감시한다. 필터가 일관되면 이 값은 자유도 <span class="math inline">\(m\)</span>인 카이제곱 분포를 따르므로, 지속적으로 큰 값은 과신 또는 모형 오류의 신호다.</p>
+</section>
+<section id="근사가-부족할-때의-대안-예고" class="level2">
+<h2 class="anchored" data-anchor-id="근사가-부족할-때의-대안-예고">근사가 부족할 때의 대안 예고</h2>
+<ul>
+<li><strong>반복 EKF(Iterated EKF, IEKF)</strong>: 갱신 후의 <span class="math inline">\(\hat x^{+}\)</span>에서 <span class="math inline">\(H\)</span>를 다시 평가해 갱신을 몇 번 반복한다 — 측정 비선형이 강할 때 저렴한 개선.</li>
+<li><strong>무향 칼만 필터(Unscented Kalman Filter, UKF)</strong>: 자코비안 대신 시그마 포인트(sigma point)들을 <span class="math inline">\(f, h\)</span>에 직접 통과시켜 평균·공분산을 근사한다. 미분 불가능한 모형에도 쓸 수 있다.</li>
+<li><strong>파티클 필터(particle filter)</strong>: 가우스 가정 자체를 버리고 표본으로 사후분포를 표현한다. 쌍봉 사후분포처럼 EKF가 원리적으로 표현 못 하는 경우의 해법 — <a href="../../../content/concepts/probability/bootstrap-particle-filter.html">Bootstrap Particle Filter</a> 참조.</li>
+</ul>
+</section>
+<section id="전제-장부" class="level2">
+<h2 class="anchored" data-anchor-id="전제-장부">전제 장부</h2>
+<table id="p-f9cb6c0f" class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>구분</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>모형</td>
+<td><span class="math inline">\(x_{k+1} = f(x_k,u_k) + w_k\)</span>, <span class="math inline">\(z_k = h(x_k) + v_k\)</span>, <span class="math inline">\(w \sim \mathcal N(0,Q)\)</span>, <span class="math inline">\(v \sim \mathcal N(0,R)\)</span>, 상호 독립</td>
+</tr>
+<tr class="even">
+<td>매끄러움</td>
+<td><span class="math inline">\(f, h\)</span>가 추정치 주변에서 미분 가능해 자코비안 <span class="math inline">\(F, H\)</span>가 존재</td>
+</tr>
+<tr class="odd">
+<td>근사 유효성</td>
+<td>공분산 타원 규모에서 1차 테일러 나머지항이 무시 가능</td>
+</tr>
+<tr class="even">
+<td>최적성</td>
+<td>선형·가우스로 퇴화할 때만 정확, 일반적으로는 근사기이며 무편향·일관성 보장 없음</td>
+</tr>
+<tr class="odd">
+<td>각도 상태</td>
+<td>잔차·차이에 <span class="math inline">\((-\pi,\pi]\)</span> 되감기 필요 (더 근본적 해법은 예정 노드 SO(3)/SE(3)의 매니폴드 표현)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="구현-안전-체크" class="level2">
+<h2 class="anchored" data-anchor-id="구현-안전-체크">구현 안전 체크</h2>
+<ul>
+<li>평균 전파에 <span class="math inline">\(f, h\)</span>를, 공분산 전파에만 <span class="math inline">\(F, H\)</span>를 쓰는지 코드에서 직접 확인</li>
+<li>해석적 자코비안을 수치미분(유한차분)과 무작위 상태 여러 점에서 대조</li>
+<li>각도 혁신·상태 차이의 되감기 함수 단위 시험</li>
+<li>공분산 갱신은 조지프 형식, 대칭화 <span class="math inline">\(P \leftarrow (P + P^{\top})/2\)</span> 병행</li>
+<li><span class="math inline">\(S\)</span>의 역행렬을 직접 만들지 말고 선형 시스템 풀이로 <span class="math inline">\(K\)</span> 계산</li>
+<li>NIS 시계열을 카이제곱 구간과 함께 기록해 과신·발산 조기 탐지</li>
+<li><span class="math inline">\(Q\)</span>에 선형화 오차 여유분을 반영하고, 조정 근거를 단위와 함께 문서화</li>
+</ul>
+</section>
+<section id="다음-연결" class="level2">
+<h2 class="anchored" data-anchor-id="다음-연결">다음 연결</h2>
+<ul>
+<li>재사용한 재귀의 원형과 유도: <a href="../../../content/concepts/estimation/kalman-filter.html">칼만 필터</a></li>
+<li><span class="math inline">\(F, H\)</span>를 계산하는 도구 그 자체: <a href="../../../content/concepts/robotics/jacobian.html">자코비안</a></li>
+<li>가우스 근사가 무너질 때: <a href="../../../content/concepts/probability/bootstrap-particle-filter.html">Bootstrap Particle Filter</a></li>
+<li>레인지-베어링 EKF의 완결된 응용: 예정 노드 로봇 위치추정(robot.localization)</li>
+</ul>
+</section>
+</div>
+<section id="회상-점검" class="level2">
+<h2 class="anchored" data-anchor-id="회상-점검">회상 점검</h2>
+<ol type="1">
+<li>평균 전파와 공분산 전파에서 각각 무엇을 사용하는가? 이를 혼동하면 어떤 오류가 생기는가?</li>
+<li><span class="math inline">\(F_k\)</span>와 <span class="math inline">\(H_k\)</span>는 각각 어느 점에서 평가하며, 왜 그 점인가?</li>
+<li>수치 예에서 <span class="math inline">\(\hat x^{-} = 0\)</span>이면 갱신에 무슨 일이 일어나는가? 이것이 드러내는 EKF의 원리적 한계는?</li>
+<li>NIS가 지속적으로 카이제곱 상한을 넘는다면 어떤 원인들을 순서대로 의심하겠는가?</li>
+</ol>
+</section>
+<section id="참고문헌" class="level2">
+<h2 class="anchored" data-anchor-id="참고문헌">참고문헌</h2>
+<ul>
+<li>Andrew H. Jazwinski, <em>Stochastic Processes and Filtering Theory</em>, Academic Press, 1970.</li>
+<li>Yaakov Bar-Shalom, X. Rong Li, and Thiagalingam Kirubarajan, <em>Estimation with Applications to Tracking and Navigation</em>, Wiley, 2001.</li>
+<li>Sebastian Thrun, Wolfram Burgard, and Dieter Fox, <em>Probabilistic Robotics</em>, MIT Press, 2005.</li>
+<li>Simon J. Julier and Jeffrey K. Uhlmann, “Unscented Filtering and Nonlinear Estimation,” <em>Proceedings of the IEEE</em>, 2004.</li>
+</ul>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script>
+(function loadAtlasInterface() {
+  // 리뷰 프로필이 include 목록을 병합할 때 이 조각이 두 번 삽입되더라도
+  // atlas.js가 중복 로드되지 않도록 막는다.
+  if (window.__ATLAS_SCRIPTS_LOADED__) return;
+  window.__ATLAS_SCRIPTS_LOADED__ = true;
+  const resources = Array.from(document.querySelectorAll('link[href], script[src]'));
+  const siteLibrary = resources
+    .map((element) => element.href || element.src)
+    .find((url) => url && url.includes('/site_libs/'));
+  const fallback = new URL('./', document.baseURI).href;
+  const siteRoot = siteLibrary ? siteLibrary.split('/site_libs/')[0] + '/' : fallback;
+  window.__ROBOTICS_MATH_ATLAS_ROOT__ = siteRoot;
+
+  const script = document.createElement('script');
+  script.src = new URL('assets/js/atlas.js', siteRoot).href;
+  script.defer = true;
+  document.head.appendChild(script);
+})();
+</script>
+
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "복사완료!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "복사완료!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">소스 코드</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="p-73be93c4" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="p-73be93c4-1"><a href="#p-73be93c4-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-73be93c4-2"><a href="#p-73be93c4-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기"</span></span>
+<span id="p-73be93c4-3"><a href="#p-73be93c4-3" aria-hidden="true" tabindex="-1"></a><span class="an">id:</span><span class="co"> estimation.extended_kalman_filter</span></span>
+<span id="p-73be93c4-4"><a href="#p-73be93c4-4" aria-hidden="true" tabindex="-1"></a><span class="an">kind:</span><span class="co"> concept</span></span>
+<span id="p-73be93c4-5"><a href="#p-73be93c4-5" aria-hidden="true" tabindex="-1"></a><span class="an">domain:</span><span class="co"> estimation</span></span>
+<span id="p-73be93c4-6"><a href="#p-73be93c4-6" aria-hidden="true" tabindex="-1"></a><span class="an">aliases:</span></span>
+<span id="p-73be93c4-7"><a href="#p-73be93c4-7" aria-hidden="true" tabindex="-1"></a><span class="co">  - EKF</span></span>
+<span id="p-73be93c4-8"><a href="#p-73be93c4-8" aria-hidden="true" tabindex="-1"></a><span class="co">  - extended Kalman filter</span></span>
+<span id="p-73be93c4-9"><a href="#p-73be93c4-9" aria-hidden="true" tabindex="-1"></a><span class="co">  - 확장칼만필터</span></span>
+<span id="p-73be93c4-10"><a href="#p-73be93c4-10" aria-hidden="true" tabindex="-1"></a><span class="an">one-line:</span><span class="co"> "비선형 동역학·측정 모형을 현재 추정치에서 자코비안으로 선형화해 칼만 필터의 예측·측정 갱신을 재사용하는 가우스 상태추정기다."</span></span>
+<span id="p-73be93c4-11"><a href="#p-73be93c4-11" aria-hidden="true" tabindex="-1"></a><span class="an">difficulty:</span><span class="co"> 4</span></span>
+<span id="p-73be93c4-12"><a href="#p-73be93c4-12" aria-hidden="true" tabindex="-1"></a><span class="an">prerequisites:</span></span>
+<span id="p-73be93c4-13"><a href="#p-73be93c4-13" aria-hidden="true" tabindex="-1"></a><span class="co">  intuition:</span></span>
+<span id="p-73be93c4-14"><a href="#p-73be93c4-14" aria-hidden="true" tabindex="-1"></a><span class="co">    required:</span></span>
+<span id="p-73be93c4-15"><a href="#p-73be93c4-15" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: estimation.kalman_filter</span></span>
+<span id="p-73be93c4-16"><a href="#p-73be93c4-16" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: explain</span></span>
+<span id="p-73be93c4-17"><a href="#p-73be93c4-17" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: 예측과 측정을 불확실성으로 절충하는 구조가 동일하다.</span></span>
+<span id="p-73be93c4-18"><a href="#p-73be93c4-18" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful:</span></span>
+<span id="p-73be93c4-19"><a href="#p-73be93c4-19" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: probability.gaussian_conditioning</span></span>
+<span id="p-73be93c4-20"><a href="#p-73be93c4-20" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: explain</span></span>
+<span id="p-73be93c4-21"><a href="#p-73be93c4-21" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: 갱신식이 가우스 조건부의 국소 근사임을 이해한다.</span></span>
+<span id="p-73be93c4-22"><a href="#p-73be93c4-22" aria-hidden="true" tabindex="-1"></a><span class="co">  application:</span></span>
+<span id="p-73be93c4-23"><a href="#p-73be93c4-23" aria-hidden="true" tabindex="-1"></a><span class="co">    required:</span></span>
+<span id="p-73be93c4-24"><a href="#p-73be93c4-24" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: estimation.kalman_filter</span></span>
+<span id="p-73be93c4-25"><a href="#p-73be93c4-25" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: calculate</span></span>
+<span id="p-73be93c4-26"><a href="#p-73be93c4-26" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: 선형 KF의 예측·측정 갱신 식을 그대로 재사용한다.</span></span>
+<span id="p-73be93c4-27"><a href="#p-73be93c4-27" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: robot.jacobian</span></span>
+<span id="p-73be93c4-28"><a href="#p-73be93c4-28" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: calculate</span></span>
+<span id="p-73be93c4-29"><a href="#p-73be93c4-29" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: f와 h의 자코비안 F, H를 현재 추정치에서 평가한다.</span></span>
+<span id="p-73be93c4-30"><a href="#p-73be93c4-30" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful: []</span></span>
+<span id="p-73be93c4-31"><a href="#p-73be93c4-31" aria-hidden="true" tabindex="-1"></a><span class="an">relations:</span></span>
+<span id="p-73be93c4-32"><a href="#p-73be93c4-32" aria-hidden="true" tabindex="-1"></a><span class="co">  requires:</span></span>
+<span id="p-73be93c4-33"><a href="#p-73be93c4-33" aria-hidden="true" tabindex="-1"></a><span class="co">    - estimation.kalman_filter</span></span>
+<span id="p-73be93c4-34"><a href="#p-73be93c4-34" aria-hidden="true" tabindex="-1"></a><span class="co">    - robot.jacobian</span></span>
+<span id="p-73be93c4-35"><a href="#p-73be93c4-35" aria-hidden="true" tabindex="-1"></a><span class="co">  derived-from:</span></span>
+<span id="p-73be93c4-36"><a href="#p-73be93c4-36" aria-hidden="true" tabindex="-1"></a><span class="co">    - estimation.kalman_filter</span></span>
+<span id="p-73be93c4-37"><a href="#p-73be93c4-37" aria-hidden="true" tabindex="-1"></a><span class="co">  used-in:</span></span>
+<span id="p-73be93c4-38"><a href="#p-73be93c4-38" aria-hidden="true" tabindex="-1"></a><span class="co">    - robot.state_estimation</span></span>
+<span id="p-73be93c4-39"><a href="#p-73be93c4-39" aria-hidden="true" tabindex="-1"></a><span class="co">    - robot.sensor_fusion</span></span>
+<span id="p-73be93c4-40"><a href="#p-73be93c4-40" aria-hidden="true" tabindex="-1"></a><span class="co">    - robot.localization</span></span>
+<span id="p-73be93c4-41"><a href="#p-73be93c4-41" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-73be93c4-42"><a href="#p-73be93c4-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-43"><a href="#p-73be93c4-43" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="30초 핵심"}</span>
+<span id="p-73be93c4-44"><a href="#p-73be93c4-44" aria-hidden="true" tabindex="-1"></a>확장 칼만 필터(Extended Kalman Filter, EKF)는 비선형 동역학 $f$와 비선형 측정 $h$를 **현재 추정치에서 자코비안(Jacobian)으로 국소 선형화**해, 선형 칼만 필터의 예측–갱신 재귀를 그대로 재사용하는 가우스(Gaussian) 상태추정기다. 이동 로봇의 위치추정과 센서 융합에서 사실상의 기본기다. 단, 선형화는 추정치 주변에서만 유효하므로 **비선형성이 강하거나 공분산이 크면 근사가 깨져 발산할 수 있다** — 정확한 사후분포를 계산하는 필터가 아니라 국소 근사기다.</span>
+<span id="p-73be93c4-45"><a href="#p-73be93c4-45" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-73be93c4-46"><a href="#p-73be93c4-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-47"><a href="#p-73be93c4-47" aria-hidden="true" tabindex="-1"></a>::: {.depth-intuition}</span>
+<span id="p-73be93c4-48"><a href="#p-73be93c4-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-49"><a href="#p-73be93c4-49" aria-hidden="true" tabindex="-1"></a><span class="fu">## 해결하려는 문제: 선형 가정이 깨지는 순간</span></span>
+<span id="p-73be93c4-50"><a href="#p-73be93c4-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-51"><a href="#p-73be93c4-51" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">칼만 필터</span><span class="co">](kalman-filter.qmd)</span>는 동역학과 측정이 모두 선형 행렬 $F, H$로 쓰인다고 가정했다. 그러나 로봇의 모형은 대부분 비선형이다.</span>
+<span id="p-73be93c4-52"><a href="#p-73be93c4-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-53"><a href="#p-73be93c4-53" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-54"><a href="#p-73be93c4-54" aria-hidden="true" tabindex="-1"></a>x_{k+1} = f(x_k, u_k) + w_k, \qquad</span>
+<span id="p-73be93c4-55"><a href="#p-73be93c4-55" aria-hidden="true" tabindex="-1"></a>z_k = h(x_k) + v_k</span>
+<span id="p-73be93c4-56"><a href="#p-73be93c4-56" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-57"><a href="#p-73be93c4-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-58"><a href="#p-73be93c4-58" aria-hidden="true" tabindex="-1"></a>여기서 $w_k \sim \mathcal N(0, Q)$, $v_k \sim \mathcal N(0, R)$은 서로 독립인 잡음(noise)이다. 방향각 $\theta$가 $\cos\theta, \sin\theta$로 위치에 들어가는 이동 로봇의 동역학, 랜드마크까지의 거리 $\sqrt{\cdot}$와 방위각 $\operatorname{atan2}$로 이루어진 측정이 전형적인 예다. 이런 $f, h$에는 "행렬을 곱한다"는 칼만 필터의 두 식을 그대로 쓸 수 없고, 가우스 분포를 비선형 함수에 통과시키면 결과는 더 이상 가우스가 아니다.</span>
+<span id="p-73be93c4-59"><a href="#p-73be93c4-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-60"><a href="#p-73be93c4-60" aria-hidden="true" tabindex="-1"></a><span class="fu">## 핵심 아이디어: 지금 있는 곳에서 1차 테일러 전개</span></span>
+<span id="p-73be93c4-61"><a href="#p-73be93c4-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-62"><a href="#p-73be93c4-62" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">자코비안</span><span class="co">](../robotics/jacobian.qmd)</span> 장의 결론을 그대로 가져온다. 매끄러운 함수는 한 점 주변에서 자코비안이라는 선형 지도로 근사된다. EKF는 이 근사를 **가장 좋은 정보가 있는 점, 즉 현재 추정치**에서 수행한다.</span>
+<span id="p-73be93c4-63"><a href="#p-73be93c4-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-64"><a href="#p-73be93c4-64" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-65"><a href="#p-73be93c4-65" aria-hidden="true" tabindex="-1"></a>F_k = \left.\frac{\partial f}{\partial x}\right|_{\hat x_k^{+},\,u_k}, \qquad</span>
+<span id="p-73be93c4-66"><a href="#p-73be93c4-66" aria-hidden="true" tabindex="-1"></a>H_k = \left.\frac{\partial h}{\partial x}\right|_{\hat x_k^{-}}</span>
+<span id="p-73be93c4-67"><a href="#p-73be93c4-67" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-68"><a href="#p-73be93c4-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-69"><a href="#p-73be93c4-69" aria-hidden="true" tabindex="-1"></a>동역학의 자코비안 $F_k$는 갱신이 끝난 사후 추정 $\hat x_k^{+}$에서, 측정의 자코비안 $H_k$는 예측된 사전 추정 $\hat x_k^{-}$에서 평가한다 — 각 단계가 시작될 때 손에 쥔 최선의 상태가 그것이기 때문이다. 이렇게 만든 $F_k, H_k$를 선형 칼만 필터의 자리에 끼워 넣으면 나머지 재귀는 동일하다.</span>
+<span id="p-73be93c4-70"><a href="#p-73be93c4-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-71"><a href="#p-73be93c4-71" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-73be93c4-72"><a href="#p-73be93c4-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-73"><a href="#p-73be93c4-73" aria-hidden="true" tabindex="-1"></a>::: {.depth-application}</span>
+<span id="p-73be93c4-74"><a href="#p-73be93c4-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-75"><a href="#p-73be93c4-75" aria-hidden="true" tabindex="-1"></a><span class="fu">## 기호와 모양 점검</span></span>
+<span id="p-73be93c4-76"><a href="#p-73be93c4-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-77"><a href="#p-73be93c4-77" aria-hidden="true" tabindex="-1"></a>상태 $x \in \mathbb R^n$, 입력 $u \in \mathbb R^p$, 측정 $z \in \mathbb R^m$일 때 $F_k$는 $n \times n$, $H_k$는 $m \times n$, $Q$는 $n \times n$, $R$은 $m \times m$이다. $F_k$의 $(i,j)$ 성분의 단위는 (상태 $i$의 단위)/(상태 $j$의 단위)로, 선형 필터의 $F, H$와 모양·단위 규칙이 완전히 같다. 자코비안이 아닌 $f, h$ 자체는 벡터를 벡터로 보내는 비선형 함수라는 점만 다르다.</span>
+<span id="p-73be93c4-78"><a href="#p-73be93c4-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-79"><a href="#p-73be93c4-79" aria-hidden="true" tabindex="-1"></a><span class="fu">## 알고리즘: 평균은 비선형 그대로, 공분산만 자코비안</span></span>
+<span id="p-73be93c4-80"><a href="#p-73be93c4-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-81"><a href="#p-73be93c4-81" aria-hidden="true" tabindex="-1"></a>**예측(prediction).** 사후 추정 $(\hat x_k^{+}, P_k^{+})$에서 출발한다.</span>
+<span id="p-73be93c4-82"><a href="#p-73be93c4-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-83"><a href="#p-73be93c4-83" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-84"><a href="#p-73be93c4-84" aria-hidden="true" tabindex="-1"></a>\hat x_{k+1}^{-} = f(\hat x_k^{+}, u_k), \qquad</span>
+<span id="p-73be93c4-85"><a href="#p-73be93c4-85" aria-hidden="true" tabindex="-1"></a>P_{k+1}^{-} = F_k P_k^{+} F_k^{\top} + Q</span>
+<span id="p-73be93c4-86"><a href="#p-73be93c4-86" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-87"><a href="#p-73be93c4-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-88"><a href="#p-73be93c4-88" aria-hidden="true" tabindex="-1"></a>**측정 갱신(measurement update).** 사전 추정 $(\hat x_k^{-}, P_k^{-})$과 측정 $z_k$를 결합한다.</span>
+<span id="p-73be93c4-89"><a href="#p-73be93c4-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-90"><a href="#p-73be93c4-90" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-91"><a href="#p-73be93c4-91" aria-hidden="true" tabindex="-1"></a>\nu_k = z_k - h(\hat x_k^{-}), \qquad</span>
+<span id="p-73be93c4-92"><a href="#p-73be93c4-92" aria-hidden="true" tabindex="-1"></a>S_k = H_k P_k^{-} H_k^{\top} + R, \qquad</span>
+<span id="p-73be93c4-93"><a href="#p-73be93c4-93" aria-hidden="true" tabindex="-1"></a>K_k = P_k^{-} H_k^{\top} S_k^{-1}</span>
+<span id="p-73be93c4-94"><a href="#p-73be93c4-94" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-95"><a href="#p-73be93c4-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-96"><a href="#p-73be93c4-96" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-97"><a href="#p-73be93c4-97" aria-hidden="true" tabindex="-1"></a>\hat x_k^{+} = \hat x_k^{-} + K_k \nu_k, \qquad</span>
+<span id="p-73be93c4-98"><a href="#p-73be93c4-98" aria-hidden="true" tabindex="-1"></a>P_k^{+} = (I - K_k H_k)\, P_k^{-}</span>
+<span id="p-73be93c4-99"><a href="#p-73be93c4-99" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-100"><a href="#p-73be93c4-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-101"><a href="#p-73be93c4-101" aria-hidden="true" tabindex="-1"></a>혁신(innovation) $\nu_k$는 $m$차원, 혁신 공분산 $S_k$는 $m \times m$, 이득(gain) $K_k$는 $n \times m$으로 선형 필터와 모양이 같다. 수치 안정성을 위해 공분산 갱신은 조지프(Joseph) 형식 $P_k^{+} = (I - K_k H_k) P_k^{-} (I - K_k H_k)^{\top} + K_k R K_k^{\top}$을 권장한다 — 이득이 최적에서 조금 벗어나도 대칭·양의 준정부호가 유지된다.</span>
+<span id="p-73be93c4-102"><a href="#p-73be93c4-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-103"><a href="#p-73be93c4-103" aria-hidden="true" tabindex="-1"></a>여기서 이 장에서 가장 중요한 구분 하나. **평균의 전파는 비선형 함수 $f, h$를 그대로 통과시키고, 공분산의 전파에만 자코비안 $F, H$를 쓴다.** 예측 평균을 $F \hat x^{+}$로, 혁신을 $z - H\hat x^{-}$로 쓰는 것은 흔하지만 명백한 오류다 — 자코비안은 "변화율"이지 함수값이 아니다.</span>
+<span id="p-73be93c4-104"><a href="#p-73be93c4-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-105"><a href="#p-73be93c4-105" aria-hidden="true" tabindex="-1"></a><span class="fu">## 손으로 따라가는 수치 예: 제곱 측정 하나</span></span>
+<span id="p-73be93c4-106"><a href="#p-73be93c4-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-107"><a href="#p-73be93c4-107" aria-hidden="true" tabindex="-1"></a>1차원 상태를 비선형 센서 $z = x^2 + v$로 관측한다. 사전 추정 $\hat x^{-} = 2$, $P^{-} = 0.25$, $R = 1$, 측정값 $z = 5$라 하자.</span>
+<span id="p-73be93c4-108"><a href="#p-73be93c4-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-109"><a href="#p-73be93c4-109" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>자코비안: $h(x) = x^2$이므로 $H = 2\hat x^{-} = 4$ (스칼라, $1\times1$).</span>
+<span id="p-73be93c4-110"><a href="#p-73be93c4-110" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>혁신: $\nu = z - h(\hat x^{-}) = 5 - 2^2 = 1$. 예측 측정에 $H\hat x^{-} = 8$이 아니라 $h(\hat x^{-}) = 4$를 쓴 것에 주목하라.</span>
+<span id="p-73be93c4-111"><a href="#p-73be93c4-111" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>혁신 공분산: $S = H P^{-} H + R = 4 \cdot 0.25 \cdot 4 + 1 = 5$.</span>
+<span id="p-73be93c4-112"><a href="#p-73be93c4-112" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>이득: $K = P^{-} H / S = 0.25 \cdot 4 / 5 = 0.2$.</span>
+<span id="p-73be93c4-113"><a href="#p-73be93c4-113" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>갱신: $\hat x^{+} = 2 + 0.2 \cdot 1 = 2.2$, $\quad P^{+} = (1 - 0.2 \cdot 4) \cdot 0.25 = 0.2 \cdot 0.25 = 0.05$.</span>
+<span id="p-73be93c4-114"><a href="#p-73be93c4-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-115"><a href="#p-73be93c4-115" aria-hidden="true" tabindex="-1"></a>**검산.** 조지프 형식으로 다시 계산하면 $P^{+} = (1-0.8) \cdot 0.25 \cdot (1-0.8) + 0.2 \cdot 1 \cdot 0.2 = 0.01 + 0.04 = 0.05$로 일치한다. 갱신된 추정의 예측 측정은 $h(2.2) = 4.84$로, 갱신 전 $4$보다 측정값 $5$에 가까워졌다.</span>
+<span id="p-73be93c4-116"><a href="#p-73be93c4-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-117"><a href="#p-73be93c4-117" aria-hidden="true" tabindex="-1"></a><span class="fu">## 로봇 예: 평면 자세와 레인지-베어링 측정</span></span>
+<span id="p-73be93c4-118"><a href="#p-73be93c4-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-119"><a href="#p-73be93c4-119" aria-hidden="true" tabindex="-1"></a>상태를 평면 자세 $x = (x, y, \theta)^{\top}$, 입력을 속도 $v$와 각속도 $\omega$로 두면 흔한 동역학은</span>
+<span id="p-73be93c4-120"><a href="#p-73be93c4-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-121"><a href="#p-73be93c4-121" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-122"><a href="#p-73be93c4-122" aria-hidden="true" tabindex="-1"></a>f(x, u) =</span>
+<span id="p-73be93c4-123"><a href="#p-73be93c4-123" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix}</span>
+<span id="p-73be93c4-124"><a href="#p-73be93c4-124" aria-hidden="true" tabindex="-1"></a>x + v\,\Delta t \cos\theta <span class="sc">\\</span></span>
+<span id="p-73be93c4-125"><a href="#p-73be93c4-125" aria-hidden="true" tabindex="-1"></a>y + v\,\Delta t \sin\theta <span class="sc">\\</span></span>
+<span id="p-73be93c4-126"><a href="#p-73be93c4-126" aria-hidden="true" tabindex="-1"></a>\theta + \omega\,\Delta t</span>
+<span id="p-73be93c4-127"><a href="#p-73be93c4-127" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="p-73be93c4-128"><a href="#p-73be93c4-128" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-129"><a href="#p-73be93c4-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-130"><a href="#p-73be93c4-130" aria-hidden="true" tabindex="-1"></a>이고, 자코비안은 $3 \times 3$으로</span>
+<span id="p-73be93c4-131"><a href="#p-73be93c4-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-132"><a href="#p-73be93c4-132" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-133"><a href="#p-73be93c4-133" aria-hidden="true" tabindex="-1"></a>F =</span>
+<span id="p-73be93c4-134"><a href="#p-73be93c4-134" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix}</span>
+<span id="p-73be93c4-135"><a href="#p-73be93c4-135" aria-hidden="true" tabindex="-1"></a>1 &amp; 0 &amp; -v\,\Delta t \sin\theta <span class="sc">\\</span></span>
+<span id="p-73be93c4-136"><a href="#p-73be93c4-136" aria-hidden="true" tabindex="-1"></a>0 &amp; 1 &amp; \phantom{-}v\,\Delta t \cos\theta <span class="sc">\\</span></span>
+<span id="p-73be93c4-137"><a href="#p-73be93c4-137" aria-hidden="true" tabindex="-1"></a>0 &amp; 0 &amp; 1</span>
+<span id="p-73be93c4-138"><a href="#p-73be93c4-138" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="p-73be93c4-139"><a href="#p-73be93c4-139" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-140"><a href="#p-73be93c4-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-141"><a href="#p-73be93c4-141" aria-hidden="true" tabindex="-1"></a>이다. 항등행렬에서 벗어나는 곳은 셋째 열뿐 — "방향각의 오차가 위치 오차로 번진다"는 구조가 그대로 읽힌다. 알려진 랜드마크 $(\ell_x, \ell_y)$에 대한 레인지-베어링(range-bearing) 측정 $h(x) = \big(r,\ \operatorname{atan2}(\ell_y - y,\, \ell_x - x) - \theta\big)^{\top}$, $r = \sqrt{(\ell_x - x)^2 + (\ell_y - y)^2}$의 자코비안 $H$는 $2 \times 3$이며, 예를 들어 첫 행은 $\big({-(\ell_x - x)/r},\ {-(\ell_y - y)/r},\ 0\big)$, 둘째 행의 마지막 항은 $-1$이다(방위각은 로봇이 회전한 만큼 반대로 움직인다). 전체 유도는 연쇄법칙의 반복이므로 생략하지만, 각 항의 단위 — 첫 행은 무차원, 둘째 행의 위치 편미분은 rad/m — 를 확인하는 습관이 부호 실수를 잡아 준다.</span>
+<span id="p-73be93c4-142"><a href="#p-73be93c4-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-143"><a href="#p-73be93c4-143" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-73be93c4-144"><a href="#p-73be93c4-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-145"><a href="#p-73be93c4-145" aria-hidden="true" tabindex="-1"></a>::: {.depth-derivation}</span>
+<span id="p-73be93c4-146"><a href="#p-73be93c4-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-147"><a href="#p-73be93c4-147" aria-hidden="true" tabindex="-1"></a><span class="fu">## 공분산 전파 식의 유도: 오차에 대한 선형화</span></span>
+<span id="p-73be93c4-148"><a href="#p-73be93c4-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-149"><a href="#p-73be93c4-149" aria-hidden="true" tabindex="-1"></a>한 단계에 한 변화만 준다. 사후 오차를 $e_k^{+} = x_k - \hat x_k^{+}$라 하고, 참 상태의 전파 $x_{k+1} = f(x_k, u_k) + w_k$에서 $f$를 $\hat x_k^{+}$ 주변에서 1차 테일러 전개한다.</span>
+<span id="p-73be93c4-150"><a href="#p-73be93c4-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-151"><a href="#p-73be93c4-151" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-152"><a href="#p-73be93c4-152" aria-hidden="true" tabindex="-1"></a>f(x_k, u_k) = f(\hat x_k^{+}, u_k) + F_k\, e_k^{+} + r(e_k^{+})</span>
+<span id="p-73be93c4-153"><a href="#p-73be93c4-153" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-154"><a href="#p-73be93c4-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-155"><a href="#p-73be93c4-155" aria-hidden="true" tabindex="-1"></a>나머지항 $r$은 $<span class="sc">\|</span>e_k^{+}<span class="sc">\|</span>$에 대해 2차 이상이다. 이를 예측 오차에 대입하면</span>
+<span id="p-73be93c4-156"><a href="#p-73be93c4-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-157"><a href="#p-73be93c4-157" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-158"><a href="#p-73be93c4-158" aria-hidden="true" tabindex="-1"></a>e_{k+1}^{-} = x_{k+1} - \hat x_{k+1}^{-}</span>
+<span id="p-73be93c4-159"><a href="#p-73be93c4-159" aria-hidden="true" tabindex="-1"></a>= F_k\, e_k^{+} + w_k + r(e_k^{+})</span>
+<span id="p-73be93c4-160"><a href="#p-73be93c4-160" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-161"><a href="#p-73be93c4-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-162"><a href="#p-73be93c4-162" aria-hidden="true" tabindex="-1"></a>이다. 나머지항을 버리는 것이 EKF의 유일한 근사다. 버린 뒤 양변의 공분산을 취하면, 오차와 잡음이 독립이므로</span>
+<span id="p-73be93c4-163"><a href="#p-73be93c4-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-164"><a href="#p-73be93c4-164" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-165"><a href="#p-73be93c4-165" aria-hidden="true" tabindex="-1"></a>P_{k+1}^{-} = \operatorname{Cov}(F_k e_k^{+} + w_k) = F_k P_k^{+} F_k^{\top} + Q</span>
+<span id="p-73be93c4-166"><a href="#p-73be93c4-166" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-73be93c4-167"><a href="#p-73be93c4-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-168"><a href="#p-73be93c4-168" aria-hidden="true" tabindex="-1"></a>를 얻는다. 측정 쪽도 동일하게 $h(x_k) \approx h(\hat x_k^{-}) + H_k e_k^{-}$로 전개하면 혁신이 $\nu_k \approx H_k e_k^{-} + v_k$가 되어, 선형 칼만 필터의 갱신 유도(<span class="co">[</span><span class="ot">가우스 조건부</span><span class="co">](kalman-filter.qmd)</span> 관점)가 글자 그대로 재사용된다. 즉 EKF는 새 필터가 아니라 **"오차 좌표에서의 선형 칼만 필터"**다.</span>
+<span id="p-73be93c4-169"><a href="#p-73be93c4-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-170"><a href="#p-73be93c4-170" aria-hidden="true" tabindex="-1"></a>**검산.** $f(x,u) = Fx + Bu$, $h(x) = Hx$인 선형 모형이면 자코비안이 상수 $F, H$이고 나머지항 $r \equiv 0$이므로, 위 식 전부가 선형 칼만 필터와 정확히 일치한다 — 근사가 근사 아닌 경우로 퇴화하는지 확인했다.</span>
+<span id="p-73be93c4-171"><a href="#p-73be93c4-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-172"><a href="#p-73be93c4-172" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-73be93c4-173"><a href="#p-73be93c4-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-174"><a href="#p-73be93c4-174" aria-hidden="true" tabindex="-1"></a>::: {.depth-application}</span>
+<span id="p-73be93c4-175"><a href="#p-73be93c4-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-176"><a href="#p-73be93c4-176" aria-hidden="true" tabindex="-1"></a><span class="fu">## 성립 조건과 실패 조건</span></span>
+<span id="p-73be93c4-177"><a href="#p-73be93c4-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-178"><a href="#p-73be93c4-178" aria-hidden="true" tabindex="-1"></a>EKF가 잘 작동하는 조건은 한 문장으로 요약된다. **공분산 타원이 덮는 영역 안에서 $f, h$가 거의 선형이어야 한다.** 즉 선형화의 유효 반경이 $P$의 크기보다 커야 한다. 이 조건이 깨지는 대표적 상황들:</span>
+<span id="p-73be93c4-179"><a href="#p-73be93c4-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-180"><a href="#p-73be93c4-180" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**강한 비선형 + 큰 초기 불확실성.** 위 수치 예에서 $P^{-}$가 커서 추정이 $x = 0$ 근처까지 걸치면 $h(x) = x^2$의 기울기가 $-4$에서 $+4$까지 변하고, 한 점에서 평가한 $H$는 대표성을 잃는다. 극단적으로 $\hat x^{-} = 0$이면 $H = 0$이 되어 측정이 완전히 무시된다 — 게다가 $z = x^2$은 $\pm x$를 구분하지 못하므로 참 사후분포는 쌍봉인데, EKF는 단봉 가우스만 표현할 수 있다.</span>
+<span id="p-73be93c4-181"><a href="#p-73be93c4-181" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**각도 잔차의 되감기(wrapping) 누락.** 방위각 혁신 $\nu = z - h(\hat x^{-})$를 $(-\pi, \pi]$로 되감지 않으면, 참 오차 $0.1$ rad가 $2\pi - 0.1 \approx 6.18$ rad로 계산되어 한 번의 갱신으로 필터가 튕겨 나간다. 각도가 포함된 모든 잔차·상태 차이에 되감기를 적용하라.</span>
+<span id="p-73be93c4-182"><a href="#p-73be93c4-182" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**자코비안의 부호·좌표계 실수.** $H$의 부호가 틀리면 이득이 오차를 키우는 방향으로 작동한다. 수치미분과의 대조(아래 체크)로 반드시 검증한다.</span>
+<span id="p-73be93c4-183"><a href="#p-73be93c4-183" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**과신에 의한 발산.** $Q, R$을 너무 작게 잡으면 $P$가 근거 없이 줄고, 이득이 0으로 수렴해 새 측정을 거부하는 "잠긴 필터"가 된다. 선형화 오차는 모형에 없는 오차이므로, 이를 흡수할 여유를 $Q$에 두는 것이 실무 관행이다.</span>
+<span id="p-73be93c4-184"><a href="#p-73be93c4-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-185"><a href="#p-73be93c4-185" aria-hidden="true" tabindex="-1"></a>일관성 진단으로는 정규화 혁신제곱(Normalized Innovation Squared, NIS) $\nu^{\top} S^{-1} \nu$를 감시한다. 필터가 일관되면 이 값은 자유도 $m$인 카이제곱 분포를 따르므로, 지속적으로 큰 값은 과신 또는 모형 오류의 신호다.</span>
+<span id="p-73be93c4-186"><a href="#p-73be93c4-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-187"><a href="#p-73be93c4-187" aria-hidden="true" tabindex="-1"></a><span class="fu">## 근사가 부족할 때의 대안 예고</span></span>
+<span id="p-73be93c4-188"><a href="#p-73be93c4-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-189"><a href="#p-73be93c4-189" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**반복 EKF(Iterated EKF, IEKF)**: 갱신 후의 $\hat x^{+}$에서 $H$를 다시 평가해 갱신을 몇 번 반복한다 — 측정 비선형이 강할 때 저렴한 개선.</span>
+<span id="p-73be93c4-190"><a href="#p-73be93c4-190" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**무향 칼만 필터(Unscented Kalman Filter, UKF)**: 자코비안 대신 시그마 포인트(sigma point)들을 $f, h$에 직접 통과시켜 평균·공분산을 근사한다. 미분 불가능한 모형에도 쓸 수 있다.</span>
+<span id="p-73be93c4-191"><a href="#p-73be93c4-191" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**파티클 필터(particle filter)**: 가우스 가정 자체를 버리고 표본으로 사후분포를 표현한다. 쌍봉 사후분포처럼 EKF가 원리적으로 표현 못 하는 경우의 해법 — <span class="co">[</span><span class="ot">Bootstrap Particle Filter</span><span class="co">](../probability/bootstrap-particle-filter.qmd)</span> 참조.</span>
+<span id="p-73be93c4-192"><a href="#p-73be93c4-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-193"><a href="#p-73be93c4-193" aria-hidden="true" tabindex="-1"></a><span class="fu">## 전제 장부</span></span>
+<span id="p-73be93c4-194"><a href="#p-73be93c4-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-195"><a href="#p-73be93c4-195" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 구분 <span class="pp">|</span> 내용 <span class="pp">|</span></span>
+<span id="p-73be93c4-196"><a href="#p-73be93c4-196" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|</span></span>
+<span id="p-73be93c4-197"><a href="#p-73be93c4-197" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 모형 <span class="pp">|</span> $x_{k+1} = f(x_k,u_k) + w_k$, $z_k = h(x_k) + v_k$, $w \sim \mathcal N(0,Q)$, $v \sim \mathcal N(0,R)$, 상호 독립 <span class="pp">|</span></span>
+<span id="p-73be93c4-198"><a href="#p-73be93c4-198" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 매끄러움 <span class="pp">|</span> $f, h$가 추정치 주변에서 미분 가능해 자코비안 $F, H$가 존재 <span class="pp">|</span></span>
+<span id="p-73be93c4-199"><a href="#p-73be93c4-199" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 근사 유효성 <span class="pp">|</span> 공분산 타원 규모에서 1차 테일러 나머지항이 무시 가능 <span class="pp">|</span></span>
+<span id="p-73be93c4-200"><a href="#p-73be93c4-200" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 최적성 <span class="pp">|</span> 선형·가우스로 퇴화할 때만 정확, 일반적으로는 근사기이며 무편향·일관성 보장 없음 <span class="pp">|</span></span>
+<span id="p-73be93c4-201"><a href="#p-73be93c4-201" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 각도 상태 <span class="pp">|</span> 잔차·차이에 $(-\pi,\pi]$ 되감기 필요 (더 근본적 해법은 예정 노드 SO(3)/SE(3)의 매니폴드 표현) <span class="pp">|</span></span>
+<span id="p-73be93c4-202"><a href="#p-73be93c4-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-203"><a href="#p-73be93c4-203" aria-hidden="true" tabindex="-1"></a><span class="fu">## 구현 안전 체크</span></span>
+<span id="p-73be93c4-204"><a href="#p-73be93c4-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-205"><a href="#p-73be93c4-205" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>평균 전파에 $f, h$를, 공분산 전파에만 $F, H$를 쓰는지 코드에서 직접 확인</span>
+<span id="p-73be93c4-206"><a href="#p-73be93c4-206" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>해석적 자코비안을 수치미분(유한차분)과 무작위 상태 여러 점에서 대조</span>
+<span id="p-73be93c4-207"><a href="#p-73be93c4-207" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>각도 혁신·상태 차이의 되감기 함수 단위 시험</span>
+<span id="p-73be93c4-208"><a href="#p-73be93c4-208" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>공분산 갱신은 조지프 형식, 대칭화 $P \leftarrow (P + P^{\top})/2$ 병행</span>
+<span id="p-73be93c4-209"><a href="#p-73be93c4-209" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$S$의 역행렬을 직접 만들지 말고 선형 시스템 풀이로 $K$ 계산</span>
+<span id="p-73be93c4-210"><a href="#p-73be93c4-210" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>NIS 시계열을 카이제곱 구간과 함께 기록해 과신·발산 조기 탐지</span>
+<span id="p-73be93c4-211"><a href="#p-73be93c4-211" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$Q$에 선형화 오차 여유분을 반영하고, 조정 근거를 단위와 함께 문서화</span>
+<span id="p-73be93c4-212"><a href="#p-73be93c4-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-213"><a href="#p-73be93c4-213" aria-hidden="true" tabindex="-1"></a><span class="fu">## 다음 연결</span></span>
+<span id="p-73be93c4-214"><a href="#p-73be93c4-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-215"><a href="#p-73be93c4-215" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>재사용한 재귀의 원형과 유도: <span class="co">[</span><span class="ot">칼만 필터</span><span class="co">](kalman-filter.qmd)</span></span>
+<span id="p-73be93c4-216"><a href="#p-73be93c4-216" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$F, H$를 계산하는 도구 그 자체: <span class="co">[</span><span class="ot">자코비안</span><span class="co">](../robotics/jacobian.qmd)</span></span>
+<span id="p-73be93c4-217"><a href="#p-73be93c4-217" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>가우스 근사가 무너질 때: <span class="co">[</span><span class="ot">Bootstrap Particle Filter</span><span class="co">](../probability/bootstrap-particle-filter.qmd)</span></span>
+<span id="p-73be93c4-218"><a href="#p-73be93c4-218" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>레인지-베어링 EKF의 완결된 응용: 예정 노드 로봇 위치추정(robot.localization)</span>
+<span id="p-73be93c4-219"><a href="#p-73be93c4-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-220"><a href="#p-73be93c4-220" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-73be93c4-221"><a href="#p-73be93c4-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-222"><a href="#p-73be93c4-222" aria-hidden="true" tabindex="-1"></a><span class="fu">## 회상 점검</span></span>
+<span id="p-73be93c4-223"><a href="#p-73be93c4-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-224"><a href="#p-73be93c4-224" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>평균 전파와 공분산 전파에서 각각 무엇을 사용하는가? 이를 혼동하면 어떤 오류가 생기는가?</span>
+<span id="p-73be93c4-225"><a href="#p-73be93c4-225" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$F_k$와 $H_k$는 각각 어느 점에서 평가하며, 왜 그 점인가?</span>
+<span id="p-73be93c4-226"><a href="#p-73be93c4-226" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>수치 예에서 $\hat x^{-} = 0$이면 갱신에 무슨 일이 일어나는가? 이것이 드러내는 EKF의 원리적 한계는?</span>
+<span id="p-73be93c4-227"><a href="#p-73be93c4-227" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>NIS가 지속적으로 카이제곱 상한을 넘는다면 어떤 원인들을 순서대로 의심하겠는가?</span>
+<span id="p-73be93c4-228"><a href="#p-73be93c4-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-229"><a href="#p-73be93c4-229" aria-hidden="true" tabindex="-1"></a><span class="fu">## 참고문헌</span></span>
+<span id="p-73be93c4-230"><a href="#p-73be93c4-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-73be93c4-231"><a href="#p-73be93c4-231" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Andrew H. Jazwinski, *Stochastic Processes and Filtering Theory*, Academic Press, 1970.</span>
+<span id="p-73be93c4-232"><a href="#p-73be93c4-232" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Yaakov Bar-Shalom, X. Rong Li, and Thiagalingam Kirubarajan, *Estimation with Applications to Tracking and Navigation*, Wiley, 2001.</span>
+<span id="p-73be93c4-233"><a href="#p-73be93c4-233" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Sebastian Thrun, Wolfram Burgard, and Dieter Fox, *Probabilistic Robotics*, MIT Press, 2005.</span>
+<span id="p-73be93c4-234"><a href="#p-73be93c4-234" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Simon J. Julier and Jeffrey K. Uhlmann, "Unscented Filtering and Nonlinear Estimation," *Proceedings of the IEEE*, 2004.</span></code></pre></div><button title="클립보드 복사" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p><span id="p-34ab9566" class="paragraph-anchor"></span>© Robotics Math Atlas contributors · CC BY-NC-SA 4.0</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/blob/main/content/concepts/estimation/extended-kalman-filter.qmd" class="toc-action"><i class="bi bi-github"></i>소스코드 보기</a></li><li><a href="https://github.com/ycpiglet/linear_algebra_for_robotics/issues/new" class="toc-action"><i class="bi empty"></i>이슈 보고</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="../../../about.html#progress-center">
+<p><span id="p-9341ed86" class="paragraph-anchor"></span>학습 기록 관리</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

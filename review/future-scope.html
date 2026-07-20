@@ -486,6 +486,12 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./content/concepts/linalg/eigenvalues.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">고유값과 고유벡터: 동역학이 변하지 않는 방향</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./content/concepts/linalg/least-squares.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기</span></a>
   </div>
@@ -500,6 +506,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="./content/concepts/linalg/orthogonal-projection.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">직교투영: 도달 가능한 것 중 가장 가까운 답</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/linalg/svd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬</span></a>
   </div>
 </li>
       </ul>
@@ -581,6 +593,12 @@ window.Quarto = {
  <span class="menu-text">자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/robotics/rotation-representations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나</span></a>
+  </div>
+</li>
       </ul>
   </li>
       </ul>
@@ -629,6 +647,12 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/gibbs-sampling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./content/concepts/probability/importance-sampling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Importance Sampling</span></a>
   </div>
@@ -637,6 +661,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="./content/concepts/probability/markov-chain.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Markov Chain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/probability/mcmc-diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MCMC 수렴 진단: 언제 chain을 믿을 수 있나</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -703,6 +733,12 @@ window.Quarto = {
           </a> 
       </div>
       <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./content/concepts/estimation/extended-kalman-filter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기</span></a>
+  </div>
+</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./content/concepts/estimation/kalman-filter.html" class="sidebar-item-text sidebar-link">
@@ -1263,24 +1299,18 @@ window.Quarto = {
 <td>← 신호 및 시스템</td>
 </tr>
 <tr class="odd">
-<td><code>estimation.extended_kalman_filter</code></td>
-<td>확장 칼만 필터</td>
-<td>비선형 동역학·측정을 자코비안으로 국소 선형화해 가우스 상태를 갱신한다.</td>
-<td>← 자코비안, 칼만 필터</td>
-</tr>
-<tr class="even">
 <td><code>estimation.square_root_filter</code></td>
 <td>제곱근 필터</td>
 <td>공분산 대신 그 인수를 전파해 수치 안정성을 높인다.</td>
 <td>← 수치선형대수, 칼만 필터</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>estimation.rts_smoother</code></td>
 <td>RTS 평활기</td>
 <td>전방 칼만 필터와 후방 재귀로 미래 측정을 과거 상태에 반영한다.</td>
 <td>← 칼만 필터</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>estimation.particle_filter</code></td>
 <td>입자 필터</td>
 <td>비선형·비가우스 상태분포를 가중 입자로 근사한다.</td>
@@ -2492,119 +2522,118 @@ window.Quarto = {
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">소스 코드</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="p-bb7cabca" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="p-bb7cabca-1"><a href="#p-bb7cabca-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="p-bb7cabca-2"><a href="#p-bb7cabca-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "향후 확장 노드: 로봇·AI·역학·센서·구동기"</span></span>
-<span id="p-bb7cabca-3"><a href="#p-bb7cabca-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> "세 핵심 장 이후 위키형 지식 아틀라스에 추가할 예정 개념의 안정 ID와 한 문장 범위"</span></span>
-<span id="p-bb7cabca-4"><a href="#p-bb7cabca-4" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> true</span></span>
-<span id="p-bb7cabca-5"><a href="#p-bb7cabca-5" aria-hidden="true" tabindex="-1"></a><span class="an">toc-depth:</span><span class="co"> 2</span></span>
-<span id="p-bb7cabca-6"><a href="#p-bb7cabca-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="p-bb7cabca-7"><a href="#p-bb7cabca-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-8"><a href="#p-bb7cabca-8" aria-hidden="true" tabindex="-1"></a>::: {.concept-hero}</span>
-<span id="p-bb7cabca-9"><a href="#p-bb7cabca-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## 이 페이지는 목차 계약이며 본문이 아니다</span></span>
-<span id="p-bb7cabca-10"><a href="#p-bb7cabca-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-11"><a href="#p-bb7cabca-11" aria-hidden="true" tabindex="-1"></a>현재 상세 집필 범위는 **<span class="co">[</span><span class="ot">자코비안</span><span class="co">](content/concepts/robotics/jacobian.qmd)</span>,</span>
-<span id="p-bb7cabca-12"><a href="#p-bb7cabca-12" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">최대우도추정</span><span class="co">](content/concepts/statistics/maximum-likelihood-estimation.qmd)</span>,</span>
-<span id="p-bb7cabca-13"><a href="#p-bb7cabca-13" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">칼만 필터</span><span class="co">](content/concepts/estimation/kalman-filter.qmd)</span>** 세 장이다. 아래 항목은 위키 링크와</span>
-<span id="p-bb7cabca-14"><a href="#p-bb7cabca-14" aria-hidden="true" tabindex="-1"></a>선수관계를 미리 안정화하기 위한 **예정 노드(planned node)**이며, 이번 단계에서는 안정 ID,</span>
-<span id="p-bb7cabca-15"><a href="#p-bb7cabca-15" aria-hidden="true" tabindex="-1"></a>한 문장 정의, 첫 연결만 둔다.</span>
-<span id="p-bb7cabca-16"><a href="#p-bb7cabca-16" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="p-bb7cabca-17"><a href="#p-bb7cabca-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-18"><a href="#p-bb7cabca-18" aria-hidden="true" tabindex="-1"></a>표의 <span class="in">`←`</span>는 “왼쪽 노드를 이해할 때 오른쪽 기존 장이 직접 쓰인다”는 첫 연결이다. 상세 선수관계는</span>
-<span id="p-bb7cabca-19"><a href="#p-bb7cabca-19" aria-hidden="true" tabindex="-1"></a>실제 장을 집필할 때 깊이별로 다시 감사한다.</span>
-<span id="p-bb7cabca-20"><a href="#p-bb7cabca-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-21"><a href="#p-bb7cabca-21" aria-hidden="true" tabindex="-1"></a><span class="fu">## 로봇 기구학·제어·위치추정</span></span>
-<span id="p-bb7cabca-22"><a href="#p-bb7cabca-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-23"><a href="#p-bb7cabca-23" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 안정 ID <span class="pp">|</span> 예정 장 <span class="pp">|</span> 한 문장 범위 <span class="pp">|</span> 첫 연결 <span class="pp">|</span></span>
-<span id="p-bb7cabca-24"><a href="#p-bb7cabca-24" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|</span></span>
-<span id="p-bb7cabca-25"><a href="#p-bb7cabca-25" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.forward_kinematics`</span> <span class="pp">|</span> 순기구학 <span class="pp">|</span> 관절값에서 말단 위치·자세를 계산한다. <span class="pp">|</span> ← 자코비안 <span class="pp">|</span></span>
-<span id="p-bb7cabca-26"><a href="#p-bb7cabca-26" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.inverse_kinematics`</span> <span class="pp">|</span> 역기구학 <span class="pp">|</span> 원하는 말단 자세를 만드는 관절값을 구한다. <span class="pp">|</span> ← 자코비안, 최적화 <span class="pp">|</span></span>
-<span id="p-bb7cabca-27"><a href="#p-bb7cabca-27" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.differential_kinematics`</span> <span class="pp">|</span> 미분기구학 <span class="pp">|</span> 관절속도와 작업공간 속도를 국소적으로 연결한다. <span class="pp">|</span> ← 자코비안 <span class="pp">|</span></span>
-<span id="p-bb7cabca-28"><a href="#p-bb7cabca-28" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.manipulability`</span> <span class="pp">|</span> 조작성 <span class="pp">|</span> 자코비안의 특잇값과 타원으로 방향별 운동·힘 능력을 평가한다. <span class="pp">|</span> ← 자코비안, SVD <span class="pp">|</span></span>
-<span id="p-bb7cabca-29"><a href="#p-bb7cabca-29" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.trajectory_generation`</span> <span class="pp">|</span> 궤적 생성 <span class="pp">|</span> 위치·속도·가속도 제한을 만족하는 시간 경로를 만든다. <span class="pp">|</span> ← 수치선형대수, 최적화 <span class="pp">|</span></span>
-<span id="p-bb7cabca-30"><a href="#p-bb7cabca-30" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.motion_planning`</span> <span class="pp">|</span> 동작 계획 <span class="pp">|</span> 장애물과 동역학 제약 아래 시작 상태에서 목표 상태로 가는 경로를 찾는다. <span class="pp">|</span> ← 최적화, 확률 <span class="pp">|</span></span>
-<span id="p-bb7cabca-31"><a href="#p-bb7cabca-31" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.impedance_control`</span> <span class="pp">|</span> 임피던스 제어 <span class="pp">|</span> 접촉 시 말단의 힘–변위 관계를 원하는 질량·감쇠·강성처럼 만든다. <span class="pp">|</span> ← 자코비안, 상태추정 <span class="pp">|</span></span>
-<span id="p-bb7cabca-32"><a href="#p-bb7cabca-32" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.force_control`</span> <span class="pp">|</span> 힘 제어 <span class="pp">|</span> 접촉 힘·토크를 측정하고 원하는 렌치를 관절 명령으로 바꾼다. <span class="pp">|</span> ← 자코비안, 제어 <span class="pp">|</span></span>
-<span id="p-bb7cabca-33"><a href="#p-bb7cabca-33" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.operational_space_control`</span> <span class="pp">|</span> 작업공간 제어 <span class="pp">|</span> 관절 동역학을 작업공간 힘·가속도 명령으로 바꾼다. <span class="pp">|</span> ← 자코비안, 강체동역학 <span class="pp">|</span></span>
-<span id="p-bb7cabca-34"><a href="#p-bb7cabca-34" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.state_estimation`</span> <span class="pp">|</span> 로봇 상태추정 <span class="pp">|</span> 센서와 동역학으로 직접 측정하지 못하는 위치·속도·편향을 추정한다. <span class="pp">|</span> ← MLE, 칼만 필터 <span class="pp">|</span></span>
-<span id="p-bb7cabca-35"><a href="#p-bb7cabca-35" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.sensor_fusion`</span> <span class="pp">|</span> 로봇 센서 융합 <span class="pp">|</span> 서로 다른 자료율·좌표계·불확실성을 가진 센서를 일관된 상태로 결합한다. <span class="pp">|</span> ← 자코비안, MLE, 칼만 필터 <span class="pp">|</span></span>
-<span id="p-bb7cabca-36"><a href="#p-bb7cabca-36" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.localization`</span> <span class="pp">|</span> 위치추정 <span class="pp">|</span> 지도 또는 기준 좌표계에서 로봇 위치·자세와 불확실성을 추정한다. <span class="pp">|</span> ← 칼만 필터, 입자 필터 <span class="pp">|</span></span>
-<span id="p-bb7cabca-37"><a href="#p-bb7cabca-37" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.slam`</span> <span class="pp">|</span> 동시적 위치추정 및 지도작성 <span class="pp">|</span> 알 수 없는 환경의 지도와 로봇 자세를 함께 추정한다. <span class="pp">|</span> ← 자코비안, MLE, 칼만 필터 <span class="pp">|</span></span>
-<span id="p-bb7cabca-38"><a href="#p-bb7cabca-38" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.calibration`</span> <span class="pp">|</span> 로봇 보정 <span class="pp">|</span> 관절 영점·링크·도구·베이스 모수를 측정자료로 추정한다. <span class="pp">|</span> ← 자코비안, MLE <span class="pp">|</span></span>
-<span id="p-bb7cabca-39"><a href="#p-bb7cabca-39" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.dynamics`</span> <span class="pp">|</span> 로봇 동역학 <span class="pp">|</span> 다관절 로봇의 관성·코리올리·중력·접촉 항을 구성한다. <span class="pp">|</span> ← 자코비안, 다물체계 <span class="pp">|</span></span>
-<span id="p-bb7cabca-40"><a href="#p-bb7cabca-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-41"><a href="#p-bb7cabca-41" aria-hidden="true" tabindex="-1"></a><span class="fu">## 역학·기구학</span></span>
-<span id="p-bb7cabca-42"><a href="#p-bb7cabca-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-43"><a href="#p-bb7cabca-43" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 안정 ID <span class="pp">|</span> 예정 장 <span class="pp">|</span> 한 문장 범위 <span class="pp">|</span> 첫 연결 <span class="pp">|</span></span>
-<span id="p-bb7cabca-44"><a href="#p-bb7cabca-44" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|</span></span>
-<span id="p-bb7cabca-45"><a href="#p-bb7cabca-45" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`mechanics.rigid_body_kinematics`</span> <span class="pp">|</span> 강체 기구학 <span class="pp">|</span> 변형 없는 물체의 위치·자세·속도·가속도를 좌표계와 함께 기술한다. <span class="pp">|</span> ← 자코비안, $SE(3)$ <span class="pp">|</span></span>
-<span id="p-bb7cabca-46"><a href="#p-bb7cabca-46" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`mechanics.rigid_body_dynamics`</span> <span class="pp">|</span> 강체 동역학 <span class="pp">|</span> 힘·토크와 질량·관성에 따른 운동을 기술한다. <span class="pp">|</span> ← 선형대수, 미분방정식 <span class="pp">|</span></span>
-<span id="p-bb7cabca-47"><a href="#p-bb7cabca-47" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`mechanics.lagrangian_dynamics`</span> <span class="pp">|</span> 라그랑주 동역학 <span class="pp">|</span> 에너지와 일반화 좌표로 다관절 운동방정식을 유도한다. <span class="pp">|</span> ← 행렬미적분, 최적화 <span class="pp">|</span></span>
-<span id="p-bb7cabca-48"><a href="#p-bb7cabca-48" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`mechanics.contact_friction`</span> <span class="pp">|</span> 접촉·마찰 <span class="pp">|</span> 접촉 제약, 법선력, 마찰원뿔과 미끄럼을 모델링한다. <span class="pp">|</span> ← 최적화, 역학 <span class="pp">|</span></span>
-<span id="p-bb7cabca-49"><a href="#p-bb7cabca-49" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`mechanics.multibody_system`</span> <span class="pp">|</span> 다물체계 <span class="pp">|</span> 여러 링크·관절·접촉이 연결된 계의 운동을 효율적으로 계산한다. <span class="pp">|</span> ← 강체동역학, 자코비안 <span class="pp">|</span></span>
-<span id="p-bb7cabca-50"><a href="#p-bb7cabca-50" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`mechanics.system_identification`</span> <span class="pp">|</span> 시스템 식별 <span class="pp">|</span> 입력·출력 데이터에서 질량·마찰·모터 상수 같은 동역학 모수를 추정한다. <span class="pp">|</span> ← MLE, 최적화 <span class="pp">|</span></span>
-<span id="p-bb7cabca-51"><a href="#p-bb7cabca-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-52"><a href="#p-bb7cabca-52" aria-hidden="true" tabindex="-1"></a><span class="fu">## 인공지능·로봇학습</span></span>
-<span id="p-bb7cabca-53"><a href="#p-bb7cabca-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-54"><a href="#p-bb7cabca-54" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 안정 ID <span class="pp">|</span> 예정 장 <span class="pp">|</span> 한 문장 범위 <span class="pp">|</span> 첫 연결 <span class="pp">|</span></span>
-<span id="p-bb7cabca-55"><a href="#p-bb7cabca-55" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|</span></span>
-<span id="p-bb7cabca-56"><a href="#p-bb7cabca-56" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.supervised_learning`</span> <span class="pp">|</span> 지도학습 <span class="pp">|</span> 입력–정답 자료에서 예측함수의 모수를 학습한다. <span class="pp">|</span> ← 최소제곱, MLE <span class="pp">|</span></span>
-<span id="p-bb7cabca-57"><a href="#p-bb7cabca-57" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.neural_network`</span> <span class="pp">|</span> 신경망 <span class="pp">|</span> 합성된 비선형 층과 역전파로 복잡한 함수를 근사한다. <span class="pp">|</span> ← 행렬미적분, 최적화 <span class="pp">|</span></span>
-<span id="p-bb7cabca-58"><a href="#p-bb7cabca-58" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.probabilistic_learning`</span> <span class="pp">|</span> 확률적 학습 <span class="pp">|</span> 예측값뿐 아니라 불확실성과 잠재변수를 확률모형으로 학습한다. <span class="pp">|</span> ← MLE, 베이즈 추론 <span class="pp">|</span></span>
-<span id="p-bb7cabca-59"><a href="#p-bb7cabca-59" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.reinforcement_learning`</span> <span class="pp">|</span> 강화학습 <span class="pp">|</span> 상태·행동·보상 상호작용에서 장기 의사결정 정책을 학습한다. <span class="pp">|</span> ← 확률과정, 최적화 <span class="pp">|</span></span>
-<span id="p-bb7cabca-60"><a href="#p-bb7cabca-60" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.robot_learning`</span> <span class="pp">|</span> 로봇학습 <span class="pp">|</span> 시연·상호작용·센서 자료로 로봇의 인지와 행동을 학습한다. <span class="pp">|</span> ← 상태추정, 제어, 강화학습 <span class="pp">|</span></span>
-<span id="p-bb7cabca-61"><a href="#p-bb7cabca-61" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.differentiable_simulation`</span> <span class="pp">|</span> 미분가능 시뮬레이션 <span class="pp">|</span> 시뮬레이터 출력의 미분을 이용해 모수·제어·설계를 최적화한다. <span class="pp">|</span> ← 자코비안, 역학 <span class="pp">|</span></span>
-<span id="p-bb7cabca-62"><a href="#p-bb7cabca-62" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.sim_to_real`</span> <span class="pp">|</span> 시뮬레이션-현실 전이 <span class="pp">|</span> 시뮬레이터와 실제 로봇의 차이를 모델링하고 정책·모형을 이전한다. <span class="pp">|</span> ← MLE, 시스템 식별 <span class="pp">|</span></span>
-<span id="p-bb7cabca-63"><a href="#p-bb7cabca-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-64"><a href="#p-bb7cabca-64" aria-hidden="true" tabindex="-1"></a><span class="fu">## 통계·필터 직접 확장</span></span>
-<span id="p-bb7cabca-65"><a href="#p-bb7cabca-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-66"><a href="#p-bb7cabca-66" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 안정 ID <span class="pp">|</span> 예정 장 <span class="pp">|</span> 한 문장 범위 <span class="pp">|</span> 첫 연결 <span class="pp">|</span></span>
-<span id="p-bb7cabca-67"><a href="#p-bb7cabca-67" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|</span></span>
-<span id="p-bb7cabca-68"><a href="#p-bb7cabca-68" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`statistics.fisher_information`</span> <span class="pp">|</span> 피셔 정보 <span class="pp">|</span> 로그우도의 기대 곡률로 모수의 국소 정보량과 정밀도 한계를 기술한다. <span class="pp">|</span> ← MLE <span class="pp">|</span></span>
-<span id="p-bb7cabca-69"><a href="#p-bb7cabca-69" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`statistics.maximum_a_posteriori`</span> <span class="pp">|</span> 최대사후확률추정 <span class="pp">|</span> 우도와 사전분포를 결합해 사후확률이 가장 큰 모수를 찾는다. <span class="pp">|</span> ← MLE, 베이즈 법칙 <span class="pp">|</span></span>
-<span id="p-bb7cabca-70"><a href="#p-bb7cabca-70" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`statistics.generalized_linear_model`</span> <span class="pp">|</span> 일반화선형모형 <span class="pp">|</span> 가우스 밖의 반응분포와 연결함수로 선형 예측자를 확장한다. <span class="pp">|</span> ← MLE <span class="pp">|</span></span>
-<span id="p-bb7cabca-71"><a href="#p-bb7cabca-71" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`signals.low_pass_filter`</span> <span class="pp">|</span> 저역통과필터 <span class="pp">|</span> 낮은 주파수 성분을 통과시키고 높은 주파수 성분을 줄인다. <span class="pp">|</span> ← 신호 및 시스템 <span class="pp">|</span></span>
-<span id="p-bb7cabca-72"><a href="#p-bb7cabca-72" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`estimation.extended_kalman_filter`</span> <span class="pp">|</span> 확장 칼만 필터 <span class="pp">|</span> 비선형 동역학·측정을 자코비안으로 국소 선형화해 가우스 상태를 갱신한다. <span class="pp">|</span> ← 자코비안, 칼만 필터 <span class="pp">|</span></span>
-<span id="p-bb7cabca-73"><a href="#p-bb7cabca-73" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`estimation.square_root_filter`</span> <span class="pp">|</span> 제곱근 필터 <span class="pp">|</span> 공분산 대신 그 인수를 전파해 수치 안정성을 높인다. <span class="pp">|</span> ← 수치선형대수, 칼만 필터 <span class="pp">|</span></span>
-<span id="p-bb7cabca-74"><a href="#p-bb7cabca-74" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`estimation.rts_smoother`</span> <span class="pp">|</span> RTS 평활기 <span class="pp">|</span> 전방 칼만 필터와 후방 재귀로 미래 측정을 과거 상태에 반영한다. <span class="pp">|</span> ← 칼만 필터 <span class="pp">|</span></span>
-<span id="p-bb7cabca-75"><a href="#p-bb7cabca-75" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`estimation.particle_filter`</span> <span class="pp">|</span> 입자 필터 <span class="pp">|</span> 비선형·비가우스 상태분포를 가중 입자로 근사한다. <span class="pp">|</span> ← 베이즈 필터, SMC <span class="pp">|</span></span>
-<span id="p-bb7cabca-76"><a href="#p-bb7cabca-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-77"><a href="#p-bb7cabca-77" aria-hidden="true" tabindex="-1"></a><span class="fu">## 센서공학</span></span>
-<span id="p-bb7cabca-78"><a href="#p-bb7cabca-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-79"><a href="#p-bb7cabca-79" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 안정 ID <span class="pp">|</span> 예정 장 <span class="pp">|</span> 한 문장 범위 <span class="pp">|</span> 첫 연결 <span class="pp">|</span></span>
-<span id="p-bb7cabca-80"><a href="#p-bb7cabca-80" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|</span></span>
-<span id="p-bb7cabca-81"><a href="#p-bb7cabca-81" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.measurement_chain`</span> <span class="pp">|</span> 측정 사슬 <span class="pp">|</span> 물리량이 변환소자·증폭·표본화·양자화를 거쳐 숫자가 되는 전 과정을 추적한다. <span class="pp">|</span> ← 신호 및 시스템 <span class="pp">|</span></span>
-<span id="p-bb7cabca-82"><a href="#p-bb7cabca-82" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.encoder`</span> <span class="pp">|</span> 엔코더 <span class="pp">|</span> 관절·축의 위치와 속도를 증분형 또는 절대형 코드로 측정한다. <span class="pp">|</span> ← MLE 보정, 자코비안 <span class="pp">|</span></span>
-<span id="p-bb7cabca-83"><a href="#p-bb7cabca-83" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.imu`</span> <span class="pp">|</span> 관성측정장치 <span class="pp">|</span> 가속도와 각속도를 측정하고 편향·중력·진동·온도 영향을 모델링한다. <span class="pp">|</span> ← MLE, 칼만 필터 <span class="pp">|</span></span>
-<span id="p-bb7cabca-84"><a href="#p-bb7cabca-84" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.lidar`</span> <span class="pp">|</span> 라이다 <span class="pp">|</span> 빛의 비행시간·위상으로 거리와 점군을 측정한다. <span class="pp">|</span> ← MLE, 위치추정 <span class="pp">|</span></span>
-<span id="p-bb7cabca-85"><a href="#p-bb7cabca-85" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.camera`</span> <span class="pp">|</span> 카메라 <span class="pp">|</span> 광학 투영과 영상 센서로 밝기·색·기하 정보를 측정한다. <span class="pp">|</span> ← 자코비안, MLE <span class="pp">|</span></span>
-<span id="p-bb7cabca-86"><a href="#p-bb7cabca-86" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.force_torque`</span> <span class="pp">|</span> 힘·토크 센서 <span class="pp">|</span> 구조물 변형을 통해 축별 힘과 모멘트를 측정한다. <span class="pp">|</span> ← 자코비안 전치, 보정 <span class="pp">|</span></span>
-<span id="p-bb7cabca-87"><a href="#p-bb7cabca-87" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.gnss`</span> <span class="pp">|</span> 위성항법 센서 <span class="pp">|</span> 위성 신호의 시간·반송파 정보로 절대 위치와 속도를 추정한다. <span class="pp">|</span> ← 확률과정, 칼만 필터 <span class="pp">|</span></span>
-<span id="p-bb7cabca-88"><a href="#p-bb7cabca-88" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.range_contact`</span> <span class="pp">|</span> 거리·접촉 센서 <span class="pp">|</span> 초음파·적외선·스위치·촉각으로 근접과 접촉을 측정한다. <span class="pp">|</span> ← 신호처리, 확률 <span class="pp">|</span></span>
-<span id="p-bb7cabca-89"><a href="#p-bb7cabca-89" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.calibration`</span> <span class="pp">|</span> 센서 보정 <span class="pp">|</span> 편향·척도·축 불일치·외부 변환을 데이터로 추정하고 검증한다. <span class="pp">|</span> ← 자코비안, MLE <span class="pp">|</span></span>
-<span id="p-bb7cabca-90"><a href="#p-bb7cabca-90" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.time_sync`</span> <span class="pp">|</span> 시간 동기화 <span class="pp">|</span> 여러 센서의 측정 시각·지연·클록 드리프트를 공통 시간축에 맞춘다. <span class="pp">|</span> ← 칼만 필터 <span class="pp">|</span></span>
-<span id="p-bb7cabca-91"><a href="#p-bb7cabca-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-92"><a href="#p-bb7cabca-92" aria-hidden="true" tabindex="-1"></a><span class="fu">## 구동기·장비·모듈</span></span>
-<span id="p-bb7cabca-93"><a href="#p-bb7cabca-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-94"><a href="#p-bb7cabca-94" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 안정 ID <span class="pp">|</span> 예정 장 <span class="pp">|</span> 한 문장 범위 <span class="pp">|</span> 첫 연결 <span class="pp">|</span></span>
-<span id="p-bb7cabca-95"><a href="#p-bb7cabca-95" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|</span></span>
-<span id="p-bb7cabca-96"><a href="#p-bb7cabca-96" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`actuator.motor`</span> <span class="pp">|</span> 전동기 <span class="pp">|</span> 전류·자속·토크·속도의 관계와 열·전압 한계를 다룬다. <span class="pp">|</span> ← 제어, 역학 <span class="pp">|</span></span>
-<span id="p-bb7cabca-97"><a href="#p-bb7cabca-97" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`actuator.gearbox`</span> <span class="pp">|</span> 감속기 <span class="pp">|</span> 속도·토크 변환, 백래시, 효율, 탄성을 모델링한다. <span class="pp">|</span> ← 역학, 상태추정 <span class="pp">|</span></span>
-<span id="p-bb7cabca-98"><a href="#p-bb7cabca-98" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`actuator.driver`</span> <span class="pp">|</span> 모터 드라이버 <span class="pp">|</span> 전류·속도·위치 폐루프와 전력 스위칭·보호를 구현한다. <span class="pp">|</span> ← 신호, 제어 <span class="pp">|</span></span>
-<span id="p-bb7cabca-99"><a href="#p-bb7cabca-99" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`actuator.brake`</span> <span class="pp">|</span> 브레이크·홀딩 <span class="pp">|</span> 전원 상실과 정지 상태에서 축을 안전하게 유지한다. <span class="pp">|</span> ← 안전, 제어 <span class="pp">|</span></span>
-<span id="p-bb7cabca-100"><a href="#p-bb7cabca-100" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`hardware.power`</span> <span class="pp">|</span> 전원·배터리 <span class="pp">|</span> 전압·전류·에너지·회생·보호와 전력 예산을 관리한다. <span class="pp">|</span> ← 회로, 시스템 <span class="pp">|</span></span>
-<span id="p-bb7cabca-101"><a href="#p-bb7cabca-101" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`hardware.realtime_controller`</span> <span class="pp">|</span> 실시간 제어기 <span class="pp">|</span> 결정적인 주기로 센서를 읽고 제어 명령을 계산·전송한다. <span class="pp">|</span> ← 수치계산, 제어 <span class="pp">|</span></span>
-<span id="p-bb7cabca-102"><a href="#p-bb7cabca-102" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`hardware.fieldbus`</span> <span class="pp">|</span> 통신 버스 <span class="pp">|</span> EtherCAT·CAN·RS-485 같은 버스의 주기·지연·동기·오류를 다룬다. <span class="pp">|</span> ← 신호, 시간 동기화 <span class="pp">|</span></span>
-<span id="p-bb7cabca-103"><a href="#p-bb7cabca-103" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`hardware.compute_module`</span> <span class="pp">|</span> 연산 모듈 <span class="pp">|</span> CPU·GPU·MCU의 계산량, 지연, 전력, 배치 제약을 비교한다. <span class="pp">|</span> ← 알고리즘 구현 <span class="pp">|</span></span>
-<span id="p-bb7cabca-104"><a href="#p-bb7cabca-104" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`hardware.safety_io`</span> <span class="pp">|</span> 안전 입출력 <span class="pp">|</span> 비상정지·인터록·제한 스위치·안전 상태 전이를 구성한다. <span class="pp">|</span> ← 안전제어 <span class="pp">|</span></span>
-<span id="p-bb7cabca-105"><a href="#p-bb7cabca-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-106"><a href="#p-bb7cabca-106" aria-hidden="true" tabindex="-1"></a><span class="fu">## 확장 순서</span></span>
-<span id="p-bb7cabca-107"><a href="#p-bb7cabca-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-108"><a href="#p-bb7cabca-108" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>세 핵심 장의 본문·링크·출력 검증을 끝낸다.</span>
-<span id="p-bb7cabca-109"><a href="#p-bb7cabca-109" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>위 표의 안정 ID를 아틀라스 예정 노드 원본으로 승격한다.</span>
-<span id="p-bb7cabca-110"><a href="#p-bb7cabca-110" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>독자가 가장 많이 따라간 역링크를 기준으로 다음 장을 고른다.</span>
-<span id="p-bb7cabca-111"><a href="#p-bb7cabca-111" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>새 장을 만들 때만 깊이별 선수 체크와 실제 제품 근거를 추가한다.</span>
-<span id="p-bb7cabca-112"><a href="#p-bb7cabca-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-bb7cabca-113"><a href="#p-bb7cabca-113" aria-hidden="true" tabindex="-1"></a>상세 장이 생기기 전까지 이 페이지의 한 문장 범위를 넘어선 제품·알고리즘 주장은 추가하지 않는다.</span></code></pre></div><button title="클립보드 복사" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="p-bde2031f" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="p-bde2031f-1"><a href="#p-bde2031f-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-bde2031f-2"><a href="#p-bde2031f-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "향후 확장 노드: 로봇·AI·역학·센서·구동기"</span></span>
+<span id="p-bde2031f-3"><a href="#p-bde2031f-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> "세 핵심 장 이후 위키형 지식 아틀라스에 추가할 예정 개념의 안정 ID와 한 문장 범위"</span></span>
+<span id="p-bde2031f-4"><a href="#p-bde2031f-4" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> true</span></span>
+<span id="p-bde2031f-5"><a href="#p-bde2031f-5" aria-hidden="true" tabindex="-1"></a><span class="an">toc-depth:</span><span class="co"> 2</span></span>
+<span id="p-bde2031f-6"><a href="#p-bde2031f-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-bde2031f-7"><a href="#p-bde2031f-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-8"><a href="#p-bde2031f-8" aria-hidden="true" tabindex="-1"></a>::: {.concept-hero}</span>
+<span id="p-bde2031f-9"><a href="#p-bde2031f-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## 이 페이지는 목차 계약이며 본문이 아니다</span></span>
+<span id="p-bde2031f-10"><a href="#p-bde2031f-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-11"><a href="#p-bde2031f-11" aria-hidden="true" tabindex="-1"></a>현재 상세 집필 범위는 **<span class="co">[</span><span class="ot">자코비안</span><span class="co">](content/concepts/robotics/jacobian.qmd)</span>,</span>
+<span id="p-bde2031f-12"><a href="#p-bde2031f-12" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">최대우도추정</span><span class="co">](content/concepts/statistics/maximum-likelihood-estimation.qmd)</span>,</span>
+<span id="p-bde2031f-13"><a href="#p-bde2031f-13" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">칼만 필터</span><span class="co">](content/concepts/estimation/kalman-filter.qmd)</span>** 세 장이다. 아래 항목은 위키 링크와</span>
+<span id="p-bde2031f-14"><a href="#p-bde2031f-14" aria-hidden="true" tabindex="-1"></a>선수관계를 미리 안정화하기 위한 **예정 노드(planned node)**이며, 이번 단계에서는 안정 ID,</span>
+<span id="p-bde2031f-15"><a href="#p-bde2031f-15" aria-hidden="true" tabindex="-1"></a>한 문장 정의, 첫 연결만 둔다.</span>
+<span id="p-bde2031f-16"><a href="#p-bde2031f-16" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-bde2031f-17"><a href="#p-bde2031f-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-18"><a href="#p-bde2031f-18" aria-hidden="true" tabindex="-1"></a>표의 <span class="in">`←`</span>는 “왼쪽 노드를 이해할 때 오른쪽 기존 장이 직접 쓰인다”는 첫 연결이다. 상세 선수관계는</span>
+<span id="p-bde2031f-19"><a href="#p-bde2031f-19" aria-hidden="true" tabindex="-1"></a>실제 장을 집필할 때 깊이별로 다시 감사한다.</span>
+<span id="p-bde2031f-20"><a href="#p-bde2031f-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-21"><a href="#p-bde2031f-21" aria-hidden="true" tabindex="-1"></a><span class="fu">## 로봇 기구학·제어·위치추정</span></span>
+<span id="p-bde2031f-22"><a href="#p-bde2031f-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-23"><a href="#p-bde2031f-23" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 안정 ID <span class="pp">|</span> 예정 장 <span class="pp">|</span> 한 문장 범위 <span class="pp">|</span> 첫 연결 <span class="pp">|</span></span>
+<span id="p-bde2031f-24"><a href="#p-bde2031f-24" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|</span></span>
+<span id="p-bde2031f-25"><a href="#p-bde2031f-25" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.forward_kinematics`</span> <span class="pp">|</span> 순기구학 <span class="pp">|</span> 관절값에서 말단 위치·자세를 계산한다. <span class="pp">|</span> ← 자코비안 <span class="pp">|</span></span>
+<span id="p-bde2031f-26"><a href="#p-bde2031f-26" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.inverse_kinematics`</span> <span class="pp">|</span> 역기구학 <span class="pp">|</span> 원하는 말단 자세를 만드는 관절값을 구한다. <span class="pp">|</span> ← 자코비안, 최적화 <span class="pp">|</span></span>
+<span id="p-bde2031f-27"><a href="#p-bde2031f-27" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.differential_kinematics`</span> <span class="pp">|</span> 미분기구학 <span class="pp">|</span> 관절속도와 작업공간 속도를 국소적으로 연결한다. <span class="pp">|</span> ← 자코비안 <span class="pp">|</span></span>
+<span id="p-bde2031f-28"><a href="#p-bde2031f-28" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.manipulability`</span> <span class="pp">|</span> 조작성 <span class="pp">|</span> 자코비안의 특잇값과 타원으로 방향별 운동·힘 능력을 평가한다. <span class="pp">|</span> ← 자코비안, SVD <span class="pp">|</span></span>
+<span id="p-bde2031f-29"><a href="#p-bde2031f-29" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.trajectory_generation`</span> <span class="pp">|</span> 궤적 생성 <span class="pp">|</span> 위치·속도·가속도 제한을 만족하는 시간 경로를 만든다. <span class="pp">|</span> ← 수치선형대수, 최적화 <span class="pp">|</span></span>
+<span id="p-bde2031f-30"><a href="#p-bde2031f-30" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.motion_planning`</span> <span class="pp">|</span> 동작 계획 <span class="pp">|</span> 장애물과 동역학 제약 아래 시작 상태에서 목표 상태로 가는 경로를 찾는다. <span class="pp">|</span> ← 최적화, 확률 <span class="pp">|</span></span>
+<span id="p-bde2031f-31"><a href="#p-bde2031f-31" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.impedance_control`</span> <span class="pp">|</span> 임피던스 제어 <span class="pp">|</span> 접촉 시 말단의 힘–변위 관계를 원하는 질량·감쇠·강성처럼 만든다. <span class="pp">|</span> ← 자코비안, 상태추정 <span class="pp">|</span></span>
+<span id="p-bde2031f-32"><a href="#p-bde2031f-32" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.force_control`</span> <span class="pp">|</span> 힘 제어 <span class="pp">|</span> 접촉 힘·토크를 측정하고 원하는 렌치를 관절 명령으로 바꾼다. <span class="pp">|</span> ← 자코비안, 제어 <span class="pp">|</span></span>
+<span id="p-bde2031f-33"><a href="#p-bde2031f-33" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.operational_space_control`</span> <span class="pp">|</span> 작업공간 제어 <span class="pp">|</span> 관절 동역학을 작업공간 힘·가속도 명령으로 바꾼다. <span class="pp">|</span> ← 자코비안, 강체동역학 <span class="pp">|</span></span>
+<span id="p-bde2031f-34"><a href="#p-bde2031f-34" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.state_estimation`</span> <span class="pp">|</span> 로봇 상태추정 <span class="pp">|</span> 센서와 동역학으로 직접 측정하지 못하는 위치·속도·편향을 추정한다. <span class="pp">|</span> ← MLE, 칼만 필터 <span class="pp">|</span></span>
+<span id="p-bde2031f-35"><a href="#p-bde2031f-35" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.sensor_fusion`</span> <span class="pp">|</span> 로봇 센서 융합 <span class="pp">|</span> 서로 다른 자료율·좌표계·불확실성을 가진 센서를 일관된 상태로 결합한다. <span class="pp">|</span> ← 자코비안, MLE, 칼만 필터 <span class="pp">|</span></span>
+<span id="p-bde2031f-36"><a href="#p-bde2031f-36" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.localization`</span> <span class="pp">|</span> 위치추정 <span class="pp">|</span> 지도 또는 기준 좌표계에서 로봇 위치·자세와 불확실성을 추정한다. <span class="pp">|</span> ← 칼만 필터, 입자 필터 <span class="pp">|</span></span>
+<span id="p-bde2031f-37"><a href="#p-bde2031f-37" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.slam`</span> <span class="pp">|</span> 동시적 위치추정 및 지도작성 <span class="pp">|</span> 알 수 없는 환경의 지도와 로봇 자세를 함께 추정한다. <span class="pp">|</span> ← 자코비안, MLE, 칼만 필터 <span class="pp">|</span></span>
+<span id="p-bde2031f-38"><a href="#p-bde2031f-38" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.calibration`</span> <span class="pp">|</span> 로봇 보정 <span class="pp">|</span> 관절 영점·링크·도구·베이스 모수를 측정자료로 추정한다. <span class="pp">|</span> ← 자코비안, MLE <span class="pp">|</span></span>
+<span id="p-bde2031f-39"><a href="#p-bde2031f-39" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`robot.dynamics`</span> <span class="pp">|</span> 로봇 동역학 <span class="pp">|</span> 다관절 로봇의 관성·코리올리·중력·접촉 항을 구성한다. <span class="pp">|</span> ← 자코비안, 다물체계 <span class="pp">|</span></span>
+<span id="p-bde2031f-40"><a href="#p-bde2031f-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-41"><a href="#p-bde2031f-41" aria-hidden="true" tabindex="-1"></a><span class="fu">## 역학·기구학</span></span>
+<span id="p-bde2031f-42"><a href="#p-bde2031f-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-43"><a href="#p-bde2031f-43" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 안정 ID <span class="pp">|</span> 예정 장 <span class="pp">|</span> 한 문장 범위 <span class="pp">|</span> 첫 연결 <span class="pp">|</span></span>
+<span id="p-bde2031f-44"><a href="#p-bde2031f-44" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|</span></span>
+<span id="p-bde2031f-45"><a href="#p-bde2031f-45" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`mechanics.rigid_body_kinematics`</span> <span class="pp">|</span> 강체 기구학 <span class="pp">|</span> 변형 없는 물체의 위치·자세·속도·가속도를 좌표계와 함께 기술한다. <span class="pp">|</span> ← 자코비안, $SE(3)$ <span class="pp">|</span></span>
+<span id="p-bde2031f-46"><a href="#p-bde2031f-46" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`mechanics.rigid_body_dynamics`</span> <span class="pp">|</span> 강체 동역학 <span class="pp">|</span> 힘·토크와 질량·관성에 따른 운동을 기술한다. <span class="pp">|</span> ← 선형대수, 미분방정식 <span class="pp">|</span></span>
+<span id="p-bde2031f-47"><a href="#p-bde2031f-47" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`mechanics.lagrangian_dynamics`</span> <span class="pp">|</span> 라그랑주 동역학 <span class="pp">|</span> 에너지와 일반화 좌표로 다관절 운동방정식을 유도한다. <span class="pp">|</span> ← 행렬미적분, 최적화 <span class="pp">|</span></span>
+<span id="p-bde2031f-48"><a href="#p-bde2031f-48" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`mechanics.contact_friction`</span> <span class="pp">|</span> 접촉·마찰 <span class="pp">|</span> 접촉 제약, 법선력, 마찰원뿔과 미끄럼을 모델링한다. <span class="pp">|</span> ← 최적화, 역학 <span class="pp">|</span></span>
+<span id="p-bde2031f-49"><a href="#p-bde2031f-49" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`mechanics.multibody_system`</span> <span class="pp">|</span> 다물체계 <span class="pp">|</span> 여러 링크·관절·접촉이 연결된 계의 운동을 효율적으로 계산한다. <span class="pp">|</span> ← 강체동역학, 자코비안 <span class="pp">|</span></span>
+<span id="p-bde2031f-50"><a href="#p-bde2031f-50" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`mechanics.system_identification`</span> <span class="pp">|</span> 시스템 식별 <span class="pp">|</span> 입력·출력 데이터에서 질량·마찰·모터 상수 같은 동역학 모수를 추정한다. <span class="pp">|</span> ← MLE, 최적화 <span class="pp">|</span></span>
+<span id="p-bde2031f-51"><a href="#p-bde2031f-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-52"><a href="#p-bde2031f-52" aria-hidden="true" tabindex="-1"></a><span class="fu">## 인공지능·로봇학습</span></span>
+<span id="p-bde2031f-53"><a href="#p-bde2031f-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-54"><a href="#p-bde2031f-54" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 안정 ID <span class="pp">|</span> 예정 장 <span class="pp">|</span> 한 문장 범위 <span class="pp">|</span> 첫 연결 <span class="pp">|</span></span>
+<span id="p-bde2031f-55"><a href="#p-bde2031f-55" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|</span></span>
+<span id="p-bde2031f-56"><a href="#p-bde2031f-56" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.supervised_learning`</span> <span class="pp">|</span> 지도학습 <span class="pp">|</span> 입력–정답 자료에서 예측함수의 모수를 학습한다. <span class="pp">|</span> ← 최소제곱, MLE <span class="pp">|</span></span>
+<span id="p-bde2031f-57"><a href="#p-bde2031f-57" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.neural_network`</span> <span class="pp">|</span> 신경망 <span class="pp">|</span> 합성된 비선형 층과 역전파로 복잡한 함수를 근사한다. <span class="pp">|</span> ← 행렬미적분, 최적화 <span class="pp">|</span></span>
+<span id="p-bde2031f-58"><a href="#p-bde2031f-58" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.probabilistic_learning`</span> <span class="pp">|</span> 확률적 학습 <span class="pp">|</span> 예측값뿐 아니라 불확실성과 잠재변수를 확률모형으로 학습한다. <span class="pp">|</span> ← MLE, 베이즈 추론 <span class="pp">|</span></span>
+<span id="p-bde2031f-59"><a href="#p-bde2031f-59" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.reinforcement_learning`</span> <span class="pp">|</span> 강화학습 <span class="pp">|</span> 상태·행동·보상 상호작용에서 장기 의사결정 정책을 학습한다. <span class="pp">|</span> ← 확률과정, 최적화 <span class="pp">|</span></span>
+<span id="p-bde2031f-60"><a href="#p-bde2031f-60" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.robot_learning`</span> <span class="pp">|</span> 로봇학습 <span class="pp">|</span> 시연·상호작용·센서 자료로 로봇의 인지와 행동을 학습한다. <span class="pp">|</span> ← 상태추정, 제어, 강화학습 <span class="pp">|</span></span>
+<span id="p-bde2031f-61"><a href="#p-bde2031f-61" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.differentiable_simulation`</span> <span class="pp">|</span> 미분가능 시뮬레이션 <span class="pp">|</span> 시뮬레이터 출력의 미분을 이용해 모수·제어·설계를 최적화한다. <span class="pp">|</span> ← 자코비안, 역학 <span class="pp">|</span></span>
+<span id="p-bde2031f-62"><a href="#p-bde2031f-62" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`ai.sim_to_real`</span> <span class="pp">|</span> 시뮬레이션-현실 전이 <span class="pp">|</span> 시뮬레이터와 실제 로봇의 차이를 모델링하고 정책·모형을 이전한다. <span class="pp">|</span> ← MLE, 시스템 식별 <span class="pp">|</span></span>
+<span id="p-bde2031f-63"><a href="#p-bde2031f-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-64"><a href="#p-bde2031f-64" aria-hidden="true" tabindex="-1"></a><span class="fu">## 통계·필터 직접 확장</span></span>
+<span id="p-bde2031f-65"><a href="#p-bde2031f-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-66"><a href="#p-bde2031f-66" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 안정 ID <span class="pp">|</span> 예정 장 <span class="pp">|</span> 한 문장 범위 <span class="pp">|</span> 첫 연결 <span class="pp">|</span></span>
+<span id="p-bde2031f-67"><a href="#p-bde2031f-67" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|</span></span>
+<span id="p-bde2031f-68"><a href="#p-bde2031f-68" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`statistics.fisher_information`</span> <span class="pp">|</span> 피셔 정보 <span class="pp">|</span> 로그우도의 기대 곡률로 모수의 국소 정보량과 정밀도 한계를 기술한다. <span class="pp">|</span> ← MLE <span class="pp">|</span></span>
+<span id="p-bde2031f-69"><a href="#p-bde2031f-69" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`statistics.maximum_a_posteriori`</span> <span class="pp">|</span> 최대사후확률추정 <span class="pp">|</span> 우도와 사전분포를 결합해 사후확률이 가장 큰 모수를 찾는다. <span class="pp">|</span> ← MLE, 베이즈 법칙 <span class="pp">|</span></span>
+<span id="p-bde2031f-70"><a href="#p-bde2031f-70" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`statistics.generalized_linear_model`</span> <span class="pp">|</span> 일반화선형모형 <span class="pp">|</span> 가우스 밖의 반응분포와 연결함수로 선형 예측자를 확장한다. <span class="pp">|</span> ← MLE <span class="pp">|</span></span>
+<span id="p-bde2031f-71"><a href="#p-bde2031f-71" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`signals.low_pass_filter`</span> <span class="pp">|</span> 저역통과필터 <span class="pp">|</span> 낮은 주파수 성분을 통과시키고 높은 주파수 성분을 줄인다. <span class="pp">|</span> ← 신호 및 시스템 <span class="pp">|</span></span>
+<span id="p-bde2031f-72"><a href="#p-bde2031f-72" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`estimation.square_root_filter`</span> <span class="pp">|</span> 제곱근 필터 <span class="pp">|</span> 공분산 대신 그 인수를 전파해 수치 안정성을 높인다. <span class="pp">|</span> ← 수치선형대수, 칼만 필터 <span class="pp">|</span></span>
+<span id="p-bde2031f-73"><a href="#p-bde2031f-73" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`estimation.rts_smoother`</span> <span class="pp">|</span> RTS 평활기 <span class="pp">|</span> 전방 칼만 필터와 후방 재귀로 미래 측정을 과거 상태에 반영한다. <span class="pp">|</span> ← 칼만 필터 <span class="pp">|</span></span>
+<span id="p-bde2031f-74"><a href="#p-bde2031f-74" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`estimation.particle_filter`</span> <span class="pp">|</span> 입자 필터 <span class="pp">|</span> 비선형·비가우스 상태분포를 가중 입자로 근사한다. <span class="pp">|</span> ← 베이즈 필터, SMC <span class="pp">|</span></span>
+<span id="p-bde2031f-75"><a href="#p-bde2031f-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-76"><a href="#p-bde2031f-76" aria-hidden="true" tabindex="-1"></a><span class="fu">## 센서공학</span></span>
+<span id="p-bde2031f-77"><a href="#p-bde2031f-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-78"><a href="#p-bde2031f-78" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 안정 ID <span class="pp">|</span> 예정 장 <span class="pp">|</span> 한 문장 범위 <span class="pp">|</span> 첫 연결 <span class="pp">|</span></span>
+<span id="p-bde2031f-79"><a href="#p-bde2031f-79" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|</span></span>
+<span id="p-bde2031f-80"><a href="#p-bde2031f-80" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.measurement_chain`</span> <span class="pp">|</span> 측정 사슬 <span class="pp">|</span> 물리량이 변환소자·증폭·표본화·양자화를 거쳐 숫자가 되는 전 과정을 추적한다. <span class="pp">|</span> ← 신호 및 시스템 <span class="pp">|</span></span>
+<span id="p-bde2031f-81"><a href="#p-bde2031f-81" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.encoder`</span> <span class="pp">|</span> 엔코더 <span class="pp">|</span> 관절·축의 위치와 속도를 증분형 또는 절대형 코드로 측정한다. <span class="pp">|</span> ← MLE 보정, 자코비안 <span class="pp">|</span></span>
+<span id="p-bde2031f-82"><a href="#p-bde2031f-82" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.imu`</span> <span class="pp">|</span> 관성측정장치 <span class="pp">|</span> 가속도와 각속도를 측정하고 편향·중력·진동·온도 영향을 모델링한다. <span class="pp">|</span> ← MLE, 칼만 필터 <span class="pp">|</span></span>
+<span id="p-bde2031f-83"><a href="#p-bde2031f-83" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.lidar`</span> <span class="pp">|</span> 라이다 <span class="pp">|</span> 빛의 비행시간·위상으로 거리와 점군을 측정한다. <span class="pp">|</span> ← MLE, 위치추정 <span class="pp">|</span></span>
+<span id="p-bde2031f-84"><a href="#p-bde2031f-84" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.camera`</span> <span class="pp">|</span> 카메라 <span class="pp">|</span> 광학 투영과 영상 센서로 밝기·색·기하 정보를 측정한다. <span class="pp">|</span> ← 자코비안, MLE <span class="pp">|</span></span>
+<span id="p-bde2031f-85"><a href="#p-bde2031f-85" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.force_torque`</span> <span class="pp">|</span> 힘·토크 센서 <span class="pp">|</span> 구조물 변형을 통해 축별 힘과 모멘트를 측정한다. <span class="pp">|</span> ← 자코비안 전치, 보정 <span class="pp">|</span></span>
+<span id="p-bde2031f-86"><a href="#p-bde2031f-86" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.gnss`</span> <span class="pp">|</span> 위성항법 센서 <span class="pp">|</span> 위성 신호의 시간·반송파 정보로 절대 위치와 속도를 추정한다. <span class="pp">|</span> ← 확률과정, 칼만 필터 <span class="pp">|</span></span>
+<span id="p-bde2031f-87"><a href="#p-bde2031f-87" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.range_contact`</span> <span class="pp">|</span> 거리·접촉 센서 <span class="pp">|</span> 초음파·적외선·스위치·촉각으로 근접과 접촉을 측정한다. <span class="pp">|</span> ← 신호처리, 확률 <span class="pp">|</span></span>
+<span id="p-bde2031f-88"><a href="#p-bde2031f-88" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.calibration`</span> <span class="pp">|</span> 센서 보정 <span class="pp">|</span> 편향·척도·축 불일치·외부 변환을 데이터로 추정하고 검증한다. <span class="pp">|</span> ← 자코비안, MLE <span class="pp">|</span></span>
+<span id="p-bde2031f-89"><a href="#p-bde2031f-89" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`sensor.time_sync`</span> <span class="pp">|</span> 시간 동기화 <span class="pp">|</span> 여러 센서의 측정 시각·지연·클록 드리프트를 공통 시간축에 맞춘다. <span class="pp">|</span> ← 칼만 필터 <span class="pp">|</span></span>
+<span id="p-bde2031f-90"><a href="#p-bde2031f-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-91"><a href="#p-bde2031f-91" aria-hidden="true" tabindex="-1"></a><span class="fu">## 구동기·장비·모듈</span></span>
+<span id="p-bde2031f-92"><a href="#p-bde2031f-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-93"><a href="#p-bde2031f-93" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 안정 ID <span class="pp">|</span> 예정 장 <span class="pp">|</span> 한 문장 범위 <span class="pp">|</span> 첫 연결 <span class="pp">|</span></span>
+<span id="p-bde2031f-94"><a href="#p-bde2031f-94" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|---|</span></span>
+<span id="p-bde2031f-95"><a href="#p-bde2031f-95" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`actuator.motor`</span> <span class="pp">|</span> 전동기 <span class="pp">|</span> 전류·자속·토크·속도의 관계와 열·전압 한계를 다룬다. <span class="pp">|</span> ← 제어, 역학 <span class="pp">|</span></span>
+<span id="p-bde2031f-96"><a href="#p-bde2031f-96" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`actuator.gearbox`</span> <span class="pp">|</span> 감속기 <span class="pp">|</span> 속도·토크 변환, 백래시, 효율, 탄성을 모델링한다. <span class="pp">|</span> ← 역학, 상태추정 <span class="pp">|</span></span>
+<span id="p-bde2031f-97"><a href="#p-bde2031f-97" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`actuator.driver`</span> <span class="pp">|</span> 모터 드라이버 <span class="pp">|</span> 전류·속도·위치 폐루프와 전력 스위칭·보호를 구현한다. <span class="pp">|</span> ← 신호, 제어 <span class="pp">|</span></span>
+<span id="p-bde2031f-98"><a href="#p-bde2031f-98" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`actuator.brake`</span> <span class="pp">|</span> 브레이크·홀딩 <span class="pp">|</span> 전원 상실과 정지 상태에서 축을 안전하게 유지한다. <span class="pp">|</span> ← 안전, 제어 <span class="pp">|</span></span>
+<span id="p-bde2031f-99"><a href="#p-bde2031f-99" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`hardware.power`</span> <span class="pp">|</span> 전원·배터리 <span class="pp">|</span> 전압·전류·에너지·회생·보호와 전력 예산을 관리한다. <span class="pp">|</span> ← 회로, 시스템 <span class="pp">|</span></span>
+<span id="p-bde2031f-100"><a href="#p-bde2031f-100" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`hardware.realtime_controller`</span> <span class="pp">|</span> 실시간 제어기 <span class="pp">|</span> 결정적인 주기로 센서를 읽고 제어 명령을 계산·전송한다. <span class="pp">|</span> ← 수치계산, 제어 <span class="pp">|</span></span>
+<span id="p-bde2031f-101"><a href="#p-bde2031f-101" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`hardware.fieldbus`</span> <span class="pp">|</span> 통신 버스 <span class="pp">|</span> EtherCAT·CAN·RS-485 같은 버스의 주기·지연·동기·오류를 다룬다. <span class="pp">|</span> ← 신호, 시간 동기화 <span class="pp">|</span></span>
+<span id="p-bde2031f-102"><a href="#p-bde2031f-102" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`hardware.compute_module`</span> <span class="pp">|</span> 연산 모듈 <span class="pp">|</span> CPU·GPU·MCU의 계산량, 지연, 전력, 배치 제약을 비교한다. <span class="pp">|</span> ← 알고리즘 구현 <span class="pp">|</span></span>
+<span id="p-bde2031f-103"><a href="#p-bde2031f-103" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`hardware.safety_io`</span> <span class="pp">|</span> 안전 입출력 <span class="pp">|</span> 비상정지·인터록·제한 스위치·안전 상태 전이를 구성한다. <span class="pp">|</span> ← 안전제어 <span class="pp">|</span></span>
+<span id="p-bde2031f-104"><a href="#p-bde2031f-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-105"><a href="#p-bde2031f-105" aria-hidden="true" tabindex="-1"></a><span class="fu">## 확장 순서</span></span>
+<span id="p-bde2031f-106"><a href="#p-bde2031f-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-107"><a href="#p-bde2031f-107" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>세 핵심 장의 본문·링크·출력 검증을 끝낸다.</span>
+<span id="p-bde2031f-108"><a href="#p-bde2031f-108" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>위 표의 안정 ID를 아틀라스 예정 노드 원본으로 승격한다.</span>
+<span id="p-bde2031f-109"><a href="#p-bde2031f-109" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>독자가 가장 많이 따라간 역링크를 기준으로 다음 장을 고른다.</span>
+<span id="p-bde2031f-110"><a href="#p-bde2031f-110" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>새 장을 만들 때만 깊이별 선수 체크와 실제 제품 근거를 추가한다.</span>
+<span id="p-bde2031f-111"><a href="#p-bde2031f-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-bde2031f-112"><a href="#p-bde2031f-112" aria-hidden="true" tabindex="-1"></a>상세 장이 생기기 전까지 이 페이지의 한 문장 범위를 넘어선 제품·알고리즘 주장은 추가하지 않는다.</span></code></pre></div><button title="클립보드 복사" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

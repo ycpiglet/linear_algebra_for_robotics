@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-07-19T14:30:25Z",
-  "content_hash": "sha256:9079a37cd9b2bdfd9840c68e5347bbfe8ca4cb0f274a7fa62322fecb3b404eae",
+  "generated_at": "2026-07-20T02:59:26Z",
+  "content_hash": "sha256:0f548c28a3d4dbb393d378b3e638a688bc310a1a715031c8d9fb81814d4e1d3d",
   "nodes": [
     {
       "id": "control.feedback",
@@ -36,6 +36,14 @@
       "site_path": "content/concepts/probability/bootstrap-particle-filter.html"
     },
     {
+      "id": "estimation.extended_kalman_filter",
+      "type": "concept",
+      "label": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+      "domain": "estimation",
+      "url": "/content/concepts/estimation/extended-kalman-filter.html",
+      "site_path": "content/concepts/estimation/extended-kalman-filter.html"
+    },
+    {
       "id": "estimation.kalman_filter",
       "type": "concept",
       "label": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
@@ -68,6 +76,14 @@
       "site_path": "content/concepts/foundations/change-and-accumulation.html"
     },
     {
+      "id": "linalg.eigenvalues",
+      "type": "concept",
+      "label": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+      "domain": "linear_algebra",
+      "url": "/content/concepts/linalg/eigenvalues.html",
+      "site_path": "content/concepts/linalg/eigenvalues.html"
+    },
+    {
       "id": "linalg.least_squares",
       "type": "concept",
       "label": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
@@ -92,6 +108,14 @@
       "site_path": "content/concepts/linalg/orthogonal-projection.html"
     },
     {
+      "id": "linalg.svd",
+      "type": "concept",
+      "label": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+      "domain": "linear_algebra",
+      "url": "/content/concepts/linalg/svd.html",
+      "site_path": "content/concepts/linalg/svd.html"
+    },
+    {
       "id": "probability.detailed-balance",
       "type": "concept",
       "label": "Detailed Balance와 Reversibility",
@@ -108,6 +132,14 @@
       "site_path": "content/concepts/probability/gaussian-conditioning.html"
     },
     {
+      "id": "probability.gibbs-sampling",
+      "type": "concept",
+      "label": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+      "domain": "probability",
+      "url": "/content/concepts/probability/gibbs-sampling.html",
+      "site_path": "content/concepts/probability/gibbs-sampling.html"
+    },
+    {
       "id": "probability.importance-sampling",
       "type": "concept",
       "label": "Importance Sampling",
@@ -122,6 +154,14 @@
       "domain": "probability",
       "url": "/content/concepts/probability/markov-chain.html",
       "site_path": "content/concepts/probability/markov-chain.html"
+    },
+    {
+      "id": "probability.mcmc-diagnostics",
+      "type": "concept",
+      "label": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+      "domain": "probability",
+      "url": "/content/concepts/probability/mcmc-diagnostics.html",
+      "site_path": "content/concepts/probability/mcmc-diagnostics.html"
     },
     {
       "id": "probability.mean_covariance",
@@ -162,6 +202,14 @@
       "domain": "robotics",
       "url": "/content/concepts/robotics/jacobian.html",
       "site_path": "content/concepts/robotics/jacobian.html"
+    },
+    {
+      "id": "robot.rotation_representations",
+      "type": "concept",
+      "label": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+      "domain": "robotics",
+      "url": "/content/concepts/robotics/rotation-representations.html",
+      "site_path": "content/concepts/robotics/rotation-representations.html"
     },
     {
       "id": "statistics.maximum_likelihood_estimation",
@@ -267,12 +315,6 @@
       "resolved": false
     },
     {
-      "id": "estimation.extended_kalman_filter",
-      "type": "unresolved",
-      "label": "estimation.extended_kalman_filter",
-      "resolved": false
-    },
-    {
       "id": "estimation.innovation_orthogonality",
       "type": "unresolved",
       "label": "estimation.innovation_orthogonality",
@@ -312,6 +354,12 @@
       "id": "linalg.weighted_least_squares",
       "type": "unresolved",
       "label": "linalg.weighted_least_squares",
+      "resolved": false
+    },
+    {
+      "id": "mechanics.rigid_body_kinematics",
+      "type": "unresolved",
+      "label": "mechanics.rigid_body_kinematics",
       "resolved": false
     },
     {
@@ -813,6 +861,16 @@
     },
     {
       "type": "prerequisite",
+      "source": "robot.jacobian",
+      "target": "robot.rotation_representations",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": true,
+      "id": "prerequisite:18e417d9f5421dd3"
+    },
+    {
+      "type": "prerequisite",
       "source": "foundations.change_accumulation",
       "target": "robot.jacobian",
       "category": "required",
@@ -850,6 +908,26 @@
       "competency": "recognize",
       "resolved": false,
       "id": "prerequisite:26204b6c1082a604"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.gaussian_conditioning",
+      "target": "probability.gibbs-sampling",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:266ec9206af28dae"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "robot.rotation_representations",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:27465fee1c1e0eb9"
     },
     {
       "type": "prerequisite",
@@ -993,6 +1071,16 @@
     },
     {
       "type": "prerequisite",
+      "source": "probability.gaussian_conditioning",
+      "target": "estimation.extended_kalman_filter",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:423a0b996786a862"
+    },
+    {
+      "type": "prerequisite",
       "source": "linalg.least_squares",
       "target": "robot.jacobian",
       "category": "helpful",
@@ -1000,6 +1088,16 @@
       "competency": "prove",
       "resolved": true,
       "id": "prerequisite:4436307638980d3f"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "robot.rotation_representations",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:4792f2ee41616673"
     },
     {
       "type": "prerequisite",
@@ -1063,6 +1161,16 @@
     },
     {
       "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "linalg.eigenvalues",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:543d02e205d446e1"
+    },
+    {
+      "type": "prerequisite",
       "source": "estimation.resampling",
       "target": "estimation.bootstrap-particle-filter",
       "category": "required",
@@ -1073,6 +1181,16 @@
     },
     {
       "type": "prerequisite",
+      "source": "robot.jacobian",
+      "target": "estimation.extended_kalman_filter",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:562b28a83ca2e987"
+    },
+    {
+      "type": "prerequisite",
       "source": "linalg.linear_system",
       "target": "linalg.orthogonal_projection",
       "category": "required",
@@ -1080,6 +1198,16 @@
       "competency": "apply",
       "resolved": true,
       "id": "prerequisite:5b6a9a33162a1acd"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.eigenvalues",
+      "target": "linalg.svd",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:5bb063409e0523db"
     },
     {
       "type": "prerequisite",
@@ -1203,6 +1331,16 @@
     },
     {
       "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "linalg.svd",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:6df5e8fca2faeade"
+    },
+    {
+      "type": "prerequisite",
       "source": "control.feedback",
       "target": "control.pid",
       "category": "required",
@@ -1283,6 +1421,16 @@
     },
     {
       "type": "prerequisite",
+      "source": "linalg.orthogonal_projection",
+      "target": "linalg.svd",
+      "category": "helpful",
+      "depth": "application",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:7b8641679c529d01"
+    },
+    {
+      "type": "prerequisite",
       "source": "linalg.least_squares",
       "target": "estimation.kalman_filter",
       "category": "required",
@@ -1310,6 +1458,16 @@
       "competency": "explain",
       "resolved": true,
       "id": "prerequisite:7f51393d92e93f69"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "linalg.eigenvalues",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:7f56cbb9be23a49a"
     },
     {
       "type": "prerequisite",
@@ -1563,6 +1721,16 @@
     },
     {
       "type": "prerequisite",
+      "source": "probability.metropolis-hastings",
+      "target": "probability.gibbs-sampling",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:b63eb13e3b7e00b2"
+    },
+    {
+      "type": "prerequisite",
       "source": "linalg.linear_system",
       "target": "linalg.orthogonal_projection",
       "category": "required",
@@ -1580,6 +1748,16 @@
       "competency": "calculate",
       "resolved": true,
       "id": "prerequisite:b77728e93fca76d3"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.markov-chain",
+      "target": "probability.mcmc-diagnostics",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:b9093367a0a0c9a7"
     },
     {
       "type": "prerequisite",
@@ -1603,6 +1781,16 @@
     },
     {
       "type": "prerequisite",
+      "source": "probability.metropolis-hastings",
+      "target": "probability.mcmc-diagnostics",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:c158736bdd4bb91d"
+    },
+    {
+      "type": "prerequisite",
       "source": "probability.mean_covariance",
       "target": "probability.gaussian_conditioning",
       "category": "required",
@@ -1620,6 +1808,36 @@
       "competency": "recognize",
       "resolved": false,
       "id": "prerequisite:c4d69f9a20b31f62"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.monte-carlo",
+      "target": "probability.mcmc-diagnostics",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:c7e0dd6b1320006b"
+    },
+    {
+      "type": "prerequisite",
+      "source": "systems.state_space",
+      "target": "linalg.eigenvalues",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": true,
+      "id": "prerequisite:c89d13491b3ce33b"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.markov-chain",
+      "target": "probability.gibbs-sampling",
+      "category": "required",
+      "depth": "proof",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:caa4caa81cff6191"
     },
     {
       "type": "prerequisite",
@@ -1783,6 +2001,16 @@
     },
     {
       "type": "prerequisite",
+      "source": "estimation.kalman_filter",
+      "target": "estimation.extended_kalman_filter",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:e67b0b6049dab35b"
+    },
+    {
+      "type": "prerequisite",
       "source": "probability.mean_covariance",
       "target": "estimation.kalman_filter",
       "category": "required",
@@ -1890,6 +2118,16 @@
       "competency": "calculate",
       "resolved": true,
       "id": "prerequisite:fac7d397eb28bf0e"
+    },
+    {
+      "type": "prerequisite",
+      "source": "estimation.kalman_filter",
+      "target": "estimation.extended_kalman_filter",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:fc77761a00df667f"
     },
     {
       "type": "prerequisite",
@@ -2290,6 +2528,14 @@
     },
     {
       "type": "relation",
+      "source": "estimation.extended_kalman_filter",
+      "target": "robot.jacobian",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:0d37932ee1bb6687"
+    },
+    {
+      "type": "relation",
       "source": "estimation.kalman_filter",
       "target": "robot.state_estimation",
       "relation": "used_in",
@@ -2303,6 +2549,14 @@
       "relation": "same_structure_as",
       "resolved": true,
       "id": "relation:174324aca93ab687"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.svd",
+      "target": "linalg.least_squares",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:1998d3baabf35697"
     },
     {
       "type": "relation",
@@ -2343,6 +2597,14 @@
       "relation": "used_in",
       "resolved": true,
       "id": "relation:2517986a105043ee"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.eigenvalues",
+      "target": "linalg.svd",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:26a8cd7c5a2350cd"
     },
     {
       "type": "relation",
@@ -2426,6 +2688,14 @@
     },
     {
       "type": "relation",
+      "source": "probability.gibbs-sampling",
+      "target": "probability.gaussian_conditioning",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:31a7ae0a5ce6053c"
+    },
+    {
+      "type": "relation",
       "source": "estimation.kalman_filter",
       "target": "linalg.least_squares",
       "relation": "derived_from",
@@ -2447,6 +2717,14 @@
       "relation": "derived_from",
       "resolved": true,
       "id": "relation:34db8ac1775d6d56"
+    },
+    {
+      "type": "relation",
+      "source": "probability.mcmc-diagnostics",
+      "target": "probability.monte-carlo",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:35a5fdd3054001e2"
     },
     {
       "type": "relation",
@@ -2538,11 +2816,27 @@
     },
     {
       "type": "relation",
+      "source": "probability.gibbs-sampling",
+      "target": "probability.metropolis-hastings",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:3cccfeaa4f2d9892"
+    },
+    {
+      "type": "relation",
       "source": "estimation.bayes-filtering",
       "target": "probability.measure-foundations",
       "relation": "requires",
       "resolved": true,
       "id": "relation:3e53c10aa51890f4"
+    },
+    {
+      "type": "relation",
+      "source": "probability.mcmc-diagnostics",
+      "target": "probability.metropolis-hastings",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:4078754c6ac548eb"
     },
     {
       "type": "relation",
@@ -2567,6 +2861,14 @@
       "relation": "requires",
       "resolved": true,
       "id": "relation:44e80028ee7a4dc8"
+    },
+    {
+      "type": "relation",
+      "source": "robot.rotation_representations",
+      "target": "estimation.extended_kalman_filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:4c9ff52611221f67"
     },
     {
       "type": "relation",
@@ -2623,6 +2925,22 @@
       "relation": "same_structure_as",
       "resolved": true,
       "id": "relation:5c4c2d68fbe01c0e"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.extended_kalman_filter",
+      "target": "robot.state_estimation",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:616939392ec66d78"
+    },
+    {
+      "type": "relation",
+      "source": "robot.rotation_representations",
+      "target": "mechanics.rigid_body_kinematics",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:61cea5f6d033a73f"
     },
     {
       "type": "relation",
@@ -2738,11 +3056,27 @@
     },
     {
       "type": "relation",
-      "source": "estimation.kalman_filter",
-      "target": "estimation.extended_kalman_filter",
-      "relation": "deepens",
+      "source": "probability.gibbs-sampling",
+      "target": "probability.metropolis-hastings",
+      "relation": "derived_from",
+      "resolved": true,
+      "id": "relation:7c831d644eafc8bd"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.extended_kalman_filter",
+      "target": "robot.localization",
+      "relation": "used_in",
       "resolved": false,
-      "id": "relation:84f2ab6efaf74f88"
+      "id": "relation:7d7bdb98946403c8"
+    },
+    {
+      "type": "relation",
+      "source": "robot.rotation_representations",
+      "target": "robot.jacobian",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:822f965c3a6a7946"
     },
     {
       "type": "relation",
@@ -2847,6 +3181,14 @@
       "relation": "same_structure_as",
       "resolved": true,
       "id": "relation:996519ffd08ba417"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.extended_kalman_filter",
+      "target": "estimation.kalman_filter",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:99f3dad1a4c5cca1"
     },
     {
       "type": "relation",
@@ -2955,6 +3297,14 @@
     {
       "type": "relation",
       "source": "estimation.kalman_filter",
+      "target": "estimation.extended_kalman_filter",
+      "relation": "deepens",
+      "resolved": true,
+      "id": "relation:acf7d2a552499aef"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
       "target": "robot.sensor_fusion",
       "relation": "used_in",
       "resolved": false,
@@ -3034,6 +3384,14 @@
     },
     {
       "type": "relation",
+      "source": "probability.mcmc-diagnostics",
+      "target": "probability.gibbs-sampling",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:b7c63ffc32a63ce7"
+    },
+    {
+      "type": "relation",
       "source": "probability.mean_covariance",
       "target": "linalg.orthogonal_projection",
       "relation": "same_structure_as",
@@ -3074,6 +3432,14 @@
     },
     {
       "type": "relation",
+      "source": "robot.jacobian",
+      "target": "estimation.extended_kalman_filter",
+      "relation": "same_structure_as",
+      "resolved": true,
+      "id": "relation:c738360c025aec52"
+    },
+    {
+      "type": "relation",
       "source": "probability.gaussian_conditioning",
       "target": "linalg.linear_system",
       "relation": "requires",
@@ -3087,6 +3453,14 @@
       "relation": "helpful",
       "resolved": true,
       "id": "relation:c88396459a04c87d"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.extended_kalman_filter",
+      "target": "robot.sensor_fusion",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:ca8757ca6a7d6a07"
     },
     {
       "type": "relation",
@@ -3122,11 +3496,35 @@
     },
     {
       "type": "relation",
+      "source": "linalg.svd",
+      "target": "linalg.eigenvalues",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:d360b8e0cd922146"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.eigenvalues",
+      "target": "linalg.linear_system",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:d455aaf05cb7dcf9"
+    },
+    {
+      "type": "relation",
       "source": "probability.metropolis-hastings",
       "target": "probability.detailed-balance",
       "relation": "requires",
       "resolved": true,
       "id": "relation:d641868d2aef67be"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.extended_kalman_filter",
+      "target": "estimation.kalman_filter",
+      "relation": "derived_from",
+      "resolved": true,
+      "id": "relation:d6a3fe9a244ae310"
     },
     {
       "type": "relation",
@@ -3234,11 +3632,27 @@
     },
     {
       "type": "relation",
+      "source": "linalg.eigenvalues",
+      "target": "systems.state_space",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:e1c7ceda3bea28d3"
+    },
+    {
+      "type": "relation",
       "source": "estimation.kalman_filter",
       "target": "systems.state_space",
       "relation": "requires",
       "resolved": true,
       "id": "relation:e201a641e5d703ca"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.svd",
+      "target": "estimation.kalman_filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:e219a1e067fc0f83"
     },
     {
       "type": "relation",
@@ -3322,6 +3736,22 @@
     },
     {
       "type": "relation",
+      "source": "linalg.svd",
+      "target": "robot.jacobian",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:f3e7d5fb81be5f4e"
+    },
+    {
+      "type": "relation",
+      "source": "robot.rotation_representations",
+      "target": "linalg.linear_system",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:f5ec0198ba77bf4f"
+    },
+    {
+      "type": "relation",
       "source": "probability.markov-chain",
       "target": "probability.detailed-balance",
       "relation": "used_in",
@@ -3338,19 +3768,19 @@
     },
     {
       "type": "relation",
+      "source": "linalg.eigenvalues",
+      "target": "probability.mean_covariance",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:fab3807f73bef993"
+    },
+    {
+      "type": "relation",
       "source": "estimation.kalman_filter",
       "target": "linalg.linear_system",
       "relation": "requires",
       "resolved": true,
       "id": "relation:fc72e7695b23e1a1"
-    },
-    {
-      "type": "relation",
-      "source": "robot.jacobian",
-      "target": "estimation.extended_kalman_filter",
-      "relation": "same_structure_as",
-      "resolved": false,
-      "id": "relation:feb9812d61dd8d58"
     },
     {
       "type": "relation",

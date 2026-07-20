@@ -31,6 +31,14 @@
    "subject": "Add Quarto book source: content, courseware, platform, and toolchain"
   }
  ],
+ "content/concepts/estimation/extended-kalman-filter.qmd": [
+  {
+   "sha": "948f9fb550fb970727e52af0295dc7aa54d0b96e",
+   "date": "2026-07-20",
+   "author": "Claude",
+   "subject": "신규 6장: 회전 표현·고유값·SVD·EKF·Gibbs·MCMC 진단"
+  }
+ ],
  "content/concepts/estimation/kalman-filter.qmd": [
   {
    "sha": "8972e4a80c5c1fb385546800dd48b5ae9a9353ab",
@@ -51,6 +59,14 @@
    "date": "2026-07-17",
    "author": "ITP OP PC(JYC)",
    "subject": "Add Quarto book source: content, courseware, platform, and toolchain"
+  }
+ ],
+ "content/concepts/linalg/eigenvalues.qmd": [
+  {
+   "sha": "948f9fb550fb970727e52af0295dc7aa54d0b96e",
+   "date": "2026-07-20",
+   "author": "Claude",
+   "subject": "신규 6장: 회전 표현·고유값·SVD·EKF·Gibbs·MCMC 진단"
   }
  ],
  "content/concepts/linalg/least-squares.qmd": [
@@ -75,6 +91,14 @@
    "date": "2026-07-17",
    "author": "ITP OP PC(JYC)",
    "subject": "Add Quarto book source: content, courseware, platform, and toolchain"
+  }
+ ],
+ "content/concepts/linalg/svd.qmd": [
+  {
+   "sha": "948f9fb550fb970727e52af0295dc7aa54d0b96e",
+   "date": "2026-07-20",
+   "author": "Claude",
+   "subject": "신규 6장: 회전 표현·고유값·SVD·EKF·Gibbs·MCMC 진단"
   }
  ],
  "content/concepts/probability/bayes-filtering.qmd": [
@@ -109,6 +133,14 @@
    "subject": "Add Quarto book source: content, courseware, platform, and toolchain"
   }
  ],
+ "content/concepts/probability/gibbs-sampling.qmd": [
+  {
+   "sha": "948f9fb550fb970727e52af0295dc7aa54d0b96e",
+   "date": "2026-07-20",
+   "author": "Claude",
+   "subject": "신규 6장: 회전 표현·고유값·SVD·EKF·Gibbs·MCMC 진단"
+  }
+ ],
  "content/concepts/probability/importance-sampling.qmd": [
   {
    "sha": "59ccfb55770f9268db965e4c1a26bb2a4399f651",
@@ -123,6 +155,14 @@
    "date": "2026-07-17",
    "author": "ITP OP PC(JYC)",
    "subject": "Add Quarto book source: content, courseware, platform, and toolchain"
+  }
+ ],
+ "content/concepts/probability/mcmc-diagnostics.qmd": [
+  {
+   "sha": "948f9fb550fb970727e52af0295dc7aa54d0b96e",
+   "date": "2026-07-20",
+   "author": "Claude",
+   "subject": "신규 6장: 회전 표현·고유값·SVD·EKF·Gibbs·MCMC 진단"
   }
  ],
  "content/concepts/probability/mean-covariance.qmd": [
@@ -185,6 +225,14 @@
    "date": "2026-07-17",
    "author": "ITP OP PC(JYC)",
    "subject": "Add Quarto book source: content, courseware, platform, and toolchain"
+  }
+ ],
+ "content/concepts/robotics/rotation-representations.qmd": [
+  {
+   "sha": "948f9fb550fb970727e52af0295dc7aa54d0b96e",
+   "date": "2026-07-20",
+   "author": "Claude",
+   "subject": "신규 6장: 회전 표현·고유값·SVD·EKF·Gibbs·MCMC 진단"
   }
  ],
  "content/concepts/statistics/maximum-likelihood-estimation.qmd": [
@@ -434,6 +482,12 @@
   }
  ],
  "future-scope.qmd": [
+  {
+   "sha": "61f06ff07d32f6f9ea66a125d569320c1dce06fd",
+   "date": "2026-07-20",
+   "author": "Claude",
+   "subject": "계약·인수인계 문서 갱신: EKF 예정 노드 승격, 원고 진행 현황 반영"
+  },
   {
    "sha": "59ccfb55770f9268db965e4c1a26bb2a4399f651",
    "date": "2026-07-17",
