@@ -96,6 +96,7 @@ definition_of_done:
   - batch push 자격은 개인 PAT가 아닌 저장소 전용 write deploy key로 격리된다
   - key 회전은 활성 secret을 덮어쓰지 않는 primary·next 슬롯으로 수행하고 실패 시 기존 슬롯으로 복귀한다
   - key 회전은 Issue 트레일러가 있는 새 커밋, before_sha와 다른 head_sha, pushed=true, 원격 ref 일치, 새 key의 read_only=false·사용 시각을 검증한다
+  - push credential checkout은 full history로 원격 batch ref가 예상 커밋의 조상인지 non-force push 전에 증명한다
   - rollback은 workflow와 ruleset·deploy key·secret을 하나의 동결된 control-plane cutover로 되돌린다
   - front matter·코드·수식·HTML·shortcode·저장소 밖 경로 제안은 자동 반영되지 않는다
 evidence:
