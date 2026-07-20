@@ -1,0 +1,239 @@
+---
+title: "고유값과 고유벡터: 동역학이 변하지 않는 방향"
+id: linalg.eigenvalues
+kind: concept
+domain: linear_algebra
+aliases:
+  - eigenvalue
+  - eigenvector
+  - 고유치
+  - 대각화
+  - diagonalization
+one-line: "선형사상이 방향을 바꾸지 않는 축과 그 축의 배율을 찾아, 행렬 거듭제곱·미분방정식·안정성을 한 축씩 해석한다."
+difficulty: 3
+prerequisites:
+  intuition:
+    required:
+      - concept: linalg.linear_system
+        competency: explain
+        reason: 행렬을 사상으로 읽어야 불변 방향이라는 질문이 성립한다.
+    helpful:
+      - concept: systems.state_space
+        competency: recognize
+        reason: 상태방정식의 안정성이 고유값 위치로 결정된다.
+  application:
+    required:
+      - concept: linalg.linear_system
+        competency: calculate
+        reason: 고유벡터 계산은 $(A-\lambda I)v=0$이라는 동차 선형계 풀이로 귀결된다.
+    helpful: []
+relations:
+  requires:
+    - linalg.linear_system
+  used-in:
+    - systems.state_space
+    - probability.mean_covariance
+    - linalg.svd
+---
+
+::: {.callout-note title="30초 핵심"}
+정방행렬 $A$에 대해 $Av=\lambda v$ ($v\neq 0$)를 만족하는 방향 $v$는 $A$를 아무리 반복 적용해도 방향이 바뀌지 않고 배율 $\lambda$만 곱해진다. 로봇의 반복 동역학 $x_{k+1}=Ax_k$와 연속 동역학 $\dot x=Ax$는 이 축들 위에서 각각 $\lambda^k$, $e^{\lambda t}$라는 스칼라 문제로 쪼개지고, 안정성은 고유값의 위치(이산 $|\lambda|<1$, 연속 $\operatorname{Re}\lambda<0$)로 판정된다. 한계도 분명하다: 고유벡터가 부족한 결손 행렬이 존재하고, 비대칭 행렬에서는 고유값만으로 과도 응답을 판단할 수 없다.
+:::
+
+::: {.depth-intuition}
+
+## 해결하려는 문제: 반복 적용을 스칼라 문제로 쪼개기
+
+$Ax$ 한 번은 [선형 시스템](linear-systems.qmd)에서처럼 "열벡터의 조합"으로 읽으면 충분하다. 그러나 로봇에서는 같은 $A$가 매 시간 스텝마다 반복 적용된다 — 이산 동역학 $x_{k+1}=Ax_k$의 $k$번 반복은 $A^k x_0$다. 일반 벡터는 $A$를 거칠 때마다 방향과 크기가 모두 뒤틀리므로 $A^k$의 거동을 눈으로 좇기 어렵다.
+
+질문을 뒤집자. **$A$가 방향을 바꾸지 못하는 벡터가 있는가?** 그런 방향 $v$ 위에서는 $A$의 작용이 "$\lambda$배 늘리기"라는 스칼라 곱으로 줄어들고, $k$번 반복은 $\lambda^k$배가 된다. 초기 상태를 그런 방향들의 조합으로 분해하면, 복잡한 행렬 동역학이 서로 간섭하지 않는 스칼라 동역학 여러 개의 합으로 바뀐다. 이것이 고유값 분석의 전부다: **좌표축을 동역학이 변하지 않는 방향으로 갈아끼우는 것.**
+
+:::
+
+::: {.depth-application}
+
+## 정의와 특성방정식
+
+고유값(eigenvalue) $\lambda$와 고유벡터(eigenvector) $v$는
+
+$$
+Av=\lambda v,\qquad v\neq 0
+$$
+
+으로 정의된다. 모양을 점검하면 $A\in\mathbb R^{n\times n}$은 정방행렬이어야 하고(입력과 출력이 같은 공간이어야 "같은 방향"이 정의된다), $v\in\mathbb R^n$ 또는 $\mathbb C^n$, $\lambda$는 스칼라다. 식을 옮기면 $(A-\lambda I)v=0$, 즉 $v$는 $A-\lambda I$의 영공간의 0이 아닌 원소다. 그런 $v$가 존재하려면 $A-\lambda I$가 특이해야 하므로 특성방정식(characteristic equation) $\det(A-\lambda I)=0$을 얻는다. $n\times n$ 행렬이면 $\lambda$에 대한 $n$차 다항식이고, 중복을 세면 복소수 범위에서 근이 정확히 $n$개다.
+
+## 손 계산 예: 2×2
+
+$$
+A=\begin{bmatrix}2&1\\1&2\end{bmatrix},\qquad
+\det(A-\lambda I)=(2-\lambda)^2-1=\lambda^2-4\lambda+3=(\lambda-3)(\lambda-1)
+$$
+
+이므로 $\lambda_1=3$, $\lambda_2=1$이다. 검산: 고유값의 합 $3+1=4$는 대각합 $2+2$와 같고, 곱 $3\cdot1=3$은 $\det A=4-1$과 같다.
+
+- $\lambda_1=3$: $(A-3I)v=\begin{bmatrix}-1&1\\1&-1\end{bmatrix}v=0$이므로 $v_1=(1,1)^\top$. 검산: $Av_1=(3,3)^\top=3v_1$. ✓
+- $\lambda_2=1$: $(A-I)v=\begin{bmatrix}1&1\\1&1\end{bmatrix}v=0$이므로 $v_2=(1,-1)^\top$. 검산: $Av_2=(1,-1)^\top=1\cdot v_2$. ✓
+
+고유벡터는 방향만 의미가 있다. $v_1$의 임의 배수도 고유벡터이므로 필요하면 단위 길이로 정규화한다.
+
+## 대각화와 거듭제곱: 모드 분해
+
+고유벡터 $n$개가 선형독립이면 $P=[v_1\ \cdots\ v_n]$, $\Lambda=\operatorname{diag}(\lambda_1,\ldots,\lambda_n)$에 대해 $A=P\Lambda P^{-1}$로 대각화(diagonalization)된다. 거듭제곱이 즉시 풀린다:
+
+$$
+A^k=P\Lambda^kP^{-1},\qquad
+\Lambda^k=\operatorname{diag}(\lambda_1^k,\ldots,\lambda_n^k).
+$$
+
+동역학으로 읽으면, 초기 상태를 고유벡터 조합 $x_0=\sum_i c_iv_i$로 분해할 때 ($c=P^{-1}x_0$)
+
+$$
+x_k=A^kx_0=\sum_i c_i\lambda_i^k\,v_i.
+$$
+
+각 항 $c_i\lambda_i^kv_i$를 모드(mode)라 부른다. 모드끼리는 절대 섞이지 않고, 오래 지나면 $|\lambda|$가 가장 큰 모드가 응답을 지배한다.
+
+위 예로 확인하자. $x_0=(2,0)^\top=1\cdot(1,1)^\top+1\cdot(1,-1)^\top$이므로
+
+$$
+x_k=3^k\begin{bmatrix}1\\1\end{bmatrix}+1^k\begin{bmatrix}1\\-1\end{bmatrix}
+=\begin{bmatrix}3^k+1\\3^k-1\end{bmatrix}.
+$$
+
+검산: $k=1$이면 $(4,2)^\top$이고 직접 곱해도 $Ax_0=(4,2)^\top$. $k=2$이면 공식은 $(10,8)^\top$, 직접 곱은 $A(4,2)^\top=(10,8)^\top$. ✓
+
+## 복소 고유쌍은 회전과 감쇠 진동
+
+실행렬의 특성방정식은 실계수 다항식이므로 복소근은 반드시 켤레쌍 $\lambda=a\pm bi$로 나온다. 이는 그 2차원 부분공간에서 $A$가 "배율 $+$ 회전"으로 작용한다는 뜻이다. 감쇠 진동자를 상태공간으로 쓴
+
+$$
+A=\begin{bmatrix}0&1\\-\omega^2&-2\zeta\omega\end{bmatrix}
+$$
+
+의 특성방정식은 $\lambda^2+2\zeta\omega\lambda+\omega^2=0$이고, $0<\zeta<1$이면 $\lambda=-\zeta\omega\pm i\,\omega\sqrt{1-\zeta^2}$다. 실수부 $-\zeta\omega$는 감쇠율(단위: 1/s), 허수부는 감쇠 진동 주파수(rad/s)다. 검산: $\omega=1$, $\zeta=0.5$이면 $\lambda=-0.5\pm i\frac{\sqrt3}{2}$이고, 두 근의 합 $-1$은 계수 $-2\zeta\omega$와, 곱 $0.25+0.75=1$은 $\omega^2$과 일치한다. ✓ 켤레쌍 두 모드의 합은 항상 실수이므로 실초기값에서 출발한 궤적은 실수로 유지된다.
+
+## 대칭행렬의 스펙트럼 정리와 공분산 타원
+
+$A=A^\top$이면 스펙트럼 정리(spectral theorem)가 성립한다: 모든 고유값이 실수이고, 고유벡터를 서로 직교하는 정규직교 기저로 잡을 수 있어 $A=Q\Lambda Q^\top$ ($Q^{-1}=Q^\top$)이다. 위의 $A=\begin{bmatrix}2&1\\1&2\end{bmatrix}$가 바로 그 예로, $v_1=(1,1)^\top$과 $v_2=(1,-1)^\top$의 내적은 $1-1=0$이다.
+
+이때 이차형식(quadratic form)은
+
+$$
+x^\top Ax=\sum_i\lambda_i\,(q_i^\top x)^2
+$$
+
+으로, 모든 $\lambda_i>0$이면 $x\neq0$에서 $x^\top Ax>0$인 양의 정부호(positive definite) 행렬이다. [평균과 공분산](../probability/mean-covariance.qmd)의 공분산 행렬이 정확히 이 부류다: 등고선 $x^\top\Sigma^{-1}x=1$은 타원이고, 타원의 축 방향이 $\Sigma$의 고유벡터, 반축 길이가 $\sqrt{\lambda_i}$다. 위 예를 공분산 $\Sigma=A$로 읽으면 분산이 가장 큰 방향은 $(1,1)/\sqrt2$이고 그 방향 표준편차는 $\sqrt3$이다.
+
+## 안정성 영역: 연속은 왼쪽 반평면, 이산은 단위원 내부
+
+모드 분해가 안정성 판정을 스칼라 문제로 만든다.
+
+- **연속시간** $\dot x=Ax$: 각 모드는 $e^{\lambda t}$로 진화하고 $|e^{(a+bi)t}|=e^{at}$이므로, 모든 고유값이 $\operatorname{Re}\lambda<0$일 때 소멸한다.
+- **이산시간** $x_{k+1}=Ax_k$: 각 모드는 $\lambda^k$로 진화하고 $|\lambda^k|=|\lambda|^k$이므로, 모든 고유값이 $|\lambda|<1$일 때 소멸한다.
+
+영역이 다른 이유는 진화 규칙이 지수함수 $e^{\lambda t}$냐 거듭제곱 $\lambda^k$냐의 차이일 뿐이다. 크기를 결정하는 것이 전자는 지수의 **실수부**, 후자는 밑의 **절댓값**이다. 둘은 $z=e^{\lambda \Delta t}$라는 사상으로 이어지며, 왼쪽 반평면 $\operatorname{Re}\lambda<0$이 정확히 단위원 내부 $|z|<1$로 옮겨진다.
+
+주의: 이산화가 이 안정성을 공짜로 보존하지는 않는다. 전진 오일러 $x_{k+1}=(I+\Delta t\,A)x_k$의 고유값은 $1+\Delta t\,\lambda$인데, $\lambda=-3$처럼 안정한 연속 모드도 $\Delta t=1$이면 $|1-3|=2>1$로 발산한다($\Delta t=0.5$이면 $|{-0.5}|<1$로 안정). 검산은 대입으로 끝난다.
+
+:::
+
+::: {.depth-derivation}
+
+## 대각화 공식의 유도
+
+고유쌍 $Av_i=\lambda_iv_i$ ($i=1,\ldots,n$)를 열 방향으로 나란히 쌓는 것이 유일한 아이디어다.
+
+**1단계.** $P=[v_1\ \cdots\ v_n]$이라 하면 $AP$의 $i$번째 열은 $Av_i=\lambda_iv_i$다.
+
+**2단계.** $\lambda_iv_i$는 $P$의 $i$번째 열에 $\lambda_i$를 곱한 것이므로, 열마다 배율을 먹이는 행렬 곱으로 $AP=P\Lambda$라 쓸 수 있다. 모양 점검: $AP$와 $P\Lambda$ 모두 $n\times n$이다.
+
+**3단계.** 고유벡터들이 선형독립이면 $P$가 가역이므로 $A=P\Lambda P^{-1}$.
+
+**4단계.** 거듭제곱에서 안쪽 $P^{-1}P$가 연쇄적으로 소거된다:
+
+$$
+A^k=(P\Lambda P^{-1})(P\Lambda P^{-1})\cdots(P\Lambda P^{-1})=P\Lambda^kP^{-1}.
+$$
+
+검산: 위 2×2 예에서 $P=\begin{bmatrix}1&1\\1&-1\end{bmatrix}$, $P^{-1}=\frac12\begin{bmatrix}1&1\\1&-1\end{bmatrix}$이고
+
+$$
+P\Lambda^2P^{-1}
+=\begin{bmatrix}9&1\\9&-1\end{bmatrix}
+\cdot\frac12\begin{bmatrix}1&1\\1&-1\end{bmatrix}
+=\begin{bmatrix}5&4\\4&5\end{bmatrix},
+$$
+
+직접 계산한 $A^2=\begin{bmatrix}5&4\\4&5\end{bmatrix}$와 일치한다. ✓
+
+## 대각화가 안 되는 행렬: 결손
+
+유도의 3단계가 무너질 수 있다. 고유벡터가 $n$개에 못 미치는 행렬을 결손(defective)이라 한다. 대표 예는 $J=\begin{bmatrix}1&1\\0&1\end{bmatrix}$로, 특성방정식 $(1-\lambda)^2=0$에서 $\lambda=1$이 중복도 2인데 $(J-I)=\begin{bmatrix}0&1\\0&0\end{bmatrix}$의 영공간은 $(1,0)^\top$ 방향 1차원뿐이다. 고유벡터가 하나 모자라므로 가역인 $P$를 만들 수 없다. 실제로 $J^k=\begin{bmatrix}1&k\\0&1\end{bmatrix}$ (검산: $J^2$를 직접 곱하면 $\begin{bmatrix}1&2\\0&1\end{bmatrix}$ ✓) — $|\lambda|=1$인데도 순수한 $\lambda^k$가 아니라 $k$에 비례하는 다항 성장이 붙는다. 모자란 방향을 $(J-\lambda I)w=v$를 만족하는 일반화 고유벡터(generalized eigenvector)로 채우는 Jordan 형식은 이 교재의 이후 장에서 다룬다. 여기서는 "결손이면 모드가 $\lambda^k$ 곱하기 $k$의 다항식으로 변형된다"는 사실만 기억하면 된다.
+
+:::
+
+::: {.depth-application}
+
+## 실패 조건: 고유값이 말해 주지 않는 것
+
+이 도구가 조용히 틀리는 상황이 세 가지 있다.
+
+**첫째, 비대칭 행렬의 고유벡터는 직교하지 않는다.** 고유벡터끼리 거의 평행하면 $P$의 조건수(condition number)가 커지고, 모드 계수 $c=P^{-1}x_0$가 입력보다 훨씬 커진다. 고유값 자체도 섭동에 민감해진다. 대칭(정규) 행렬에서 성립하던 좋은 성질을 비대칭 행렬로 무심코 이월하는 것이 가장 흔한 오용이다.
+
+**둘째, 고유값만으로 과도 응답을 판단하면 안 된다.** 비정규(non-normal) 행렬은 모든 고유값이 안정해도 일시 증폭을 일으킨다.
+
+$$
+A=\begin{bmatrix}-1&10\\0&-2\end{bmatrix},\qquad \lambda=-1,\,-2
+$$
+
+는 둘 다 왼쪽 반평면에 있지만, 고유벡터가 $(1,0)^\top$과 $(10,-1)^\top/\sqrt{101}$로 거의 평행하다. $x_0=(0,1)^\top$을 분해하면 계수가 $c_1=10$, $c_2=-1$로 부풀고,
+
+$$
+x(t)=10e^{-t}\begin{bmatrix}1\\0\end{bmatrix}-e^{-2t}\begin{bmatrix}10\\-1\end{bmatrix}
+$$
+
+의 첫 성분 $10(e^{-t}-e^{-2t})$는 $t=\ln 2$에서 $2.5$까지 자란다. 검산: $x(0)=(0,1)^\top$이고 $\|x(\ln 2)\|=\sqrt{2.5^2+0.25^2}\approx2.51$ — 크기 1에서 출발해 소멸 전에 2.5배로 부푼다. 제어 이득이나 추정기의 포화·제약이 이 과도 구간에서 걸리면, "고유값이 전부 안정"하다는 진단은 아무 위안이 되지 않는다.
+
+**셋째, 특성방정식을 수치적으로 풀지 말라.** $\det(A-\lambda I)=0$은 정의와 손 계산의 도구이지 알고리즘이 아니다. 다항식 계수를 만드는 순간 근이 계수 섭동에 극도로 민감해진다(Wilkinson의 유명한 예). 실무 라이브러리는 반대로 QR 반복(QR iteration)으로 $A$를 직교 상사변환하며 고유값을 구하고, 다항식 근 풀이조차 동반행렬의 고유값 문제로 바꿔 푼다.
+
+## 전제 장부
+
+| 구분 | 내용 |
+|---|---|
+| 정의 성립 | $A$가 정방행렬이어야 고유값·고유벡터가 정의된다 |
+| 대각화 조건 | 선형독립인 고유벡터 $n$개 존재(고유값이 전부 서로 다르면 충분, 결손이면 실패) |
+| 스펙트럼 정리 | $A=A^\top$일 때만 실고유값·직교 고유벡터 보장 |
+| 안정성 판정 | 이산 $|\lambda|<1$, 연속 $\operatorname{Re}\lambda<0$ — 점근 거동만 보장, 과도 응답은 별도 |
+| 수치 계산 | QR 반복 계열 사용, 특성다항식 경유 금지 |
+
+## 구현 안전 체크
+
+- 고유값을 구했으면 $\|Av-\lambda v\|$로 잔차를 확인하고, 합=대각합·곱=행렬식으로 교차 검산
+- 실행렬에서 복소 고유값이 나오면 켤레쌍인지 확인 — 짝이 없으면 계산 오류
+- 대칭행렬은 대칭 전용 루틴(`eigh` 계열) 사용: 더 빠르고 직교성이 보장된다
+- 비대칭 행렬이면 $P$의 조건수를 함께 보고, 크면 고유값 기반 결론(특히 과도 응답)을 유보
+- 이산화 후에는 이산 고유값 $|\lambda|<1$을 다시 확인 — 연속 안정성이 자동 이월되지 않는다
+- 고유벡터의 부호·배율은 라이브러리마다 다르다 — 부호에 의존하는 코드는 금물
+
+## 다음 연결
+
+- 비정방·비대칭 행렬에서 "방향과 배율" 질문의 올바른 도구: [특이값 분해(SVD)](svd.qmd) — 직교 입력축과 직교 출력축을 항상 보장한다
+- 상태방정식의 안정성·모드 해석: [상태공간 표현](../systems/state-space.qmd)
+- 공분산 타원과 불확실성의 기하: [평균과 공분산](../probability/mean-covariance.qmd)
+- $(A-\lambda I)v=0$을 푸는 기반: [선형 시스템 Ax=b](linear-systems.qmd)
+
+:::
+
+## 회상 점검
+
+1. $Av=\lambda v$에서 왜 $v\neq0$ 조건이 필수이고, 이 조건이 어떻게 $\det(A-\lambda I)=0$으로 이어지는가?
+2. $x_{k+1}=Ax_k$의 해를 모드 분해로 쓰면 어떤 형태이고, 오래 지나면 어떤 모드가 지배하는가?
+3. 연속시간과 이산시간의 안정성 영역이 왜 다른가? 전진 오일러 이산화는 안정성을 보존하는가?
+4. 고유값이 모두 안정한데 상태가 일시적으로 크게 부푸는 일이 어떻게 가능한가? 어떤 행렬 부류에서는 이 걱정이 없는가?
+
+## 참고문헌
+
+- Gilbert Strang, *Introduction to Linear Algebra*, Wellesley-Cambridge Press.
+- Gene H. Golub and Charles F. Van Loan, *Matrix Computations*, Johns Hopkins University Press.
+- Lloyd N. Trefethen and Mark Embree, *Spectra and Pseudospectra: The Behavior of Nonnormal Matrices and Operators*, Princeton University Press, 2005.
+- Roger A. Horn and Charles R. Johnson, *Matrix Analysis*, Cambridge University Press.

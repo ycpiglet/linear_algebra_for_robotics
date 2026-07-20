@@ -1,0 +1,212 @@
+---
+title: "MCMC 수렴 진단: 언제 chain을 믿을 수 있나"
+id: probability.mcmc-diagnostics
+kind: concept
+domain: probability
+aliases:
+  - MCMC diagnostics
+  - ESS
+  - R-hat
+  - 수렴 진단
+  - effective sample size
+one-line: "상관된 MCMC 표본의 유효 정보량과 미수렴 신호를 자기상관·유효표본수·다중 chain 분산비로 정량화한다 — 진단은 수렴의 증명이 아니라 실패의 탐지다."
+difficulty: 3
+prerequisites:
+  intuition:
+    required:
+      - concept: probability.metropolis-hastings
+        competency: explain
+        reason: 무엇이 chain을 만들고 왜 표본이 상관되는지 알아야 한다.
+    helpful:
+      - concept: probability.markov-chain
+        competency: explain
+        reason: ergodic average의 수렴 대상이 무엇인지 정의한다.
+  application:
+    required:
+      - concept: probability.monte-carlo
+        competency: calculate
+        reason: i.i.d. 몬테카를로 오차 $N^{-1/2}$를 기준선으로 쓴다.
+relations:
+  requires:
+    - probability.metropolis-hastings
+    - probability.monte-carlo
+  used-in:
+    - probability.gibbs-sampling
+---
+
+::: {.callout-note title="30초 핵심"}
+MCMC 표본은 상관되어 있으므로 $N$개의 표본이 $N$개어치의 정보가 아니다. 자기상관시간 $\tau$가 그 할인율이고, 유효표본수 $\mathrm{ESS}=N/\tau$와 다중 chain 분산비 $\widehat R$이 대표 진단량이다. 로봇의 posterior 추정(센서 보정, SLAM 사후분포)에서 "표본 십만 개"가 실제로는 수백 개어치일 수 있다. 가장 중요한 한계: 어떤 진단도 수렴을 **증명**하지 못한다 — 통과는 필요조건일 뿐, 실패의 탐지만이 확실하다.
+:::
+
+::: {.depth-intuition}
+
+## 해결하려는 문제: invariance는 공짜지만 수렴은 아니다
+
+[Metropolis–Hastings](metropolis-hastings.qmd)와 Gibbs sampler는 **구성에 의해** 목표분포 $\pi$의 invariance를 보장한다. 그러나 이것은 "$\pi$에서 시작했다면 $\pi$에 머문다"는 말이지, "임의의 초기값에서 유한한 시간 안에 $\pi$ 근처에 도달했다"는 말이 아니다. 실제로 우리가 갖는 것은 어딘가에서 출발해 유한 시간 $N$만큼 달린 chain 하나다. 두 가지가 어긋날 수 있다.
+
+1. chain이 아직 목표분포의 전형적 영역에 도달하지 못했다 (transient bias).
+2. 도달했더라도 이웃 표본끼리 강하게 상관되어 정보가 중복된다 (mixing 손실).
+
+수렴 진단은 이 두 실패를 데이터에서 탐지하려는 시도다. 논리 방향에 주의하자. 진단 실패 → 미수렴 확실. 진단 통과 → 미수렴의 **증거를 못 찾았을 뿐**. 이 비대칭이 이 장 전체의 뼈대다.
+
+:::
+
+::: {.depth-application}
+
+## burn-in: 초기 구간 폐기는 편의이지 증명이 아니다
+
+**burn-in**(워밍업, warm-up)은 chain의 앞부분 $B$개 표본을 버리고 나머지로 평균을 내는 실무 관행이다. 초기값이 목표분포의 전형적 영역에서 멀 때 transient bias를 줄여 준다. 그러나 [MH 장의 전제 장부](metropolis-hastings.qmd)에 적어 둔 그대로, burn-in은 convergence의 증명이 아니다. chain이 $B$ 스텝 뒤에 수렴해 있다는 보장은 어디에도 없고, 한 mode에 갇힌 chain은 $B$를 아무리 키워도 낫지 않는다. burn-in은 "명백히 나쁜 구간을 버리는 값싼 보험"으로만 이해한다.
+
+## 자기상관이 유효표본수를 깎는다
+
+정상상태(stationary) chain에서 관심 함수 $f$의 **자기상관함수**(autocorrelation function, ACF)를
+
+$$
+\rho(k)=\frac{\operatorname{Cov}\!\bigl(f(X_n),\,f(X_{n+k})\bigr)}{\operatorname{Var}\!\bigl(f(X_n)\bigr)}
+$$
+
+로 정의한다. $\rho(k)$는 무차원이고 $k$는 시차(표본 개수)다. **적분 자기상관시간**(integrated autocorrelation time)
+
+$$
+\tau=1+2\sum_{k=1}^{\infty}\rho(k)
+$$
+
+은 "표본 하나가 몇 개어치의 중복을 안고 있는가"를 재는 무차원 수이며, **유효표본수**(effective sample size, ESS)는
+
+$$
+\mathrm{ESS}=\frac{N}{\tau}
+$$
+
+다. i.i.d.면 $\rho(k)=0$이라 $\tau=1$, $\mathrm{ESS}=N$이다.
+
+**손 계산 예 (AR(1) 장난감).** $\rho(k)=\varphi^{k}$, $\varphi=0.9$인 chain을 보자. $\rho(1)=0.9$, $\rho(2)=0.81$, $\rho(3)=0.729$로 느리게 죽는다. 기하급수를 합하면
+
+$$
+\tau=1+2\sum_{k=1}^{\infty}0.9^{k}=1+2\cdot\frac{0.9}{1-0.9}=1+18=19.
+$$
+
+$N=1900$개의 표본을 모았다면 $\mathrm{ESS}=1900/19=100$. 십구백 개를 저장했지만 정보량은 독립표본 100개어치다.
+
+## Monte Carlo 표준오차: i.i.d. 대비 $\sqrt{\tau}$배 손해
+
+[i.i.d. Monte Carlo](monte-carlo.qmd)에서 ergodic average $\bar f_N$의 표준오차는 $\mathrm{sd}(f)/\sqrt N$였다. 상관된 chain에서는
+
+$$
+\mathrm{MCSE}\approx\mathrm{sd}(f)\cdot\sqrt{\frac{\tau}{N}}
+=\frac{\mathrm{sd}(f)}{\sqrt{\mathrm{ESS}}}
+$$
+
+로, i.i.d. 대비 정확히 $\sqrt{\tau}$배 나쁘다. 위 예에서 $N=1900$, $\tau=19$면 $\mathrm{MCSE}=\mathrm{sd}/\sqrt{100}=\mathrm{sd}/10$이다. i.i.d.였다면 $\mathrm{sd}/\sqrt{1900}\approx\mathrm{sd}/43.6$이었을 테니 $\sqrt{19}\approx4.36$배 손해다. 단위 점검: $\mathrm{MCSE}$는 $f$와 같은 단위, $\tau/N$은 무차원 — 일관된다.
+
+## 여러 chain의 분산 비교가 미수렴을 폭로한다: $\widehat R$
+
+한 chain 안에서는 "갇힌 채로 안정된" 상태와 "수렴한" 상태를 구별할 수 없다. Gelman–Rubin의 **잠재적 척도 감소 인자**(potential scale reduction factor, $\widehat R$)는 **과분산된**(overdispersed) 초기값들 — 목표분포가 퍼져 있을 만한 영역보다 넓게 흩어 놓은 시작점들 — 에서 $m$개의 chain을 각각 $n$ 스텝 돌린 뒤, 두 분산을 비교한다.
+
+- $W$: chain **내부** 분산들의 평균 (각 chain이 제자리에서 얼마나 흔들리나)
+- $B/n$: chain **간** 평균들의 분산 (chain들이 서로 얼마나 떨어져 있나)
+
+$$
+\widehat V=\frac{n-1}{n}W+\frac{B}{n},\qquad
+\widehat R=\sqrt{\frac{\widehat V}{W}}.
+$$
+
+모든 chain이 같은 분포를 탐색하면 $B/n$이 $W$ 수준으로 내려와 $\widehat R\to1$이다. **손 계산 예.** 두 chain($m=2$, $n=1000$)이 서로 다른 mode에 갇혀 chain 평균이 $-3$과 $+3$, 내부 분산이 각각 $1$이라 하자. $W=1$, $B=\frac{n}{m-1}\sum_j(\bar\theta_j-\bar\theta)^2=1000\cdot(9+9)=18000$, $\widehat V=0.999+18=18.999$, $\widehat R=\sqrt{18.999}\approx4.36$. 각 chain의 trace는 매끈해 보여도 $\widehat R$이 미수렴을 즉시 폭로한다. $\widehat R\approx1$은 **필요조건**이다 — 모든 chain이 같은 mode에 함께 갇히면 $\widehat R$도 속는다.
+
+**split-$\widehat R$.** 각 chain을 절반으로 쪼개 전·후반을 별개 chain처럼 취급하고 같은 계산을 한다. 전체 평균은 안정돼 보이지만 chain 안에서 느린 drift가 진행 중인 경우 — 전반과 후반의 평균이 다른 경우 — 를 whole-chain $\widehat R$은 놓치고 split-$\widehat R$은 잡는다. 현대 구현(Vehtari et al. 2021)은 여기에 rank 정규화와 folding을 더해 두꺼운 꼬리와 분산 차이까지 감지한다.
+
+## 눈은 속는다: trace plot과 running mean의 역할과 한계
+
+**trace plot**(표본을 시간 순으로 그린 그림)과 running mean(누적 평균 곡선)은 가장 값싼 진단이다. 초기 transient, 갑작스러운 level shift, 한 자리에 오래 머무는 sticky 구간은 눈으로 즉시 보인다. 그러나 역도 성립하지 않는다. 두 mode 중 하나에 갇힌 chain의 trace는 **완벽하게 건강해 보인다** — 잘 섞이고, running mean도 매끈하게 안정된다. 안정된 곳이 목표분포의 절반일 뿐이다. 위 $\widehat R=4.36$ 예가 정확히 이 상황이다. 시각 진단은 "명백한 실패의 조기 발견"용이지 수렴의 근거가 아니다.
+
+:::
+
+::: {.depth-derivation}
+
+## ergodic average의 분산에서 $\tau$가 나온다
+
+정상상태 chain에서 $\sigma^2=\operatorname{Var}(f(X_n))$이라 하자. ergodic average $\bar f_N=\frac1N\sum_{n=1}^N f(X_n)$의 분산을 전개한다. 먼저 합의 분산은 모든 쌍의 공분산 합이다.
+
+$$
+\operatorname{Var}\Bigl(\sum_{n=1}^N f(X_n)\Bigr)
+=\sum_{n=1}^N\sum_{l=1}^N \operatorname{Cov}\bigl(f(X_n),f(X_l)\bigr).
+$$
+
+정상성에 의해 공분산은 시차 $k=|n-l|$에만 의존하고, 시차 $k\ge1$인 쌍은 정확히 $2(N-k)$개다.
+
+$$
+\operatorname{Var}\Bigl(\sum_{n=1}^N f(X_n)\Bigr)
+=N\sigma^2+2\sum_{k=1}^{N-1}(N-k)\,\sigma^2\rho(k).
+$$
+
+$N^2$으로 나누어 평균의 분산으로 바꾼다.
+
+$$
+\operatorname{Var}(\bar f_N)
+=\frac{\sigma^2}{N}\Bigl[1+2\sum_{k=1}^{N-1}\Bigl(1-\frac kN\Bigr)\rho(k)\Bigr].
+$$
+
+$\sum_k k\,|\rho(k)|<\infty$이면 $N\to\infty$에서 괄호 안이 $\tau=1+2\sum_{k\ge1}\rho(k)$로 수렴하므로
+
+$$
+\operatorname{Var}(\bar f_N)\approx\frac{\sigma^2\,\tau}{N}
+=\frac{\sigma^2}{\mathrm{ESS}}.
+$$
+
+즉 상관된 $N$개 표본의 평균은 독립표본 $N/\tau$개의 평균과 같은 분산을 갖는다 — ESS 정의가 유도에서 그대로 떨어진다.
+
+**검산.** AR(1) 예에 대입: $\tau=19$, $N=1900$이면 $\operatorname{Var}(\bar f_N)\approx\sigma^2\cdot19/1900=\sigma^2/100$, 표준오차 $\sigma/10$ — 응용 절의 $\mathrm{MCSE}=\mathrm{sd}/\sqrt{\mathrm{ESS}}$와 일치한다. 모양 점검: $\rho(k)$·$\tau$는 무차원, $\operatorname{Var}(\bar f_N)$은 $f^2$의 단위 — 일관된다.
+
+:::
+
+::: {.depth-application}
+
+## 실패 조건: 진단이 속거나 오용되는 경우
+
+- **acceptance rate 하나로 판정 금지.** [MH 장의 반례](metropolis-hastings.qmd) 그대로: 제자리 proposal은 acceptance 100%지만 전혀 움직이지 않고, 극단적으로 좁은 proposal도 acceptance만 높다. acceptance rate는 tuning 참고치이지 수렴 지표가 아니다.
+- **단일 chain으로는 $\widehat R$을 정의할 수 없다.** chain 간 분산 $B$가 필요하다. chain 하나를 쪼개는 split조차 "그 chain이 간 곳"만 볼 뿐, 가 보지 않은 mode는 원리적으로 감지 불가다.
+- **ESS는 통계량마다 다르다.** 같은 chain이라도 평균용 ESS와 꼬리 분위수(예: 5% VaR류)용 ESS는 다르며, 꼬리 함수는 드문 방문에 의존해 ESS가 훨씬 작은 것이 보통이다. "이 chain의 ESS"라는 단일 숫자는 없다 — 보고하는 추정량마다 계산한다.
+- **thinning(솎아내기)은 보통 정보 손실.** $k$개마다 하나만 남기면 상관은 줄지만 버린 표본의 정보도 함께 버린다. 같은 계산 예산이면 전부 쓰는 쪽이 MCSE가 작거나 같다. 저장 용량이 병목일 때만 정당화된다.
+- **모든 chain이 같은 초기값 근처에서 출발하면 $\widehat R$이 속는다.** 과분산 초기값이 전제 조건이다.
+
+## 전제 장부
+
+| 구분 | 내용 |
+|---|---|
+| $\tau$·ESS 정의 | 정상상태 + $\sum_k k\,\lvert\rho(k)\rvert<\infty$ (자기상관의 충분히 빠른 감쇠) |
+| MCSE 공식 | ergodic average에 대한 CLT 성립 구간 — [유한상태 MH 수렴 증명](../../proofs/finite-state-mh-convergence-ergodic-average.qmd)의 조건이 한 예 |
+| $\widehat R$의 힘 | 과분산 초기값에서 출발한 $m\ge2$개의 chain |
+| 진단의 논리 | 실패 탐지는 확실, 통과는 필요조건일 뿐 — 수렴 증명 아님 |
+| burn-in | transient bias 완화용 실무 선택이며 convergence 증명이 아님 |
+
+## 구현 안전 체크
+
+- chain을 4개 이상, 과분산 초기값에서 시작
+- 모든 보고 통계량에 대해 split-$\widehat R<1.01$ 확인
+- 통계량별 ESS 목표치(예: 평균은 수백, 꼬리 분위수는 별도 상향) 설정
+- 점 추정과 함께 MCSE 보고 — "표본 수 $N$"이 아니라 ESS가 정보량
+- trace plot·running mean은 조기 실패 발견용으로만
+- thinning은 저장 병목일 때만
+- ACF 추정 시 잡음(noise) 섞인 큰 시차의 $\widehat\rho(k)$를 끝까지 더하지 말 것 — Geyer의 초기 양수열 등 절단 규칙 사용
+
+## 다음 연결
+
+- 진단 대상이 되는 chain의 구성: [Metropolis–Hastings 알고리즘](metropolis-hastings.qmd)
+- 좌표별 갱신에서도 같은 진단이 그대로 적용된다: [Gibbs Sampling](gibbs-sampling.qmd)
+- $N^{-1/2}$ 기준선: [Monte Carlo 방법](monte-carlo.qmd)
+- CLT와 ergodic average 수렴의 완결: [유한상태 MH 수렴 증명](../../proofs/finite-state-mh-convergence-ergodic-average.qmd)
+- 전체 학습 순서: [MCMC 학습 경로](../../paths/mcmc.qmd)
+
+:::
+
+## 회상 점검
+
+1. $\varphi=0.9$인 AR(1) chain에서 $\tau=19$가 나오는 계산을 재현하라. $N=1900$이면 ESS는 얼마인가?
+2. 진단 통과가 수렴의 증명이 될 수 없는 논리적 이유는 무엇인가? 진단이 확실하게 말해 주는 방향은 어느 쪽인가?
+3. 한 mode에 갇힌 chain의 trace plot이 건강해 보이는 이유와, $\widehat R$이 이를 잡아내는 메커니즘을 설명하라.
+4. 같은 chain에서 평균의 ESS와 꼬리 분위수의 ESS가 왜 다른가?
+
+## 참고문헌
+
+- Andrew Gelman and Donald B. Rubin, “Inference from Iterative Simulation Using Multiple Sequences,” *Statistical Science*, 1992.
+- Charles J. Geyer, “Practical Markov Chain Monte Carlo,” *Statistical Science*, 1992.
+- Aki Vehtari, Andrew Gelman, Daniel Simpson, Bob Carpenter, and Paul-Christian Bürkner, “Rank-Normalization, Folding, and Localization: An Improved $\widehat R$ for Assessing Convergence of MCMC,” *Bayesian Analysis*, 2021.

@@ -1,13 +1,13 @@
 # 프로젝트 안내 (세션 인수인계)
 
 한국어 로봇수학 교재 **Robotics Math Atlas**. Quarto(.qmd) 단일 원고에서 웹·EPUB·PDF를
-렌더하며, GitHub 기반 협업 교정 시스템이 가동 중이다. 최종 갱신: 2026-07-19.
+렌더하며, GitHub 기반 협업 교정 시스템이 가동 중이다. 최종 갱신: 2026-07-20.
 
 ## 핵심 문서
 
 - `EDITING_SYSTEM_PLAN.md` — 교정 시스템 기획서 + 각 Phase 구현 노트(수동 설정 절차 포함)
 - `EDITING_UX_RESEARCH.md`, `EDITING_UX_RESEARCH_2.md` — 근거 조사(검증 표기 규약 있음)
-- `AUTHORING_MANUAL.md` — 집필 규범(원고 작업 전 필독), `future-scope.qmd` — 예정 노드 55개 계약
+- `AUTHORING_MANUAL.md` — 집필 규범(원고 작업 전 필독), `future-scope.qmd` — 예정 노드 54개 계약
 - `platform/editorial/README.md` — 주체 구분 규약(커밋 트레일러·라벨), 이벤트 원장 규칙
 
 ## 빌드·검증
@@ -43,13 +43,16 @@
 
 ## 원고 진행 (커리큘럼 `curriculum.qmd` A~M 대비)
 
-- 완비: K(MC·SMC·PF, 증명 5편) · L(MCMC 대부분, 증명 4편) · G(확률 기초+MLE 플래그십)
-- 플래그십 3장: 자코비안(2001줄)·MLE(1985줄)·칼만 필터(1191줄). 중형 장 14, 지원 장 5,
+- 완비: K(MC·SMC·PF, 증명 5편) · L(MCMC — Gibbs·수렴 진단 포함, 증명 4편) · G(확률 기초+MLE 플래그십)
+- 플래그십 3장: 자코비안(2001줄)·MLE(1985줄)·칼만 필터(1191줄). 중형 장 14+6, 지원 장 5,
   경로 5, 실습 5
-- 미착수: C(수치선대) · D(행렬미적분) · **E(SO(3)/SE(3) — 최대 공백)** · F(최적화) ·
-  H(신호) · I2(고전제어) · J1/J3(센서·퓨전) · M(ML/RL) + `future-scope.qmd` 예정 노드 55개
-- 다음 집필 우선순위 합의안: ① E축 회전·자세 표현 ② B5/B6 고유값·SVD ③ EKF(두 플래그십 교차점)
-  ④ L축 마무리(Gibbs·수렴 진단)
+- **2026-07-20 신규 6장**(우선순위 합의안 ①~④ 전부 이행): 회전 표현(E축 착수,
+  `robot.rotation_representations`) · 고유값(B5) · SVD(B6) · EKF(`estimation.extended_kalman_filter`,
+  future-scope에서 승격) · Gibbs 표본화 · MCMC 수렴 진단. 전 장 수치 검산·재계산 검수 완료
+- 미착수: C(수치선대) · D(행렬미적분) · E 잔여(SE(3)·리 군 — 회전 표현만 집필됨) · F(최적화) ·
+  H(신호) · I2(고전제어) · J1/J3(센서·퓨전) · M(ML/RL) + `future-scope.qmd` 예정 노드 54개
+- 다음 후보: SE(3)/동차변환(E축 완결) · EKF-SLAM 또는 UKF · 수치선대 C축(QR·조건수) ·
+  최적화 F축(경사하강·뉴턴)
 
 ## 작업 규약
 

@@ -69,7 +69,6 @@ toc-depth: 2
 | `statistics.maximum_a_posteriori` | 최대사후확률추정 | 우도와 사전분포를 결합해 사후확률이 가장 큰 모수를 찾는다. | ← MLE, 베이즈 법칙 |
 | `statistics.generalized_linear_model` | 일반화선형모형 | 가우스 밖의 반응분포와 연결함수로 선형 예측자를 확장한다. | ← MLE |
 | `signals.low_pass_filter` | 저역통과필터 | 낮은 주파수 성분을 통과시키고 높은 주파수 성분을 줄인다. | ← 신호 및 시스템 |
-| `estimation.extended_kalman_filter` | 확장 칼만 필터 | 비선형 동역학·측정을 자코비안으로 국소 선형화해 가우스 상태를 갱신한다. | ← 자코비안, 칼만 필터 |
 | `estimation.square_root_filter` | 제곱근 필터 | 공분산 대신 그 인수를 전파해 수치 안정성을 높인다. | ← 수치선형대수, 칼만 필터 |
 | `estimation.rts_smoother` | RTS 평활기 | 전방 칼만 필터와 후방 재귀로 미래 측정을 과거 상태에 반영한다. | ← 칼만 필터 |
 | `estimation.particle_filter` | 입자 필터 | 비선형·비가우스 상태분포를 가중 입자로 근사한다. | ← 베이즈 필터, SMC |
