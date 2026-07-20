@@ -57,6 +57,8 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.sha }}
           path: batch
+          ssh-key: ${{ secrets.EDITORIAL_BATCH_SSH_KEY }}
+          persist-credentials: true
 
       - name: Install pinned uv
         uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
@@ -149,8 +151,6 @@ jobs:
         id: batch
         if: steps.precheck.outputs.pending != '0'
         working-directory: batch
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           if [ "$(git rev-parse HEAD)" = "$base" ]; then
             echo "새 커밋 없음 — 푸시 생략"

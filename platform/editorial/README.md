@@ -54,6 +54,15 @@ privileged digest에는 임의 ref의 YAML을 실행할 수 있는 `workflow_dis
 
 동결을 해제하기 전에 실패한 source push가 없는지 확인한다. 이슈의 댓글·`bridged` 라벨은
 source push, main 대상 batch PR 보장, read-only quality dispatch가 모두 성공한 뒤에만 붙는다.
-`editorial/batch`에는 direct update 제한 ruleset을 적용하고 GitHub Actions integration만
-bridge push용 bypass actor로 둔다. dispatch 직전 workflow가 live ref를 방금 push한 SHA와
-다시 비교하지만, ruleset이 이 비교 사이의 사람 push 경합을 구조적으로 줄이는 1차 경계다.
+`editorial/batch`에는 direct update 제한 ruleset을 적용한다. 개인 소유 저장소의 내장
+`GITHUB_TOKEN`은 eligible ruleset bypass App이 아니므로, bridge checkout은
+`EDITORIAL_BATCH_SSH_KEY` Actions secret과 짝을 이루는 write deploy key
+`editorial-batch-actions-only`만 사용한다. ruleset의 유일한 bypass actor는 `DeployKey`이며
+저장소에는 이 전용 key 외 deploy key를 두지 않는다. dispatch 직전 workflow가 live ref를
+방금 push한 SHA와 다시 비교하지만, ruleset이 이 비교 사이의 사람 push 경합을 구조적으로
+줄이는 1차 경계다.
+
+key를 교체할 때도 먼저 위의 freeze·drain 절차를 수행한다. 새 write deploy key와
+`EDITORIAL_BATCH_SSH_KEY` secret을 같은 점검 창에서 교체하고, 기본 브랜치
+`repository_dispatch` 복귀 검증이 성공한 뒤 이전 key를 제거한다. 개인 PAT나 계정 SSH key를
+이 용도로 재사용하지 않는다.

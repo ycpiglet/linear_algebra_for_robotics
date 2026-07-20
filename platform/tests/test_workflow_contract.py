@@ -211,6 +211,8 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
         "fetch-depth": "0",
         "ref": "${{ github.sha }}",
         "path": "batch",
+        "ssh-key": "${{ secrets.EDITORIAL_BATCH_SSH_KEY }}",
+        "persist-credentials": "true",
     }
     assert steps["Install pinned uv"]["with"] == {
         "version": "0.11.28",
@@ -250,6 +252,7 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
 
     push = steps["Push batch branch"]
     assert push["working-directory"] == "batch"
+    assert "env" not in push
     assert "git push -u origin editorial/batch" in push["run"]
     ensure = steps["Ensure batch PR exists"]
     assert ensure["run"].count("--base main") == 3
