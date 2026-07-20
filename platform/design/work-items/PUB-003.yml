@@ -9,7 +9,7 @@ version_impact: breaking
 owner_role: publishing-ops-steward
 review_roles: [release-engineer]
 branch: null
-dependencies: []
+dependencies: [PUB-002, PUB-016]
 decision_refs:
   - README.md
   - pyproject.toml

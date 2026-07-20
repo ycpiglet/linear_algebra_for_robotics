@@ -1,0 +1,73 @@
+schema_version: 1
+id: PUB-016
+title: agent provenance trailer 형식 CI gate
+area: ci
+status: ready
+priority: P0
+change_class: toolchain
+version_impact: compatible
+owner_role: release-engineer
+review_roles: [publishing-ops-steward]
+branch: agent/pub-016-provenance-gate
+dependencies: [PUB-002]
+decision_refs:
+  - platform/editorial/README.md
+  - CLAUDE.md
+decision_needed: []
+blocker: null
+status_reason: null
+superseded_by: null
+scope:
+  in:
+    - PR과 main push의 새 agent 커밋·merge commit에서 Git이 파싱하는 Actor trailer 검증
+    - literal escape와 본문 속 유사 문자열을 trailer로 오인하지 않는 회귀 test
+    - PUB-002의 기존 비정규 trailer 커밋을 역사적 예외로 기록하고 새 위반만 차단
+  out:
+    - 보호된 기존 Git history 재작성
+    - 사람 커밋에 Actor trailer 강제
+change_paths:
+  read:
+    - .github/workflows/publish-web.yml
+    - platform/editorial/README.md
+    - CLAUDE.md
+  write:
+    - .github/workflows/publish-web.yml
+    - platform/scripts/verify_provenance.py
+    - platform/tests/test_provenance.py
+    - platform/editorial/README.md
+    - platform/design/work-items/PUB-002.yml
+    - platform/design/work-items/PUB-016.yml
+  exclusive_locks: [ci-control-plane]
+  generated: []
+verification:
+  source_contract:
+    - 새 PR commit range와 main push range의 Actor trailer parser fixture
+    - literal backslash-n과 본문 문자열만 있는 agent commit의 fail-closed test
+    - make test와 make lint
+  rendered_contract: []
+  post_merge:
+    - 유효한 agent trailer commit은 통과하고 의도적으로 잘못 만든 fixture는 차단됨
+rollback:
+  triggers:
+    - 사람 커밋이나 과거 허용 예외까지 차단함
+    - merge queue·배치 merge의 정상 commit range를 해석하지 못함
+  unit: merge_commit
+  steps:
+    - provenance gate merge commit을 revert하고 실패 commit range와 event payload를 보존한다
+  compatibility_preserved:
+    - 기존 history와 공개 provenance evidence는 수정하지 않는다
+definition_of_done:
+  - Git trailer parser가 Actor 값 agent를 정확히 하나 인식해야 agent provenance로 판정한다
+  - PR과 main push 모두 새 commit range만 검사한다
+  - literal escape·본문 유사 문자열·중복 상충 trailer fixture가 실패한다
+  - PUB-002의 알려진 예외 commit과 보완 PR 근거가 문서화된다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  post_merge: []
+  last_known_good: null
+  revert_ref: null
+  follow_up: null
+last_reviewed: "2026-07-21"

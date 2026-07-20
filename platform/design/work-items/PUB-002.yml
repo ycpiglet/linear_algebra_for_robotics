@@ -2,13 +2,13 @@ schema_version: 1
 id: PUB-002
 title: 모든 PR의 read-only 품질 lane과 배포 분리
 area: ci
-status: in_review
+status: done
 priority: P0
 change_class: toolchain
 version_impact: breaking
 owner_role: release-engineer
 review_roles: [publishing-ops-steward]
-branch: agent/pub-002-ci-safety
+branch: agent/pub-002-evidence
 dependencies: [PUB-001]
 decision_refs:
   - platform/design/README.md#검증-계층
@@ -102,14 +102,53 @@ definition_of_done:
   - rollback은 workflow와 ruleset·deploy key·secret을 하나의 동결된 control-plane cutover로 되돌린다
   - front matter·코드·수식·HTML·shortcode·저장소 밖 경로 제안은 자동 반영되지 않는다
 evidence:
-  issue: null
+  issue: 18
   pr: 16
   ci_runs:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29749197342
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29749499320
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29749915933
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29751854155
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29752160881
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29752565133
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29752680852
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29752936523
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29753166303
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29753541153
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29754164962
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29754523021
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29754971996
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29754998233
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29754998040
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29755762869
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29756088961
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29756108463
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29756234333
   rendered_artifacts:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29749197342/artifacts/8463814311
-  post_merge: []
-  last_known_good: 225573073f4432ba62e67e9e8def1bbacbae7721
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29749499320/artifacts/8463994945
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29751854155/artifacts/8464959102
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29752936523/artifacts/8465428214
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29754164962/artifacts/8465971932
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29754998233/artifacts/8466309863
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29754998040/artifacts/8466536457
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29755762869/artifacts/8466696675
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/review/
+  post_merge:
+    - "PR #16 merge 289c9e685ee5460a51564e2b5e7f05439a4258f8로 build와 trusted deploy를 분리하고 main required checks를 연결함"
+    - "PR #17 merge ef71c33d99ac0e77bfcedc20f397a1d9b36c5b9d로 editorial batch write credential을 전용 deploy key로 격리함"
+    - "PR #19 merge 756d20dcf48763d20bbc89147d99a9039d0e8b56로 full-history non-force push ancestry 증명을 추가함"
+    - "PR #20 merge c02055d29ef4dd8776106d2a08992f3c5d251e83로 source push 뒤 부분 실패의 idempotent 복구를 추가함"
+    - "PR #21 merge bdc9eb7fc837d714d081ce9a8e0ac9f9aa977b4a에서 Issue #18 교정 커밋 7370b28649b5785fba62fbeac3f9a3a9167a43ca와 이벤트를 보존함"
+    - "main ruleset 19211454는 merge commit만 허용하고 source-contract와 publication-build를 strict required checks로 요구함"
+    - "editorial batch ruleset 19211567은 DeployKey만 update bypass할 수 있고 전용 key 157811443은 verified=true와 read_only=false임"
+    - "Actions 기본 권한은 read이고 trusted digest의 PR 생성 설정만 활성화했으며 EDITORIAL_BATCH_KEY_SLOT=primary를 유지함"
+    - "실패 drill 29752680852와 29753541153에서 freeze가 자동 복원되고 issue가 오확정되지 않았음을 확인함"
+    - "성공 digest 29754971996가 batch 7370b28을 0dd7327로 non-force push하고 PR #21 생성과 quality dispatch 뒤 Issue #18을 bridged 처리함"
+    - "최종 reader와 review가 source SHA bdc9eb7을 제공하고 Bayes-filter 교정 문구를 동일하게 렌더함"
+    - "zero-pending digest 29756234333에서 precheck 외 단계를 모두 건너뛰고 EDITORIAL_FREEZE=false 정상 운영으로 복귀함"
+  last_known_good: bdc9eb7fc837d714d081ce9a8e0ac9f9aa977b4a
   revert_ref: null
-  follow_up: null
-last_reviewed: "2026-07-20"
+  follow_up: PUB-016
+last_reviewed: "2026-07-21"
