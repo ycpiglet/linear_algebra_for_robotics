@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1140 610" role="img" aria-labelledby="title desc">
+  <title id="title">2R 로봇팔의 정상, 준특이, 정확한 특이 자세 비교</title>
+  <desc id="desc">둘째 관절각이 60도에서 10도, 0도로 줄어드는 세 자세를 나란히 비교한다. 두 링크가 펴질수록 미터 매 라디안 단위의 최소 특이값은 0.158에서 0.027, 0으로 줄고 제곱미터 매 제곱라디안 단위의 조작성 행렬식 절댓값은 0.1039에서 0.0208, 0으로 줄며, 속도 타원은 타원에서 가는 타원을 거쳐 선분이 된다.</desc>
+  <defs>
+    <style>
+      .ink{fill:#172033;font-family:'Noto Sans KR',sans-serif}.muted{fill:#5b6578;font-family:'Noto Sans KR',sans-serif}.card{fill:#fff;stroke:#d7dfeb;stroke-width:2}.axis{stroke:#93a1b7;stroke-width:2}.link{stroke:#34415a;stroke-width:14;stroke-linecap:round}.joint{fill:#fff;stroke:#34415a;stroke-width:5}.normal{fill:#dcf7f2;stroke:#087f78;stroke-width:4}.near{fill:#fff2d6;stroke:#955000;stroke-width:4}.singular{stroke:#a92f49;stroke-width:6;stroke-linecap:round}.normalText{fill:#087f78;font-family:'Noto Sans KR',sans-serif}.nearText{fill:#955000;font-family:'Noto Sans KR',sans-serif}.singularText{fill:#a92f49;font-family:'Noto Sans KR',sans-serif}
+    </style>
+  </defs>
+  <rect width="1140" height="610" rx="24" fill="#fbfcfe"/>
+  <text class="ink" x="38" y="45" font-size="26" font-weight="700">특이점은 갑자기 생기는 벽이 아니라, 속도 타원의 짧은 축이 무너지는 과정이다</text>
+  <text class="muted" x="38" y="72" font-size="16">공통 조건: l₁=0.4 m, l₂=0.3 m, q₁=30° · w=|det J| [m²/rad²]</text>
+
+  <g transform="translate(24 94)">
+    <rect class="card" width="348" height="482" rx="18"/>
+    <text class="normalText" x="22" y="38" font-size="21" font-weight="700">A · 정상 자세</text><text class="ink" x="238" y="38" font-size="18" font-weight="700">q₂=60°</text>
+    <line class="axis" x1="35" y1="280" x2="316" y2="280"/><line class="axis" x1="74" y1="310" x2="74" y2="85"/>
+    <line class="link" x1="74" y1="280" x2="178" y2="220"/><line class="link" x1="178" y1="220" x2="178" y2="142"/>
+    <circle class="joint" cx="74" cy="280" r="11"/><circle class="joint" cx="178" cy="220" r="11"/><circle class="joint" cx="178" cy="142" r="10"/>
+    <text class="muted" x="212" y="166" font-size="15">두 열이 독립</text>
+    <text class="ink" x="22" y="329" font-size="16" font-weight="700">단위 관절속도 → 말단 속도 타원</text>
+    <line class="axis" x1="52" y1="390" x2="296" y2="390"/><line class="axis" x1="174" y1="430" x2="174" y2="345"/>
+    <ellipse class="normal" cx="174" cy="390" rx="75" ry="17" transform="rotate(-29 174 390)"/>
+    <text class="normalText" x="22" y="450" font-size="17" font-weight="700">σ_min=0.158 m/rad</text>
+    <text class="normalText" x="22" y="472" font-size="16">w=0.1039 m²/rad²</text>
+  </g>
+
+  <g transform="translate(396 94)">
+    <rect class="card" width="348" height="482" rx="18"/>
+    <text class="nearText" x="22" y="38" font-size="21" font-weight="700">B · 준특이 자세</text><text class="ink" x="238" y="38" font-size="18" font-weight="700">q₂=10°</text>
+    <line class="axis" x1="35" y1="280" x2="316" y2="280"/><line class="axis" x1="74" y1="310" x2="74" y2="85"/>
+    <line class="link" x1="74" y1="280" x2="178" y2="220"/><line class="link" x1="178" y1="220" x2="238" y2="170"/>
+    <circle class="joint" cx="74" cy="280" r="11"/><circle class="joint" cx="178" cy="220" r="11"/><circle class="joint" cx="238" cy="170" r="10"/>
+    <text class="muted" x="191" y="132" font-size="15">거의 같은 방향</text>
+    <text class="ink" x="22" y="329" font-size="16" font-weight="700">짧은 축이 이미 크게 감소</text>
+    <line class="axis" x1="52" y1="390" x2="296" y2="390"/><line class="axis" x1="174" y1="430" x2="174" y2="345"/>
+    <ellipse class="near" cx="174" cy="390" rx="80" ry="4" transform="rotate(-33 174 390)"/>
+    <text class="nearText" x="22" y="450" font-size="17" font-weight="700">σ_min=0.027 m/rad</text>
+    <text class="nearText" x="22" y="472" font-size="16">w=0.0208 m²/rad²</text>
+  </g>
+
+  <g transform="translate(768 94)">
+    <rect class="card" width="348" height="482" rx="18"/>
+    <text class="singularText" x="22" y="38" font-size="21" font-weight="700">C · 정확한 특이</text><text class="ink" x="248" y="38" font-size="18" font-weight="700">q₂=0°</text>
+    <line class="axis" x1="35" y1="280" x2="316" y2="280"/><line class="axis" x1="74" y1="310" x2="74" y2="85"/>
+    <line class="link" x1="74" y1="280" x2="178" y2="220"/><line class="link" x1="178" y1="220" x2="246" y2="181"/>
+    <circle class="joint" cx="74" cy="280" r="11"/><circle class="joint" cx="178" cy="220" r="11"/><circle class="joint" cx="246" cy="181" r="10"/>
+    <text class="muted" x="196" y="140" font-size="15">두 열이 나란함</text>
+    <text class="ink" x="22" y="329" font-size="16" font-weight="700">타원이 선분으로 붕괴</text>
+    <line class="axis" x1="52" y1="390" x2="296" y2="390"/><line class="axis" x1="174" y1="430" x2="174" y2="345"/>
+    <line class="singular" x1="110" y1="430" x2="238" y2="350"/>
+    <text class="singularText" x="22" y="450" font-size="17" font-weight="700">σ_min=0 m/rad</text>
+    <text class="singularText" x="22" y="472" font-size="16">w=0 m²/rad² · 방향 하나 소실</text>
+  </g>
+</svg>
