@@ -12,9 +12,11 @@ branch: agent/design-operations-backlog
 dependencies: []
 decision_refs:
   - AUTHORING_MANUAL.md#0-이-매뉴얼을-사용하는-법
-  - EDITING_SYSTEM_PLAN.md#7-편집-기록을-스타일과-의도로-학습하는-방법
+  - EDITING_SYSTEM_PLAN.md#7-스타일-학습-루프
 decision_needed: []
 blocker: null
+status_reason: null
+superseded_by: null
 scope:
   in:
     - 작업별 YAML, schema, checker, dependency·lock·evidence 계약
@@ -68,5 +70,8 @@ evidence:
   ci_runs:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29741637916
   rendered_artifacts: []
+  post_merge: []
   last_known_good: 5a79cae
+  revert_ref: null
+  follow_up: null
 last_reviewed: "2026-07-20"

@@ -16,6 +16,8 @@ decision_refs:
   - assets/README.md
 decision_needed: []
 blocker: null
+status_reason: null
+superseded_by: null
 scope:
   in:
     - body·heading·caption·label·code·math semantic type roles
@@ -75,5 +77,8 @@ evidence:
   pr: null
   ci_runs: []
   rendered_artifacts: []
+  post_merge: []
   last_known_good: null
+  revert_ref: null
+  follow_up: null
 last_reviewed: "2026-07-20"

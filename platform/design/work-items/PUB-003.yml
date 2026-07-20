@@ -22,6 +22,8 @@ decision_needed:
   - JSON Schema $id 유지 또는 새 identity 도입 여부 확정
   - 열린 PR·clone·webhook·deploy key carry-over 방식 확정
 blocker: null
+status_reason: null
+superseded_by: null
 scope:
   in:
     - 표시 브랜드·repository·package·import·site identity 표
@@ -63,5 +65,8 @@ evidence:
   pr: null
   ci_runs: []
   rendered_artifacts: []
+  post_merge: []
   last_known_good: 5a79cae
+  revert_ref: null
+  follow_up: null
 last_reviewed: "2026-07-20"

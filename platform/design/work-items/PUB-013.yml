@@ -11,9 +11,11 @@ review_roles: [math-domain-reviewer, render-qa]
 branch: null
 dependencies: [PUB-009]
 decision_refs:
-  - AUTHORING_MANUAL.md#9-알고리즘과-코드
+  - AUTHORING_MANUAL.md#9-알고리즘의사코드코드
 decision_needed: []
 blocker: null
+status_reason: null
+superseded_by: null
 scope:
   in:
     - 한 학습 경로 또는 3~5개 원고의 code·terminal blocks
@@ -43,5 +45,8 @@ evidence:
   pr: null
   ci_runs: []
   rendered_artifacts: []
+  post_merge: []
   last_known_good: null
+  revert_ref: null
+  follow_up: null
 last_reviewed: "2026-07-20"

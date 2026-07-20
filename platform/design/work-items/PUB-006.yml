@@ -15,6 +15,8 @@ decision_refs:
   - AUTHORING_MANUAL.md#10-시각화-설계
 decision_needed: []
 blocker: null
+status_reason: null
+superseded_by: null
 scope:
   in:
     - repository-owned deterministic artifact inventory
@@ -64,5 +66,8 @@ evidence:
   pr: null
   ci_runs: []
   rendered_artifacts: []
+  post_merge: []
   last_known_good: null
+  revert_ref: null
+  follow_up: null
 last_reviewed: "2026-07-20"

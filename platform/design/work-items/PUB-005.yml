@@ -15,6 +15,8 @@ decision_refs:
   - platform/design/work-items/PUB-004.yml
 decision_needed: []
 blocker: null
+status_reason: null
+superseded_by: null
 scope:
   in:
     - GitHub repository rename과 local remote 갱신
@@ -73,5 +75,8 @@ evidence:
   pr: null
   ci_runs: []
   rendered_artifacts: []
+  post_merge: []
   last_known_good: null
+  revert_ref: null
+  follow_up: null
 last_reviewed: "2026-07-20"

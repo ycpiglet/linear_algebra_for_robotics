@@ -14,6 +14,8 @@ decision_refs:
   - platform/design/work-items/PUB-003.yml
 decision_needed: []
 blocker: null
+status_reason: null
+superseded_by: null
 scope:
   in:
     - old·new Pages prefix를 처리하는 editorial 회귀 테스트
@@ -66,5 +68,8 @@ evidence:
   pr: null
   ci_runs: []
   rendered_artifacts: []
+  post_merge: []
   last_known_good: null
+  revert_ref: null
+  follow_up: null
 last_reviewed: "2026-07-20"

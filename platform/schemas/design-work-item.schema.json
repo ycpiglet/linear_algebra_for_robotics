@@ -18,6 +18,8 @@
     "decision_refs",
     "decision_needed",
     "blocker",
+    "status_reason",
+    "superseded_by",
     "scope",
     "change_paths",
     "verification",
@@ -83,6 +85,11 @@
       "uniqueItems": true
     },
     "blocker": { "type": ["string", "null"], "minLength": 1 },
+    "status_reason": { "type": ["string", "null"], "minLength": 1 },
+    "superseded_by": {
+      "type": ["string", "null"],
+      "pattern": "^PUB-[0-9]{3}$"
+    },
     "scope": { "$ref": "#/$defs/scope" },
     "change_paths": { "$ref": "#/$defs/changePaths" },
     "verification": { "$ref": "#/$defs/verification" },
@@ -143,13 +150,28 @@
     },
     "evidence": {
       "type": "object",
-      "required": ["issue", "pr", "ci_runs", "rendered_artifacts", "last_known_good"],
+      "required": [
+        "issue",
+        "pr",
+        "ci_runs",
+        "rendered_artifacts",
+        "post_merge",
+        "last_known_good",
+        "revert_ref",
+        "follow_up"
+      ],
       "properties": {
         "issue": { "type": ["integer", "null"], "minimum": 1 },
         "pr": { "type": ["integer", "null"], "minimum": 1 },
         "ci_runs": { "$ref": "#/$defs/stringList" },
         "rendered_artifacts": { "$ref": "#/$defs/stringList" },
-        "last_known_good": { "type": ["string", "null"], "minLength": 1 }
+        "post_merge": { "$ref": "#/$defs/stringList" },
+        "last_known_good": { "type": ["string", "null"], "minLength": 1 },
+        "revert_ref": { "type": ["string", "null"], "minLength": 1 },
+        "follow_up": {
+          "type": ["string", "null"],
+          "pattern": "^PUB-[0-9]{3}$"
+        }
       },
       "additionalProperties": false
     }

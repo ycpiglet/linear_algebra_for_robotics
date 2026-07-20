@@ -14,6 +14,8 @@ decision_refs:
   - platform/design/README.md#검증-계층
 decision_needed: []
 blocker: null
+status_reason: null
+superseded_by: null
 scope:
   in:
     - 첫 네 batch의 cross-format integration과 baseline ratchet
@@ -48,5 +50,8 @@ evidence:
   pr: null
   ci_runs: []
   rendered_artifacts: []
+  post_merge: []
   last_known_good: null
+  revert_ref: null
+  follow_up: null
 last_reviewed: "2026-07-20"
