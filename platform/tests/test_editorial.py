@@ -5,6 +5,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = REPOSITORY_ROOT / "platform/scripts"
@@ -83,6 +84,16 @@ class EditorialTestCase(unittest.TestCase):
                              msg=f"prefix={prefix!r}")
         self.assertIsNone(editorial.page_to_source("https://example.org/none.html", self.root))
 
+    def test_page_mapping_cannot_escape_repository_root(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            sandbox = Path(directory)
+            repository = sandbox / "repository"
+            repository.mkdir()
+            (sandbox / "secret.qmd").write_text("outside", encoding="utf-8")
+            self.assertIsNone(
+                editorial.page_to_source("https://example.org/../secret.html", repository)
+            )
+
     def test_apply_replaces_plain_span_and_records_event(self) -> None:
         body = issue_body(self.page, "필터는 상태를 업데이트한다.",
                           suggestion="필터는 측정 갱신으로 상태를 고쳐 쓴다.")
@@ -106,6 +117,50 @@ class EditorialTestCase(unittest.TestCase):
         outcomes = self.apply([make_issue(13, body)])
         self.assertEqual(outcomes[0].action, "needs-review")
         self.assertIn("공분산", self.source.read_text(encoding="utf-8"))
+
+    def test_executable_cell_is_never_auto_rewritten(self) -> None:
+        self.source.write_text(
+            "# 실험\n\n```{python}\nsteps = 55\nprint(steps)\n```\n", encoding="utf-8"
+        )
+        body = issue_body(
+            self.page,
+            "steps = 55",
+            suggestion="import os; os.system('echo untrusted')",
+        )
+        outcomes = self.apply([make_issue(21, body)])
+        self.assertEqual(outcomes[0].action, "needs-review")
+        self.assertIn("steps = 55", self.source.read_text(encoding="utf-8"))
+
+    def test_front_matter_and_inline_markup_are_not_plain_prose(self) -> None:
+        examples = [
+            ("---\ntitle: Atlas\n---\n\n본문.\n", "Atlas"),
+            ("본문에 `state = 1` 코드가 있다.\n", "state = 1"),
+            ("본문에 $x = 1$ 수식이 있다.\n", "x = 1"),
+            ("<span>본문</span>\n", "본문"),
+            ("<div>\n본문\n</div>\n", "본문"),
+            ("$$\nx = 1\n$$\n", "x = 1"),
+            ("\\begin{equation}\nx = 1\n\\end{equation}\n", "x = 1"),
+        ]
+        for source, quote in examples:
+            start = source.index(quote)
+            with self.subTest(quote=quote):
+                self.assertFalse(
+                    editorial.replaceable(source, (start, start + len(quote)), "안전한 문장")
+                )
+
+    def test_structural_or_multiline_suggestion_is_never_auto_applied(self) -> None:
+        source = "평범한 본문 문장이다.\n"
+        span = (0, len("평범한 본문 문장이다."))
+        unsafe = [
+            "{{< include /etc/passwd >}}",
+            "문장\n\n```{python}\nprint('run')\n```",
+            "<script>alert(1)</script>",
+            "[링크](javascript:alert(1))",
+            "    들여쓴 구조",
+        ]
+        for suggestion in unsafe:
+            with self.subTest(suggestion=suggestion):
+                self.assertFalse(editorial.replaceable(source, span, suggestion))
 
     def test_duplicate_quote_disambiguated_by_suffix(self) -> None:
         body = issue_body(self.page, "반복되는 문구다.", suffix="같은 내용. 뒤에 덧붙은",
@@ -136,6 +191,38 @@ class EditorialTestCase(unittest.TestCase):
     def test_invalid_event_rejected_by_schema(self) -> None:
         with self.assertRaisesRegex(ValueError, "schema validation failed"):
             editorial.append_event({"id": "x", "date": "2026-07-18"}, self.root)
+
+    def test_finalize_marks_serialized_outcomes_after_push(self) -> None:
+        record = editorial.Outcome(
+            issue=19,
+            action="not-found",
+            file="content/example.qmd",
+            line=None,
+            detail="stale quote",
+        ).__dict__
+        with mock.patch.object(editorial, "mark_processed") as mark:
+            editorial.finalize_outcomes([record], "owner/repo", "token")
+        mark.assert_called_once_with(
+            "owner/repo", "token", editorial.Outcome(**record)
+        )
+
+    def test_finalize_rejects_malformed_outcome(self) -> None:
+        with self.assertRaisesRegex(ValueError, "invalid outcome"):
+            editorial.finalize_outcomes([{"issue": 20}], "owner/repo", "token")
+
+    def test_apply_cli_never_marks_remote_issues(self) -> None:
+        issues = self.root / "issues.json"
+        issues.write_text("[]", encoding="utf-8")
+        with (
+            mock.patch.object(editorial, "mark_processed") as mark,
+            mock.patch.object(editorial, "apply_issues", return_value=[]) as apply,
+        ):
+            result = editorial.main([
+                "apply", "--issues", str(issues), "--root", str(self.root), "--no-git"
+            ])
+        self.assertEqual(result, 0)
+        mark.assert_not_called()
+        apply.assert_called_once_with([], self.root.resolve(), git=False, dry_run=False)
 
 
 class StyleLintTestCase(unittest.TestCase):

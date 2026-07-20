@@ -2,7 +2,7 @@ schema_version: 1
 id: PUB-001
 title: 디자인·출판 백로그 레지스트리와 충돌 검사
 area: governance
-status: in_review
+status: done
 priority: P0
 change_class: governance
 version_impact: additive
@@ -69,8 +69,14 @@ evidence:
   pr: 15
   ci_runs:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29741637916
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29743648831
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29743788732
   rendered_artifacts: []
-  post_merge: []
+  post_merge:
+    - merge:225573073f4432ba62e67e9e8def1bbacbae7721
+    - pages:61de6115a7c09b988f70075bc48e6b9e1eab5dd4
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/review/
   last_known_good: 5a79cae
   revert_ref: null
   follow_up: null

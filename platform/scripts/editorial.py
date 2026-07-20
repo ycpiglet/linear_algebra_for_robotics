@@ -13,6 +13,8 @@ panel files GitHub issues whose body carries a machine-readable
   editorial event record (§6), and reports everything it could not apply
   (ambiguous, markup-crossing, comment-only) with the resolved source
   location so a human or LLM pass can pick it up.
+- ``finalize`` comments on and labels outcomes only after the workflow has
+  durably pushed any source changes.
 - ``ingest``  validates and appends a single event record.
 
 Only exact, markup-free text spans are auto-applied — the same selectivity
@@ -115,6 +117,7 @@ def page_to_source(page: str, root: Path = ROOT) -> Path | None:
     Leading path segments (site subpath, /review/, /preview/pr-N/) are
     stripped progressively until the remainder matches an existing source.
     """
+    root = root.resolve()
     path = urllib.parse.urlsplit(page).path
     if path.endswith("/"):
         path += "index.html"
@@ -123,8 +126,12 @@ def page_to_source(page: str, root: Path = ROOT) -> Path | None:
     parts = [part for part in path.split("/") if part]
     for start in range(len(parts)):
         relative = "/".join(parts[start:])[: -len(".html")] + ".qmd"
-        candidate = root / relative
-        if candidate.is_file():
+        candidate = (root / relative).resolve()
+        try:
+            candidate.relative_to(root)
+        except ValueError:
+            continue
+        if candidate.is_file() and candidate.suffix == ".qmd":
             return candidate
     return None
 
@@ -182,13 +189,134 @@ def locate(source: str, quote: str, prefix: str = "", suffix: str = "") -> list[
     return spans
 
 
-def replaceable(source: str, span: tuple[int, int]) -> bool:
-    """Only plain prose spans are safe to rewrite mechanically.  A span that
-    crosses inline markup or a paragraph boundary needs eyes, not a regex."""
-    raw = source[span[0]:span[1]]
-    if "\n\n" in raw:
+_UNSAFE_PROSE_CHARS = set("`*_<>${}[]|#~\\^")
+_UNSAFE_LINE_CHARS = _UNSAFE_PROSE_CHARS - {"*", "_"}
+
+
+def _in_front_matter(source: str, offset: int) -> bool:
+    lines = source.splitlines(keepends=True)
+    if not lines or lines[0].lstrip("\ufeff").strip() != "---":
         return False
-    return not any(char in _MARKUP_CHARS for char in raw)
+    cursor = len(lines[0])
+    for line in lines[1:]:
+        cursor += len(line)
+        if line.strip() in {"---", "..."}:
+            return offset < cursor
+    return True
+
+
+def _in_fenced_block(source: str, offset: int) -> bool:
+    fence: tuple[str, int] | None = None
+    cursor = 0
+    for line in source.splitlines(keepends=True):
+        line_end = cursor + len(line)
+        marker = re.match(r"\s*(`{3,}|~{3,})", line)
+        contains_offset = cursor <= offset < line_end
+        if marker:
+            token = marker.group(1)
+            if contains_offset:
+                return True
+            if fence is None:
+                fence = (token[0], len(token))
+            elif token[0] == fence[0] and len(token) >= fence[1]:
+                fence = None
+        elif contains_offset:
+            return fence is not None
+        cursor = line_end
+    return fence is not None
+
+
+def _inside_inline_emphasis(prefix: str, marker: str) -> bool:
+    open_length = 0
+    for match in re.finditer(re.escape(marker) + "+", prefix):
+        length = len(match.group(0))
+        if open_length == 0:
+            open_length = length
+        elif length == open_length:
+            open_length = 0
+    return open_length != 0
+
+
+def _in_html_block(source: str, offset: int) -> bool:
+    prefix = source[:offset]
+    if prefix.rfind("<!--") > prefix.rfind("-->"):
+        return True
+    void_tags = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta"}
+    stack: list[str] = []
+    tag_pattern = re.compile(
+        r"<\s*(/?)\s*([A-Za-z][\w:-]*)(?:\s[^<>]*?)?\s*(/?)>", re.S
+    )
+    for match in tag_pattern.finditer(prefix):
+        closing, tag, self_closing = match.groups()
+        tag = tag.lower()
+        if self_closing or tag in void_tags:
+            continue
+        if closing:
+            if tag in stack:
+                del stack[len(stack) - 1 - stack[::-1].index(tag):]
+        else:
+            stack.append(tag)
+    return bool(stack)
+
+
+def _in_math_block(source: str, offset: int) -> bool:
+    prefix = source[:offset]
+    if len(re.findall(r"(?<!\\)\$\$", prefix)) % 2:
+        return True
+    if prefix.rfind(r"\[") > prefix.rfind(r"\]"):
+        return True
+    environments: list[str] = []
+    for match in re.finditer(r"\\(begin|end)\{([^{}]+)\}", prefix):
+        operation, name = match.groups()
+        if operation == "begin":
+            environments.append(name)
+        elif name in environments:
+            del environments[len(environments) - 1 - environments[::-1].index(name):]
+    return bool(environments)
+
+
+def replaceable(source: str, span: tuple[int, int], suggestion: str) -> bool:
+    """Accept only short, single-line plain prose outside executable/structural syntax."""
+    start, end = span
+    raw = source[start:end]
+    if not raw or "\n" in raw or not suggestion or len(raw) > 500 or len(suggestion) > 500:
+        return False
+    if (
+        suggestion != suggestion.strip()
+        or "\t" in suggestion
+        or "\n" in suggestion
+        or any(char in _UNSAFE_PROSE_CHARS for char in suggestion)
+    ):
+        return False
+    stripped_suggestion = suggestion.strip()
+    if ":::" in suggestion or re.match(
+        r"^(?:>|[-+]\s|\d+[.)]\s|---+$|===+$)", stripped_suggestion
+    ):
+        return False
+    if (
+        _in_front_matter(source, start)
+        or _in_fenced_block(source, start)
+        or _in_html_block(source, start)
+        or _in_math_block(source, start)
+    ):
+        return False
+
+    line_start = source.rfind("\n", 0, start) + 1
+    line_end = source.find("\n", end)
+    if line_end == -1:
+        line_end = len(source)
+    line = source[line_start:line_end]
+    stripped_line = line.lstrip()
+    if line.startswith(("    ", "\t")) or stripped_line.startswith(("#", "#|", ":::")):
+        return False
+    if any(char in _UNSAFE_PROSE_CHARS for char in raw):
+        return False
+    if any(char in _UNSAFE_LINE_CHARS for char in line):
+        return False
+    prefix = line[: start - line_start]
+    return not (
+        _inside_inline_emphasis(prefix, "*") or _inside_inline_emphasis(prefix, "_")
+    )
 
 
 def line_of(source: str, offset: int) -> int:
@@ -318,9 +446,14 @@ def apply_issues(
             outcomes.append(Outcome(proposal.number, "comment-only", file=relative, line=line,
                                     detail="수정안 없는 코멘트 — 협의·LLM 경로로"))
             continue
-        if not replaceable(text, span):
-            outcomes.append(Outcome(proposal.number, "needs-review", file=relative, line=line,
-                                    detail="인용 구간이 서식·문단 경계를 걸침 — 기계 반영 부적합"))
+        if not replaceable(text, span, proposal.suggestion):
+            outcomes.append(Outcome(
+                proposal.number,
+                "needs-review",
+                file=relative,
+                line=line,
+                detail="본문 평문 밖의 구조·서식 또는 구조 문법 수정안 — 기계 반영 부적합",
+            ))
             continue
 
         outcome = Outcome(proposal.number, "applied", file=relative, line=line,
@@ -502,6 +635,18 @@ def mark_processed(repo: str, token: str, outcome: Outcome) -> None:
     )
 
 
+def finalize_outcomes(records: list[dict[str, Any]], repo: str, token: str) -> None:
+    """Mark serialized outcomes only after their source state is durable."""
+    for record in records:
+        if not isinstance(record, dict):
+            raise ValueError("each outcome must be a JSON object")
+        try:
+            outcome = Outcome(**record)
+        except TypeError as error:
+            raise ValueError(f"invalid outcome: {error}") from error
+        mark_processed(repo, token, outcome)
+
+
 # ---------------------------------------------------------------------------
 # CLI
 
@@ -518,11 +663,16 @@ def main(argv: list[str] | None = None) -> int:
 
     apply_cmd = commands.add_parser("apply", help="apply suggestions from an issues JSON file")
     apply_cmd.add_argument("--issues", required=True, help="path to issues JSON ('-' for stdin)")
+    apply_cmd.add_argument("--root", default=str(ROOT), help="isolated source worktree")
     apply_cmd.add_argument("--no-git", action="store_true")
     apply_cmd.add_argument("--dry-run", action="store_true")
-    apply_cmd.add_argument("--repo", default=None,
-                           help="when set with a token, comment on and label processed issues")
-    apply_cmd.add_argument("--token", default=None)
+
+    finalize = commands.add_parser(
+        "finalize", help="comment on and label outcomes after a durable batch push"
+    )
+    finalize.add_argument("--outcomes", required=True, help="path to outcomes JSON ('-' for stdin)")
+    finalize.add_argument("--repo", required=True)
+    finalize.add_argument("--token", default=None)
 
     ingest = commands.add_parser("ingest", help="validate and append one event record")
     ingest.add_argument("--record", required=True, help="path to a JSON record ('-' for stdin)")
@@ -551,16 +701,31 @@ def main(argv: list[str] | None = None) -> int:
         raw = (sys.stdin.read() if args.issues == "-"
                else Path(args.issues).read_text(encoding="utf-8"))
         issues = json.loads(raw)
-        outcomes = apply_issues(issues, git=not args.no_git, dry_run=args.dry_run)
-        token = args.token or os.environ.get("GITHUB_TOKEN", "")
-        if args.repo and token and not args.dry_run:
-            for outcome in outcomes:
-                mark_processed(args.repo, token, outcome)
+        outcomes = apply_issues(
+            issues,
+            Path(args.root).resolve(),
+            git=not args.no_git,
+            dry_run=args.dry_run,
+        )
         json.dump([outcome.__dict__ for outcome in outcomes], sys.stdout,
                   ensure_ascii=False, indent=2, default=str)
         print()
         applied = sum(1 for o in outcomes if o.action == "applied")
         print(f"{len(outcomes)}건 처리, {applied}건 자동 반영", file=sys.stderr)
+        return 0
+
+    if args.command == "finalize":
+        token = args.token or os.environ.get("GITHUB_TOKEN", "")
+        if not token:
+            print("GITHUB_TOKEN이 필요합니다", file=sys.stderr)
+            return 2
+        raw = (sys.stdin.read() if args.outcomes == "-"
+               else Path(args.outcomes).read_text(encoding="utf-8"))
+        records = json.loads(raw)
+        if not isinstance(records, list):
+            raise ValueError("outcomes JSON must be an array")
+        finalize_outcomes(records, args.repo, token)
+        print(f"{len(records)}건 원격 처리 완료", file=sys.stderr)
         return 0
 
     if args.command == "ingest":
