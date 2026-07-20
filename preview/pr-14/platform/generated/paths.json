@@ -1,0 +1,636 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-20T06:53:43Z",
+  "content_hash": "sha256:0f548c28a3d4dbb393d378b3e638a688bc310a1a715031c8d9fb81814d4e1d3d",
+  "paths": [
+    {
+      "id": "path.kalman_filter",
+      "title": "목표 경로: 칼만 필터(Kalman filter)를 직관에서 완전 유도까지",
+      "one_line": "평균·공분산과 상태모형에서 출발해 스칼라 갱신, 가우스 조건부 분포, 가중최소제곱, 조지프 형식과 일관성 진단으로 간다.",
+      "goal": "칼만 필터의 예측–보정을 재구성하고 정확한 베이즈 조건, 선형 최소평균제곱오차 조건과 실제 실패 원인을 구분한다.",
+      "estimated_time": {
+        "intuition": "70분",
+        "application": "3시간",
+        "derivation": "6시간",
+        "proof": "9시간 이상"
+      },
+      "entry_points": {
+        "intuition": "probability.mean_covariance",
+        "application": "systems.state_space",
+        "derivation": "probability.gaussian_conditioning",
+        "proof": "linalg.orthogonal_projection"
+      },
+      "source": "content/paths/kalman-filter.qmd",
+      "url": "/content/paths/kalman-filter.html",
+      "site_path": "content/paths/kalman-filter.html",
+      "stages": [
+        {
+          "id": "main",
+          "title": "목표 경로: 칼만 필터(Kalman filter)를 직관에서 완전 유도까지",
+          "steps": [
+            {
+              "concept": "probability.mean_covariance",
+              "depth": "application",
+              "optional": false,
+              "note": "평균과 공분산(covariance)을 중심·타원·단위로 읽는다.",
+              "position": 1,
+              "stage": "main",
+              "stage_position": 1
+            },
+            {
+              "concept": "systems.state_space",
+              "depth": "application",
+              "optional": false,
+              "note": "상태전이와 측정과정을 분리한다.",
+              "position": 2,
+              "stage": "main",
+              "stage_position": 2
+            },
+            {
+              "concept": "estimation.kalman_filter",
+              "depth": "application",
+              "optional": false,
+              "note": "스칼라(scalar) 예와 예측–보정을 계산한다.",
+              "position": 3,
+              "stage": "main",
+              "stage_position": 3
+            },
+            {
+              "concept": "probability.gaussian_conditioning",
+              "depth": "derivation",
+              "optional": false,
+              "note": "보정 식을 공동 가우스(Gaussian) 분포에서 유도한다.",
+              "position": 4,
+              "stage": "main",
+              "stage_position": 4
+            },
+            {
+              "concept": "linalg.least_squares",
+              "depth": "derivation",
+              "optional": true,
+              "note": "가중최소제곱(WLS)과 직교성(orthogonality) 관점을 추가한다.",
+              "position": 5,
+              "stage": "main",
+              "stage_position": 5
+            },
+            {
+              "concept": "estimation.kalman_filter",
+              "depth": "proof",
+              "optional": true,
+              "note": "정확성의 층위와 조지프(Joseph) 형식의 양의 준정부호성(PSD) 증명을 완결한다.",
+              "position": 6,
+              "stage": "main",
+              "stage_position": 6
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "concept": "probability.mean_covariance",
+          "depth": "application",
+          "optional": false,
+          "note": "평균과 공분산(covariance)을 중심·타원·단위로 읽는다.",
+          "position": 1,
+          "stage": "main",
+          "stage_position": 1
+        },
+        {
+          "concept": "systems.state_space",
+          "depth": "application",
+          "optional": false,
+          "note": "상태전이와 측정과정을 분리한다.",
+          "position": 2,
+          "stage": "main",
+          "stage_position": 2
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "depth": "application",
+          "optional": false,
+          "note": "스칼라(scalar) 예와 예측–보정을 계산한다.",
+          "position": 3,
+          "stage": "main",
+          "stage_position": 3
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "depth": "derivation",
+          "optional": false,
+          "note": "보정 식을 공동 가우스(Gaussian) 분포에서 유도한다.",
+          "position": 4,
+          "stage": "main",
+          "stage_position": 4
+        },
+        {
+          "concept": "linalg.least_squares",
+          "depth": "derivation",
+          "optional": true,
+          "note": "가중최소제곱(WLS)과 직교성(orthogonality) 관점을 추가한다.",
+          "position": 5,
+          "stage": "main",
+          "stage_position": 5
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "depth": "proof",
+          "optional": true,
+          "note": "정확성의 층위와 조지프(Joseph) 형식의 양의 준정부호성(PSD) 증명을 완결한다.",
+          "position": 6,
+          "stage": "main",
+          "stage_position": 6
+        }
+      ]
+    },
+    {
+      "id": "path.least_squares",
+      "title": "목표 경로: 최소제곱을 기하·통계·수치로 연결하기",
+      "one_line": "정확히 맞지 않는 연립식에서 출발해 투영, 정규방정식, Gaussian MLE, QR·SVD 선택까지 이어진다.",
+      "goal": "최소제곱을 유도하고 가정에 따라 기하·통계 해석을 구분하며 안정적인 계산법을 선택한다.",
+      "estimated_time": {
+        "intuition": "35분",
+        "application": "2시간",
+        "derivation": "3시간",
+        "proof": "4시간 이상"
+      },
+      "entry_points": {
+        "intuition": "linalg.linear_system",
+        "application": "linalg.linear_system",
+        "derivation": "linalg.orthogonal_projection",
+        "proof": "linalg.orthogonal_projection"
+      },
+      "source": "content/paths/least-squares.qmd",
+      "url": "/content/paths/least-squares.html",
+      "site_path": "content/paths/least-squares.html",
+      "stages": [
+        {
+          "id": "main",
+          "title": "목표 경로: 최소제곱을 기하·통계·수치로 연결하기",
+          "steps": [
+            {
+              "concept": "linalg.linear_system",
+              "depth": "application",
+              "optional": false,
+              "note": "행·열·shape와 exact solution의 존재를 확인한다.",
+              "position": 1,
+              "stage": "main",
+              "stage_position": 1
+            },
+            {
+              "concept": "linalg.orthogonal_projection",
+              "depth": "derivation",
+              "optional": false,
+              "note": "가장 가까운 점과 residual orthogonality를 연결한다.",
+              "position": 2,
+              "stage": "main",
+              "stage_position": 2
+            },
+            {
+              "concept": "linalg.least_squares",
+              "depth": "application",
+              "optional": false,
+              "note": "line fitting, weighted residual, solver 선택을 익힌다.",
+              "position": 3,
+              "stage": "main",
+              "stage_position": 3
+            },
+            {
+              "concept": "probability.mean_covariance",
+              "depth": "application",
+              "optional": true,
+              "note": "Gaussian MLE와 weighted LS 해석이 목표일 때 추가한다.",
+              "position": 4,
+              "stage": "main",
+              "stage_position": 4
+            },
+            {
+              "concept": "linalg.least_squares",
+              "depth": "proof",
+              "optional": true,
+              "note": "최소성·유일성과 rank-deficient 반례를 증명한다.",
+              "position": 5,
+              "stage": "main",
+              "stage_position": 5
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "concept": "linalg.linear_system",
+          "depth": "application",
+          "optional": false,
+          "note": "행·열·shape와 exact solution의 존재를 확인한다.",
+          "position": 1,
+          "stage": "main",
+          "stage_position": 1
+        },
+        {
+          "concept": "linalg.orthogonal_projection",
+          "depth": "derivation",
+          "optional": false,
+          "note": "가장 가까운 점과 residual orthogonality를 연결한다.",
+          "position": 2,
+          "stage": "main",
+          "stage_position": 2
+        },
+        {
+          "concept": "linalg.least_squares",
+          "depth": "application",
+          "optional": false,
+          "note": "line fitting, weighted residual, solver 선택을 익힌다.",
+          "position": 3,
+          "stage": "main",
+          "stage_position": 3
+        },
+        {
+          "concept": "probability.mean_covariance",
+          "depth": "application",
+          "optional": true,
+          "note": "Gaussian MLE와 weighted LS 해석이 목표일 때 추가한다.",
+          "position": 4,
+          "stage": "main",
+          "stage_position": 4
+        },
+        {
+          "concept": "linalg.least_squares",
+          "depth": "proof",
+          "optional": true,
+          "note": "최소성·유일성과 rank-deficient 반례를 증명한다.",
+          "position": 5,
+          "stage": "main",
+          "stage_position": 5
+        }
+      ]
+    },
+    {
+      "id": "path.mcmc",
+      "title": "학습 경로: MCMC와 Metropolis–Hastings",
+      "aliases": [
+        "MCMC path",
+        "Markov chain Monte Carlo",
+        "메트로폴리스 헤이스팅스 학습 경로"
+      ],
+      "domain": "probability",
+      "difficulty": 4,
+      "one_line": "직관·구현·유한상태 완전증명을 분리해 MCMC의 불변성, 수렴, Monte Carlo 오차를 혼동하지 않게 한다.",
+      "entry_points": {
+        "intuition": "probability.markov-chain",
+        "implementation": "probability.metropolis-hastings",
+        "proof": "probability.markov-chain"
+      },
+      "entry_concepts": [
+        "probability.markov-chain"
+      ],
+      "exit_concept": "probability.metropolis-hastings",
+      "source": "content/paths/mcmc.qmd",
+      "url": "/content/paths/mcmc.html",
+      "site_path": "content/paths/mcmc.html",
+      "stages": [
+        {
+          "id": "mcmc.chain",
+          "title": "Markov chain과 평형",
+          "steps": [
+            {
+              "concept": "probability.markov-chain",
+              "depth": "derivation",
+              "optional": false,
+              "position": 1,
+              "stage": "mcmc.chain",
+              "stage_position": 1
+            },
+            {
+              "concept": "probability.detailed-balance",
+              "depth": "proof",
+              "optional": false,
+              "position": 2,
+              "stage": "mcmc.chain",
+              "stage_position": 2
+            }
+          ]
+        },
+        {
+          "id": "mcmc.mh",
+          "title": "Metropolis–Hastings",
+          "steps": [
+            {
+              "concept": "probability.metropolis-hastings",
+              "depth": "proof",
+              "optional": false,
+              "position": 3,
+              "stage": "mcmc.mh",
+              "stage_position": 1
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "concept": "probability.markov-chain",
+          "depth": "derivation",
+          "optional": false,
+          "position": 1,
+          "stage": "mcmc.chain",
+          "stage_position": 1
+        },
+        {
+          "concept": "probability.detailed-balance",
+          "depth": "proof",
+          "optional": false,
+          "position": 2,
+          "stage": "mcmc.chain",
+          "stage_position": 2
+        },
+        {
+          "concept": "probability.metropolis-hastings",
+          "depth": "proof",
+          "optional": false,
+          "position": 3,
+          "stage": "mcmc.mh",
+          "stage_position": 1
+        }
+      ]
+    },
+    {
+      "id": "path.particle-filter",
+      "title": "학습 경로: Particle Filter",
+      "aliases": [
+        "Particle Filter path",
+        "입자필터 학습 경로"
+      ],
+      "domain": "estimation",
+      "difficulty": 4,
+      "one_line": "직관·구현·완전증명 목표에 따라 필요한 선수개념만 선택하는 Particle Filter 경로다.",
+      "entry_points": {
+        "intuition": "estimation.bayes-filtering",
+        "implementation": "estimation.bayes-filtering",
+        "proof": "probability.measure-foundations"
+      },
+      "entry_concepts": [
+        "estimation.bayes-filtering",
+        "probability.monte-carlo"
+      ],
+      "exit_concept": "estimation.bootstrap-particle-filter",
+      "source": "content/paths/particle-filter.qmd",
+      "url": "/content/paths/particle-filter.html",
+      "site_path": "content/paths/particle-filter.html",
+      "stages": [
+        {
+          "id": "pf.foundation",
+          "title": "확률 적분과 Bayes 재귀",
+          "steps": [
+            {
+              "concept": "probability.measure-foundations",
+              "depth": "proof",
+              "optional": true,
+              "note": "증명 모드에서만 필수다.",
+              "position": 1,
+              "stage": "pf.foundation",
+              "stage_position": 1
+            },
+            {
+              "concept": "probability.monte-carlo",
+              "depth": "application",
+              "optional": false,
+              "position": 2,
+              "stage": "pf.foundation",
+              "stage_position": 2
+            },
+            {
+              "concept": "estimation.bayes-filtering",
+              "depth": "derivation",
+              "optional": false,
+              "position": 3,
+              "stage": "pf.foundation",
+              "stage_position": 3
+            }
+          ]
+        },
+        {
+          "id": "pf.weighting",
+          "title": "Proposal과 순차 weight",
+          "steps": [
+            {
+              "concept": "probability.importance-sampling",
+              "depth": "derivation",
+              "optional": false,
+              "position": 4,
+              "stage": "pf.weighting",
+              "stage_position": 1
+            },
+            {
+              "concept": "estimation.sequential-importance-sampling",
+              "depth": "proof",
+              "optional": false,
+              "position": 5,
+              "stage": "pf.weighting",
+              "stage_position": 2
+            }
+          ]
+        },
+        {
+          "id": "pf.selection",
+          "title": "Selection과 Particle Filter",
+          "steps": [
+            {
+              "concept": "estimation.resampling",
+              "depth": "proof",
+              "optional": false,
+              "position": 6,
+              "stage": "pf.selection",
+              "stage_position": 1
+            },
+            {
+              "concept": "estimation.bootstrap-particle-filter",
+              "depth": "implementation",
+              "optional": false,
+              "position": 7,
+              "stage": "pf.selection",
+              "stage_position": 2
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "concept": "probability.measure-foundations",
+          "depth": "proof",
+          "optional": true,
+          "note": "증명 모드에서만 필수다.",
+          "position": 1,
+          "stage": "pf.foundation",
+          "stage_position": 1
+        },
+        {
+          "concept": "probability.monte-carlo",
+          "depth": "application",
+          "optional": false,
+          "position": 2,
+          "stage": "pf.foundation",
+          "stage_position": 2
+        },
+        {
+          "concept": "estimation.bayes-filtering",
+          "depth": "derivation",
+          "optional": false,
+          "position": 3,
+          "stage": "pf.foundation",
+          "stage_position": 3
+        },
+        {
+          "concept": "probability.importance-sampling",
+          "depth": "derivation",
+          "optional": false,
+          "position": 4,
+          "stage": "pf.weighting",
+          "stage_position": 1
+        },
+        {
+          "concept": "estimation.sequential-importance-sampling",
+          "depth": "proof",
+          "optional": false,
+          "position": 5,
+          "stage": "pf.weighting",
+          "stage_position": 2
+        },
+        {
+          "concept": "estimation.resampling",
+          "depth": "proof",
+          "optional": false,
+          "position": 6,
+          "stage": "pf.selection",
+          "stage_position": 1
+        },
+        {
+          "concept": "estimation.bootstrap-particle-filter",
+          "depth": "implementation",
+          "optional": false,
+          "position": 7,
+          "stage": "pf.selection",
+          "stage_position": 2
+        }
+      ]
+    },
+    {
+      "id": "path.pid",
+      "title": "목표 경로: PID를 내가 원하는 깊이까지",
+      "one_line": "선형대수나 확률과정을 강제하지 않고 PID의 직관, 구현, 유도, 안정성 분석으로 단계적으로 들어간다.",
+      "goal": "PID의 세 항을 설명하고, 단위와 sampling을 보존해 구현하며, 안정성 명제의 조건을 구분한다.",
+      "estimated_time": {
+        "intuition": "25분",
+        "application": "90분",
+        "derivation": "2시간 30분",
+        "proof": "4시간 이상"
+      },
+      "entry_points": {
+        "intuition": "control.feedback",
+        "application": "foundations.change_accumulation",
+        "derivation": "systems.state_space",
+        "proof": "systems.state_space"
+      },
+      "source": "content/paths/pid.qmd",
+      "url": "/content/paths/pid.html",
+      "site_path": "content/paths/pid.html",
+      "stages": [
+        {
+          "id": "main",
+          "title": "목표 경로: PID를 내가 원하는 깊이까지",
+          "steps": [
+            {
+              "concept": "control.feedback",
+              "depth": "intuition",
+              "optional": false,
+              "note": "목표–출력–오차의 닫힌 고리를 먼저 잡는다.",
+              "position": 1,
+              "stage": "main",
+              "stage_position": 1
+            },
+            {
+              "concept": "foundations.change_accumulation",
+              "depth": "application",
+              "optional": false,
+              "note": "sampling 간격을 포함한 적분과 차분을 계산한다.",
+              "position": 2,
+              "stage": "main",
+              "stage_position": 2
+            },
+            {
+              "concept": "control.pid",
+              "depth": "application",
+              "optional": false,
+              "note": "P/I/D, derivative filter, saturation과 anti-windup을 익힌다.",
+              "position": 3,
+              "stage": "main",
+              "stage_position": 3
+            },
+            {
+              "concept": "systems.state_space",
+              "depth": "application",
+              "optional": true,
+              "note": "폐루프 안정성까지 분석할 때만 먼저 학습한다.",
+              "position": 4,
+              "stage": "main",
+              "stage_position": 4
+            },
+            {
+              "concept": "control.pid",
+              "depth": "proof",
+              "optional": true,
+              "note": "평형 오차와 안정성이 서로 다른 명제임을 확인한다.",
+              "position": 5,
+              "stage": "main",
+              "stage_position": 5
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "concept": "control.feedback",
+          "depth": "intuition",
+          "optional": false,
+          "note": "목표–출력–오차의 닫힌 고리를 먼저 잡는다.",
+          "position": 1,
+          "stage": "main",
+          "stage_position": 1
+        },
+        {
+          "concept": "foundations.change_accumulation",
+          "depth": "application",
+          "optional": false,
+          "note": "sampling 간격을 포함한 적분과 차분을 계산한다.",
+          "position": 2,
+          "stage": "main",
+          "stage_position": 2
+        },
+        {
+          "concept": "control.pid",
+          "depth": "application",
+          "optional": false,
+          "note": "P/I/D, derivative filter, saturation과 anti-windup을 익힌다.",
+          "position": 3,
+          "stage": "main",
+          "stage_position": 3
+        },
+        {
+          "concept": "systems.state_space",
+          "depth": "application",
+          "optional": true,
+          "note": "폐루프 안정성까지 분석할 때만 먼저 학습한다.",
+          "position": 4,
+          "stage": "main",
+          "stage_position": 4
+        },
+        {
+          "concept": "control.pid",
+          "depth": "proof",
+          "optional": true,
+          "note": "평형 오차와 안정성이 서로 다른 명제임을 확인한다.",
+          "position": 5,
+          "stage": "main",
+          "stage_position": 5
+        }
+      ]
+    }
+  ]
+}

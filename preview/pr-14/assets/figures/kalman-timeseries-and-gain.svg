@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 510" role="img" aria-labelledby="title desc">
+  <title id="title">칼만 필터의 시계열 추정과 측정 잡음에 따른 칼만 이득</title>
+  <desc id="desc">왼쪽 그래프는 참값 주변에 흩어진 측정과 그 사이를 부드럽게 추적하는 추정값을 보인다. 오른쪽 그래프는 사전분산이 1일 때 측정분산 R이 커질수록 칼만 이득이 감소하는 곡선이다.</desc>
+  <defs>
+    <style>
+      .ink{fill:#172033;font-family:'Noto Sans KR',sans-serif}.muted{fill:#5b6578;font-family:'Noto Sans KR',sans-serif}.grid{stroke:#d7dfeb;stroke-width:1}.axis{stroke:#5b6578;stroke-width:2}.truth{fill:none;stroke:#34415a;stroke-width:4;stroke-dasharray:9 7}.estimate{fill:none;stroke:#1459b8;stroke-width:5}.gain{fill:none;stroke:#087f78;stroke-width:5}.measure{fill:#a92f49;opacity:.72}
+    </style>
+  </defs>
+  <rect width="1120" height="510" rx="24" fill="#fbfcfe"/>
+  <text class="ink" x="40" y="45" font-size="26" font-weight="700">측정이 거칠어도 추정은 동역학을 따라가며, R이 커지면 센서를 덜 믿는다</text>
+  <g transform="translate(65 90)">
+    <text class="ink" x="0" y="0" font-size="20" font-weight="700">A · 참값, 측정, 추정</text>
+    <g transform="translate(0 25)">
+      <line class="grid" x1="0" y1="75" x2="470" y2="75"/><line class="grid" x1="0" y1="150" x2="470" y2="150"/><line class="grid" x1="0" y1="225" x2="470" y2="225"/>
+      <line class="axis" x1="0" y1="300" x2="480" y2="300"/><line class="axis" x1="0" y1="300" x2="0" y2="0"/>
+      <polyline class="truth" points="0,235 52,220 104,186 156,143 208,105 260,86 312,98 364,132 416,168 468,185"/>
+      <polyline class="estimate" points="0,240 52,222 104,194 156,151 208,114 260,92 312,101 364,128 416,160 468,180"/>
+      <g class="measure"><circle cx="0" cy="266" r="6"/><circle cx="52" cy="195" r="6"/><circle cx="104" cy="225" r="6"/><circle cx="156" cy="117" r="6"/><circle cx="208" cy="142" r="6"/><circle cx="260" cy="56" r="6"/><circle cx="312" cy="138" r="6"/><circle cx="364" cy="104" r="6"/><circle cx="416" cy="204" r="6"/><circle cx="468" cy="152" r="6"/></g>
+      <text class="muted" x="205" y="338" font-size="16">시간 t</text><text class="muted" x="-40" y="155" font-size="16" transform="rotate(-90 -40 155)">위치 (m)</text>
+      <line x1="35" y1="371" x2="72" y2="371" class="truth"/><text class="muted" x="80" y="377" font-size="15">참값</text>
+      <circle class="measure" cx="163" cy="371" r="6"/><text class="muted" x="176" y="377" font-size="15">측정</text>
+      <line x1="257" y1="371" x2="294" y2="371" class="estimate"/><text class="muted" x="302" y="377" font-size="15">사후 추정</text>
+    </g>
+  </g>
+  <g transform="translate(650 90)">
+    <text class="ink" x="0" y="0" font-size="20" font-weight="700">B · P⁻=1일 때 K=1/(1+R)</text>
+    <g transform="translate(0 25)">
+      <line class="grid" x1="0" y1="75" x2="400" y2="75"/><line class="grid" x1="0" y1="150" x2="400" y2="150"/><line class="grid" x1="0" y1="225" x2="400" y2="225"/>
+      <line class="axis" x1="0" y1="300" x2="415" y2="300"/><line class="axis" x1="0" y1="300" x2="0" y2="0"/>
+      <polyline class="gain" points="0,0 40,100 80,150 120,180 160,200 200,214 240,225 280,233 320,240 360,245 400,250"/>
+      <text class="muted" x="174" y="338" font-size="16">측정분산 R</text><text class="muted" x="-40" y="165" font-size="16" transform="rotate(-90 -40 165)">칼만 이득 K</text>
+      <text class="muted" x="-20" y="7" font-size="14">1.0</text><text class="muted" x="-28" y="157" font-size="14">0.5</text><text class="muted" x="395" y="322" font-size="14">5</text>
+      <text class="ink" x="180" y="95" font-size="17" font-weight="700">R ↑ → K ↓</text>
+      <text class="muted" x="132" y="122" font-size="15">시끄러운 센서일수록 덜 보정</text>
+    </g>
+  </g>
+</svg>

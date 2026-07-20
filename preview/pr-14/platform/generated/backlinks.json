@@ -1,0 +1,2681 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-20T06:53:43Z",
+  "content_hash": "sha256:0f548c28a3d4dbb393d378b3e638a688bc310a1a715031c8d9fb81814d4e1d3d",
+  "concepts": {
+    "control.feedback": {
+      "required_by": [
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "depth": "application",
+          "competency": "apply",
+          "reason": "오차 부호와 actuator 방향을 확인한다.",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "depth": "derivation",
+          "competency": "apply",
+          "reason": "폐루프 평형을 구성한다.",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "목표·출력·오차가 닫힌 고리에서 어떻게 연결되는지 이해한다.",
+          "diagnostic": "open loop와 feedback의 차이를 한 문장으로 말할 수 있는가?",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "depth": "teaching",
+          "competency": "teach",
+          "reason": "세 항이 닫힌 고리에서 수행하는 역할을 설명한다.",
+          "url": "/content/concepts/control/pid.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "예측 오차로 보정하는 닫힌 고리 구조를 직관적으로 본다.",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        }
+      ],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "relation": "derived_from",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "relation": "requires",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "relation": "same_structure_as",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": [
+        {
+          "id": "path.pid",
+          "title": "목표 경로: PID를 내가 원하는 깊이까지",
+          "url": "/content/paths/pid.html",
+          "depth": "intuition",
+          "position": 1,
+          "stage": "main",
+          "optional": false
+        }
+      ]
+    },
+    "control.pid": {
+      "required_by": [],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "control.feedback",
+          "title": "피드백: 결과를 보고 다음 행동을 고치는 구조",
+          "relation": "deepens",
+          "url": "/content/concepts/control/feedback.html"
+        },
+        {
+          "concept": "control.feedback",
+          "title": "피드백: 결과를 보고 다음 행동을 고치는 구조",
+          "relation": "used_in",
+          "url": "/content/concepts/control/feedback.html"
+        },
+        {
+          "concept": "foundations.change_accumulation",
+          "title": "변화율과 누적량: 미분·적분의 공학적 직관",
+          "relation": "deepens",
+          "url": "/content/concepts/foundations/change-and-accumulation.html"
+        },
+        {
+          "concept": "foundations.change_accumulation",
+          "title": "변화율과 누적량: 미분·적분의 공학적 직관",
+          "relation": "used_in",
+          "url": "/content/concepts/foundations/change-and-accumulation.html"
+        },
+        {
+          "concept": "systems.state_space",
+          "title": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+          "relation": "used_in",
+          "url": "/content/concepts/systems/state-space.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": [
+        {
+          "id": "path.pid",
+          "title": "목표 경로: PID를 내가 원하는 깊이까지",
+          "url": "/content/paths/pid.html",
+          "depth": "application",
+          "position": 3,
+          "stage": "main",
+          "optional": false
+        },
+        {
+          "id": "path.pid",
+          "title": "목표 경로: PID를 내가 원하는 깊이까지",
+          "url": "/content/paths/pid.html",
+          "depth": "proof",
+          "position": 5,
+          "stage": "main",
+          "optional": true
+        }
+      ]
+    },
+    "estimation.bayes-filtering": {
+      "required_by": [
+        {
+          "concept": "estimation.sequential-importance-sampling",
+          "title": "Sequential Importance Sampling (SIS)",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "unnormalized filtering target factorization을 사용한다.",
+          "url": "/content/concepts/probability/sequential-importance-sampling.html"
+        },
+        {
+          "concept": "estimation.bootstrap-particle-filter",
+          "title": "Bootstrap Particle Filter",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "근사하려는 predict-update 재귀를 알아야 한다.",
+          "url": "/content/concepts/probability/bootstrap-particle-filter.html"
+        },
+        {
+          "concept": "estimation.sequential-importance-sampling",
+          "title": "Sequential Importance Sampling (SIS)",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "상태공간모형과 filtering 목표를 알아야 한다.",
+          "url": "/content/concepts/probability/sequential-importance-sampling.html"
+        }
+      ],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.bootstrap-particle-filter",
+          "title": "Bootstrap Particle Filter",
+          "relation": "requires",
+          "url": "/content/concepts/probability/bootstrap-particle-filter.html"
+        },
+        {
+          "concept": "estimation.sequential-importance-sampling",
+          "title": "Sequential Importance Sampling (SIS)",
+          "relation": "requires",
+          "url": "/content/concepts/probability/sequential-importance-sampling.html"
+        },
+        {
+          "concept": "probability.measure-foundations",
+          "title": "확률·측도 기반: 이 트랙에서 어디까지 가정하는가",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/measure-probability-foundations.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [
+        {
+          "id": "proof.bootstrap-particle-filter-fixed-horizon-consistency",
+          "title": "증명: 유한상태 Bootstrap Particle Filter의 고정-Horizon 일관성",
+          "url": "/content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "참 prediction–weighting 재귀와 비교한다."
+        },
+        {
+          "id": "proof.sis-weight-recursion",
+          "title": "증명: SIS Importance Weight 재귀",
+          "url": "/content/proofs/sis-weight-recursion.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "상태공간모형의 joint factorization을 사용한다."
+        }
+      ],
+      "paths": [
+        {
+          "id": "path.particle-filter",
+          "title": "학습 경로: Particle Filter",
+          "url": "/content/paths/particle-filter.html",
+          "depth": "derivation",
+          "position": 3,
+          "stage": "pf.foundation",
+          "optional": false
+        }
+      ]
+    },
+    "estimation.bootstrap-particle-filter": {
+      "required_by": [],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.bayes-filtering",
+          "title": "Bayes Filtering 재귀",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/bayes-filtering.html"
+        },
+        {
+          "concept": "estimation.resampling",
+          "title": "Particle Resampling",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/resampling.html"
+        },
+        {
+          "concept": "estimation.sequential-importance-sampling",
+          "title": "Sequential Importance Sampling (SIS)",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/sequential-importance-sampling.html"
+        },
+        {
+          "concept": "probability.importance-sampling",
+          "title": "Importance Sampling",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/importance-sampling.html"
+        },
+        {
+          "concept": "probability.monte-carlo",
+          "title": "Monte Carlo 적분",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/monte-carlo.html"
+        }
+      ],
+      "proofs": [
+        {
+          "id": "proof.bootstrap-particle-filter-fixed-horizon-consistency",
+          "title": "증명: 유한상태 Bootstrap Particle Filter의 고정-Horizon 일관성",
+          "url": "/content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.html"
+        }
+      ],
+      "required_by_proofs": [
+        {
+          "id": "proof.bootstrap-particle-filter-fixed-horizon-consistency",
+          "title": "증명: 유한상태 Bootstrap Particle Filter의 고정-Horizon 일관성",
+          "url": "/content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "resample–propagate–weight convention을 사용한다."
+        }
+      ],
+      "paths": [
+        {
+          "id": "path.particle-filter",
+          "title": "학습 경로: Particle Filter",
+          "url": "/content/paths/particle-filter.html",
+          "depth": "implementation",
+          "position": 7,
+          "stage": "pf.selection",
+          "optional": false
+        }
+      ]
+    },
+    "estimation.extended_kalman_filter": {
+      "required_by": [],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "relation": "deepens",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "relation": "same_structure_as",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "robot.rotation_representations",
+          "title": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+          "relation": "used_in",
+          "url": "/content/concepts/robotics/rotation-representations.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
+    },
+    "estimation.kalman_filter": {
+      "required_by": [
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "선형 KF의 예측·측정 갱신 식을 그대로 재사용한다.",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
+        },
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "예측과 측정을 불확실성으로 절충하는 구조가 동일하다.",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
+        }
+      ],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "control.feedback",
+          "title": "피드백: 결과를 보고 다음 행동을 고치는 구조",
+          "relation": "same_structure_as",
+          "url": "/content/concepts/control/feedback.html"
+        },
+        {
+          "concept": "control.feedback",
+          "title": "피드백: 결과를 보고 다음 행동을 고치는 구조",
+          "relation": "used_in",
+          "url": "/content/concepts/control/feedback.html"
+        },
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "relation": "derived_from",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
+        },
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "relation": "requires",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
+        },
+        {
+          "concept": "foundations.change_accumulation",
+          "title": "변화율과 누적량: 미분·적분의 공학적 직관",
+          "relation": "used_in",
+          "url": "/content/concepts/foundations/change-and-accumulation.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "relation": "same_structure_as",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "linalg.linear_system",
+          "title": "선형 시스템 Ax=b: 여러 식을 한 번에 푸는 언어",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/linear-systems.html"
+        },
+        {
+          "concept": "linalg.orthogonal_projection",
+          "title": "직교투영: 도달 가능한 것 중 가장 가까운 답",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/orthogonal-projection.html"
+        },
+        {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/svd.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "relation": "deepens",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "probability.mean_covariance",
+          "title": "평균과 공분산: 추정값과 불확실성을 함께 표현하기",
+          "relation": "deepens",
+          "url": "/content/concepts/probability/mean-covariance.html"
+        },
+        {
+          "concept": "probability.mean_covariance",
+          "title": "평균과 공분산: 추정값과 불확실성을 함께 표현하기",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/mean-covariance.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "relation": "used_in",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "systems.state_space",
+          "title": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+          "relation": "deepens",
+          "url": "/content/concepts/systems/state-space.html"
+        },
+        {
+          "concept": "systems.state_space",
+          "title": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+          "relation": "used_in",
+          "url": "/content/concepts/systems/state-space.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": [
+        {
+          "id": "path.kalman_filter",
+          "title": "목표 경로: 칼만 필터(Kalman filter)를 직관에서 완전 유도까지",
+          "url": "/content/paths/kalman-filter.html",
+          "depth": "application",
+          "position": 3,
+          "stage": "main",
+          "optional": false
+        },
+        {
+          "id": "path.kalman_filter",
+          "title": "목표 경로: 칼만 필터(Kalman filter)를 직관에서 완전 유도까지",
+          "url": "/content/paths/kalman-filter.html",
+          "depth": "proof",
+          "position": 6,
+          "stage": "main",
+          "optional": true
+        }
+      ]
+    },
+    "estimation.resampling": {
+      "required_by": [
+        {
+          "concept": "estimation.bootstrap-particle-filter",
+          "title": "Bootstrap Particle Filter",
+          "depth": "implementation",
+          "competency": "calculate",
+          "reason": "ancestor index와 offspring count를 안전하게 구현한다.",
+          "url": "/content/concepts/probability/bootstrap-particle-filter.html"
+        },
+        {
+          "concept": "estimation.bootstrap-particle-filter",
+          "title": "Bootstrap Particle Filter",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "weighted particles를 다시 균등가중으로 만드는 이유를 안다.",
+          "url": "/content/concepts/probability/bootstrap-particle-filter.html"
+        }
+      ],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.bootstrap-particle-filter",
+          "title": "Bootstrap Particle Filter",
+          "relation": "requires",
+          "url": "/content/concepts/probability/bootstrap-particle-filter.html"
+        },
+        {
+          "concept": "probability.monte-carlo",
+          "title": "Monte Carlo 적분",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/monte-carlo.html"
+        }
+      ],
+      "proofs": [
+        {
+          "id": "proof.resampling-unbiasedness",
+          "title": "증명: Resampling의 조건부 Unbiasedness",
+          "url": "/content/proofs/resampling-unbiasedness.html"
+        }
+      ],
+      "required_by_proofs": [
+        {
+          "id": "proof.bootstrap-particle-filter-fixed-horizon-consistency",
+          "title": "증명: 유한상태 Bootstrap Particle Filter의 고정-Horizon 일관성",
+          "url": "/content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "prove",
+          "reason": "offspring empirical measure의 조건부 평균을 사용한다."
+        }
+      ],
+      "paths": [
+        {
+          "id": "path.particle-filter",
+          "title": "학습 경로: Particle Filter",
+          "url": "/content/paths/particle-filter.html",
+          "depth": "proof",
+          "position": 6,
+          "stage": "pf.selection",
+          "optional": false
+        }
+      ]
+    },
+    "estimation.sequential-importance-sampling": {
+      "required_by": [
+        {
+          "concept": "estimation.bootstrap-particle-filter",
+          "title": "Bootstrap Particle Filter",
+          "depth": "implementation",
+          "competency": "derive",
+          "reason": "transition proposal에서 incremental weight가 likelihood로 줄어드는 과정을 알아야 한다.",
+          "url": "/content/concepts/probability/bootstrap-particle-filter.html"
+        }
+      ],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.bayes-filtering",
+          "title": "Bayes Filtering 재귀",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/bayes-filtering.html"
+        },
+        {
+          "concept": "estimation.bootstrap-particle-filter",
+          "title": "Bootstrap Particle Filter",
+          "relation": "derived_from",
+          "url": "/content/concepts/probability/bootstrap-particle-filter.html"
+        },
+        {
+          "concept": "estimation.bootstrap-particle-filter",
+          "title": "Bootstrap Particle Filter",
+          "relation": "requires",
+          "url": "/content/concepts/probability/bootstrap-particle-filter.html"
+        },
+        {
+          "concept": "probability.importance-sampling",
+          "title": "Importance Sampling",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/importance-sampling.html"
+        },
+        {
+          "concept": "probability.measure-foundations",
+          "title": "확률·측도 기반: 이 트랙에서 어디까지 가정하는가",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/measure-probability-foundations.html"
+        }
+      ],
+      "proofs": [
+        {
+          "id": "proof.sis-weight-recursion",
+          "title": "증명: SIS Importance Weight 재귀",
+          "url": "/content/proofs/sis-weight-recursion.html"
+        }
+      ],
+      "required_by_proofs": [],
+      "paths": [
+        {
+          "id": "path.particle-filter",
+          "title": "학습 경로: Particle Filter",
+          "url": "/content/paths/particle-filter.html",
+          "depth": "proof",
+          "position": 5,
+          "stage": "pf.weighting",
+          "optional": false
+        }
+      ]
+    },
+    "foundations.change_accumulation": {
+      "required_by": [
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "depth": "derivation",
+          "competency": "apply",
+          "reason": "연속식에서 이산식을 유도한다.",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "systems.state_space",
+          "title": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+          "depth": "derivation",
+          "competency": "apply",
+          "reason": "간단한 discretization을 유도한다.",
+          "url": "/content/concepts/systems/state-space.html"
+        },
+        {
+          "concept": "systems.state_space",
+          "title": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+          "depth": "teaching",
+          "competency": "apply",
+          "reason": "연속·이산 모델의 차이를 설명한다.",
+          "url": "/content/concepts/systems/state-space.html"
+        },
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "sampling 간격이 포함된 적분·차분을 계산한다.",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "사인(sin)·코사인(cos)과 합성함수의 편미분을 계산한다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "depth": "derivation",
+          "competency": "calculate",
+          "reason": "로그우도를 미분하고 정지조건을 계산한다.",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "상수 오차와 적분 상태의 관계를 논증한다.",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "depth": "teaching",
+          "competency": "derive",
+          "reason": "연속·이산 구현과 단위 차이를 설명한다.",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "derivation",
+          "competency": "derive",
+          "reason": "미분과 연쇄법칙으로 자코비안의 각 열을 유도한다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "프레셰(Fréchet) 미분의 나머지항과 연쇄법칙을 따라간다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "미분과 적분의 교환 조건을 포함한 점수함수·정보 등식을 따라간다.",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "systems.state_space",
+          "title": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+          "depth": "application",
+          "competency": "explain",
+          "reason": "연속시간과 이산시간을 구분한다.",
+          "url": "/content/concepts/systems/state-space.html"
+        },
+        {
+          "concept": "systems.state_space",
+          "title": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+          "depth": "intuition",
+          "competency": "recognize",
+          "reason": "상태가 시간에 따라 변한다는 뜻을 읽는다.",
+          "url": "/content/concepts/systems/state-space.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "teaching",
+          "competency": "teach",
+          "reason": "도함수·편미분·자코비안을 하나의 국소 선형화로 연결한다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "control.feedback",
+          "title": "피드백: 결과를 보고 다음 행동을 고치는 구조",
+          "depth": "application",
+          "competency": "explain",
+          "reason": "시간에 따라 오차가 변하는 모습을 읽는 데 도움이 된다.",
+          "url": "/content/concepts/control/feedback.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "기울기를 입력 변화에 대한 출력 변화율로 읽는 데 도움이 된다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "depth": "intuition",
+          "competency": "recognize",
+          "reason": "I와 D라는 이름의 감각을 빠르게 잡는다.",
+          "url": "/content/concepts/control/pid.html"
+        }
+      ],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "control.feedback",
+          "title": "피드백: 결과를 보고 다음 행동을 고치는 구조",
+          "relation": "helpful",
+          "url": "/content/concepts/control/feedback.html"
+        },
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "relation": "helpful",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "relation": "derived_from",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "relation": "requires",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "relation": "helpful",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "systems.state_space",
+          "title": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+          "relation": "requires",
+          "url": "/content/concepts/systems/state-space.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": [
+        {
+          "id": "path.pid",
+          "title": "목표 경로: PID를 내가 원하는 깊이까지",
+          "url": "/content/paths/pid.html",
+          "depth": "application",
+          "position": 2,
+          "stage": "main",
+          "optional": false
+        }
+      ]
+    },
+    "linalg.eigenvalues": {
+      "required_by": [
+        {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "특이값은 $A^\\top A$ 고유값의 제곱근이라 고유값 언어가 먼저 필요하다.",
+          "url": "/content/concepts/linalg/svd.html"
+        }
+      ],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "relation": "requires",
+          "url": "/content/concepts/linalg/svd.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
+    },
+    "linalg.least_squares": {
+      "required_by": [
+        {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "의사역행렬 최소노름 해를 SVD로 계산한다.",
+          "url": "/content/concepts/linalg/svd.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "derivation",
+          "competency": "derive",
+          "reason": "최대사후확률(Maximum A Posteriori, MAP)·가중최소제곱(Weighted Least Squares, WLS) 관점과 직교성(orthogonality)을 연결한다.",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "teaching",
+          "competency": "teach",
+          "reason": "가중최소제곱(WLS)·직교투영·재귀 추정 관점을 연결한다.",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "depth": "teaching",
+          "competency": "teach",
+          "reason": "통계모형과 최적화 목적함수 사이의 가정을 명시한다.",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "implementation",
+          "competency": "apply",
+          "reason": "특이값 분해(Singular Value Decomposition, SVD)·의사역행렬·감쇠 최소제곱을 안정적으로 구현한다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "depth": "implementation",
+          "competency": "apply",
+          "reason": "가우스 선형모형을 안정적인 직교–상삼각 분해(QR factorization, QR)·특잇값분해(singular value decomposition, SVD) 풀이기로 계산한다.",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "derivation",
+          "competency": "derive",
+          "reason": "최소노름 속도와 감쇠 해를 목적함수에서 유도한다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "depth": "derivation",
+          "competency": "derive",
+          "reason": "가우스 MLE와 정규방정식의 동일한 구조를 확인한다.",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "application",
+          "competency": "explain",
+          "reason": "측정 갱신을 가중 잔차의 절충으로 해석한다.",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "application",
+          "competency": "explain",
+          "reason": "비정방·계수(rank) 저하 자코비안의 의사역행렬과 감쇠 최소제곱을 해석한다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "depth": "application",
+          "competency": "explain",
+          "reason": "가우스 MLE와 잔차 제곱합의 연결을 기하적으로 볼 수 있다.",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "proof",
+          "competency": "prove",
+          "reason": "의사역행렬의 최소노름 성질과 감쇠 해를 확인한다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "depth": "proof",
+          "competency": "prove",
+          "reason": "가우스 선형모형의 최소제곱 동치와 유일성 조건을 증명한다.",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "teaching",
+          "competency": "teach",
+          "reason": "역기구학과 특이점 근처 안정화의 선택을 설명한다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        }
+      ],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "relation": "derived_from",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "relation": "helpful",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "relation": "same_structure_as",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "linalg.linear_system",
+          "title": "선형 시스템 Ax=b: 여러 식을 한 번에 푸는 언어",
+          "relation": "deepens",
+          "url": "/content/concepts/linalg/linear-systems.html"
+        },
+        {
+          "concept": "linalg.linear_system",
+          "title": "선형 시스템 Ax=b: 여러 식을 한 번에 푸는 언어",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/linear-systems.html"
+        },
+        {
+          "concept": "linalg.orthogonal_projection",
+          "title": "직교투영: 도달 가능한 것 중 가장 가까운 답",
+          "relation": "deepens",
+          "url": "/content/concepts/linalg/orthogonal-projection.html"
+        },
+        {
+          "concept": "linalg.orthogonal_projection",
+          "title": "직교투영: 도달 가능한 것 중 가장 가까운 답",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/orthogonal-projection.html"
+        },
+        {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "relation": "requires",
+          "url": "/content/concepts/linalg/svd.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "relation": "same_structure_as",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "relation": "helpful",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "relation": "helpful",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "relation": "same_structure_as",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "relation": "used_in",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": [
+        {
+          "id": "path.least_squares",
+          "title": "목표 경로: 최소제곱을 기하·통계·수치로 연결하기",
+          "url": "/content/paths/least-squares.html",
+          "depth": "application",
+          "position": 3,
+          "stage": "main",
+          "optional": false
+        },
+        {
+          "id": "path.kalman_filter",
+          "title": "목표 경로: 칼만 필터(Kalman filter)를 직관에서 완전 유도까지",
+          "url": "/content/paths/kalman-filter.html",
+          "depth": "derivation",
+          "position": 5,
+          "stage": "main",
+          "optional": true
+        },
+        {
+          "id": "path.least_squares",
+          "title": "목표 경로: 최소제곱을 기하·통계·수치로 연결하기",
+          "url": "/content/paths/least-squares.html",
+          "depth": "proof",
+          "position": 5,
+          "stage": "main",
+          "optional": true
+        }
+      ]
+    },
+    "linalg.linear_system": {
+      "required_by": [
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "application",
+          "competency": "apply",
+          "reason": "칼만 이득(gain)을 역행렬을 직접 만들지 않고 계산한다.",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "depth": "derivation",
+          "competency": "apply",
+          "reason": "rank와 해의 유일성을 분석한다.",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "linalg.orthogonal_projection",
+          "title": "직교투영: 도달 가능한 것 중 가장 가까운 답",
+          "depth": "application",
+          "competency": "apply",
+          "reason": "행렬–벡터 곱과 transpose를 계산한다.",
+          "url": "/content/concepts/linalg/orthogonal-projection.html"
+        },
+        {
+          "concept": "linalg.orthogonal_projection",
+          "title": "직교투영: 도달 가능한 것 중 가장 가까운 답",
+          "depth": "derivation",
+          "competency": "apply",
+          "reason": "정규방정식의 shape를 추적한다.",
+          "url": "/content/concepts/linalg/orthogonal-projection.html"
+        },
+        {
+          "concept": "linalg.orthogonal_projection",
+          "title": "직교투영: 도달 가능한 것 중 가장 가까운 답",
+          "depth": "teaching",
+          "competency": "apply",
+          "reason": "투영의 shape와 해의 유일성을 설명한다.",
+          "url": "/content/concepts/linalg/orthogonal-projection.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "depth": "derivation",
+          "competency": "apply",
+          "reason": "block matrix 식을 다룬다.",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "depth": "teaching",
+          "competency": "apply",
+          "reason": "gain과 Schur complement의 shape를 설명한다.",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "probability.mean_covariance",
+          "title": "평균과 공분산: 추정값과 불확실성을 함께 표현하기",
+          "depth": "proof",
+          "competency": "apply",
+          "reason": "공분산의 PSD 성질을 이차형식으로 증명한다.",
+          "url": "/content/concepts/probability/mean-covariance.html"
+        },
+        {
+          "concept": "probability.mean_covariance",
+          "title": "평균과 공분산: 추정값과 불확실성을 함께 표현하기",
+          "depth": "teaching",
+          "competency": "apply",
+          "reason": "기하·단위·PSD 성질을 행렬 관점으로 설명한다.",
+          "url": "/content/concepts/probability/mean-covariance.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "derivation",
+          "competency": "apply",
+          "reason": "선형 지도의 열·영공간·계수를 운동과 연결한다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "implementation",
+          "competency": "apply",
+          "reason": "역행렬을 직접 만들지 않고 선형 시스템과 최소제곱 문제를 푼다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "systems.state_space",
+          "title": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+          "depth": "derivation",
+          "competency": "apply",
+          "reason": "여러 시간 step의 전개를 다룬다.",
+          "url": "/content/concepts/systems/state-space.html"
+        },
+        {
+          "concept": "systems.state_space",
+          "title": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+          "depth": "teaching",
+          "competency": "apply",
+          "reason": "상태 선택과 측정과정을 여러 shape로 설명한다.",
+          "url": "/content/concepts/systems/state-space.html"
+        },
+        {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "고유벡터 계산은 $(A-\\lambda I)v=0$이라는 동차 선형계 풀이로 귀결된다.",
+          "url": "/content/concepts/linalg/eigenvalues.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "행렬곱과 선형 시스템을 계산한다.",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "inverse 대신 선형 시스템으로 gain을 계산한다.",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "probability.mean_covariance",
+          "title": "평균과 공분산: 추정값과 불확실성을 함께 표현하기",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "벡터 외적과 행렬 곱을 계산한다.",
+          "url": "/content/concepts/probability/mean-covariance.html"
+        },
+        {
+          "concept": "probability.mean_covariance",
+          "title": "평균과 공분산: 추정값과 불확실성을 함께 표현하기",
+          "depth": "derivation",
+          "competency": "calculate",
+          "reason": "이차형식과 선형변환의 shape를 추적한다.",
+          "url": "/content/concepts/probability/mean-covariance.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "$J\\dot q$와 $J$의 전치를 이용한 행렬곱의 모양(shape)을 계산한다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "robot.rotation_representations",
+          "title": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "회전행렬 곱과 전치, 벡터 변환을 손으로 계산한다.",
+          "url": "/content/concepts/robotics/rotation-representations.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "depth": "implementation",
+          "competency": "calculate",
+          "reason": "보정 설계행렬의 모양과 선형 풀이기를 다룬다.",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "systems.state_space",
+          "title": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "행렬–벡터 곱과 shape를 계산한다.",
+          "url": "/content/concepts/systems/state-space.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "계수·영공간·특이값 분해(SVD)로 특이점의 의미를 증명한다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "행렬을 사상으로 읽어야 불변 방향이라는 질문이 성립한다.",
+          "url": "/content/concepts/linalg/eigenvalues.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "Ax를 여러 열의 조합과 예측값으로 읽는다.",
+          "diagnostic": "행렬의 행과 열이 각각 무엇을 나타내는지 말할 수 있는가?",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "linalg.orthogonal_projection",
+          "title": "직교투영: 도달 가능한 것 중 가장 가까운 답",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "column space를 행렬의 도달 가능한 출력으로 해석한다.",
+          "url": "/content/concepts/linalg/orthogonal-projection.html"
+        },
+        {
+          "concept": "robot.rotation_representations",
+          "title": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "행렬을 선형사상으로 읽어야 회전행렬의 조건이 보인다.",
+          "url": "/content/concepts/robotics/rotation-representations.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "depth": "teaching",
+          "competency": "teach",
+          "reason": "rank와 유일성 문제를 반례로 설명한다.",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "teaching",
+          "competency": "teach",
+          "reason": "행렬 모양·계수·영공간을 물리적 움직임과 힘으로 설명한다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "probability.mean_covariance",
+          "title": "평균과 공분산: 추정값과 불확실성을 함께 표현하기",
+          "depth": "intuition",
+          "competency": "recognize",
+          "reason": "벡터와 행렬의 shape를 읽는 데 도움이 된다.",
+          "url": "/content/concepts/probability/mean-covariance.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "depth": "intuition",
+          "competency": "recognize",
+          "reason": "행렬을 벡터를 다른 벡터로 보내는 지도로 읽는 데 도움이 된다.",
+          "url": "/content/concepts/robotics/jacobian.html"
+        }
+      ],
+      "explicitly_not_required_by": [
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "depth": "intuition",
+          "competency": "recognize",
+          "url": "/content/concepts/control/pid.html"
+        }
+      ],
+      "relations": [
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "relation": "requires",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "relation": "requires",
+          "url": "/content/concepts/linalg/eigenvalues.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "relation": "requires",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "linalg.orthogonal_projection",
+          "title": "직교투영: 도달 가능한 것 중 가장 가까운 답",
+          "relation": "requires",
+          "url": "/content/concepts/linalg/orthogonal-projection.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "relation": "requires",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "probability.mean_covariance",
+          "title": "평균과 공분산: 추정값과 불확실성을 함께 표현하기",
+          "relation": "helpful",
+          "url": "/content/concepts/probability/mean-covariance.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "relation": "requires",
+          "url": "/content/concepts/robotics/jacobian.html"
+        },
+        {
+          "concept": "robot.rotation_representations",
+          "title": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+          "relation": "requires",
+          "url": "/content/concepts/robotics/rotation-representations.html"
+        },
+        {
+          "concept": "systems.state_space",
+          "title": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+          "relation": "contrasts_with",
+          "url": "/content/concepts/systems/state-space.html"
+        },
+        {
+          "concept": "systems.state_space",
+          "title": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+          "relation": "requires",
+          "url": "/content/concepts/systems/state-space.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": [
+        {
+          "id": "path.least_squares",
+          "title": "목표 경로: 최소제곱을 기하·통계·수치로 연결하기",
+          "url": "/content/paths/least-squares.html",
+          "depth": "application",
+          "position": 1,
+          "stage": "main",
+          "optional": false
+        }
+      ]
+    },
+    "linalg.orthogonal_projection": {
+      "required_by": [
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "depth": "derivation",
+          "competency": "apply",
+          "reason": "정규방정식을 기하적으로 유도한다.",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "선형 최소평균제곱오차(Linear Minimum Mean Square Error, LMMSE)의 직교성 원리를 증명한다.",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "최소성·유일성을 직교분해로 증명한다.",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "depth": "teaching",
+          "competency": "prove",
+          "reason": "기하·통계·수치 관점과 가정을 구분해 설명한다.",
+          "url": "/content/concepts/linalg/least-squares.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "depth": "application",
+          "competency": "explain",
+          "reason": "residual orthogonality를 해석한다.",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "depth": "application",
+          "competency": "explain",
+          "reason": "$U$·$V$ 열이 만드는 부분공간 투영으로 해를 해석한다.",
+          "url": "/content/concepts/linalg/svd.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "depth": "intuition",
+          "competency": "recognize",
+          "reason": "가장 가까운 점이라는 기하학을 바로 볼 수 있다.",
+          "url": "/content/concepts/linalg/least-squares.html"
+        }
+      ],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "relation": "helpful",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "relation": "derived_from",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "relation": "helpful",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "linalg.linear_system",
+          "title": "선형 시스템 Ax=b: 여러 식을 한 번에 푸는 언어",
+          "relation": "deepens",
+          "url": "/content/concepts/linalg/linear-systems.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "relation": "helpful",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "probability.mean_covariance",
+          "title": "평균과 공분산: 추정값과 불확실성을 함께 표현하기",
+          "relation": "same_structure_as",
+          "url": "/content/concepts/probability/mean-covariance.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "relation": "helpful",
+          "url": "/content/concepts/robotics/jacobian.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": [
+        {
+          "id": "path.least_squares",
+          "title": "목표 경로: 최소제곱을 기하·통계·수치로 연결하기",
+          "url": "/content/paths/least-squares.html",
+          "depth": "derivation",
+          "position": 2,
+          "stage": "main",
+          "optional": false
+        }
+      ]
+    },
+    "linalg.svd": {
+      "required_by": [],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/eigenvalues.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
+    },
+    "probability.detailed-balance": {
+      "required_by": [
+        {
+          "concept": "probability.metropolis-hastings",
+          "title": "Metropolis–Hastings 알고리즘",
+          "depth": "proof",
+          "competency": "prove",
+          "reason": "대칭 flow에서 invariance가 따라오는 논리를 사용한다.",
+          "url": "/content/concepts/probability/metropolis-hastings.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "probability.metropolis-hastings",
+          "title": "Metropolis–Hastings 알고리즘",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "acceptance ratio가 양방향 흐름을 맞춘다는 직관을 준다.",
+          "url": "/content/concepts/probability/metropolis-hastings.html"
+        }
+      ],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "probability.markov-chain",
+          "title": "Markov Chain",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/markov-chain.html"
+        },
+        {
+          "concept": "probability.metropolis-hastings",
+          "title": "Metropolis–Hastings 알고리즘",
+          "relation": "derived_from",
+          "url": "/content/concepts/probability/metropolis-hastings.html"
+        },
+        {
+          "concept": "probability.metropolis-hastings",
+          "title": "Metropolis–Hastings 알고리즘",
+          "relation": "requires",
+          "url": "/content/concepts/probability/metropolis-hastings.html"
+        }
+      ],
+      "proofs": [
+        {
+          "id": "proof.detailed-balance-implies-invariance",
+          "title": "증명: Detailed Balance는 Invariance를 함의한다",
+          "url": "/content/proofs/detailed-balance-implies-invariance.html"
+        }
+      ],
+      "required_by_proofs": [
+        {
+          "id": "proof.detailed-balance-implies-invariance",
+          "title": "증명: Detailed Balance는 Invariance를 함의한다",
+          "url": "/content/proofs/detailed-balance-implies-invariance.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "explain",
+          "reason": "쌍별 flow equality가 가정이다."
+        },
+        {
+          "id": "proof.metropolis-hastings-invariance",
+          "title": "증명: Metropolis–Hastings Kernel의 Invariance",
+          "url": "/content/proofs/metropolis-hastings-invariance.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "prove",
+          "reason": "MH flow의 대칭성에서 invariance를 결론낸다."
+        }
+      ],
+      "paths": [
+        {
+          "id": "path.mcmc",
+          "title": "학습 경로: MCMC와 Metropolis–Hastings",
+          "url": "/content/paths/mcmc.html",
+          "depth": "proof",
+          "position": 2,
+          "stage": "mcmc.chain",
+          "optional": false
+        }
+      ]
+    },
+    "probability.gaussian_conditioning": {
+      "required_by": [
+        {
+          "concept": "probability.gibbs-sampling",
+          "title": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "가우스 완전조건부를 닫힌 형태로 계산한다.",
+          "url": "/content/concepts/probability/gibbs-sampling.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "derivation",
+          "competency": "derive",
+          "reason": "결합 가우스(joint Gaussian) 분포에서 보정(correction) 식을 유도한다.",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "proof",
+          "competency": "prove",
+          "reason": "사후 평균·공분산의 정확성을 증명한다.",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "teaching",
+          "competency": "teach",
+          "reason": "가우스(Gaussian) 조건부 갱신의 가정과 한계를 설명한다.",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "갱신식이 가우스 조건부의 국소 근사임을 이해한다.",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
+        }
+      ],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "relation": "derived_from",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "relation": "helpful",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "relation": "same_structure_as",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "linalg.linear_system",
+          "title": "선형 시스템 Ax=b: 여러 식을 한 번에 푸는 언어",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/linear-systems.html"
+        },
+        {
+          "concept": "probability.gibbs-sampling",
+          "title": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+          "relation": "requires",
+          "url": "/content/concepts/probability/gibbs-sampling.html"
+        },
+        {
+          "concept": "probability.mean_covariance",
+          "title": "평균과 공분산: 추정값과 불확실성을 함께 표현하기",
+          "relation": "deepens",
+          "url": "/content/concepts/probability/mean-covariance.html"
+        },
+        {
+          "concept": "probability.mean_covariance",
+          "title": "평균과 공분산: 추정값과 불확실성을 함께 표현하기",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/mean-covariance.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": [
+        {
+          "id": "path.kalman_filter",
+          "title": "목표 경로: 칼만 필터(Kalman filter)를 직관에서 완전 유도까지",
+          "url": "/content/paths/kalman-filter.html",
+          "depth": "derivation",
+          "position": 4,
+          "stage": "main",
+          "optional": false
+        }
+      ]
+    },
+    "probability.gibbs-sampling": {
+      "required_by": [],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "probability.mcmc-diagnostics",
+          "title": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/mcmc-diagnostics.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
+    },
+    "probability.importance-sampling": {
+      "required_by": [
+        {
+          "concept": "estimation.sequential-importance-sampling",
+          "title": "Sequential Importance Sampling (SIS)",
+          "depth": "intuition",
+          "competency": "calculate",
+          "reason": "목표/proposal 밀도비와 normalized weight를 알아야 한다.",
+          "url": "/content/concepts/probability/sequential-importance-sampling.html"
+        },
+        {
+          "concept": "estimation.sequential-importance-sampling",
+          "title": "Sequential Importance Sampling (SIS)",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "path-space IS ratio를 재귀식으로 변형한다.",
+          "url": "/content/concepts/probability/sequential-importance-sampling.html"
+        },
+        {
+          "concept": "estimation.bootstrap-particle-filter",
+          "title": "Bootstrap Particle Filter",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "likelihood weight의 의미를 이해한다.",
+          "url": "/content/concepts/probability/bootstrap-particle-filter.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "estimation.resampling",
+          "title": "Particle Resampling",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "normalized weight가 어디서 생기는지 알 수 있다.",
+          "url": "/content/concepts/probability/resampling.html"
+        }
+      ],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.bootstrap-particle-filter",
+          "title": "Bootstrap Particle Filter",
+          "relation": "requires",
+          "url": "/content/concepts/probability/bootstrap-particle-filter.html"
+        },
+        {
+          "concept": "estimation.sequential-importance-sampling",
+          "title": "Sequential Importance Sampling (SIS)",
+          "relation": "requires",
+          "url": "/content/concepts/probability/sequential-importance-sampling.html"
+        },
+        {
+          "concept": "probability.measure-foundations",
+          "title": "확률·측도 기반: 이 트랙에서 어디까지 가정하는가",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/measure-probability-foundations.html"
+        },
+        {
+          "concept": "probability.monte-carlo",
+          "title": "Monte Carlo 적분",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/monte-carlo.html"
+        }
+      ],
+      "proofs": [
+        {
+          "id": "proof.importance-sampling-identity",
+          "title": "증명: Importance Sampling 항등식",
+          "url": "/content/proofs/importance-sampling-identity.html"
+        },
+        {
+          "id": "proof.snis-consistency",
+          "title": "증명: Self-Normalized Importance Sampling의 일관성",
+          "url": "/content/proofs/self-normalized-importance-sampling-consistency.html"
+        }
+      ],
+      "required_by_proofs": [
+        {
+          "id": "proof.snis-consistency",
+          "title": "증명: Self-Normalized Importance Sampling의 일관성",
+          "url": "/content/proofs/self-normalized-importance-sampling-consistency.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "calculate",
+          "reason": "unnormalized weight와 SNIS estimator를 알아야 한다."
+        },
+        {
+          "id": "proof.sis-weight-recursion",
+          "title": "증명: SIS Importance Weight 재귀",
+          "url": "/content/proofs/sis-weight-recursion.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "target/proposal density ratio가 importance weight임을 사용한다."
+        }
+      ],
+      "paths": [
+        {
+          "id": "path.particle-filter",
+          "title": "학습 경로: Particle Filter",
+          "url": "/content/paths/particle-filter.html",
+          "depth": "derivation",
+          "position": 4,
+          "stage": "pf.weighting",
+          "optional": false
+        }
+      ]
+    },
+    "probability.markov-chain": {
+      "required_by": [
+        {
+          "concept": "probability.detailed-balance",
+          "title": "Detailed Balance와 Reversibility",
+          "depth": "proof",
+          "competency": "calculate",
+          "reason": "$\\pi P$의 성분을 계산한다.",
+          "url": "/content/concepts/probability/detailed-balance.html"
+        },
+        {
+          "concept": "probability.gibbs-sampling",
+          "title": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+          "depth": "proof",
+          "competency": "calculate",
+          "reason": "좌표별 kernel 합성의 불변성을 계산한다.",
+          "url": "/content/concepts/probability/gibbs-sampling.html"
+        },
+        {
+          "concept": "probability.metropolis-hastings",
+          "title": "Metropolis–Hastings 알고리즘",
+          "depth": "proof",
+          "competency": "calculate",
+          "reason": "transition kernel과 invariant distribution을 계산한다.",
+          "url": "/content/concepts/probability/metropolis-hastings.html"
+        },
+        {
+          "concept": "probability.detailed-balance",
+          "title": "Detailed Balance와 Reversibility",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "transition matrix와 stationary distribution을 알아야 한다.",
+          "url": "/content/concepts/probability/detailed-balance.html"
+        },
+        {
+          "concept": "probability.metropolis-hastings",
+          "title": "Metropolis–Hastings 알고리즘",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "MCMC 표본이 독립표본이 아니라 chain의 상태임을 알아야 한다.",
+          "url": "/content/concepts/probability/metropolis-hastings.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "probability.mcmc-diagnostics",
+          "title": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "ergodic average의 수렴 대상이 무엇인지 정의한다.",
+          "url": "/content/concepts/probability/mcmc-diagnostics.html"
+        }
+      ],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "probability.detailed-balance",
+          "title": "Detailed Balance와 Reversibility",
+          "relation": "requires",
+          "url": "/content/concepts/probability/detailed-balance.html"
+        },
+        {
+          "concept": "probability.measure-foundations",
+          "title": "확률·측도 기반: 이 트랙에서 어디까지 가정하는가",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/measure-probability-foundations.html"
+        },
+        {
+          "concept": "probability.metropolis-hastings",
+          "title": "Metropolis–Hastings 알고리즘",
+          "relation": "requires",
+          "url": "/content/concepts/probability/metropolis-hastings.html"
+        }
+      ],
+      "proofs": [
+        {
+          "id": "proof.finite-state-mh-convergence-ergodic-average",
+          "title": "증명: 유한상태 Metropolis–Hastings의 수렴과 Ergodic Average",
+          "url": "/content/proofs/finite-state-mh-convergence-ergodic-average.html"
+        }
+      ],
+      "required_by_proofs": [
+        {
+          "id": "proof.detailed-balance-implies-invariance",
+          "title": "증명: Detailed Balance는 Invariance를 함의한다",
+          "url": "/content/proofs/detailed-balance-implies-invariance.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "calculate",
+          "reason": "row-stochastic matrix와 stationary equation을 사용한다."
+        },
+        {
+          "id": "proof.metropolis-hastings-invariance",
+          "title": "증명: Metropolis–Hastings Kernel의 Invariance",
+          "url": "/content/proofs/metropolis-hastings-invariance.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "calculate",
+          "reason": "유한 transition kernel과 self-loop를 구성한다."
+        },
+        {
+          "id": "proof.finite-state-mh-convergence-ergodic-average",
+          "title": "증명: 유한상태 Metropolis–Hastings의 수렴과 Ergodic Average",
+          "url": "/content/proofs/finite-state-mh-convergence-ergodic-average.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "prove",
+          "reason": "유한 transition matrix, irreducibility, aperiodicity를 사용한다."
+        }
+      ],
+      "paths": [
+        {
+          "id": "path.mcmc",
+          "title": "학습 경로: MCMC와 Metropolis–Hastings",
+          "url": "/content/paths/mcmc.html",
+          "depth": "derivation",
+          "position": 1,
+          "stage": "mcmc.chain",
+          "optional": false
+        }
+      ]
+    },
+    "probability.mcmc-diagnostics": {
+      "required_by": [],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
+    },
+    "probability.mean_covariance": {
+      "required_by": [
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "공분산 전파와 불확실성 타원을 계산한다.",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "block covariance와 선형변환을 계산한다.",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "가우스 모형의 평균·분산과 잔차의 단위를 계산한다.",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "depth": "derivation",
+          "competency": "calculate",
+          "reason": "기댓값·분산과 가우스 확률밀도를 해석한다.",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "depth": "derivation",
+          "competency": "derive",
+          "reason": "innovation과 residual covariance를 유도한다.",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "점수함수의 기댓값과 공분산을 계산한다.",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "추정값과 신뢰도를 평균·분산으로 함께 읽는다.",
+          "diagnostic": "분산이 작다는 말의 의미와 단위를 설명할 수 있는가?",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "평균, 분산, 공분산을 신뢰도와 타원으로 해석한다.",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "depth": "proof",
+          "competency": "prove",
+          "reason": "조건부 covariance의 PSD 성질과 직교성을 논증한다.",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "depth": "teaching",
+          "competency": "prove",
+          "reason": "scalar·기하·block covariance 관점을 연결한다.",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "depth": "teaching",
+          "competency": "teach",
+          "reason": "확률·밀도·우도와 불확실성의 차이를 단위까지 설명한다.",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "depth": "intuition",
+          "competency": "recognize",
+          "reason": "평균과 분산을 센서 잡음의 중심과 퍼짐으로 읽는 데 도움이 된다.",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        }
+      ],
+      "explicitly_not_required_by": [
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "depth": "intuition",
+          "competency": "recognize",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "depth": "intuition",
+          "competency": "recognize",
+          "url": "/content/concepts/linalg/least-squares.html"
+        }
+      ],
+      "relations": [
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "relation": "requires",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/eigenvalues.html"
+        },
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "relation": "helpful",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "relation": "derived_from",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "probability.gaussian_conditioning",
+          "title": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+          "relation": "requires",
+          "url": "/content/concepts/probability/gaussian-conditioning.html"
+        },
+        {
+          "concept": "statistics.maximum_likelihood_estimation",
+          "title": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+          "relation": "helpful",
+          "url": "/content/concepts/statistics/maximum-likelihood-estimation.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": [
+        {
+          "id": "path.kalman_filter",
+          "title": "목표 경로: 칼만 필터(Kalman filter)를 직관에서 완전 유도까지",
+          "url": "/content/paths/kalman-filter.html",
+          "depth": "application",
+          "position": 1,
+          "stage": "main",
+          "optional": false
+        },
+        {
+          "id": "path.least_squares",
+          "title": "목표 경로: 최소제곱을 기하·통계·수치로 연결하기",
+          "url": "/content/paths/least-squares.html",
+          "depth": "application",
+          "position": 4,
+          "stage": "main",
+          "optional": true
+        }
+      ]
+    },
+    "probability.measure-foundations": {
+      "required_by": [
+        {
+          "concept": "estimation.bayes-filtering",
+          "title": "Bayes Filtering 재귀",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "확률분포·조건부분포라는 말의 범위를 구분한다.",
+          "url": "/content/concepts/probability/bayes-filtering.html"
+        },
+        {
+          "concept": "estimation.bayes-filtering",
+          "title": "Bayes Filtering 재귀",
+          "depth": "proof",
+          "competency": "explain",
+          "reason": "조건부독립과 밀도 factorization을 정확히 읽는다.",
+          "url": "/content/concepts/probability/bayes-filtering.html"
+        },
+        {
+          "concept": "estimation.sequential-importance-sampling",
+          "title": "Sequential Importance Sampling (SIS)",
+          "depth": "proof",
+          "competency": "explain",
+          "reason": "path density와 support 조건을 정확히 읽는다.",
+          "url": "/content/concepts/probability/sequential-importance-sampling.html"
+        },
+        {
+          "concept": "probability.importance-sampling",
+          "title": "Importance Sampling",
+          "depth": "proof",
+          "competency": "explain",
+          "reason": "절대연속성과 SLLN 조건을 읽어야 한다.",
+          "url": "/content/concepts/probability/importance-sampling.html"
+        },
+        {
+          "concept": "probability.markov-chain",
+          "title": "Markov Chain",
+          "depth": "proof",
+          "competency": "explain",
+          "reason": "현재 페이지의 유한상태 범위와 일반 kernel 범위를 구분한다.",
+          "url": "/content/concepts/probability/markov-chain.html"
+        },
+        {
+          "concept": "probability.monte-carlo",
+          "title": "Monte Carlo 적분",
+          "depth": "proof",
+          "competency": "explain",
+          "reason": "SLLN의 가정과 거의 확실한 수렴을 정확히 읽기 위해서다.",
+          "url": "/content/concepts/probability/monte-carlo.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "probability.markov-chain",
+          "title": "Markov Chain",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "일반 상태공간의 Markov kernel을 이해하는 데 도움이 된다.",
+          "url": "/content/concepts/probability/markov-chain.html"
+        },
+        {
+          "concept": "probability.monte-carlo",
+          "title": "Monte Carlo 적분",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "확률분포와 적분의 범위를 구분하기 위해서다.",
+          "url": "/content/concepts/probability/monte-carlo.html"
+        }
+      ],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.bayes-filtering",
+          "title": "Bayes Filtering 재귀",
+          "relation": "requires",
+          "url": "/content/concepts/probability/bayes-filtering.html"
+        },
+        {
+          "concept": "probability.importance-sampling",
+          "title": "Importance Sampling",
+          "relation": "requires",
+          "url": "/content/concepts/probability/importance-sampling.html"
+        },
+        {
+          "concept": "probability.markov-chain",
+          "title": "Markov Chain",
+          "relation": "requires",
+          "url": "/content/concepts/probability/markov-chain.html"
+        },
+        {
+          "concept": "probability.monte-carlo",
+          "title": "Monte Carlo 적분",
+          "relation": "requires",
+          "url": "/content/concepts/probability/monte-carlo.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [
+        {
+          "id": "proof.elementary-finite-probability-lemmas",
+          "title": "보조정리: 유한 확률 증명에 쓰는 집중·합집합·Borel–Cantelli",
+          "url": "/content/proofs/elementary-finite-probability-lemmas.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "explain",
+          "reason": "조건부기댓값과 거의 확실한 수렴이라는 표현을 읽는다."
+        },
+        {
+          "id": "proof.importance-sampling-identity",
+          "title": "증명: Importance Sampling 항등식",
+          "url": "/content/proofs/importance-sampling-identity.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "explain",
+          "reason": "공통 기준측도와 거의 모든 곳이라는 표현을 사용한다."
+        },
+        {
+          "id": "proof.snis-consistency",
+          "title": "증명: Self-Normalized Importance Sampling의 일관성",
+          "url": "/content/proofs/self-normalized-importance-sampling-consistency.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "explain",
+          "reason": "강대수의 법칙을 명시된 가정 아래 사용한다."
+        }
+      ],
+      "paths": [
+        {
+          "id": "path.particle-filter",
+          "title": "학습 경로: Particle Filter",
+          "url": "/content/paths/particle-filter.html",
+          "depth": "proof",
+          "position": 1,
+          "stage": "pf.foundation",
+          "optional": true
+        }
+      ]
+    },
+    "probability.metropolis-hastings": {
+      "required_by": [
+        {
+          "concept": "probability.gibbs-sampling",
+          "title": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "Gibbs가 acceptance 1인 MH 특수형임을 이해한다.",
+          "url": "/content/concepts/probability/gibbs-sampling.html"
+        },
+        {
+          "concept": "probability.mcmc-diagnostics",
+          "title": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "무엇이 chain을 만들고 왜 표본이 상관되는지 알아야 한다.",
+          "url": "/content/concepts/probability/mcmc-diagnostics.html"
+        }
+      ],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "probability.detailed-balance",
+          "title": "Detailed Balance와 Reversibility",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/detailed-balance.html"
+        },
+        {
+          "concept": "probability.gibbs-sampling",
+          "title": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+          "relation": "derived_from",
+          "url": "/content/concepts/probability/gibbs-sampling.html"
+        },
+        {
+          "concept": "probability.gibbs-sampling",
+          "title": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+          "relation": "requires",
+          "url": "/content/concepts/probability/gibbs-sampling.html"
+        },
+        {
+          "concept": "probability.markov-chain",
+          "title": "Markov Chain",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/markov-chain.html"
+        },
+        {
+          "concept": "probability.mcmc-diagnostics",
+          "title": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+          "relation": "requires",
+          "url": "/content/concepts/probability/mcmc-diagnostics.html"
+        }
+      ],
+      "proofs": [
+        {
+          "id": "proof.finite-state-mh-convergence-ergodic-average",
+          "title": "증명: 유한상태 Metropolis–Hastings의 수렴과 Ergodic Average",
+          "url": "/content/proofs/finite-state-mh-convergence-ergodic-average.html"
+        },
+        {
+          "id": "proof.metropolis-hastings-invariance",
+          "title": "증명: Metropolis–Hastings Kernel의 Invariance",
+          "url": "/content/proofs/metropolis-hastings-invariance.html"
+        }
+      ],
+      "required_by_proofs": [
+        {
+          "id": "proof.finite-state-mh-convergence-ergodic-average",
+          "title": "증명: 유한상태 Metropolis–Hastings의 수렴과 Ergodic Average",
+          "url": "/content/proofs/finite-state-mh-convergence-ergodic-average.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "derive",
+          "reason": "MH kernel의 target invariance를 선행 증명으로 사용한다."
+        }
+      ],
+      "paths": [
+        {
+          "id": "path.mcmc",
+          "title": "학습 경로: MCMC와 Metropolis–Hastings",
+          "url": "/content/paths/mcmc.html",
+          "depth": "proof",
+          "position": 3,
+          "stage": "mcmc.mh",
+          "optional": false
+        }
+      ]
+    },
+    "probability.monte-carlo": {
+      "required_by": [
+        {
+          "concept": "estimation.resampling",
+          "title": "Particle Resampling",
+          "depth": "proof",
+          "competency": "calculate",
+          "reason": "empirical average의 조건부기댓값을 계산한다.",
+          "url": "/content/concepts/probability/resampling.html"
+        },
+        {
+          "concept": "probability.importance-sampling",
+          "title": "Importance Sampling",
+          "depth": "proof",
+          "competency": "calculate",
+          "reason": "가중 표본평균과 보통 표본평균을 비교해야 한다.",
+          "url": "/content/concepts/probability/importance-sampling.html"
+        },
+        {
+          "concept": "probability.mcmc-diagnostics",
+          "title": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "i.i.d. 몬테카를로 오차 $N^{-1/2}$를 기준선으로 쓴다.",
+          "url": "/content/concepts/probability/mcmc-diagnostics.html"
+        },
+        {
+          "concept": "estimation.resampling",
+          "title": "Particle Resampling",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "입자집합이 분포의 적분을 근사한다는 뜻을 알아야 한다.",
+          "url": "/content/concepts/probability/resampling.html"
+        },
+        {
+          "concept": "probability.importance-sampling",
+          "title": "Importance Sampling",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "기댓값을 표본평균으로 근사하는 목적을 알아야 한다.",
+          "url": "/content/concepts/probability/importance-sampling.html"
+        }
+      ],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.resampling",
+          "title": "Particle Resampling",
+          "relation": "requires",
+          "url": "/content/concepts/probability/resampling.html"
+        },
+        {
+          "concept": "probability.importance-sampling",
+          "title": "Importance Sampling",
+          "relation": "requires",
+          "url": "/content/concepts/probability/importance-sampling.html"
+        },
+        {
+          "concept": "probability.mcmc-diagnostics",
+          "title": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+          "relation": "requires",
+          "url": "/content/concepts/probability/mcmc-diagnostics.html"
+        },
+        {
+          "concept": "probability.measure-foundations",
+          "title": "확률·측도 기반: 이 트랙에서 어디까지 가정하는가",
+          "relation": "used_in",
+          "url": "/content/concepts/probability/measure-probability-foundations.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [
+        {
+          "id": "proof.importance-sampling-identity",
+          "title": "증명: Importance Sampling 항등식",
+          "url": "/content/proofs/importance-sampling-identity.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "calculate",
+          "reason": "증명한 항등식을 표본평균 estimator로 옮긴다."
+        },
+        {
+          "id": "proof.resampling-unbiasedness",
+          "title": "증명: Resampling의 조건부 Unbiasedness",
+          "url": "/content/proofs/resampling-unbiasedness.html",
+          "category": "required",
+          "depth": "proof",
+          "competency": "calculate",
+          "reason": "empirical average와 조건부기댓값의 선형성을 사용한다."
+        }
+      ],
+      "paths": [
+        {
+          "id": "path.particle-filter",
+          "title": "학습 경로: Particle Filter",
+          "url": "/content/paths/particle-filter.html",
+          "depth": "application",
+          "position": 2,
+          "stage": "pf.foundation",
+          "optional": false
+        }
+      ]
+    },
+    "robot.jacobian": {
+      "required_by": [
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "depth": "application",
+          "competency": "calculate",
+          "reason": "f와 h의 자코비안 F, H를 현재 추정치에서 평가한다.",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "robot.rotation_representations",
+          "title": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+          "depth": "intuition",
+          "competency": "recognize",
+          "reason": "자세의 미소 변화가 각속도와 연결되는 다음 단계를 예고한다.",
+          "url": "/content/concepts/robotics/rotation-representations.html"
+        }
+      ],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "estimation.extended_kalman_filter",
+          "title": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+          "relation": "requires",
+          "url": "/content/concepts/estimation/extended-kalman-filter.html"
+        },
+        {
+          "concept": "linalg.svd",
+          "title": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/svd.html"
+        },
+        {
+          "concept": "robot.rotation_representations",
+          "title": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+          "relation": "used_in",
+          "url": "/content/concepts/robotics/rotation-representations.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
+    },
+    "robot.rotation_representations": {
+      "required_by": [],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
+    },
+    "statistics.maximum_likelihood_estimation": {
+      "required_by": [],
+      "helpful_for": [],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "linalg.least_squares",
+          "title": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+          "relation": "same_structure_as",
+          "url": "/content/concepts/linalg/least-squares.html"
+        },
+        {
+          "concept": "robot.jacobian",
+          "title": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+          "relation": "same_structure_as",
+          "url": "/content/concepts/robotics/jacobian.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": []
+    },
+    "systems.state_space": {
+      "required_by": [
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "depth": "proof",
+          "competency": "apply",
+          "reason": "평형과 폐루프 안정성의 조건을 분리한다.",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "application",
+          "competency": "apply",
+          "reason": "F, H, Q, R의 모양(shape)과 단위를 구성한다.",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "derivation",
+          "competency": "derive",
+          "reason": "예측 평균과 공분산을 도출한다.",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "intuition",
+          "competency": "explain",
+          "reason": "상태, 동역학, 측정을 구분한다.",
+          "diagnostic": "상태와 센서 측정이 왜 다를 수 있는가?",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "depth": "teaching",
+          "competency": "teach",
+          "reason": "동역학·측정·잡음 모형을 사례별로 구성한다.",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        }
+      ],
+      "helpful_for": [
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "depth": "derivation",
+          "competency": "explain",
+          "reason": "대상 동역학과 내부 적분 상태를 함께 표현한다.",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "depth": "intuition",
+          "competency": "recognize",
+          "reason": "상태방정식의 안정성이 고유값 위치로 결정된다.",
+          "url": "/content/concepts/linalg/eigenvalues.html"
+        }
+      ],
+      "explicitly_not_required_by": [],
+      "relations": [
+        {
+          "concept": "control.feedback",
+          "title": "피드백: 결과를 보고 다음 행동을 고치는 구조",
+          "relation": "deepens",
+          "url": "/content/concepts/control/feedback.html"
+        },
+        {
+          "concept": "control.pid",
+          "title": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+          "relation": "helpful",
+          "url": "/content/concepts/control/pid.html"
+        },
+        {
+          "concept": "estimation.kalman_filter",
+          "title": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+          "relation": "requires",
+          "url": "/content/concepts/estimation/kalman-filter.html"
+        },
+        {
+          "concept": "foundations.change_accumulation",
+          "title": "변화율과 누적량: 미분·적분의 공학적 직관",
+          "relation": "deepens",
+          "url": "/content/concepts/foundations/change-and-accumulation.html"
+        },
+        {
+          "concept": "foundations.change_accumulation",
+          "title": "변화율과 누적량: 미분·적분의 공학적 직관",
+          "relation": "used_in",
+          "url": "/content/concepts/foundations/change-and-accumulation.html"
+        },
+        {
+          "concept": "linalg.eigenvalues",
+          "title": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+          "relation": "used_in",
+          "url": "/content/concepts/linalg/eigenvalues.html"
+        },
+        {
+          "concept": "linalg.linear_system",
+          "title": "선형 시스템 Ax=b: 여러 식을 한 번에 푸는 언어",
+          "relation": "contrasts_with",
+          "url": "/content/concepts/linalg/linear-systems.html"
+        }
+      ],
+      "proofs": [],
+      "required_by_proofs": [],
+      "paths": [
+        {
+          "id": "path.kalman_filter",
+          "title": "목표 경로: 칼만 필터(Kalman filter)를 직관에서 완전 유도까지",
+          "url": "/content/paths/kalman-filter.html",
+          "depth": "application",
+          "position": 2,
+          "stage": "main",
+          "optional": false
+        },
+        {
+          "id": "path.pid",
+          "title": "목표 경로: PID를 내가 원하는 깊이까지",
+          "url": "/content/paths/pid.html",
+          "depth": "application",
+          "position": 4,
+          "stage": "main",
+          "optional": true
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,3794 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-20T06:53:43Z",
+  "content_hash": "sha256:0f548c28a3d4dbb393d378b3e638a688bc310a1a715031c8d9fb81814d4e1d3d",
+  "nodes": [
+    {
+      "id": "control.feedback",
+      "type": "concept",
+      "label": "피드백: 결과를 보고 다음 행동을 고치는 구조",
+      "domain": "control",
+      "url": "/content/concepts/control/feedback.html",
+      "site_path": "content/concepts/control/feedback.html"
+    },
+    {
+      "id": "control.pid",
+      "type": "concept",
+      "label": "PID 제어: 현재·누적·변화 추세로 오차를 고치기",
+      "domain": "control",
+      "url": "/content/concepts/control/pid.html",
+      "site_path": "content/concepts/control/pid.html"
+    },
+    {
+      "id": "estimation.bayes-filtering",
+      "type": "concept",
+      "label": "Bayes Filtering 재귀",
+      "domain": "estimation",
+      "url": "/content/concepts/probability/bayes-filtering.html",
+      "site_path": "content/concepts/probability/bayes-filtering.html"
+    },
+    {
+      "id": "estimation.bootstrap-particle-filter",
+      "type": "concept",
+      "label": "Bootstrap Particle Filter",
+      "domain": "estimation",
+      "url": "/content/concepts/probability/bootstrap-particle-filter.html",
+      "site_path": "content/concepts/probability/bootstrap-particle-filter.html"
+    },
+    {
+      "id": "estimation.extended_kalman_filter",
+      "type": "concept",
+      "label": "확장 칼만 필터(EKF): 비선형 동역학·측정을 자코비안으로 국소 선형화하기",
+      "domain": "estimation",
+      "url": "/content/concepts/estimation/extended-kalman-filter.html",
+      "site_path": "content/concepts/estimation/extended-kalman-filter.html"
+    },
+    {
+      "id": "estimation.kalman_filter",
+      "type": "concept",
+      "label": "칼만 필터(Kalman filter): 동역학 예측과 센서 측정을 불확실성으로 결합하기",
+      "domain": "estimation",
+      "url": "/content/concepts/estimation/kalman-filter.html",
+      "site_path": "content/concepts/estimation/kalman-filter.html"
+    },
+    {
+      "id": "estimation.resampling",
+      "type": "concept",
+      "label": "Particle Resampling",
+      "domain": "estimation",
+      "url": "/content/concepts/probability/resampling.html",
+      "site_path": "content/concepts/probability/resampling.html"
+    },
+    {
+      "id": "estimation.sequential-importance-sampling",
+      "type": "concept",
+      "label": "Sequential Importance Sampling (SIS)",
+      "domain": "estimation",
+      "url": "/content/concepts/probability/sequential-importance-sampling.html",
+      "site_path": "content/concepts/probability/sequential-importance-sampling.html"
+    },
+    {
+      "id": "foundations.change_accumulation",
+      "type": "concept",
+      "label": "변화율과 누적량: 미분·적분의 공학적 직관",
+      "domain": "foundations",
+      "url": "/content/concepts/foundations/change-and-accumulation.html",
+      "site_path": "content/concepts/foundations/change-and-accumulation.html"
+    },
+    {
+      "id": "linalg.eigenvalues",
+      "type": "concept",
+      "label": "고유값과 고유벡터: 동역학이 변하지 않는 방향",
+      "domain": "linear_algebra",
+      "url": "/content/concepts/linalg/eigenvalues.html",
+      "site_path": "content/concepts/linalg/eigenvalues.html"
+    },
+    {
+      "id": "linalg.least_squares",
+      "type": "concept",
+      "label": "최소제곱: 맞지 않는 모든 식을 가장 잘 절충하기",
+      "domain": "linear_algebra",
+      "url": "/content/concepts/linalg/least-squares.html",
+      "site_path": "content/concepts/linalg/least-squares.html"
+    },
+    {
+      "id": "linalg.linear_system",
+      "type": "concept",
+      "label": "선형 시스템 Ax=b: 여러 식을 한 번에 푸는 언어",
+      "domain": "linear_algebra",
+      "url": "/content/concepts/linalg/linear-systems.html",
+      "site_path": "content/concepts/linalg/linear-systems.html"
+    },
+    {
+      "id": "linalg.orthogonal_projection",
+      "type": "concept",
+      "label": "직교투영: 도달 가능한 것 중 가장 가까운 답",
+      "domain": "linear_algebra",
+      "url": "/content/concepts/linalg/orthogonal-projection.html",
+      "site_path": "content/concepts/linalg/orthogonal-projection.html"
+    },
+    {
+      "id": "linalg.svd",
+      "type": "concept",
+      "label": "특이값 분해(SVD): 회전–축척–회전으로 읽는 모든 행렬",
+      "domain": "linear_algebra",
+      "url": "/content/concepts/linalg/svd.html",
+      "site_path": "content/concepts/linalg/svd.html"
+    },
+    {
+      "id": "probability.detailed-balance",
+      "type": "concept",
+      "label": "Detailed Balance와 Reversibility",
+      "domain": "probability",
+      "url": "/content/concepts/probability/detailed-balance.html",
+      "site_path": "content/concepts/probability/detailed-balance.html"
+    },
+    {
+      "id": "probability.gaussian_conditioning",
+      "type": "concept",
+      "label": "Gaussian 조건부 분포: 관측 뒤에 믿음을 갱신하는 공식",
+      "domain": "probability",
+      "url": "/content/concepts/probability/gaussian-conditioning.html",
+      "site_path": "content/concepts/probability/gaussian-conditioning.html"
+    },
+    {
+      "id": "probability.gibbs-sampling",
+      "type": "concept",
+      "label": "Gibbs 표본화: 완전조건부에서 한 좌표씩 뽑기",
+      "domain": "probability",
+      "url": "/content/concepts/probability/gibbs-sampling.html",
+      "site_path": "content/concepts/probability/gibbs-sampling.html"
+    },
+    {
+      "id": "probability.importance-sampling",
+      "type": "concept",
+      "label": "Importance Sampling",
+      "domain": "probability",
+      "url": "/content/concepts/probability/importance-sampling.html",
+      "site_path": "content/concepts/probability/importance-sampling.html"
+    },
+    {
+      "id": "probability.markov-chain",
+      "type": "concept",
+      "label": "Markov Chain",
+      "domain": "probability",
+      "url": "/content/concepts/probability/markov-chain.html",
+      "site_path": "content/concepts/probability/markov-chain.html"
+    },
+    {
+      "id": "probability.mcmc-diagnostics",
+      "type": "concept",
+      "label": "MCMC 수렴 진단: 언제 chain을 믿을 수 있나",
+      "domain": "probability",
+      "url": "/content/concepts/probability/mcmc-diagnostics.html",
+      "site_path": "content/concepts/probability/mcmc-diagnostics.html"
+    },
+    {
+      "id": "probability.mean_covariance",
+      "type": "concept",
+      "label": "평균과 공분산: 추정값과 불확실성을 함께 표현하기",
+      "domain": "probability",
+      "url": "/content/concepts/probability/mean-covariance.html",
+      "site_path": "content/concepts/probability/mean-covariance.html"
+    },
+    {
+      "id": "probability.measure-foundations",
+      "type": "concept",
+      "label": "확률·측도 기반: 이 트랙에서 어디까지 가정하는가",
+      "domain": "probability",
+      "url": "/content/concepts/probability/measure-probability-foundations.html",
+      "site_path": "content/concepts/probability/measure-probability-foundations.html"
+    },
+    {
+      "id": "probability.metropolis-hastings",
+      "type": "concept",
+      "label": "Metropolis–Hastings 알고리즘",
+      "domain": "probability",
+      "url": "/content/concepts/probability/metropolis-hastings.html",
+      "site_path": "content/concepts/probability/metropolis-hastings.html"
+    },
+    {
+      "id": "probability.monte-carlo",
+      "type": "concept",
+      "label": "Monte Carlo 적분",
+      "domain": "probability",
+      "url": "/content/concepts/probability/monte-carlo.html",
+      "site_path": "content/concepts/probability/monte-carlo.html"
+    },
+    {
+      "id": "robot.jacobian",
+      "type": "concept",
+      "label": "자코비안(Jacobian): 관절의 작은 움직임을 말단 속도와 힘으로 연결하기",
+      "domain": "robotics",
+      "url": "/content/concepts/robotics/jacobian.html",
+      "site_path": "content/concepts/robotics/jacobian.html"
+    },
+    {
+      "id": "robot.rotation_representations",
+      "type": "concept",
+      "label": "회전 표현: 회전행렬·오일러각·축각·쿼터니언을 언제 무엇으로 쓰나",
+      "domain": "robotics",
+      "url": "/content/concepts/robotics/rotation-representations.html",
+      "site_path": "content/concepts/robotics/rotation-representations.html"
+    },
+    {
+      "id": "statistics.maximum_likelihood_estimation",
+      "type": "concept",
+      "label": "최대우도추정(Maximum Likelihood Estimation, MLE): 관측된 데이터를 가장 그럴듯하게 설명하는 모수 찾기",
+      "domain": "statistics",
+      "url": "/content/concepts/statistics/maximum-likelihood-estimation.html",
+      "site_path": "content/concepts/statistics/maximum-likelihood-estimation.html"
+    },
+    {
+      "id": "systems.state_space",
+      "type": "concept",
+      "label": "상태공간: 현재 상태로 다음 순간을 예측하는 모델",
+      "domain": "systems",
+      "url": "/content/concepts/systems/state-space.html",
+      "site_path": "content/concepts/systems/state-space.html"
+    },
+    {
+      "id": "proof.bootstrap-particle-filter-fixed-horizon-consistency",
+      "type": "proof",
+      "label": "증명: 유한상태 Bootstrap Particle Filter의 고정-Horizon 일관성",
+      "url": "/content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.html",
+      "site_path": "content/proofs/bootstrap-particle-filter-fixed-horizon-consistency.html"
+    },
+    {
+      "id": "proof.detailed-balance-implies-invariance",
+      "type": "proof",
+      "label": "증명: Detailed Balance는 Invariance를 함의한다",
+      "url": "/content/proofs/detailed-balance-implies-invariance.html",
+      "site_path": "content/proofs/detailed-balance-implies-invariance.html"
+    },
+    {
+      "id": "proof.elementary-finite-probability-lemmas",
+      "type": "proof",
+      "label": "보조정리: 유한 확률 증명에 쓰는 집중·합집합·Borel–Cantelli",
+      "url": "/content/proofs/elementary-finite-probability-lemmas.html",
+      "site_path": "content/proofs/elementary-finite-probability-lemmas.html"
+    },
+    {
+      "id": "proof.finite-state-mh-convergence-ergodic-average",
+      "type": "proof",
+      "label": "증명: 유한상태 Metropolis–Hastings의 수렴과 Ergodic Average",
+      "url": "/content/proofs/finite-state-mh-convergence-ergodic-average.html",
+      "site_path": "content/proofs/finite-state-mh-convergence-ergodic-average.html"
+    },
+    {
+      "id": "proof.importance-sampling-identity",
+      "type": "proof",
+      "label": "증명: Importance Sampling 항등식",
+      "url": "/content/proofs/importance-sampling-identity.html",
+      "site_path": "content/proofs/importance-sampling-identity.html"
+    },
+    {
+      "id": "proof.metropolis-hastings-invariance",
+      "type": "proof",
+      "label": "증명: Metropolis–Hastings Kernel의 Invariance",
+      "url": "/content/proofs/metropolis-hastings-invariance.html",
+      "site_path": "content/proofs/metropolis-hastings-invariance.html"
+    },
+    {
+      "id": "proof.resampling-unbiasedness",
+      "type": "proof",
+      "label": "증명: Resampling의 조건부 Unbiasedness",
+      "url": "/content/proofs/resampling-unbiasedness.html",
+      "site_path": "content/proofs/resampling-unbiasedness.html"
+    },
+    {
+      "id": "proof.sis-weight-recursion",
+      "type": "proof",
+      "label": "증명: SIS Importance Weight 재귀",
+      "url": "/content/proofs/sis-weight-recursion.html",
+      "site_path": "content/proofs/sis-weight-recursion.html"
+    },
+    {
+      "id": "proof.snis-consistency",
+      "type": "proof",
+      "label": "증명: Self-Normalized Importance Sampling의 일관성",
+      "url": "/content/proofs/self-normalized-importance-sampling-consistency.html",
+      "site_path": "content/proofs/self-normalized-importance-sampling-consistency.html"
+    },
+    {
+      "id": "control.anti_windup",
+      "type": "unresolved",
+      "label": "control.anti_windup",
+      "resolved": false
+    },
+    {
+      "id": "control.feedforward",
+      "type": "unresolved",
+      "label": "control.feedforward",
+      "resolved": false
+    },
+    {
+      "id": "control.frequency_response",
+      "type": "unresolved",
+      "label": "control.frequency_response",
+      "resolved": false
+    },
+    {
+      "id": "control.state_feedback",
+      "type": "unresolved",
+      "label": "control.state_feedback",
+      "resolved": false
+    },
+    {
+      "id": "estimation.innovation_orthogonality",
+      "type": "unresolved",
+      "label": "estimation.innovation_orthogonality",
+      "resolved": false
+    },
+    {
+      "id": "estimation.particle_filter",
+      "type": "unresolved",
+      "label": "estimation.particle_filter",
+      "resolved": false
+    },
+    {
+      "id": "estimation.rts_smoother",
+      "type": "unresolved",
+      "label": "estimation.rts_smoother",
+      "resolved": false
+    },
+    {
+      "id": "estimation.square_root_filter",
+      "type": "unresolved",
+      "label": "estimation.square_root_filter",
+      "resolved": false
+    },
+    {
+      "id": "linalg.inner_product",
+      "type": "unresolved",
+      "label": "linalg.inner_product",
+      "resolved": false
+    },
+    {
+      "id": "linalg.vector_space",
+      "type": "unresolved",
+      "label": "linalg.vector_space",
+      "resolved": false
+    },
+    {
+      "id": "linalg.weighted_least_squares",
+      "type": "unresolved",
+      "label": "linalg.weighted_least_squares",
+      "resolved": false
+    },
+    {
+      "id": "mechanics.rigid_body_kinematics",
+      "type": "unresolved",
+      "label": "mechanics.rigid_body_kinematics",
+      "resolved": false
+    },
+    {
+      "id": "optimization.absolute_deviation",
+      "type": "unresolved",
+      "label": "optimization.absolute_deviation",
+      "resolved": false
+    },
+    {
+      "id": "optimization.nonlinear_least_squares",
+      "type": "unresolved",
+      "label": "optimization.nonlinear_least_squares",
+      "resolved": false
+    },
+    {
+      "id": "probability.stochastic_process",
+      "type": "unresolved",
+      "label": "probability.stochastic_process",
+      "resolved": false
+    },
+    {
+      "id": "robot.calibration",
+      "type": "unresolved",
+      "label": "robot.calibration",
+      "resolved": false
+    },
+    {
+      "id": "robot.dynamics",
+      "type": "unresolved",
+      "label": "robot.dynamics",
+      "resolved": false
+    },
+    {
+      "id": "robot.force_control",
+      "type": "unresolved",
+      "label": "robot.force_control",
+      "resolved": false
+    },
+    {
+      "id": "robot.forward_kinematics",
+      "type": "unresolved",
+      "label": "robot.forward_kinematics",
+      "resolved": false
+    },
+    {
+      "id": "robot.impedance_control",
+      "type": "unresolved",
+      "label": "robot.impedance_control",
+      "resolved": false
+    },
+    {
+      "id": "robot.inverse_kinematics",
+      "type": "unresolved",
+      "label": "robot.inverse_kinematics",
+      "resolved": false
+    },
+    {
+      "id": "robot.joint_control",
+      "type": "unresolved",
+      "label": "robot.joint_control",
+      "resolved": false
+    },
+    {
+      "id": "robot.localization",
+      "type": "unresolved",
+      "label": "robot.localization",
+      "resolved": false
+    },
+    {
+      "id": "robot.manipulability",
+      "type": "unresolved",
+      "label": "robot.manipulability",
+      "resolved": false
+    },
+    {
+      "id": "robot.mobile_velocity_control",
+      "type": "unresolved",
+      "label": "robot.mobile_velocity_control",
+      "resolved": false
+    },
+    {
+      "id": "robot.operational_space_control",
+      "type": "unresolved",
+      "label": "robot.operational_space_control",
+      "resolved": false
+    },
+    {
+      "id": "robot.sensor_fusion",
+      "type": "unresolved",
+      "label": "robot.sensor_fusion",
+      "resolved": false
+    },
+    {
+      "id": "robot.state_estimation",
+      "type": "unresolved",
+      "label": "robot.state_estimation",
+      "resolved": false
+    },
+    {
+      "id": "signals.low_pass_filter",
+      "type": "unresolved",
+      "label": "signals.low_pass_filter",
+      "resolved": false
+    },
+    {
+      "id": "statistics.fisher_information",
+      "type": "unresolved",
+      "label": "statistics.fisher_information",
+      "resolved": false
+    },
+    {
+      "id": "statistics.generalized_linear_model",
+      "type": "unresolved",
+      "label": "statistics.generalized_linear_model",
+      "resolved": false
+    },
+    {
+      "id": "statistics.linear_measurement",
+      "type": "unresolved",
+      "label": "statistics.linear_measurement",
+      "resolved": false
+    },
+    {
+      "id": "statistics.maximum_a_posteriori",
+      "type": "unresolved",
+      "label": "statistics.maximum_a_posteriori",
+      "resolved": false
+    }
+  ],
+  "edges": [
+    {
+      "type": "path_order",
+      "source": "linalg.least_squares",
+      "target": "probability.mean_covariance",
+      "path": "path.least_squares",
+      "from_position": 3,
+      "to_position": 4,
+      "id": "path_order:0b331e4bbefa50e2"
+    },
+    {
+      "type": "path_order",
+      "source": "control.pid",
+      "target": "systems.state_space",
+      "path": "path.pid",
+      "from_position": 3,
+      "to_position": 4,
+      "id": "path_order:20c2e59b317a2e9c"
+    },
+    {
+      "type": "path_order",
+      "source": "probability.importance-sampling",
+      "target": "estimation.sequential-importance-sampling",
+      "path": "path.particle-filter",
+      "from_position": 4,
+      "to_position": 5,
+      "id": "path_order:24680d16ea9247d6"
+    },
+    {
+      "type": "path_order",
+      "source": "probability.markov-chain",
+      "target": "probability.detailed-balance",
+      "path": "path.mcmc",
+      "from_position": 1,
+      "to_position": 2,
+      "id": "path_order:30c35c22a8921b27"
+    },
+    {
+      "type": "path_order",
+      "source": "probability.monte-carlo",
+      "target": "estimation.bayes-filtering",
+      "path": "path.particle-filter",
+      "from_position": 2,
+      "to_position": 3,
+      "id": "path_order:424fc73910fb1b17"
+    },
+    {
+      "type": "path_order",
+      "source": "probability.gaussian_conditioning",
+      "target": "linalg.least_squares",
+      "path": "path.kalman_filter",
+      "from_position": 4,
+      "to_position": 5,
+      "id": "path_order:4288485ce90eeec8"
+    },
+    {
+      "type": "path_order",
+      "source": "probability.measure-foundations",
+      "target": "probability.monte-carlo",
+      "path": "path.particle-filter",
+      "from_position": 1,
+      "to_position": 2,
+      "id": "path_order:4e464882a1bd56e7"
+    },
+    {
+      "type": "path_order",
+      "source": "systems.state_space",
+      "target": "estimation.kalman_filter",
+      "path": "path.kalman_filter",
+      "from_position": 2,
+      "to_position": 3,
+      "id": "path_order:4eb826a67efaffc2"
+    },
+    {
+      "type": "path_order",
+      "source": "probability.mean_covariance",
+      "target": "systems.state_space",
+      "path": "path.kalman_filter",
+      "from_position": 1,
+      "to_position": 2,
+      "id": "path_order:5976f2f90f13ec3d"
+    },
+    {
+      "type": "path_order",
+      "source": "foundations.change_accumulation",
+      "target": "control.pid",
+      "path": "path.pid",
+      "from_position": 2,
+      "to_position": 3,
+      "id": "path_order:5bc860f07f8d3cd0"
+    },
+    {
+      "type": "path_order",
+      "source": "control.feedback",
+      "target": "foundations.change_accumulation",
+      "path": "path.pid",
+      "from_position": 1,
+      "to_position": 2,
+      "id": "path_order:6f1cf12266e00b95"
+    },
+    {
+      "type": "path_order",
+      "source": "linalg.linear_system",
+      "target": "linalg.orthogonal_projection",
+      "path": "path.least_squares",
+      "from_position": 1,
+      "to_position": 2,
+      "id": "path_order:721ab0f4f1e893fd"
+    },
+    {
+      "type": "path_order",
+      "source": "estimation.sequential-importance-sampling",
+      "target": "estimation.resampling",
+      "path": "path.particle-filter",
+      "from_position": 5,
+      "to_position": 6,
+      "id": "path_order:7a919fe4bb4f3384"
+    },
+    {
+      "type": "path_order",
+      "source": "linalg.least_squares",
+      "target": "estimation.kalman_filter",
+      "path": "path.kalman_filter",
+      "from_position": 5,
+      "to_position": 6,
+      "id": "path_order:81d3c548d2c50d09"
+    },
+    {
+      "type": "path_order",
+      "source": "systems.state_space",
+      "target": "control.pid",
+      "path": "path.pid",
+      "from_position": 4,
+      "to_position": 5,
+      "id": "path_order:ba6a2162c1186d28"
+    },
+    {
+      "type": "path_order",
+      "source": "estimation.resampling",
+      "target": "estimation.bootstrap-particle-filter",
+      "path": "path.particle-filter",
+      "from_position": 6,
+      "to_position": 7,
+      "id": "path_order:bc27aeefd01e63ed"
+    },
+    {
+      "type": "path_order",
+      "source": "linalg.orthogonal_projection",
+      "target": "linalg.least_squares",
+      "path": "path.least_squares",
+      "from_position": 2,
+      "to_position": 3,
+      "id": "path_order:c3f5329d276c3f78"
+    },
+    {
+      "type": "path_order",
+      "source": "estimation.kalman_filter",
+      "target": "probability.gaussian_conditioning",
+      "path": "path.kalman_filter",
+      "from_position": 3,
+      "to_position": 4,
+      "id": "path_order:c6c0bebc5a5d924b"
+    },
+    {
+      "type": "path_order",
+      "source": "estimation.bayes-filtering",
+      "target": "probability.importance-sampling",
+      "path": "path.particle-filter",
+      "from_position": 3,
+      "to_position": 4,
+      "id": "path_order:e577f9dcf2017a1c"
+    },
+    {
+      "type": "path_order",
+      "source": "probability.mean_covariance",
+      "target": "linalg.least_squares",
+      "path": "path.least_squares",
+      "from_position": 4,
+      "to_position": 5,
+      "id": "path_order:e9ccd9c60f420a63"
+    },
+    {
+      "type": "path_order",
+      "source": "probability.detailed-balance",
+      "target": "probability.metropolis-hastings",
+      "path": "path.mcmc",
+      "from_position": 2,
+      "to_position": 3,
+      "id": "path_order:f5444a65985e416d"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "linalg.least_squares",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:022fcdec8e0ccc3f"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "probability.mean_covariance",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": true,
+      "id": "prerequisite:04188ac54f9754fb"
+    },
+    {
+      "type": "prerequisite",
+      "source": "systems.state_space",
+      "target": "estimation.kalman_filter",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:059b68502af27edb"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "control.pid",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:07a0c1ce5a130f5c"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "statistics.maximum_likelihood_estimation",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:099487aee34d95e8"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "linalg.least_squares",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "teach",
+      "resolved": true,
+      "id": "prerequisite:099545c3ac3d8bc4"
+    },
+    {
+      "type": "prerequisite",
+      "source": "systems.state_space",
+      "target": "control.pid",
+      "category": "required",
+      "depth": "proof",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:0d7b450014c9583a"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.stochastic_process",
+      "target": "probability.gaussian_conditioning",
+      "category": "not_required",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": false,
+      "id": "prerequisite:0f17874100e711e5"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.orthogonal_projection",
+      "target": "linalg.least_squares",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "prove",
+      "resolved": true,
+      "id": "prerequisite:1018699ac8227c80"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "statistics.maximum_likelihood_estimation",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": true,
+      "id": "prerequisite:11e8f15475d50258"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "probability.gaussian_conditioning",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:11f9c4211d9e08f1"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.orthogonal_projection",
+      "target": "linalg.least_squares",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": true,
+      "id": "prerequisite:125a599fbd791185"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "estimation.kalman_filter",
+      "category": "helpful",
+      "depth": "application",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:12ae470b0168878d"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "robot.jacobian",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "teach",
+      "resolved": true,
+      "id": "prerequisite:12eb12c1ff8eb7ba"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "statistics.maximum_likelihood_estimation",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "teach",
+      "resolved": true,
+      "id": "prerequisite:13a8d9db8210e754"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.importance-sampling",
+      "target": "estimation.sequential-importance-sampling",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:148a91e5a046a0f1"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "systems.state_space",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:14ee773b0f6fef5a"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.orthogonal_projection",
+      "target": "linalg.least_squares",
+      "category": "helpful",
+      "depth": "application",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:16427f5dda3ac2d6"
+    },
+    {
+      "type": "prerequisite",
+      "source": "robot.jacobian",
+      "target": "robot.rotation_representations",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": true,
+      "id": "prerequisite:18e417d9f5421dd3"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "robot.jacobian",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:191d7629f1973943"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "statistics.maximum_likelihood_estimation",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:1db8593b78815797"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.detailed-balance",
+      "target": "probability.metropolis-hastings",
+      "category": "required",
+      "depth": "proof",
+      "competency": "prove",
+      "resolved": true,
+      "id": "prerequisite:1e8aded43fa9d328"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.stochastic_process",
+      "target": "systems.state_space",
+      "category": "not_required",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": false,
+      "id": "prerequisite:26204b6c1082a604"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.gaussian_conditioning",
+      "target": "probability.gibbs-sampling",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:266ec9206af28dae"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "robot.rotation_representations",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:27465fee1c1e0eb9"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "robot.jacobian",
+      "category": "helpful",
+      "depth": "implementation",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:295e1b59a92c5a3a"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "control.pid",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:29c6c9ec8f41bf74"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.importance-sampling",
+      "target": "estimation.sequential-importance-sampling",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:2eff3c9792e27da8"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.measure-foundations",
+      "target": "probability.monte-carlo",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:300041077ff3a6a0"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "statistics.maximum_likelihood_estimation",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:3045aebfd3fe7d01"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "systems.state_space",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:311b255800a24e11"
+    },
+    {
+      "type": "prerequisite",
+      "source": "systems.state_space",
+      "target": "estimation.kalman_filter",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "teach",
+      "resolved": true,
+      "id": "prerequisite:31db4752da468e10"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "probability.mean_covariance",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:350cf9b5e8454ee5"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "statistics.maximum_likelihood_estimation",
+      "category": "helpful",
+      "depth": "implementation",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:36d210b78a1d5bcd"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.stochastic_process",
+      "target": "probability.mean_covariance",
+      "category": "not_required",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": false,
+      "id": "prerequisite:3795e7ef9423fef2"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.monte-carlo",
+      "target": "probability.importance-sampling",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:3c0291086475e199"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.measure-foundations",
+      "target": "estimation.bayes-filtering",
+      "category": "required",
+      "depth": "proof",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:3fe2cab148c4877e"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "systems.state_space",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:402c16208492b7de"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.monte-carlo",
+      "target": "estimation.resampling",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:41c310ebb5875812"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.gaussian_conditioning",
+      "target": "estimation.extended_kalman_filter",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:423a0b996786a862"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "robot.jacobian",
+      "category": "helpful",
+      "depth": "proof",
+      "competency": "prove",
+      "resolved": true,
+      "id": "prerequisite:4436307638980d3f"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "robot.rotation_representations",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:4792f2ee41616673"
+    },
+    {
+      "type": "prerequisite",
+      "source": "control.feedback",
+      "target": "control.pid",
+      "category": "required",
+      "depth": "application",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:48671c2066fcc9b7"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.measure-foundations",
+      "target": "estimation.bayes-filtering",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:4a97d97678409324"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.measure-foundations",
+      "target": "estimation.sequential-importance-sampling",
+      "category": "required",
+      "depth": "proof",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:4bbf1a044b056579"
+    },
+    {
+      "type": "prerequisite",
+      "source": "control.feedback",
+      "target": "control.pid",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:50c1233eda02e879"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.measure-foundations",
+      "target": "probability.importance-sampling",
+      "category": "required",
+      "depth": "proof",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:52dd9baf3a15ada2"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "probability.gaussian_conditioning",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:5410fe494ec8ef31"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "linalg.eigenvalues",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:543d02e205d446e1"
+    },
+    {
+      "type": "prerequisite",
+      "source": "estimation.resampling",
+      "target": "estimation.bootstrap-particle-filter",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:5482995030b08d08"
+    },
+    {
+      "type": "prerequisite",
+      "source": "robot.jacobian",
+      "target": "estimation.extended_kalman_filter",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:562b28a83ca2e987"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "linalg.orthogonal_projection",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:5b6a9a33162a1acd"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.eigenvalues",
+      "target": "linalg.svd",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:5bb063409e0523db"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "statistics.maximum_likelihood_estimation",
+      "category": "helpful",
+      "depth": "proof",
+      "competency": "prove",
+      "resolved": true,
+      "id": "prerequisite:5bc6647e7842c6f8"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "probability.mean_covariance",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:5becf005077c450d"
+    },
+    {
+      "type": "prerequisite",
+      "source": "estimation.bayes-filtering",
+      "target": "estimation.sequential-importance-sampling",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:5bf8a229f5ccd69d"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "probability.mean_covariance",
+      "category": "required",
+      "depth": "proof",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:5d2c3d168aad80f5"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.gaussian_conditioning",
+      "target": "estimation.kalman_filter",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:5f332585ff9c2bab"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "probability.gaussian_conditioning",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:606e64e1f1421dcd"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.detailed-balance",
+      "target": "probability.metropolis-hastings",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:623f22930eb9ea93"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "linalg.least_squares",
+      "category": "not_required",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": true,
+      "id": "prerequisite:64e94b2702ee1223"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "robot.jacobian",
+      "category": "helpful",
+      "depth": "derivation",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:65bc00aba33e61b3"
+    },
+    {
+      "type": "prerequisite",
+      "source": "estimation.bayes-filtering",
+      "target": "estimation.sequential-importance-sampling",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:696a4284c3d4c08e"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.gaussian_conditioning",
+      "target": "estimation.kalman_filter",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "teach",
+      "resolved": true,
+      "id": "prerequisite:6a1ed2d97cd5a072"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "statistics.maximum_likelihood_estimation",
+      "category": "helpful",
+      "depth": "derivation",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:6b3a8cc0583b139f"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "linalg.svd",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:6df5e8fca2faeade"
+    },
+    {
+      "type": "prerequisite",
+      "source": "control.feedback",
+      "target": "control.pid",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:6e12fd752e6b59cd"
+    },
+    {
+      "type": "prerequisite",
+      "source": "control.feedback",
+      "target": "control.pid",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "teach",
+      "resolved": true,
+      "id": "prerequisite:718ef0e25754ec0c"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "robot.jacobian",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": true,
+      "id": "prerequisite:720986d105f5859a"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "robot.jacobian",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:741df5e1d7356673"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "probability.gaussian_conditioning",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:75e80af28c6d718b"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "statistics.maximum_likelihood_estimation",
+      "category": "required",
+      "depth": "implementation",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:79aa58d450659961"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "control.pid",
+      "category": "not_required",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": true,
+      "id": "prerequisite:7a6658264a5672b8"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "control.pid",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:7b5da5b949a21aba"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.orthogonal_projection",
+      "target": "linalg.svd",
+      "category": "helpful",
+      "depth": "application",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:7b8641679c529d01"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "estimation.kalman_filter",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:7c5cf65a577a37a6"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "systems.state_space",
+      "category": "required",
+      "depth": "application",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:7dc888b48de8504e"
+    },
+    {
+      "type": "prerequisite",
+      "source": "systems.state_space",
+      "target": "estimation.kalman_filter",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:7f51393d92e93f69"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "linalg.eigenvalues",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:7f56cbb9be23a49a"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "probability.gaussian_conditioning",
+      "category": "required",
+      "depth": "proof",
+      "competency": "prove",
+      "resolved": true,
+      "id": "prerequisite:84109ae19d526c8b"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "control.pid",
+      "category": "not_required",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": true,
+      "id": "prerequisite:8c31c32a30c8e8b2"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "systems.state_space",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": true,
+      "id": "prerequisite:8c35580bdf344b6d"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.monte-carlo",
+      "target": "estimation.resampling",
+      "category": "required",
+      "depth": "proof",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:8d7ec0ef4fe52da2"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.markov-chain",
+      "target": "probability.metropolis-hastings",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:917a99bba55e9c41"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "control.feedback",
+      "category": "helpful",
+      "depth": "application",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:93699a54285b12cc"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "statistics.maximum_likelihood_estimation",
+      "category": "helpful",
+      "depth": "application",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:958e5a008bcb1508"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.orthogonal_projection",
+      "target": "estimation.kalman_filter",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:985450607cf31594"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.markov-chain",
+      "target": "probability.metropolis-hastings",
+      "category": "required",
+      "depth": "proof",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:9c946b6ac761e045"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "control.pid",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": true,
+      "id": "prerequisite:9d6b29201e259b30"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "robot.jacobian",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "teach",
+      "resolved": true,
+      "id": "prerequisite:9d704c53a52999a6"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.stochastic_process",
+      "target": "control.pid",
+      "category": "not_required",
+      "depth": "application",
+      "competency": "recognize",
+      "resolved": false,
+      "id": "prerequisite:9df8c1c0433e7aff"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "linalg.orthogonal_projection",
+      "category": "required",
+      "depth": "application",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:a30386fea6fb37ae"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "linalg.least_squares",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:a373c8c9879fab0e"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.stochastic_process",
+      "target": "control.feedback",
+      "category": "not_required",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": false,
+      "id": "prerequisite:a4752fcc896974e8"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "statistics.maximum_likelihood_estimation",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "teach",
+      "resolved": true,
+      "id": "prerequisite:a89782c19bad7f2b"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "estimation.kalman_filter",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:ad18b55c201de27d"
+    },
+    {
+      "type": "prerequisite",
+      "source": "control.feedback",
+      "target": "estimation.kalman_filter",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:ad23bf488c86aa77"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.orthogonal_projection",
+      "target": "linalg.least_squares",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:ae510c766b3146ed"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "probability.gaussian_conditioning",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:affc45a7ddcb1da3"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "robot.jacobian",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:b3281d0b68176e89"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "probability.mean_covariance",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:b39c9924f68b2c2c"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "estimation.kalman_filter",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "teach",
+      "resolved": true,
+      "id": "prerequisite:b526e2201a3853e8"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "robot.jacobian",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:b57cbba923b1a0f7"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.orthogonal_projection",
+      "target": "linalg.least_squares",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:b5a5a1250e962e67"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.metropolis-hastings",
+      "target": "probability.gibbs-sampling",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:b63eb13e3b7e00b2"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "linalg.orthogonal_projection",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:b66ac37beb43642c"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.monte-carlo",
+      "target": "probability.importance-sampling",
+      "category": "required",
+      "depth": "proof",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:b77728e93fca76d3"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.markov-chain",
+      "target": "probability.mcmc-diagnostics",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:b9093367a0a0c9a7"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.measure-foundations",
+      "target": "probability.monte-carlo",
+      "category": "required",
+      "depth": "proof",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:c0047d967c0a6d9d"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "robot.jacobian",
+      "category": "helpful",
+      "depth": "teaching",
+      "competency": "teach",
+      "resolved": true,
+      "id": "prerequisite:c098a09d5667d599"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.metropolis-hastings",
+      "target": "probability.mcmc-diagnostics",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:c158736bdd4bb91d"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "probability.gaussian_conditioning",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "prove",
+      "resolved": true,
+      "id": "prerequisite:c35dbcab205ddf38"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.stochastic_process",
+      "target": "estimation.kalman_filter",
+      "category": "not_required",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": false,
+      "id": "prerequisite:c4d69f9a20b31f62"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.monte-carlo",
+      "target": "probability.mcmc-diagnostics",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:c7e0dd6b1320006b"
+    },
+    {
+      "type": "prerequisite",
+      "source": "systems.state_space",
+      "target": "linalg.eigenvalues",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": true,
+      "id": "prerequisite:c89d13491b3ce33b"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.markov-chain",
+      "target": "probability.gibbs-sampling",
+      "category": "required",
+      "depth": "proof",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:caa4caa81cff6191"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "robot.jacobian",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:caefdba67e8148c4"
+    },
+    {
+      "type": "prerequisite",
+      "source": "systems.state_space",
+      "target": "control.pid",
+      "category": "helpful",
+      "depth": "derivation",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:cb9198301c8fb25c"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "linalg.orthogonal_projection",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:cdc9f1798d8869d4"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.measure-foundations",
+      "target": "probability.markov-chain",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:d02900534bf9e1fa"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "systems.state_space",
+      "category": "required",
+      "depth": "derivation",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:d412224dcbfb523c"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "control.pid",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:d4d4e8c57b0f9181"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.vector_space",
+      "target": "control.feedback",
+      "category": "not_required",
+      "depth": "intuition",
+      "competency": "recognize",
+      "resolved": false,
+      "id": "prerequisite:d65114b61d6ed2c0"
+    },
+    {
+      "type": "prerequisite",
+      "source": "estimation.bayes-filtering",
+      "target": "estimation.bootstrap-particle-filter",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:d890928f2fcbba99"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.stochastic_process",
+      "target": "probability.mean_covariance",
+      "category": "not_required",
+      "depth": "application",
+      "competency": "recognize",
+      "resolved": false,
+      "id": "prerequisite:dc0e8dba594f9c95"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "robot.jacobian",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:de57354a67f45c69"
+    },
+    {
+      "type": "prerequisite",
+      "source": "foundations.change_accumulation",
+      "target": "systems.state_space",
+      "category": "required",
+      "depth": "teaching",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:dfec00fc262919d8"
+    },
+    {
+      "type": "prerequisite",
+      "source": "systems.state_space",
+      "target": "estimation.kalman_filter",
+      "category": "required",
+      "depth": "application",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:e04cc33a8e0564dd"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "statistics.maximum_likelihood_estimation",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:e28a9db3960055a1"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "robot.jacobian",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:e461e0d43fd1451a"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "statistics.maximum_likelihood_estimation",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:e5763f155fd66915"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "probability.gaussian_conditioning",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:e5db05238f8b8772"
+    },
+    {
+      "type": "prerequisite",
+      "source": "estimation.kalman_filter",
+      "target": "estimation.extended_kalman_filter",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:e67b0b6049dab35b"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.mean_covariance",
+      "target": "estimation.kalman_filter",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:e6adefb82a558acf"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.measure-foundations",
+      "target": "probability.markov-chain",
+      "category": "required",
+      "depth": "proof",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:e9eb35d543add742"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "robot.jacobian",
+      "category": "required",
+      "depth": "implementation",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:ec728086e4b7a14d"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.importance-sampling",
+      "target": "estimation.resampling",
+      "category": "helpful",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:f0286b5612e77043"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.least_squares",
+      "target": "robot.jacobian",
+      "category": "helpful",
+      "depth": "application",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:f0322f5fbc9a0c4d"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.markov-chain",
+      "target": "probability.detailed-balance",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:f226870e670077c6"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.gaussian_conditioning",
+      "target": "estimation.kalman_filter",
+      "category": "required",
+      "depth": "proof",
+      "competency": "prove",
+      "resolved": true,
+      "id": "prerequisite:f52b2eab42b0ee90"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "linalg.least_squares",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:f6d642f70d217dcd"
+    },
+    {
+      "type": "prerequisite",
+      "source": "estimation.resampling",
+      "target": "estimation.bootstrap-particle-filter",
+      "category": "required",
+      "depth": "implementation",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:f7599bf691e43ce9"
+    },
+    {
+      "type": "prerequisite",
+      "source": "estimation.sequential-importance-sampling",
+      "target": "estimation.bootstrap-particle-filter",
+      "category": "required",
+      "depth": "implementation",
+      "competency": "derive",
+      "resolved": true,
+      "id": "prerequisite:fa1b93172ed2911a"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.markov-chain",
+      "target": "probability.detailed-balance",
+      "category": "required",
+      "depth": "proof",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:fac7d397eb28bf0e"
+    },
+    {
+      "type": "prerequisite",
+      "source": "estimation.kalman_filter",
+      "target": "estimation.extended_kalman_filter",
+      "category": "required",
+      "depth": "application",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "prerequisite:fc77761a00df667f"
+    },
+    {
+      "type": "prerequisite",
+      "source": "probability.importance-sampling",
+      "target": "estimation.bootstrap-particle-filter",
+      "category": "required",
+      "depth": "intuition",
+      "competency": "explain",
+      "resolved": true,
+      "id": "prerequisite:fee319bcce6ecbb3"
+    },
+    {
+      "type": "prerequisite",
+      "source": "linalg.linear_system",
+      "target": "estimation.kalman_filter",
+      "category": "required",
+      "depth": "application",
+      "competency": "apply",
+      "resolved": true,
+      "id": "prerequisite:ff690ef29c711400"
+    },
+    {
+      "type": "proof_dependency",
+      "source": "proof.importance-sampling-identity",
+      "target": "proof.sis-weight-recursion",
+      "resolved": true,
+      "id": "proof_dependency:05393c410f72590b"
+    },
+    {
+      "type": "proof_dependency",
+      "source": "proof.sis-weight-recursion",
+      "target": "proof.bootstrap-particle-filter-fixed-horizon-consistency",
+      "resolved": true,
+      "id": "proof_dependency:3636868bc7b6323d"
+    },
+    {
+      "type": "proof_dependency",
+      "source": "proof.metropolis-hastings-invariance",
+      "target": "proof.finite-state-mh-convergence-ergodic-average",
+      "resolved": true,
+      "id": "proof_dependency:3d8a21e08a584969"
+    },
+    {
+      "type": "proof_dependency",
+      "source": "proof.elementary-finite-probability-lemmas",
+      "target": "proof.finite-state-mh-convergence-ergodic-average",
+      "resolved": true,
+      "id": "proof_dependency:833c7dd711227677"
+    },
+    {
+      "type": "proof_dependency",
+      "source": "proof.elementary-finite-probability-lemmas",
+      "target": "proof.bootstrap-particle-filter-fixed-horizon-consistency",
+      "resolved": true,
+      "id": "proof_dependency:8425f4b645398150"
+    },
+    {
+      "type": "proof_dependency",
+      "source": "proof.resampling-unbiasedness",
+      "target": "proof.bootstrap-particle-filter-fixed-horizon-consistency",
+      "resolved": true,
+      "id": "proof_dependency:9c4a411da5447391"
+    },
+    {
+      "type": "proof_dependency",
+      "source": "proof.importance-sampling-identity",
+      "target": "proof.snis-consistency",
+      "resolved": true,
+      "id": "proof_dependency:a3f51aec0f3cd179"
+    },
+    {
+      "type": "proof_dependency",
+      "source": "proof.detailed-balance-implies-invariance",
+      "target": "proof.metropolis-hastings-invariance",
+      "resolved": true,
+      "id": "proof_dependency:d1e4b5894ee9bfbc"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "probability.monte-carlo",
+      "target": "proof.importance-sampling-identity",
+      "category": "required",
+      "depth": "proof",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "proof_prerequisite:019cd2463b9f8fb1"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "probability.importance-sampling",
+      "target": "proof.snis-consistency",
+      "category": "required",
+      "depth": "proof",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "proof_prerequisite:06c06c23557cec12"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "estimation.bayes-filtering",
+      "target": "proof.bootstrap-particle-filter-fixed-horizon-consistency",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "proof_prerequisite:1ff2c54636025924"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "probability.measure-foundations",
+      "target": "proof.elementary-finite-probability-lemmas",
+      "category": "required",
+      "depth": "proof",
+      "competency": "explain",
+      "resolved": true,
+      "id": "proof_prerequisite:2719bb3d82d132c5"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "estimation.bootstrap-particle-filter",
+      "target": "proof.bootstrap-particle-filter-fixed-horizon-consistency",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "proof_prerequisite:2be68ba4d89b2327"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "estimation.resampling",
+      "target": "proof.bootstrap-particle-filter-fixed-horizon-consistency",
+      "category": "required",
+      "depth": "proof",
+      "competency": "prove",
+      "resolved": true,
+      "id": "proof_prerequisite:4dcdb87a1370d2d0"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "probability.markov-chain",
+      "target": "proof.detailed-balance-implies-invariance",
+      "category": "required",
+      "depth": "proof",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "proof_prerequisite:648a11abdb01710f"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "probability.measure-foundations",
+      "target": "proof.snis-consistency",
+      "category": "required",
+      "depth": "proof",
+      "competency": "explain",
+      "resolved": true,
+      "id": "proof_prerequisite:6e18a26b191a53ed"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "probability.metropolis-hastings",
+      "target": "proof.finite-state-mh-convergence-ergodic-average",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "proof_prerequisite:73c74c1c45ab651a"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "probability.detailed-balance",
+      "target": "proof.detailed-balance-implies-invariance",
+      "category": "required",
+      "depth": "proof",
+      "competency": "explain",
+      "resolved": true,
+      "id": "proof_prerequisite:82bb295b1cae165a"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "probability.importance-sampling",
+      "target": "proof.sis-weight-recursion",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "proof_prerequisite:ae9d65d424106c6b"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "probability.markov-chain",
+      "target": "proof.finite-state-mh-convergence-ergodic-average",
+      "category": "required",
+      "depth": "proof",
+      "competency": "prove",
+      "resolved": true,
+      "id": "proof_prerequisite:b2354061b6ba91d4"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "probability.detailed-balance",
+      "target": "proof.metropolis-hastings-invariance",
+      "category": "required",
+      "depth": "proof",
+      "competency": "prove",
+      "resolved": true,
+      "id": "proof_prerequisite:cbd38c95bb8284da"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "probability.monte-carlo",
+      "target": "proof.resampling-unbiasedness",
+      "category": "required",
+      "depth": "proof",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "proof_prerequisite:e3af509940837265"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "estimation.bayes-filtering",
+      "target": "proof.sis-weight-recursion",
+      "category": "required",
+      "depth": "proof",
+      "competency": "derive",
+      "resolved": true,
+      "id": "proof_prerequisite:e622455ac4aa50e6"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "probability.measure-foundations",
+      "target": "proof.importance-sampling-identity",
+      "category": "required",
+      "depth": "proof",
+      "competency": "explain",
+      "resolved": true,
+      "id": "proof_prerequisite:ebf7b15440cf702d"
+    },
+    {
+      "type": "proof_prerequisite",
+      "source": "probability.markov-chain",
+      "target": "proof.metropolis-hastings-invariance",
+      "category": "required",
+      "depth": "proof",
+      "competency": "calculate",
+      "resolved": true,
+      "id": "proof_prerequisite:fefbae0b6814b33d"
+    },
+    {
+      "type": "proved_by",
+      "source": "probability.importance-sampling",
+      "target": "proof.snis-consistency",
+      "resolved": true,
+      "id": "proved_by:42c89bec0160c16d"
+    },
+    {
+      "type": "proved_by",
+      "source": "probability.detailed-balance",
+      "target": "proof.detailed-balance-implies-invariance",
+      "resolved": true,
+      "id": "proved_by:4760d06e44a1124a"
+    },
+    {
+      "type": "proved_by",
+      "source": "estimation.bootstrap-particle-filter",
+      "target": "proof.bootstrap-particle-filter-fixed-horizon-consistency",
+      "resolved": true,
+      "id": "proved_by:6a026d570346580b"
+    },
+    {
+      "type": "proved_by",
+      "source": "estimation.resampling",
+      "target": "proof.resampling-unbiasedness",
+      "resolved": true,
+      "id": "proved_by:6efe924b6cd437bb"
+    },
+    {
+      "type": "proved_by",
+      "source": "probability.metropolis-hastings",
+      "target": "proof.metropolis-hastings-invariance",
+      "resolved": true,
+      "id": "proved_by:a4d9b517b91d6c76"
+    },
+    {
+      "type": "proved_by",
+      "source": "estimation.sequential-importance-sampling",
+      "target": "proof.sis-weight-recursion",
+      "resolved": true,
+      "id": "proved_by:bfd6d8bb7274a15b"
+    },
+    {
+      "type": "proved_by",
+      "source": "probability.markov-chain",
+      "target": "proof.finite-state-mh-convergence-ergodic-average",
+      "resolved": true,
+      "id": "proved_by:c1ecd016e1208abb"
+    },
+    {
+      "type": "proved_by",
+      "source": "probability.metropolis-hastings",
+      "target": "proof.finite-state-mh-convergence-ergodic-average",
+      "resolved": true,
+      "id": "proved_by:da66bd254b232adf"
+    },
+    {
+      "type": "proved_by",
+      "source": "probability.importance-sampling",
+      "target": "proof.importance-sampling-identity",
+      "resolved": true,
+      "id": "proved_by:e03204e752f93ce4"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.linear_system",
+      "target": "probability.gaussian_conditioning",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:00357e8301cd4f0e"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "robot.dynamics",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:0141b454a1e5f52a"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "robot.impedance_control",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:01a4939d8b1a4a4c"
+    },
+    {
+      "type": "relation",
+      "source": "probability.gaussian_conditioning",
+      "target": "estimation.kalman_filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:01e5f91dcd26777c"
+    },
+    {
+      "type": "relation",
+      "source": "systems.state_space",
+      "target": "estimation.kalman_filter",
+      "relation": "deepens",
+      "resolved": true,
+      "id": "relation:03cb64421150bf7d"
+    },
+    {
+      "type": "relation",
+      "source": "control.feedback",
+      "target": "control.pid",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:05499b0d9020ddf7"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "linalg.least_squares",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:0567dc2cc5e44bb0"
+    },
+    {
+      "type": "relation",
+      "source": "foundations.change_accumulation",
+      "target": "control.pid",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:06159e8f607c78f0"
+    },
+    {
+      "type": "relation",
+      "source": "control.pid",
+      "target": "foundations.change_accumulation",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:06c766b9db9202d0"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "linalg.linear_system",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:07da5d131c328639"
+    },
+    {
+      "type": "relation",
+      "source": "control.pid",
+      "target": "control.feedforward",
+      "relation": "contrasts_with",
+      "resolved": false,
+      "id": "relation:0a1f9d086dc27196"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.extended_kalman_filter",
+      "target": "robot.jacobian",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:0d37932ee1bb6687"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "robot.state_estimation",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:15c19e44e616b9c6"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "linalg.least_squares",
+      "relation": "same_structure_as",
+      "resolved": true,
+      "id": "relation:174324aca93ab687"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.svd",
+      "target": "linalg.least_squares",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:1998d3baabf35697"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "foundations.change_accumulation",
+      "relation": "derived_from",
+      "resolved": true,
+      "id": "relation:1c2d396c1910058a"
+    },
+    {
+      "type": "relation",
+      "source": "probability.mean_covariance",
+      "target": "probability.gaussian_conditioning",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:206b0e88f3c6c29d"
+    },
+    {
+      "type": "relation",
+      "source": "probability.importance-sampling",
+      "target": "estimation.sequential-importance-sampling",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:20ebeeac3032ce3f"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "linalg.least_squares",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:228eefb3ad30e0c2"
+    },
+    {
+      "type": "relation",
+      "source": "foundations.change_accumulation",
+      "target": "estimation.kalman_filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:2517986a105043ee"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.eigenvalues",
+      "target": "linalg.svd",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:26a8cd7c5a2350cd"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "estimation.square_root_filter",
+      "relation": "deepens",
+      "resolved": false,
+      "id": "relation:2acd2562da80a945"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.sequential-importance-sampling",
+      "target": "estimation.bootstrap-particle-filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:2c391f0ce16d3cfe"
+    },
+    {
+      "type": "relation",
+      "source": "statistics.maximum_likelihood_estimation",
+      "target": "linalg.least_squares",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:2c45caa5309f4cb2"
+    },
+    {
+      "type": "relation",
+      "source": "control.pid",
+      "target": "robot.joint_control",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:2c56b7b61e846cfe"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.bootstrap-particle-filter",
+      "target": "probability.importance-sampling",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:2c78e9dc9612eaa1"
+    },
+    {
+      "type": "relation",
+      "source": "probability.measure-foundations",
+      "target": "probability.monte-carlo",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:2d4bbf985816a25a"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "estimation.particle_filter",
+      "relation": "contrasts_with",
+      "resolved": false,
+      "id": "relation:2fc07ae2b1f5e895"
+    },
+    {
+      "type": "relation",
+      "source": "statistics.maximum_likelihood_estimation",
+      "target": "estimation.kalman_filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:3035e3e2be5d759f"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.least_squares",
+      "target": "robot.calibration",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:3063e8030451f6e4"
+    },
+    {
+      "type": "relation",
+      "source": "control.pid",
+      "target": "control.anti_windup",
+      "relation": "deepens",
+      "resolved": false,
+      "id": "relation:30b0a94cf0f18185"
+    },
+    {
+      "type": "relation",
+      "source": "probability.gibbs-sampling",
+      "target": "probability.gaussian_conditioning",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:31a7ae0a5ce6053c"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "linalg.least_squares",
+      "relation": "derived_from",
+      "resolved": true,
+      "id": "relation:331dbaeeba5c6dc0"
+    },
+    {
+      "type": "relation",
+      "source": "probability.gaussian_conditioning",
+      "target": "probability.mean_covariance",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:33ab44f05c4bff9c"
+    },
+    {
+      "type": "relation",
+      "source": "probability.metropolis-hastings",
+      "target": "probability.detailed-balance",
+      "relation": "derived_from",
+      "resolved": true,
+      "id": "relation:34db8ac1775d6d56"
+    },
+    {
+      "type": "relation",
+      "source": "probability.mcmc-diagnostics",
+      "target": "probability.monte-carlo",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:35a5fdd3054001e2"
+    },
+    {
+      "type": "relation",
+      "source": "probability.gaussian_conditioning",
+      "target": "linalg.least_squares",
+      "relation": "same_structure_as",
+      "resolved": true,
+      "id": "relation:3638557c5f862777"
+    },
+    {
+      "type": "relation",
+      "source": "foundations.change_accumulation",
+      "target": "systems.state_space",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:36893d51c3f04a26"
+    },
+    {
+      "type": "relation",
+      "source": "statistics.maximum_likelihood_estimation",
+      "target": "linalg.least_squares",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:370220ee60973645"
+    },
+    {
+      "type": "relation",
+      "source": "systems.state_space",
+      "target": "linalg.linear_system",
+      "relation": "contrasts_with",
+      "resolved": true,
+      "id": "relation:381e7376eb442989"
+    },
+    {
+      "type": "relation",
+      "source": "probability.measure-foundations",
+      "target": "probability.markov-chain",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:38a5b89407e6d086"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.least_squares",
+      "target": "probability.mean_covariance",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:38c563927c2005b6"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.orthogonal_projection",
+      "target": "linalg.least_squares",
+      "relation": "deepens",
+      "resolved": true,
+      "id": "relation:39122ce9a037c411"
+    },
+    {
+      "type": "relation",
+      "source": "control.feedback",
+      "target": "foundations.change_accumulation",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:39d5a1672223fa17"
+    },
+    {
+      "type": "relation",
+      "source": "control.feedback",
+      "target": "control.feedforward",
+      "relation": "contrasts_with",
+      "resolved": false,
+      "id": "relation:3a77416d34cbe5cf"
+    },
+    {
+      "type": "relation",
+      "source": "control.feedback",
+      "target": "estimation.kalman_filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:3b48e4894f1c24d4"
+    },
+    {
+      "type": "relation",
+      "source": "probability.monte-carlo",
+      "target": "probability.importance-sampling",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:3cae6e542e5c7a7f"
+    },
+    {
+      "type": "relation",
+      "source": "probability.gibbs-sampling",
+      "target": "probability.metropolis-hastings",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:3cccfeaa4f2d9892"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.bayes-filtering",
+      "target": "probability.measure-foundations",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:3e53c10aa51890f4"
+    },
+    {
+      "type": "relation",
+      "source": "probability.mcmc-diagnostics",
+      "target": "probability.metropolis-hastings",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:4078754c6ac548eb"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.linear_system",
+      "target": "linalg.least_squares",
+      "relation": "deepens",
+      "resolved": true,
+      "id": "relation:410cbd2a1ac66c31"
+    },
+    {
+      "type": "relation",
+      "source": "probability.mean_covariance",
+      "target": "linalg.linear_system",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:43b9af7aa5914ec5"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "probability.mean_covariance",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:44e80028ee7a4dc8"
+    },
+    {
+      "type": "relation",
+      "source": "robot.rotation_representations",
+      "target": "estimation.extended_kalman_filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:4c9ff52611221f67"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.least_squares",
+      "target": "linalg.orthogonal_projection",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:4f140e24f4d2b7b6"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "robot.forward_kinematics",
+      "relation": "contrasts_with",
+      "resolved": false,
+      "id": "relation:50f5d43206bd0cf0"
+    },
+    {
+      "type": "relation",
+      "source": "statistics.maximum_likelihood_estimation",
+      "target": "linalg.least_squares",
+      "relation": "same_structure_as",
+      "resolved": true,
+      "id": "relation:5231973acf587caa"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "estimation.rts_smoother",
+      "relation": "deepens",
+      "resolved": false,
+      "id": "relation:53f85fe4c41dd07c"
+    },
+    {
+      "type": "relation",
+      "source": "probability.monte-carlo",
+      "target": "estimation.resampling",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:56498d7cdfbb497c"
+    },
+    {
+      "type": "relation",
+      "source": "probability.gaussian_conditioning",
+      "target": "probability.mean_covariance",
+      "relation": "derived_from",
+      "resolved": true,
+      "id": "relation:5a62b228e0f66d59"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.least_squares",
+      "target": "statistics.maximum_likelihood_estimation",
+      "relation": "same_structure_as",
+      "resolved": true,
+      "id": "relation:5c4c2d68fbe01c0e"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.extended_kalman_filter",
+      "target": "robot.state_estimation",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:616939392ec66d78"
+    },
+    {
+      "type": "relation",
+      "source": "robot.rotation_representations",
+      "target": "mechanics.rigid_body_kinematics",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:61cea5f6d033a73f"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.linear_system",
+      "target": "linalg.least_squares",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:66c63527cd7a3898"
+    },
+    {
+      "type": "relation",
+      "source": "statistics.maximum_likelihood_estimation",
+      "target": "statistics.generalized_linear_model",
+      "relation": "deepens",
+      "resolved": false,
+      "id": "relation:679a00981d31aac4"
+    },
+    {
+      "type": "relation",
+      "source": "systems.state_space",
+      "target": "estimation.kalman_filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:6a32750144af4660"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "linalg.orthogonal_projection",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:6a5c166843bee9df"
+    },
+    {
+      "type": "relation",
+      "source": "statistics.maximum_likelihood_estimation",
+      "target": "probability.mean_covariance",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:70a7b51611c763d6"
+    },
+    {
+      "type": "relation",
+      "source": "probability.measure-foundations",
+      "target": "estimation.sequential-importance-sampling",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:710b603a3528e382"
+    },
+    {
+      "type": "relation",
+      "source": "systems.state_space",
+      "target": "foundations.change_accumulation",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:71a12fa6777b3dd8"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.orthogonal_projection",
+      "target": "estimation.innovation_orthogonality",
+      "relation": "same_structure_as",
+      "resolved": false,
+      "id": "relation:72bc3e4c09b83414"
+    },
+    {
+      "type": "relation",
+      "source": "probability.mean_covariance",
+      "target": "probability.gaussian_conditioning",
+      "relation": "deepens",
+      "resolved": true,
+      "id": "relation:75ef56b35ebe9374"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.least_squares",
+      "target": "robot.inverse_kinematics",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:764ca5854472f41e"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.least_squares",
+      "target": "optimization.nonlinear_least_squares",
+      "relation": "deepens",
+      "resolved": false,
+      "id": "relation:78a79c4efe4b2646"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "probability.gaussian_conditioning",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:7a01a4bd70832e1f"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "control.feedback",
+      "relation": "same_structure_as",
+      "resolved": true,
+      "id": "relation:7a6de7ca81c848a6"
+    },
+    {
+      "type": "relation",
+      "source": "control.pid",
+      "target": "control.feedback",
+      "relation": "derived_from",
+      "resolved": true,
+      "id": "relation:7ab9b4af03c70591"
+    },
+    {
+      "type": "relation",
+      "source": "probability.gibbs-sampling",
+      "target": "probability.metropolis-hastings",
+      "relation": "derived_from",
+      "resolved": true,
+      "id": "relation:7c831d644eafc8bd"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.extended_kalman_filter",
+      "target": "robot.localization",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:7d7bdb98946403c8"
+    },
+    {
+      "type": "relation",
+      "source": "robot.rotation_representations",
+      "target": "robot.jacobian",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:822f965c3a6a7946"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.bootstrap-particle-filter",
+      "target": "estimation.sequential-importance-sampling",
+      "relation": "derived_from",
+      "resolved": true,
+      "id": "relation:857d032438c1b014"
+    },
+    {
+      "type": "relation",
+      "source": "control.pid",
+      "target": "systems.state_space",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:86ed46d13fe74846"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "robot.manipulability",
+      "relation": "deepens",
+      "resolved": false,
+      "id": "relation:88793656a3d431e8"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "robot.calibration",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:8a874378aac82097"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.sequential-importance-sampling",
+      "target": "estimation.bayes-filtering",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:921e53369b5f3e70"
+    },
+    {
+      "type": "relation",
+      "source": "statistics.maximum_likelihood_estimation",
+      "target": "statistics.fisher_information",
+      "relation": "deepens",
+      "resolved": false,
+      "id": "relation:9346c8f7ba9d9a05"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.least_squares",
+      "target": "estimation.kalman_filter",
+      "relation": "same_structure_as",
+      "resolved": true,
+      "id": "relation:9594a8e6be08bb74"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.bootstrap-particle-filter",
+      "target": "estimation.bayes-filtering",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:95e70aa596eaf137"
+    },
+    {
+      "type": "relation",
+      "source": "systems.state_space",
+      "target": "control.pid",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:966dbecd7a0b79b2"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.least_squares",
+      "target": "estimation.kalman_filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:96d2785fe18cebdf"
+    },
+    {
+      "type": "relation",
+      "source": "probability.markov-chain",
+      "target": "probability.measure-foundations",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:98e2dfcd2448f839"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "statistics.maximum_likelihood_estimation",
+      "relation": "same_structure_as",
+      "resolved": true,
+      "id": "relation:9923ed3fccd2abbf"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.least_squares",
+      "target": "probability.gaussian_conditioning",
+      "relation": "same_structure_as",
+      "resolved": true,
+      "id": "relation:996519ffd08ba417"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.extended_kalman_filter",
+      "target": "estimation.kalman_filter",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:99f3dad1a4c5cca1"
+    },
+    {
+      "type": "relation",
+      "source": "probability.measure-foundations",
+      "target": "probability.importance-sampling",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:9a0738c9d5a1baef"
+    },
+    {
+      "type": "relation",
+      "source": "probability.importance-sampling",
+      "target": "estimation.bootstrap-particle-filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:9d83e72917bf76cd"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "signals.low_pass_filter",
+      "relation": "contrasts_with",
+      "resolved": false,
+      "id": "relation:9de3a911633c6d74"
+    },
+    {
+      "type": "relation",
+      "source": "foundations.change_accumulation",
+      "target": "systems.state_space",
+      "relation": "deepens",
+      "resolved": true,
+      "id": "relation:9ffaacb5834f0c98"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.linear_system",
+      "target": "systems.state_space",
+      "relation": "contrasts_with",
+      "resolved": true,
+      "id": "relation:a077e15273300774"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.orthogonal_projection",
+      "target": "linalg.linear_system",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:a2449e3f321c6d56"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.least_squares",
+      "target": "linalg.orthogonal_projection",
+      "relation": "derived_from",
+      "resolved": true,
+      "id": "relation:a433862419ee33f1"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.sequential-importance-sampling",
+      "target": "probability.importance-sampling",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:a47e816640e14077"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.bootstrap-particle-filter",
+      "target": "estimation.sequential-importance-sampling",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:aaab7ac2f46556af"
+    },
+    {
+      "type": "relation",
+      "source": "probability.importance-sampling",
+      "target": "probability.monte-carlo",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:aae80bd2c1d6c844"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.orthogonal_projection",
+      "target": "linalg.least_squares",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:ab512c8488f9f646"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.resampling",
+      "target": "estimation.bootstrap-particle-filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:ab83221195a16f8c"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.least_squares",
+      "target": "linalg.linear_system",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:abc36c59ef7215df"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "estimation.extended_kalman_filter",
+      "relation": "deepens",
+      "resolved": true,
+      "id": "relation:acf7d2a552499aef"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "robot.sensor_fusion",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:adc1b35b81bc40ed"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "robot.inverse_kinematics",
+      "relation": "deepens",
+      "resolved": false,
+      "id": "relation:addfece2af4aa82f"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.linear_system",
+      "target": "estimation.kalman_filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:aea648fdcb444696"
+    },
+    {
+      "type": "relation",
+      "source": "probability.markov-chain",
+      "target": "probability.metropolis-hastings",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:af3aab2d5aa25984"
+    },
+    {
+      "type": "relation",
+      "source": "foundations.change_accumulation",
+      "target": "control.pid",
+      "relation": "deepens",
+      "resolved": true,
+      "id": "relation:b1eb9e06d1597022"
+    },
+    {
+      "type": "relation",
+      "source": "probability.importance-sampling",
+      "target": "probability.measure-foundations",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:b291599c00062242"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.linear_system",
+      "target": "statistics.linear_measurement",
+      "relation": "same_structure_as",
+      "resolved": false,
+      "id": "relation:b35b700c4bed605a"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "probability.gaussian_conditioning",
+      "relation": "derived_from",
+      "resolved": true,
+      "id": "relation:b50b5ac8deda59b2"
+    },
+    {
+      "type": "relation",
+      "source": "systems.state_space",
+      "target": "linalg.linear_system",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:b530158e13feb018"
+    },
+    {
+      "type": "relation",
+      "source": "probability.mean_covariance",
+      "target": "estimation.kalman_filter",
+      "relation": "deepens",
+      "resolved": true,
+      "id": "relation:b799db1b319e37bd"
+    },
+    {
+      "type": "relation",
+      "source": "probability.mcmc-diagnostics",
+      "target": "probability.gibbs-sampling",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:b7c63ffc32a63ce7"
+    },
+    {
+      "type": "relation",
+      "source": "probability.mean_covariance",
+      "target": "linalg.orthogonal_projection",
+      "relation": "same_structure_as",
+      "resolved": true,
+      "id": "relation:b8c3f539b6c8101c"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "foundations.change_accumulation",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:bc4cd74850961548"
+    },
+    {
+      "type": "relation",
+      "source": "probability.detailed-balance",
+      "target": "probability.metropolis-hastings",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:be4f41b75e7d28cc"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.least_squares",
+      "target": "linalg.weighted_least_squares",
+      "relation": "deepens",
+      "resolved": false,
+      "id": "relation:c00d4481dc748830"
+    },
+    {
+      "type": "relation",
+      "source": "statistics.maximum_likelihood_estimation",
+      "target": "statistics.maximum_a_posteriori",
+      "relation": "contrasts_with",
+      "resolved": false,
+      "id": "relation:c6062e9e138d62f1"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "estimation.extended_kalman_filter",
+      "relation": "same_structure_as",
+      "resolved": true,
+      "id": "relation:c738360c025aec52"
+    },
+    {
+      "type": "relation",
+      "source": "probability.gaussian_conditioning",
+      "target": "linalg.linear_system",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:c7f58bad7d223eee"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "linalg.orthogonal_projection",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:c88396459a04c87d"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.extended_kalman_filter",
+      "target": "robot.sensor_fusion",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:ca8757ca6a7d6a07"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "robot.operational_space_control",
+      "relation": "deepens",
+      "resolved": false,
+      "id": "relation:cb7a4dc4455dc6b0"
+    },
+    {
+      "type": "relation",
+      "source": "probability.mean_covariance",
+      "target": "estimation.kalman_filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:cc913927c39d819f"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.bayes-filtering",
+      "target": "estimation.bootstrap-particle-filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:ce0968efad02cd92"
+    },
+    {
+      "type": "relation",
+      "source": "control.feedback",
+      "target": "estimation.kalman_filter",
+      "relation": "same_structure_as",
+      "resolved": true,
+      "id": "relation:d0a670c5b5c486a2"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.svd",
+      "target": "linalg.eigenvalues",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:d360b8e0cd922146"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.eigenvalues",
+      "target": "linalg.linear_system",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:d455aaf05cb7dcf9"
+    },
+    {
+      "type": "relation",
+      "source": "probability.metropolis-hastings",
+      "target": "probability.detailed-balance",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:d641868d2aef67be"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.extended_kalman_filter",
+      "target": "estimation.kalman_filter",
+      "relation": "derived_from",
+      "resolved": true,
+      "id": "relation:d6a3fe9a244ae310"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.orthogonal_projection",
+      "target": "linalg.inner_product",
+      "relation": "derived_from",
+      "resolved": false,
+      "id": "relation:d6a7eb1b84bc6323"
+    },
+    {
+      "type": "relation",
+      "source": "probability.monte-carlo",
+      "target": "probability.measure-foundations",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:d85d59d329935b87"
+    },
+    {
+      "type": "relation",
+      "source": "control.pid",
+      "target": "robot.mobile_velocity_control",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:d86ae01251e5ecbc"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.least_squares",
+      "target": "optimization.absolute_deviation",
+      "relation": "contrasts_with",
+      "resolved": false,
+      "id": "relation:dac1a5de6f8c3fae"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.linear_system",
+      "target": "linalg.orthogonal_projection",
+      "relation": "deepens",
+      "resolved": true,
+      "id": "relation:dafe1c06ddc40dfc"
+    },
+    {
+      "type": "relation",
+      "source": "control.feedback",
+      "target": "control.pid",
+      "relation": "deepens",
+      "resolved": true,
+      "id": "relation:db04548f82fb8d2c"
+    },
+    {
+      "type": "relation",
+      "source": "control.pid",
+      "target": "control.feedback",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:db6bdbba2c4f4b75"
+    },
+    {
+      "type": "relation",
+      "source": "probability.gaussian_conditioning",
+      "target": "estimation.kalman_filter",
+      "relation": "deepens",
+      "resolved": true,
+      "id": "relation:dc19a32a5d0114f5"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.bayes-filtering",
+      "target": "estimation.sequential-importance-sampling",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:dda457a76ed9e238"
+    },
+    {
+      "type": "relation",
+      "source": "probability.metropolis-hastings",
+      "target": "probability.markov-chain",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:de83cabd1182765c"
+    },
+    {
+      "type": "relation",
+      "source": "probability.detailed-balance",
+      "target": "probability.markov-chain",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:df42e9fa67fd0698"
+    },
+    {
+      "type": "relation",
+      "source": "probability.measure-foundations",
+      "target": "estimation.bayes-filtering",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:e17694b0e2e9d49a"
+    },
+    {
+      "type": "relation",
+      "source": "probability.gaussian_conditioning",
+      "target": "linalg.orthogonal_projection",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:e17809175e0aff8d"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.eigenvalues",
+      "target": "systems.state_space",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:e1c7ceda3bea28d3"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "systems.state_space",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:e201a641e5d703ca"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.svd",
+      "target": "estimation.kalman_filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:e219a1e067fc0f83"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.bootstrap-particle-filter",
+      "target": "estimation.resampling",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:e7447c8f1e18c81d"
+    },
+    {
+      "type": "relation",
+      "source": "probability.monte-carlo",
+      "target": "estimation.bootstrap-particle-filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:ea4c50040fb43891"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.resampling",
+      "target": "probability.monte-carlo",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:eb2768a6e905f94b"
+    },
+    {
+      "type": "relation",
+      "source": "control.feedback",
+      "target": "robot.joint_control",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:eb7380d044e4a139"
+    },
+    {
+      "type": "relation",
+      "source": "statistics.maximum_likelihood_estimation",
+      "target": "foundations.change_accumulation",
+      "relation": "helpful",
+      "resolved": true,
+      "id": "relation:ec7364c93fc56c70"
+    },
+    {
+      "type": "relation",
+      "source": "control.feedback",
+      "target": "systems.state_space",
+      "relation": "deepens",
+      "resolved": true,
+      "id": "relation:ed9cb8e08cb580ba"
+    },
+    {
+      "type": "relation",
+      "source": "control.pid",
+      "target": "control.state_feedback",
+      "relation": "contrasts_with",
+      "resolved": false,
+      "id": "relation:ee2f56dc98f2a01f"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.orthogonal_projection",
+      "target": "estimation.kalman_filter",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:ee438f35e18133f1"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "robot.force_control",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:f010e8488e890639"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "robot.localization",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:f3d32d2bfb9a3c67"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.svd",
+      "target": "robot.jacobian",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:f3e7d5fb81be5f4e"
+    },
+    {
+      "type": "relation",
+      "source": "robot.rotation_representations",
+      "target": "linalg.linear_system",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:f5ec0198ba77bf4f"
+    },
+    {
+      "type": "relation",
+      "source": "probability.markov-chain",
+      "target": "probability.detailed-balance",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:f7d4bc6fcea266c1"
+    },
+    {
+      "type": "relation",
+      "source": "robot.jacobian",
+      "target": "robot.inverse_kinematics",
+      "relation": "used_in",
+      "resolved": false,
+      "id": "relation:fa18b8552979243a"
+    },
+    {
+      "type": "relation",
+      "source": "linalg.eigenvalues",
+      "target": "probability.mean_covariance",
+      "relation": "used_in",
+      "resolved": true,
+      "id": "relation:fab3807f73bef993"
+    },
+    {
+      "type": "relation",
+      "source": "estimation.kalman_filter",
+      "target": "linalg.linear_system",
+      "relation": "requires",
+      "resolved": true,
+      "id": "relation:fc72e7695b23e1a1"
+    },
+    {
+      "type": "relation",
+      "source": "control.pid",
+      "target": "control.frequency_response",
+      "relation": "deepens",
+      "resolved": false,
+      "id": "relation:ffe615a0fb1eae24"
+    }
+  ]
+}
