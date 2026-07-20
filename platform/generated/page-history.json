@@ -103,6 +103,12 @@
  ],
  "content/concepts/probability/bayes-filtering.qmd": [
   {
+   "sha": "7370b28649b5785fba62fbeac3f9a3a9167a43ca",
+   "date": "2026-07-20",
+   "author": "editorial-bridge",
+   "subject": "교정: 영문 혼용을 줄이고 “정확한 재귀”가 재귀식을 뜻함을 명확히 합니다. 내용 자체로 유지할  (#18)"
+  },
+  {
    "sha": "59ccfb55770f9268db965e4c1a26bb2a4399f651",
    "date": "2026-07-17",
    "author": "ITP OP PC(JYC)",

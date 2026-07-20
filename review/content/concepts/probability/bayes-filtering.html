@@ -1031,7 +1031,7 @@ window.Quarto = {
 =\frac{g_t(y_t\mid x_t)p(x_t\mid y_{1:t-1})}
 {\int g_t(y_t\mid u)p(u\mid y_{1:t-1})du}.
 \]</span></p>
-<p><span id="p-23bd5b9a" class="paragraph-anchor"></span>Bayes filter는 특정 알고리즘이 아니라 모든 Bayesian filtering 방법이 근사하려는 정확한 재귀다.</p>
+<p><span id="p-2c068200" class="paragraph-anchor"></span>베이즈 필터는 특정 알고리즘 하나가 아니라, 모든 베이즈 필터링 방법이 근사하려는 정확한 재귀식이다.</p>
 </div>
 </div>
 <section id="해결하려는-문제" class="level2 depth-intuition">
@@ -2221,205 +2221,205 @@ P(X_t=1\mid y_{1:t})
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">소스 코드</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="p-b0400dd1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="p-b0400dd1-1"><a href="#p-b0400dd1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="p-b0400dd1-2"><a href="#p-b0400dd1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Bayes Filtering 재귀"</span></span>
-<span id="p-b0400dd1-3"><a href="#p-b0400dd1-3" aria-hidden="true" tabindex="-1"></a><span class="an">id:</span><span class="co"> estimation.bayes-filtering</span></span>
-<span id="p-b0400dd1-4"><a href="#p-b0400dd1-4" aria-hidden="true" tabindex="-1"></a><span class="an">kind:</span><span class="co"> concept</span></span>
-<span id="p-b0400dd1-5"><a href="#p-b0400dd1-5" aria-hidden="true" tabindex="-1"></a><span class="an">domain:</span><span class="co"> estimation</span></span>
-<span id="p-b0400dd1-6"><a href="#p-b0400dd1-6" aria-hidden="true" tabindex="-1"></a><span class="an">aliases:</span></span>
-<span id="p-b0400dd1-7"><a href="#p-b0400dd1-7" aria-hidden="true" tabindex="-1"></a><span class="co">  - Bayesian filtering</span></span>
-<span id="p-b0400dd1-8"><a href="#p-b0400dd1-8" aria-hidden="true" tabindex="-1"></a><span class="co">  - Bayes filter</span></span>
-<span id="p-b0400dd1-9"><a href="#p-b0400dd1-9" aria-hidden="true" tabindex="-1"></a><span class="co">  - predict-update recursion</span></span>
-<span id="p-b0400dd1-10"><a href="#p-b0400dd1-10" aria-hidden="true" tabindex="-1"></a><span class="an">one-line:</span><span class="co"> "이전 posterior를 동역학으로 예측하고 새 측정 likelihood로 보정한다."</span></span>
-<span id="p-b0400dd1-11"><a href="#p-b0400dd1-11" aria-hidden="true" tabindex="-1"></a><span class="an">difficulty:</span><span class="co"> 3</span></span>
-<span id="p-b0400dd1-12"><a href="#p-b0400dd1-12" aria-hidden="true" tabindex="-1"></a><span class="an">prerequisites:</span></span>
-<span id="p-b0400dd1-13"><a href="#p-b0400dd1-13" aria-hidden="true" tabindex="-1"></a><span class="co">  intuition:</span></span>
-<span id="p-b0400dd1-14"><a href="#p-b0400dd1-14" aria-hidden="true" tabindex="-1"></a><span class="co">    required:</span></span>
-<span id="p-b0400dd1-15"><a href="#p-b0400dd1-15" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: probability.measure-foundations</span></span>
-<span id="p-b0400dd1-16"><a href="#p-b0400dd1-16" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: explain</span></span>
-<span id="p-b0400dd1-17"><a href="#p-b0400dd1-17" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: 확률분포·조건부분포라는 말의 범위를 구분한다.</span></span>
-<span id="p-b0400dd1-18"><a href="#p-b0400dd1-18" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful: []</span></span>
-<span id="p-b0400dd1-19"><a href="#p-b0400dd1-19" aria-hidden="true" tabindex="-1"></a><span class="co">  proof:</span></span>
-<span id="p-b0400dd1-20"><a href="#p-b0400dd1-20" aria-hidden="true" tabindex="-1"></a><span class="co">    required:</span></span>
-<span id="p-b0400dd1-21"><a href="#p-b0400dd1-21" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: probability.measure-foundations</span></span>
-<span id="p-b0400dd1-22"><a href="#p-b0400dd1-22" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: explain</span></span>
-<span id="p-b0400dd1-23"><a href="#p-b0400dd1-23" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: 조건부독립과 밀도 factorization을 정확히 읽는다.</span></span>
-<span id="p-b0400dd1-24"><a href="#p-b0400dd1-24" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful: []</span></span>
-<span id="p-b0400dd1-25"><a href="#p-b0400dd1-25" aria-hidden="true" tabindex="-1"></a><span class="an">relations:</span></span>
-<span id="p-b0400dd1-26"><a href="#p-b0400dd1-26" aria-hidden="true" tabindex="-1"></a><span class="co">  requires:</span></span>
-<span id="p-b0400dd1-27"><a href="#p-b0400dd1-27" aria-hidden="true" tabindex="-1"></a><span class="co">    - probability.measure-foundations</span></span>
-<span id="p-b0400dd1-28"><a href="#p-b0400dd1-28" aria-hidden="true" tabindex="-1"></a><span class="co">  used-in:</span></span>
-<span id="p-b0400dd1-29"><a href="#p-b0400dd1-29" aria-hidden="true" tabindex="-1"></a><span class="co">    - estimation.sequential-importance-sampling</span></span>
-<span id="p-b0400dd1-30"><a href="#p-b0400dd1-30" aria-hidden="true" tabindex="-1"></a><span class="co">    - estimation.bootstrap-particle-filter</span></span>
-<span id="p-b0400dd1-31"><a href="#p-b0400dd1-31" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="p-b0400dd1-32"><a href="#p-b0400dd1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-33"><a href="#p-b0400dd1-33" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="30초 핵심"}</span>
-<span id="p-b0400dd1-34"><a href="#p-b0400dd1-34" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-35"><a href="#p-b0400dd1-35" aria-hidden="true" tabindex="-1"></a>\underbrace{p(x_t\mid y_{1:t-1})}_{\text{예측}}</span>
-<span id="p-b0400dd1-36"><a href="#p-b0400dd1-36" aria-hidden="true" tabindex="-1"></a>=\int f_t(x_t\mid x_{t-1})p(x_{t-1}\mid y_{1:t-1})dx_{t-1},</span>
-<span id="p-b0400dd1-37"><a href="#p-b0400dd1-37" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-38"><a href="#p-b0400dd1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-39"><a href="#p-b0400dd1-39" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-40"><a href="#p-b0400dd1-40" aria-hidden="true" tabindex="-1"></a>\underbrace{p(x_t\mid y_{1:t})}_{\text{보정}}</span>
-<span id="p-b0400dd1-41"><a href="#p-b0400dd1-41" aria-hidden="true" tabindex="-1"></a>=\frac{g_t(y_t\mid x_t)p(x_t\mid y_{1:t-1})}</span>
-<span id="p-b0400dd1-42"><a href="#p-b0400dd1-42" aria-hidden="true" tabindex="-1"></a>{\int g_t(y_t\mid u)p(u\mid y_{1:t-1})du}.</span>
-<span id="p-b0400dd1-43"><a href="#p-b0400dd1-43" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-44"><a href="#p-b0400dd1-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-45"><a href="#p-b0400dd1-45" aria-hidden="true" tabindex="-1"></a>Bayes filter는 특정 알고리즘이 아니라 모든 Bayesian filtering 방법이 근사하려는 정확한 재귀다.</span>
-<span id="p-b0400dd1-46"><a href="#p-b0400dd1-46" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="p-b0400dd1-47"><a href="#p-b0400dd1-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-48"><a href="#p-b0400dd1-48" aria-hidden="true" tabindex="-1"></a>::: {.depth-intuition}</span>
-<span id="p-b0400dd1-49"><a href="#p-b0400dd1-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-50"><a href="#p-b0400dd1-50" aria-hidden="true" tabindex="-1"></a><span class="fu">## 해결하려는 문제</span></span>
-<span id="p-b0400dd1-51"><a href="#p-b0400dd1-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-52"><a href="#p-b0400dd1-52" aria-hidden="true" tabindex="-1"></a>숨은 상태 $X_t$는 직접 보이지 않고 센서 $Y_t$만 관측한다고 하자. 시간 $t$에 필요한 것은 미래 측정을 쓰지 않은 현재 상태분포</span>
-<span id="p-b0400dd1-53"><a href="#p-b0400dd1-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-54"><a href="#p-b0400dd1-54" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-55"><a href="#p-b0400dd1-55" aria-hidden="true" tabindex="-1"></a>p(x_t\mid y_{1:t})</span>
-<span id="p-b0400dd1-56"><a href="#p-b0400dd1-56" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-57"><a href="#p-b0400dd1-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-58"><a href="#p-b0400dd1-58" aria-hidden="true" tabindex="-1"></a>다. 이를 filtering distribution이라 한다.</span>
-<span id="p-b0400dd1-59"><a href="#p-b0400dd1-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-60"><a href="#p-b0400dd1-60" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**prediction:** 아직 $y_t$를 보기 전의 믿음</span>
-<span id="p-b0400dd1-61"><a href="#p-b0400dd1-61" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**filtering:** $y_t$까지 본 현재 상태의 믿음</span>
-<span id="p-b0400dd1-62"><a href="#p-b0400dd1-62" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**smoothing:** 미래 측정 $y_{t+1:T}$까지 사용한 과거 상태의 믿음</span>
-<span id="p-b0400dd1-63"><a href="#p-b0400dd1-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-64"><a href="#p-b0400dd1-64" aria-hidden="true" tabindex="-1"></a>단순 low-pass smoothing과 Bayesian smoothing은 같은 단어를 쓰더라도 정의가 다르다.</span>
-<span id="p-b0400dd1-65"><a href="#p-b0400dd1-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-66"><a href="#p-b0400dd1-66" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="p-b0400dd1-67"><a href="#p-b0400dd1-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-68"><a href="#p-b0400dd1-68" aria-hidden="true" tabindex="-1"></a>::: {.depth-derivation}</span>
-<span id="p-b0400dd1-69"><a href="#p-b0400dd1-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-70"><a href="#p-b0400dd1-70" aria-hidden="true" tabindex="-1"></a><span class="fu">## 상태공간모형과 가정</span></span>
-<span id="p-b0400dd1-71"><a href="#p-b0400dd1-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-72"><a href="#p-b0400dd1-72" aria-hidden="true" tabindex="-1"></a>이 페이지에서는 공통 기준측도에 대한 다음 밀도가 존재한다고 가정한다.</span>
-<span id="p-b0400dd1-73"><a href="#p-b0400dd1-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-74"><a href="#p-b0400dd1-74" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-75"><a href="#p-b0400dd1-75" aria-hidden="true" tabindex="-1"></a>X_0\sim\mu_0(x_0),\qquad</span>
-<span id="p-b0400dd1-76"><a href="#p-b0400dd1-76" aria-hidden="true" tabindex="-1"></a>X_t\mid X_{t-1}=x_{t-1}\sim f_t(x_t\mid x_{t-1}),</span>
-<span id="p-b0400dd1-77"><a href="#p-b0400dd1-77" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-78"><a href="#p-b0400dd1-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-79"><a href="#p-b0400dd1-79" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-80"><a href="#p-b0400dd1-80" aria-hidden="true" tabindex="-1"></a>Y_t\mid X_t=x_t\sim g_t(y_t\mid x_t).</span>
-<span id="p-b0400dd1-81"><a href="#p-b0400dd1-81" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-82"><a href="#p-b0400dd1-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-83"><a href="#p-b0400dd1-83" aria-hidden="true" tabindex="-1"></a>그래프 구조가 의미하는 핵심 조건부독립은 다음 두 가지다.</span>
-<span id="p-b0400dd1-84"><a href="#p-b0400dd1-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-85"><a href="#p-b0400dd1-85" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Markov 상태:** $X_t\perp X_{0:t-2},Y_{1:t-1}\mid X_{t-1}$</span>
-<span id="p-b0400dd1-86"><a href="#p-b0400dd1-86" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**현재상태 측정:** $Y_t\perp X_{0:t-1},Y_{1:t-1}\mid X_t$</span>
-<span id="p-b0400dd1-87"><a href="#p-b0400dd1-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-88"><a href="#p-b0400dd1-88" aria-hidden="true" tabindex="-1"></a>따라서 joint density는</span>
-<span id="p-b0400dd1-89"><a href="#p-b0400dd1-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-90"><a href="#p-b0400dd1-90" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-91"><a href="#p-b0400dd1-91" aria-hidden="true" tabindex="-1"></a>p(x_{0:t},y_{1:t})</span>
-<span id="p-b0400dd1-92"><a href="#p-b0400dd1-92" aria-hidden="true" tabindex="-1"></a>=\mu_0(x_0)\prod_{s=1}^t</span>
-<span id="p-b0400dd1-93"><a href="#p-b0400dd1-93" aria-hidden="true" tabindex="-1"></a>f_s(x_s\mid x_{s-1})g_s(y_s\mid x_s)</span>
-<span id="p-b0400dd1-94"><a href="#p-b0400dd1-94" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-95"><a href="#p-b0400dd1-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-96"><a href="#p-b0400dd1-96" aria-hidden="true" tabindex="-1"></a>로 factorization된다.</span>
-<span id="p-b0400dd1-97"><a href="#p-b0400dd1-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-98"><a href="#p-b0400dd1-98" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="가정이 깨지면"}</span>
-<span id="p-b0400dd1-99"><a href="#p-b0400dd1-99" aria-hidden="true" tabindex="-1"></a>센서 bias를 상태에 넣지 않았는데 시간상관이 강하게 남는다면, $Y_t$가 현재 $X_t$만으로 과거와 조건부독립이라는 모델이 틀릴 수 있다. 식을 버리는 대신 bias나 colored-noise state를 추가해 Markov 상태를 확장한다.</span>
-<span id="p-b0400dd1-100"><a href="#p-b0400dd1-100" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="p-b0400dd1-101"><a href="#p-b0400dd1-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-102"><a href="#p-b0400dd1-102" aria-hidden="true" tabindex="-1"></a><span class="fu">## 재귀 유도</span></span>
-<span id="p-b0400dd1-103"><a href="#p-b0400dd1-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-104"><a href="#p-b0400dd1-104" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. Prediction</span></span>
-<span id="p-b0400dd1-105"><a href="#p-b0400dd1-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-106"><a href="#p-b0400dd1-106" aria-hidden="true" tabindex="-1"></a>전확률법칙과 Markov 조건을 적용한다.</span>
-<span id="p-b0400dd1-107"><a href="#p-b0400dd1-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-108"><a href="#p-b0400dd1-108" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-109"><a href="#p-b0400dd1-109" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="p-b0400dd1-110"><a href="#p-b0400dd1-110" aria-hidden="true" tabindex="-1"></a>p(x_t\mid y_{1:t-1})</span>
-<span id="p-b0400dd1-111"><a href="#p-b0400dd1-111" aria-hidden="true" tabindex="-1"></a>&amp;=\int p(x_t,x_{t-1}\mid y_{1:t-1})dx_{t-1}<span class="sc">\\</span></span>
-<span id="p-b0400dd1-112"><a href="#p-b0400dd1-112" aria-hidden="true" tabindex="-1"></a>&amp;=\int p(x_t\mid x_{t-1},y_{1:t-1})</span>
-<span id="p-b0400dd1-113"><a href="#p-b0400dd1-113" aria-hidden="true" tabindex="-1"></a> p(x_{t-1}\mid y_{1:t-1})dx_{t-1}<span class="sc">\\</span></span>
-<span id="p-b0400dd1-114"><a href="#p-b0400dd1-114" aria-hidden="true" tabindex="-1"></a>&amp;=\int f_t(x_t\mid x_{t-1})</span>
-<span id="p-b0400dd1-115"><a href="#p-b0400dd1-115" aria-hidden="true" tabindex="-1"></a> p(x_{t-1}\mid y_{1:t-1})dx_{t-1}.</span>
-<span id="p-b0400dd1-116"><a href="#p-b0400dd1-116" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
-<span id="p-b0400dd1-117"><a href="#p-b0400dd1-117" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-118"><a href="#p-b0400dd1-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-119"><a href="#p-b0400dd1-119" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. Update</span></span>
-<span id="p-b0400dd1-120"><a href="#p-b0400dd1-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-121"><a href="#p-b0400dd1-121" aria-hidden="true" tabindex="-1"></a>Bayes 정리와 측정 조건부독립을 적용한다.</span>
-<span id="p-b0400dd1-122"><a href="#p-b0400dd1-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-123"><a href="#p-b0400dd1-123" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-124"><a href="#p-b0400dd1-124" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="p-b0400dd1-125"><a href="#p-b0400dd1-125" aria-hidden="true" tabindex="-1"></a>p(x_t\mid y_{1:t})</span>
-<span id="p-b0400dd1-126"><a href="#p-b0400dd1-126" aria-hidden="true" tabindex="-1"></a>&amp;=\frac{p(y_t\mid x_t,y_{1:t-1})p(x_t\mid y_{1:t-1})}</span>
-<span id="p-b0400dd1-127"><a href="#p-b0400dd1-127" aria-hidden="true" tabindex="-1"></a>{p(y_t\mid y_{1:t-1})}<span class="sc">\\</span></span>
-<span id="p-b0400dd1-128"><a href="#p-b0400dd1-128" aria-hidden="true" tabindex="-1"></a>&amp;=\frac{g_t(y_t\mid x_t)p(x_t\mid y_{1:t-1})}</span>
-<span id="p-b0400dd1-129"><a href="#p-b0400dd1-129" aria-hidden="true" tabindex="-1"></a>{\int g_t(y_t\mid u)p(u\mid y_{1:t-1})du}.</span>
-<span id="p-b0400dd1-130"><a href="#p-b0400dd1-130" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
-<span id="p-b0400dd1-131"><a href="#p-b0400dd1-131" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-132"><a href="#p-b0400dd1-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-133"><a href="#p-b0400dd1-133" aria-hidden="true" tabindex="-1"></a>분모는 predictive likelihood이며 update 후 적분이 1이 되게 한다. 관측된 $y_t$에서 이 값이 0이면 조건부분포가 이 식으로 정의되지 않는다.</span>
-<span id="p-b0400dd1-134"><a href="#p-b0400dd1-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-135"><a href="#p-b0400dd1-135" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="p-b0400dd1-136"><a href="#p-b0400dd1-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-137"><a href="#p-b0400dd1-137" aria-hidden="true" tabindex="-1"></a>::: {.depth-application}</span>
-<span id="p-b0400dd1-138"><a href="#p-b0400dd1-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-139"><a href="#p-b0400dd1-139" aria-hidden="true" tabindex="-1"></a><span class="fu">## 가장 작은 유한상태 예</span></span>
-<span id="p-b0400dd1-140"><a href="#p-b0400dd1-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-141"><a href="#p-b0400dd1-141" aria-hidden="true" tabindex="-1"></a>문이 열림(1) 또는 닫힘(0) 상태라고 하자. 예측분포가</span>
-<span id="p-b0400dd1-142"><a href="#p-b0400dd1-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-143"><a href="#p-b0400dd1-143" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-144"><a href="#p-b0400dd1-144" aria-hidden="true" tabindex="-1"></a>P(X_t=1\mid y_{1:t-1})=0.6</span>
-<span id="p-b0400dd1-145"><a href="#p-b0400dd1-145" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-146"><a href="#p-b0400dd1-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-147"><a href="#p-b0400dd1-147" aria-hidden="true" tabindex="-1"></a>이고, 센서가 <span class="in">`열림`</span>을 보고할 확률이 실제 열림일 때 0.9, 닫힘일 때 0.2라면</span>
-<span id="p-b0400dd1-148"><a href="#p-b0400dd1-148" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-149"><a href="#p-b0400dd1-149" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-150"><a href="#p-b0400dd1-150" aria-hidden="true" tabindex="-1"></a>P(X_t=1\mid y_{1:t})</span>
-<span id="p-b0400dd1-151"><a href="#p-b0400dd1-151" aria-hidden="true" tabindex="-1"></a>=\frac{0.9\cdot0.6}{0.9\cdot0.6+0.2\cdot0.4}</span>
-<span id="p-b0400dd1-152"><a href="#p-b0400dd1-152" aria-hidden="true" tabindex="-1"></a>=\frac{0.54}{0.62}\approx0.871.</span>
-<span id="p-b0400dd1-153"><a href="#p-b0400dd1-153" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="p-b0400dd1-154"><a href="#p-b0400dd1-154" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-155"><a href="#p-b0400dd1-155" aria-hidden="true" tabindex="-1"></a>측정은 상태를 확정하지 않고 likelihood만큼 상대적 믿음을 바꾼다.</span>
-<span id="p-b0400dd1-156"><a href="#p-b0400dd1-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-157"><a href="#p-b0400dd1-157" aria-hidden="true" tabindex="-1"></a><span class="fu">## 언제 닫힌형으로 계산되는가</span></span>
-<span id="p-b0400dd1-158"><a href="#p-b0400dd1-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-159"><a href="#p-b0400dd1-159" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>선형 전이·선형 측정·Gaussian 잡음: Kalman filter</span>
-<span id="p-b0400dd1-160"><a href="#p-b0400dd1-160" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>유한상태: 행렬 곱과 원소별 곱</span>
-<span id="p-b0400dd1-161"><a href="#p-b0400dd1-161" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>일반 비선형·비Gaussian: 적분이 닫히지 않아 EKF, UKF, quadrature, Particle Filter 등으로 근사</span>
-<span id="p-b0400dd1-162"><a href="#p-b0400dd1-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-163"><a href="#p-b0400dd1-163" aria-hidden="true" tabindex="-1"></a><span class="fu">## 실패와 반례</span></span>
-<span id="p-b0400dd1-164"><a href="#p-b0400dd1-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-165"><a href="#p-b0400dd1-165" aria-hidden="true" tabindex="-1"></a><span class="fu">### likelihood와 posterior를 혼동</span></span>
-<span id="p-b0400dd1-166"><a href="#p-b0400dd1-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-167"><a href="#p-b0400dd1-167" aria-hidden="true" tabindex="-1"></a>$g_t(y_t\mid x_t)$는 $x_t$에 대한 확률밀도일 필요가 없으며, 그 자체로 적분 1이 되지 않는다. prior/predictive distribution과 곱하고 정규화해야 posterior가 된다.</span>
-<span id="p-b0400dd1-168"><a href="#p-b0400dd1-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-169"><a href="#p-b0400dd1-169" aria-hidden="true" tabindex="-1"></a><span class="fu">### 측정을 두 번 사용</span></span>
-<span id="p-b0400dd1-170"><a href="#p-b0400dd1-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-171"><a href="#p-b0400dd1-171" aria-hidden="true" tabindex="-1"></a>같은 $y_t$를 두 번 update하면 독립적인 새 정보처럼 세어 uncertainty를 과도하게 줄인다.</span>
-<span id="p-b0400dd1-172"><a href="#p-b0400dd1-172" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-173"><a href="#p-b0400dd1-173" aria-hidden="true" tabindex="-1"></a><span class="fu">### 틀린 noise independence</span></span>
-<span id="p-b0400dd1-174"><a href="#p-b0400dd1-174" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-175"><a href="#p-b0400dd1-175" aria-hidden="true" tabindex="-1"></a>서로 상관된 센서를 독립 likelihood의 곱으로 처리하면 같은 오차 원인을 중복 계산할 수 있다.</span>
-<span id="p-b0400dd1-176"><a href="#p-b0400dd1-176" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-177"><a href="#p-b0400dd1-177" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="p-b0400dd1-178"><a href="#p-b0400dd1-178" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-179"><a href="#p-b0400dd1-179" aria-hidden="true" tabindex="-1"></a><span class="fu">## 엄밀성 범위</span></span>
-<span id="p-b0400dd1-180"><a href="#p-b0400dd1-180" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-181"><a href="#p-b0400dd1-181" aria-hidden="true" tabindex="-1"></a>유한상태에서는 모든 적분을 합으로 바꾸면 위 유도가 완전하다. 연속상태에서는 명시한 공통 기준측도에 대한 밀도가 존재한다고 가정했다. 일반 kernel과 정규 조건부분포를 사용하는 버전은 <span class="co">[</span><span class="ot">확률·측도 기반</span><span class="co">](measure-probability-foundations.qmd)</span>의 심화 범위다.</span>
-<span id="p-b0400dd1-182"><a href="#p-b0400dd1-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-183"><a href="#p-b0400dd1-183" aria-hidden="true" tabindex="-1"></a><span class="fu">## 다음 연결</span></span>
-<span id="p-b0400dd1-184"><a href="#p-b0400dd1-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-185"><a href="#p-b0400dd1-185" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>path 전체를 proposal에서 표본화: <span class="co">[</span><span class="ot">Sequential Importance Sampling</span><span class="co">](sequential-importance-sampling.qmd)</span></span>
-<span id="p-b0400dd1-186"><a href="#p-b0400dd1-186" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>상태전이를 proposal로 선택하고 매번 resampling: <span class="co">[</span><span class="ot">Bootstrap Particle Filter</span><span class="co">](bootstrap-particle-filter.qmd)</span></span>
-<span id="p-b0400dd1-187"><a href="#p-b0400dd1-187" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>목표별 체크리스트: <span class="co">[</span><span class="ot">Particle Filter 학습 경로</span><span class="co">](../../paths/particle-filter.qmd)</span></span>
-<span id="p-b0400dd1-188"><a href="#p-b0400dd1-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-189"><a href="#p-b0400dd1-189" aria-hidden="true" tabindex="-1"></a><span class="fu">## 회상 점검</span></span>
-<span id="p-b0400dd1-190"><a href="#p-b0400dd1-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-191"><a href="#p-b0400dd1-191" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>prediction과 update 식을 각각 말로 설명하라.</span>
-<span id="p-b0400dd1-192"><a href="#p-b0400dd1-192" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>두 조건부독립 가정이 joint factorization의 어느 항을 만든다고 볼 수 있는가?</span>
-<span id="p-b0400dd1-193"><a href="#p-b0400dd1-193" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>filtering과 smoothing은 어떤 관측정보 집합이 다른가?</span>
-<span id="p-b0400dd1-194"><a href="#p-b0400dd1-194" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>predictive likelihood가 0인 관측에서는 왜 단순 Bayes 밀도식이 정의되지 않는가?</span>
-<span id="p-b0400dd1-195"><a href="#p-b0400dd1-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-196"><a href="#p-b0400dd1-196" aria-hidden="true" tabindex="-1"></a><span class="fu">## 참고문헌</span></span>
-<span id="p-b0400dd1-197"><a href="#p-b0400dd1-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="p-b0400dd1-198"><a href="#p-b0400dd1-198" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Simo Särkkä and Lennart Svensson, *Bayesian Filtering and Smoothing*.</span>
-<span id="p-b0400dd1-199"><a href="#p-b0400dd1-199" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Arnaud Doucet, Nando de Freitas, and Neil Gordon (eds.), *Sequential Monte Carlo Methods in Practice*.</span></code></pre></div><button title="클립보드 복사" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="p-2215c4fc" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="p-2215c4fc-1"><a href="#p-2215c4fc-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-2215c4fc-2"><a href="#p-2215c4fc-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Bayes Filtering 재귀"</span></span>
+<span id="p-2215c4fc-3"><a href="#p-2215c4fc-3" aria-hidden="true" tabindex="-1"></a><span class="an">id:</span><span class="co"> estimation.bayes-filtering</span></span>
+<span id="p-2215c4fc-4"><a href="#p-2215c4fc-4" aria-hidden="true" tabindex="-1"></a><span class="an">kind:</span><span class="co"> concept</span></span>
+<span id="p-2215c4fc-5"><a href="#p-2215c4fc-5" aria-hidden="true" tabindex="-1"></a><span class="an">domain:</span><span class="co"> estimation</span></span>
+<span id="p-2215c4fc-6"><a href="#p-2215c4fc-6" aria-hidden="true" tabindex="-1"></a><span class="an">aliases:</span></span>
+<span id="p-2215c4fc-7"><a href="#p-2215c4fc-7" aria-hidden="true" tabindex="-1"></a><span class="co">  - Bayesian filtering</span></span>
+<span id="p-2215c4fc-8"><a href="#p-2215c4fc-8" aria-hidden="true" tabindex="-1"></a><span class="co">  - Bayes filter</span></span>
+<span id="p-2215c4fc-9"><a href="#p-2215c4fc-9" aria-hidden="true" tabindex="-1"></a><span class="co">  - predict-update recursion</span></span>
+<span id="p-2215c4fc-10"><a href="#p-2215c4fc-10" aria-hidden="true" tabindex="-1"></a><span class="an">one-line:</span><span class="co"> "이전 posterior를 동역학으로 예측하고 새 측정 likelihood로 보정한다."</span></span>
+<span id="p-2215c4fc-11"><a href="#p-2215c4fc-11" aria-hidden="true" tabindex="-1"></a><span class="an">difficulty:</span><span class="co"> 3</span></span>
+<span id="p-2215c4fc-12"><a href="#p-2215c4fc-12" aria-hidden="true" tabindex="-1"></a><span class="an">prerequisites:</span></span>
+<span id="p-2215c4fc-13"><a href="#p-2215c4fc-13" aria-hidden="true" tabindex="-1"></a><span class="co">  intuition:</span></span>
+<span id="p-2215c4fc-14"><a href="#p-2215c4fc-14" aria-hidden="true" tabindex="-1"></a><span class="co">    required:</span></span>
+<span id="p-2215c4fc-15"><a href="#p-2215c4fc-15" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: probability.measure-foundations</span></span>
+<span id="p-2215c4fc-16"><a href="#p-2215c4fc-16" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: explain</span></span>
+<span id="p-2215c4fc-17"><a href="#p-2215c4fc-17" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: 확률분포·조건부분포라는 말의 범위를 구분한다.</span></span>
+<span id="p-2215c4fc-18"><a href="#p-2215c4fc-18" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful: []</span></span>
+<span id="p-2215c4fc-19"><a href="#p-2215c4fc-19" aria-hidden="true" tabindex="-1"></a><span class="co">  proof:</span></span>
+<span id="p-2215c4fc-20"><a href="#p-2215c4fc-20" aria-hidden="true" tabindex="-1"></a><span class="co">    required:</span></span>
+<span id="p-2215c4fc-21"><a href="#p-2215c4fc-21" aria-hidden="true" tabindex="-1"></a><span class="co">      - concept: probability.measure-foundations</span></span>
+<span id="p-2215c4fc-22"><a href="#p-2215c4fc-22" aria-hidden="true" tabindex="-1"></a><span class="co">        competency: explain</span></span>
+<span id="p-2215c4fc-23"><a href="#p-2215c4fc-23" aria-hidden="true" tabindex="-1"></a><span class="co">        reason: 조건부독립과 밀도 factorization을 정확히 읽는다.</span></span>
+<span id="p-2215c4fc-24"><a href="#p-2215c4fc-24" aria-hidden="true" tabindex="-1"></a><span class="co">    helpful: []</span></span>
+<span id="p-2215c4fc-25"><a href="#p-2215c4fc-25" aria-hidden="true" tabindex="-1"></a><span class="an">relations:</span></span>
+<span id="p-2215c4fc-26"><a href="#p-2215c4fc-26" aria-hidden="true" tabindex="-1"></a><span class="co">  requires:</span></span>
+<span id="p-2215c4fc-27"><a href="#p-2215c4fc-27" aria-hidden="true" tabindex="-1"></a><span class="co">    - probability.measure-foundations</span></span>
+<span id="p-2215c4fc-28"><a href="#p-2215c4fc-28" aria-hidden="true" tabindex="-1"></a><span class="co">  used-in:</span></span>
+<span id="p-2215c4fc-29"><a href="#p-2215c4fc-29" aria-hidden="true" tabindex="-1"></a><span class="co">    - estimation.sequential-importance-sampling</span></span>
+<span id="p-2215c4fc-30"><a href="#p-2215c4fc-30" aria-hidden="true" tabindex="-1"></a><span class="co">    - estimation.bootstrap-particle-filter</span></span>
+<span id="p-2215c4fc-31"><a href="#p-2215c4fc-31" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="p-2215c4fc-32"><a href="#p-2215c4fc-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-33"><a href="#p-2215c4fc-33" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="30초 핵심"}</span>
+<span id="p-2215c4fc-34"><a href="#p-2215c4fc-34" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-35"><a href="#p-2215c4fc-35" aria-hidden="true" tabindex="-1"></a>\underbrace{p(x_t\mid y_{1:t-1})}_{\text{예측}}</span>
+<span id="p-2215c4fc-36"><a href="#p-2215c4fc-36" aria-hidden="true" tabindex="-1"></a>=\int f_t(x_t\mid x_{t-1})p(x_{t-1}\mid y_{1:t-1})dx_{t-1},</span>
+<span id="p-2215c4fc-37"><a href="#p-2215c4fc-37" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-38"><a href="#p-2215c4fc-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-39"><a href="#p-2215c4fc-39" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-40"><a href="#p-2215c4fc-40" aria-hidden="true" tabindex="-1"></a>\underbrace{p(x_t\mid y_{1:t})}_{\text{보정}}</span>
+<span id="p-2215c4fc-41"><a href="#p-2215c4fc-41" aria-hidden="true" tabindex="-1"></a>=\frac{g_t(y_t\mid x_t)p(x_t\mid y_{1:t-1})}</span>
+<span id="p-2215c4fc-42"><a href="#p-2215c4fc-42" aria-hidden="true" tabindex="-1"></a>{\int g_t(y_t\mid u)p(u\mid y_{1:t-1})du}.</span>
+<span id="p-2215c4fc-43"><a href="#p-2215c4fc-43" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-44"><a href="#p-2215c4fc-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-45"><a href="#p-2215c4fc-45" aria-hidden="true" tabindex="-1"></a>베이즈 필터는 특정 알고리즘 하나가 아니라, 모든 베이즈 필터링 방법이 근사하려는 정확한 재귀식이다.</span>
+<span id="p-2215c4fc-46"><a href="#p-2215c4fc-46" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-2215c4fc-47"><a href="#p-2215c4fc-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-48"><a href="#p-2215c4fc-48" aria-hidden="true" tabindex="-1"></a>::: {.depth-intuition}</span>
+<span id="p-2215c4fc-49"><a href="#p-2215c4fc-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-50"><a href="#p-2215c4fc-50" aria-hidden="true" tabindex="-1"></a><span class="fu">## 해결하려는 문제</span></span>
+<span id="p-2215c4fc-51"><a href="#p-2215c4fc-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-52"><a href="#p-2215c4fc-52" aria-hidden="true" tabindex="-1"></a>숨은 상태 $X_t$는 직접 보이지 않고 센서 $Y_t$만 관측한다고 하자. 시간 $t$에 필요한 것은 미래 측정을 쓰지 않은 현재 상태분포</span>
+<span id="p-2215c4fc-53"><a href="#p-2215c4fc-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-54"><a href="#p-2215c4fc-54" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-55"><a href="#p-2215c4fc-55" aria-hidden="true" tabindex="-1"></a>p(x_t\mid y_{1:t})</span>
+<span id="p-2215c4fc-56"><a href="#p-2215c4fc-56" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-57"><a href="#p-2215c4fc-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-58"><a href="#p-2215c4fc-58" aria-hidden="true" tabindex="-1"></a>다. 이를 filtering distribution이라 한다.</span>
+<span id="p-2215c4fc-59"><a href="#p-2215c4fc-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-60"><a href="#p-2215c4fc-60" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**prediction:** 아직 $y_t$를 보기 전의 믿음</span>
+<span id="p-2215c4fc-61"><a href="#p-2215c4fc-61" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**filtering:** $y_t$까지 본 현재 상태의 믿음</span>
+<span id="p-2215c4fc-62"><a href="#p-2215c4fc-62" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**smoothing:** 미래 측정 $y_{t+1:T}$까지 사용한 과거 상태의 믿음</span>
+<span id="p-2215c4fc-63"><a href="#p-2215c4fc-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-64"><a href="#p-2215c4fc-64" aria-hidden="true" tabindex="-1"></a>단순 low-pass smoothing과 Bayesian smoothing은 같은 단어를 쓰더라도 정의가 다르다.</span>
+<span id="p-2215c4fc-65"><a href="#p-2215c4fc-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-66"><a href="#p-2215c4fc-66" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-2215c4fc-67"><a href="#p-2215c4fc-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-68"><a href="#p-2215c4fc-68" aria-hidden="true" tabindex="-1"></a>::: {.depth-derivation}</span>
+<span id="p-2215c4fc-69"><a href="#p-2215c4fc-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-70"><a href="#p-2215c4fc-70" aria-hidden="true" tabindex="-1"></a><span class="fu">## 상태공간모형과 가정</span></span>
+<span id="p-2215c4fc-71"><a href="#p-2215c4fc-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-72"><a href="#p-2215c4fc-72" aria-hidden="true" tabindex="-1"></a>이 페이지에서는 공통 기준측도에 대한 다음 밀도가 존재한다고 가정한다.</span>
+<span id="p-2215c4fc-73"><a href="#p-2215c4fc-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-74"><a href="#p-2215c4fc-74" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-75"><a href="#p-2215c4fc-75" aria-hidden="true" tabindex="-1"></a>X_0\sim\mu_0(x_0),\qquad</span>
+<span id="p-2215c4fc-76"><a href="#p-2215c4fc-76" aria-hidden="true" tabindex="-1"></a>X_t\mid X_{t-1}=x_{t-1}\sim f_t(x_t\mid x_{t-1}),</span>
+<span id="p-2215c4fc-77"><a href="#p-2215c4fc-77" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-78"><a href="#p-2215c4fc-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-79"><a href="#p-2215c4fc-79" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-80"><a href="#p-2215c4fc-80" aria-hidden="true" tabindex="-1"></a>Y_t\mid X_t=x_t\sim g_t(y_t\mid x_t).</span>
+<span id="p-2215c4fc-81"><a href="#p-2215c4fc-81" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-82"><a href="#p-2215c4fc-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-83"><a href="#p-2215c4fc-83" aria-hidden="true" tabindex="-1"></a>그래프 구조가 의미하는 핵심 조건부독립은 다음 두 가지다.</span>
+<span id="p-2215c4fc-84"><a href="#p-2215c4fc-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-85"><a href="#p-2215c4fc-85" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Markov 상태:** $X_t\perp X_{0:t-2},Y_{1:t-1}\mid X_{t-1}$</span>
+<span id="p-2215c4fc-86"><a href="#p-2215c4fc-86" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**현재상태 측정:** $Y_t\perp X_{0:t-1},Y_{1:t-1}\mid X_t$</span>
+<span id="p-2215c4fc-87"><a href="#p-2215c4fc-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-88"><a href="#p-2215c4fc-88" aria-hidden="true" tabindex="-1"></a>따라서 joint density는</span>
+<span id="p-2215c4fc-89"><a href="#p-2215c4fc-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-90"><a href="#p-2215c4fc-90" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-91"><a href="#p-2215c4fc-91" aria-hidden="true" tabindex="-1"></a>p(x_{0:t},y_{1:t})</span>
+<span id="p-2215c4fc-92"><a href="#p-2215c4fc-92" aria-hidden="true" tabindex="-1"></a>=\mu_0(x_0)\prod_{s=1}^t</span>
+<span id="p-2215c4fc-93"><a href="#p-2215c4fc-93" aria-hidden="true" tabindex="-1"></a>f_s(x_s\mid x_{s-1})g_s(y_s\mid x_s)</span>
+<span id="p-2215c4fc-94"><a href="#p-2215c4fc-94" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-95"><a href="#p-2215c4fc-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-96"><a href="#p-2215c4fc-96" aria-hidden="true" tabindex="-1"></a>로 factorization된다.</span>
+<span id="p-2215c4fc-97"><a href="#p-2215c4fc-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-98"><a href="#p-2215c4fc-98" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning title="가정이 깨지면"}</span>
+<span id="p-2215c4fc-99"><a href="#p-2215c4fc-99" aria-hidden="true" tabindex="-1"></a>센서 bias를 상태에 넣지 않았는데 시간상관이 강하게 남는다면, $Y_t$가 현재 $X_t$만으로 과거와 조건부독립이라는 모델이 틀릴 수 있다. 식을 버리는 대신 bias나 colored-noise state를 추가해 Markov 상태를 확장한다.</span>
+<span id="p-2215c4fc-100"><a href="#p-2215c4fc-100" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-2215c4fc-101"><a href="#p-2215c4fc-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-102"><a href="#p-2215c4fc-102" aria-hidden="true" tabindex="-1"></a><span class="fu">## 재귀 유도</span></span>
+<span id="p-2215c4fc-103"><a href="#p-2215c4fc-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-104"><a href="#p-2215c4fc-104" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. Prediction</span></span>
+<span id="p-2215c4fc-105"><a href="#p-2215c4fc-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-106"><a href="#p-2215c4fc-106" aria-hidden="true" tabindex="-1"></a>전확률법칙과 Markov 조건을 적용한다.</span>
+<span id="p-2215c4fc-107"><a href="#p-2215c4fc-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-108"><a href="#p-2215c4fc-108" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-109"><a href="#p-2215c4fc-109" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="p-2215c4fc-110"><a href="#p-2215c4fc-110" aria-hidden="true" tabindex="-1"></a>p(x_t\mid y_{1:t-1})</span>
+<span id="p-2215c4fc-111"><a href="#p-2215c4fc-111" aria-hidden="true" tabindex="-1"></a>&amp;=\int p(x_t,x_{t-1}\mid y_{1:t-1})dx_{t-1}<span class="sc">\\</span></span>
+<span id="p-2215c4fc-112"><a href="#p-2215c4fc-112" aria-hidden="true" tabindex="-1"></a>&amp;=\int p(x_t\mid x_{t-1},y_{1:t-1})</span>
+<span id="p-2215c4fc-113"><a href="#p-2215c4fc-113" aria-hidden="true" tabindex="-1"></a> p(x_{t-1}\mid y_{1:t-1})dx_{t-1}<span class="sc">\\</span></span>
+<span id="p-2215c4fc-114"><a href="#p-2215c4fc-114" aria-hidden="true" tabindex="-1"></a>&amp;=\int f_t(x_t\mid x_{t-1})</span>
+<span id="p-2215c4fc-115"><a href="#p-2215c4fc-115" aria-hidden="true" tabindex="-1"></a> p(x_{t-1}\mid y_{1:t-1})dx_{t-1}.</span>
+<span id="p-2215c4fc-116"><a href="#p-2215c4fc-116" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="p-2215c4fc-117"><a href="#p-2215c4fc-117" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-118"><a href="#p-2215c4fc-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-119"><a href="#p-2215c4fc-119" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. Update</span></span>
+<span id="p-2215c4fc-120"><a href="#p-2215c4fc-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-121"><a href="#p-2215c4fc-121" aria-hidden="true" tabindex="-1"></a>Bayes 정리와 측정 조건부독립을 적용한다.</span>
+<span id="p-2215c4fc-122"><a href="#p-2215c4fc-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-123"><a href="#p-2215c4fc-123" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-124"><a href="#p-2215c4fc-124" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="p-2215c4fc-125"><a href="#p-2215c4fc-125" aria-hidden="true" tabindex="-1"></a>p(x_t\mid y_{1:t})</span>
+<span id="p-2215c4fc-126"><a href="#p-2215c4fc-126" aria-hidden="true" tabindex="-1"></a>&amp;=\frac{p(y_t\mid x_t,y_{1:t-1})p(x_t\mid y_{1:t-1})}</span>
+<span id="p-2215c4fc-127"><a href="#p-2215c4fc-127" aria-hidden="true" tabindex="-1"></a>{p(y_t\mid y_{1:t-1})}<span class="sc">\\</span></span>
+<span id="p-2215c4fc-128"><a href="#p-2215c4fc-128" aria-hidden="true" tabindex="-1"></a>&amp;=\frac{g_t(y_t\mid x_t)p(x_t\mid y_{1:t-1})}</span>
+<span id="p-2215c4fc-129"><a href="#p-2215c4fc-129" aria-hidden="true" tabindex="-1"></a>{\int g_t(y_t\mid u)p(u\mid y_{1:t-1})du}.</span>
+<span id="p-2215c4fc-130"><a href="#p-2215c4fc-130" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="p-2215c4fc-131"><a href="#p-2215c4fc-131" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-132"><a href="#p-2215c4fc-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-133"><a href="#p-2215c4fc-133" aria-hidden="true" tabindex="-1"></a>분모는 predictive likelihood이며 update 후 적분이 1이 되게 한다. 관측된 $y_t$에서 이 값이 0이면 조건부분포가 이 식으로 정의되지 않는다.</span>
+<span id="p-2215c4fc-134"><a href="#p-2215c4fc-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-135"><a href="#p-2215c4fc-135" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-2215c4fc-136"><a href="#p-2215c4fc-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-137"><a href="#p-2215c4fc-137" aria-hidden="true" tabindex="-1"></a>::: {.depth-application}</span>
+<span id="p-2215c4fc-138"><a href="#p-2215c4fc-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-139"><a href="#p-2215c4fc-139" aria-hidden="true" tabindex="-1"></a><span class="fu">## 가장 작은 유한상태 예</span></span>
+<span id="p-2215c4fc-140"><a href="#p-2215c4fc-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-141"><a href="#p-2215c4fc-141" aria-hidden="true" tabindex="-1"></a>문이 열림(1) 또는 닫힘(0) 상태라고 하자. 예측분포가</span>
+<span id="p-2215c4fc-142"><a href="#p-2215c4fc-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-143"><a href="#p-2215c4fc-143" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-144"><a href="#p-2215c4fc-144" aria-hidden="true" tabindex="-1"></a>P(X_t=1\mid y_{1:t-1})=0.6</span>
+<span id="p-2215c4fc-145"><a href="#p-2215c4fc-145" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-146"><a href="#p-2215c4fc-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-147"><a href="#p-2215c4fc-147" aria-hidden="true" tabindex="-1"></a>이고, 센서가 <span class="in">`열림`</span>을 보고할 확률이 실제 열림일 때 0.9, 닫힘일 때 0.2라면</span>
+<span id="p-2215c4fc-148"><a href="#p-2215c4fc-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-149"><a href="#p-2215c4fc-149" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-150"><a href="#p-2215c4fc-150" aria-hidden="true" tabindex="-1"></a>P(X_t=1\mid y_{1:t})</span>
+<span id="p-2215c4fc-151"><a href="#p-2215c4fc-151" aria-hidden="true" tabindex="-1"></a>=\frac{0.9\cdot0.6}{0.9\cdot0.6+0.2\cdot0.4}</span>
+<span id="p-2215c4fc-152"><a href="#p-2215c4fc-152" aria-hidden="true" tabindex="-1"></a>=\frac{0.54}{0.62}\approx0.871.</span>
+<span id="p-2215c4fc-153"><a href="#p-2215c4fc-153" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="p-2215c4fc-154"><a href="#p-2215c4fc-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-155"><a href="#p-2215c4fc-155" aria-hidden="true" tabindex="-1"></a>측정은 상태를 확정하지 않고 likelihood만큼 상대적 믿음을 바꾼다.</span>
+<span id="p-2215c4fc-156"><a href="#p-2215c4fc-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-157"><a href="#p-2215c4fc-157" aria-hidden="true" tabindex="-1"></a><span class="fu">## 언제 닫힌형으로 계산되는가</span></span>
+<span id="p-2215c4fc-158"><a href="#p-2215c4fc-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-159"><a href="#p-2215c4fc-159" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>선형 전이·선형 측정·Gaussian 잡음: Kalman filter</span>
+<span id="p-2215c4fc-160"><a href="#p-2215c4fc-160" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>유한상태: 행렬 곱과 원소별 곱</span>
+<span id="p-2215c4fc-161"><a href="#p-2215c4fc-161" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>일반 비선형·비Gaussian: 적분이 닫히지 않아 EKF, UKF, quadrature, Particle Filter 등으로 근사</span>
+<span id="p-2215c4fc-162"><a href="#p-2215c4fc-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-163"><a href="#p-2215c4fc-163" aria-hidden="true" tabindex="-1"></a><span class="fu">## 실패와 반례</span></span>
+<span id="p-2215c4fc-164"><a href="#p-2215c4fc-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-165"><a href="#p-2215c4fc-165" aria-hidden="true" tabindex="-1"></a><span class="fu">### likelihood와 posterior를 혼동</span></span>
+<span id="p-2215c4fc-166"><a href="#p-2215c4fc-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-167"><a href="#p-2215c4fc-167" aria-hidden="true" tabindex="-1"></a>$g_t(y_t\mid x_t)$는 $x_t$에 대한 확률밀도일 필요가 없으며, 그 자체로 적분 1이 되지 않는다. prior/predictive distribution과 곱하고 정규화해야 posterior가 된다.</span>
+<span id="p-2215c4fc-168"><a href="#p-2215c4fc-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-169"><a href="#p-2215c4fc-169" aria-hidden="true" tabindex="-1"></a><span class="fu">### 측정을 두 번 사용</span></span>
+<span id="p-2215c4fc-170"><a href="#p-2215c4fc-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-171"><a href="#p-2215c4fc-171" aria-hidden="true" tabindex="-1"></a>같은 $y_t$를 두 번 update하면 독립적인 새 정보처럼 세어 uncertainty를 과도하게 줄인다.</span>
+<span id="p-2215c4fc-172"><a href="#p-2215c4fc-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-173"><a href="#p-2215c4fc-173" aria-hidden="true" tabindex="-1"></a><span class="fu">### 틀린 noise independence</span></span>
+<span id="p-2215c4fc-174"><a href="#p-2215c4fc-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-175"><a href="#p-2215c4fc-175" aria-hidden="true" tabindex="-1"></a>서로 상관된 센서를 독립 likelihood의 곱으로 처리하면 같은 오차 원인을 중복 계산할 수 있다.</span>
+<span id="p-2215c4fc-176"><a href="#p-2215c4fc-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-177"><a href="#p-2215c4fc-177" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="p-2215c4fc-178"><a href="#p-2215c4fc-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-179"><a href="#p-2215c4fc-179" aria-hidden="true" tabindex="-1"></a><span class="fu">## 엄밀성 범위</span></span>
+<span id="p-2215c4fc-180"><a href="#p-2215c4fc-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-181"><a href="#p-2215c4fc-181" aria-hidden="true" tabindex="-1"></a>유한상태에서는 모든 적분을 합으로 바꾸면 위 유도가 완전하다. 연속상태에서는 명시한 공통 기준측도에 대한 밀도가 존재한다고 가정했다. 일반 kernel과 정규 조건부분포를 사용하는 버전은 <span class="co">[</span><span class="ot">확률·측도 기반</span><span class="co">](measure-probability-foundations.qmd)</span>의 심화 범위다.</span>
+<span id="p-2215c4fc-182"><a href="#p-2215c4fc-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-183"><a href="#p-2215c4fc-183" aria-hidden="true" tabindex="-1"></a><span class="fu">## 다음 연결</span></span>
+<span id="p-2215c4fc-184"><a href="#p-2215c4fc-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-185"><a href="#p-2215c4fc-185" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>path 전체를 proposal에서 표본화: <span class="co">[</span><span class="ot">Sequential Importance Sampling</span><span class="co">](sequential-importance-sampling.qmd)</span></span>
+<span id="p-2215c4fc-186"><a href="#p-2215c4fc-186" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>상태전이를 proposal로 선택하고 매번 resampling: <span class="co">[</span><span class="ot">Bootstrap Particle Filter</span><span class="co">](bootstrap-particle-filter.qmd)</span></span>
+<span id="p-2215c4fc-187"><a href="#p-2215c4fc-187" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>목표별 체크리스트: <span class="co">[</span><span class="ot">Particle Filter 학습 경로</span><span class="co">](../../paths/particle-filter.qmd)</span></span>
+<span id="p-2215c4fc-188"><a href="#p-2215c4fc-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-189"><a href="#p-2215c4fc-189" aria-hidden="true" tabindex="-1"></a><span class="fu">## 회상 점검</span></span>
+<span id="p-2215c4fc-190"><a href="#p-2215c4fc-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-191"><a href="#p-2215c4fc-191" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>prediction과 update 식을 각각 말로 설명하라.</span>
+<span id="p-2215c4fc-192"><a href="#p-2215c4fc-192" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>두 조건부독립 가정이 joint factorization의 어느 항을 만든다고 볼 수 있는가?</span>
+<span id="p-2215c4fc-193"><a href="#p-2215c4fc-193" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>filtering과 smoothing은 어떤 관측정보 집합이 다른가?</span>
+<span id="p-2215c4fc-194"><a href="#p-2215c4fc-194" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>predictive likelihood가 0인 관측에서는 왜 단순 Bayes 밀도식이 정의되지 않는가?</span>
+<span id="p-2215c4fc-195"><a href="#p-2215c4fc-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-196"><a href="#p-2215c4fc-196" aria-hidden="true" tabindex="-1"></a><span class="fu">## 참고문헌</span></span>
+<span id="p-2215c4fc-197"><a href="#p-2215c4fc-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="p-2215c4fc-198"><a href="#p-2215c4fc-198" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Simo Särkkä and Lennart Svensson, *Bayesian Filtering and Smoothing*.</span>
+<span id="p-2215c4fc-199"><a href="#p-2215c4fc-199" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Arnaud Doucet, Nando de Freitas, and Neil Gordon (eds.), *Sequential Monte Carlo Methods in Practice*.</span></code></pre></div><button title="클립보드 복사" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
