@@ -200,6 +200,11 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
     assert "pip install" not in text
     assert "/actions/variables/EDITORIAL_FREEZE" not in text
 
+    slot_guard = steps["Validate editorial batch key slot"]
+    assert slot_guard["env"] == {"KEY_SLOT": "${{ vars.EDITORIAL_BATCH_KEY_SLOT }}"}
+    assert '""|primary|next' in slot_guard["run"]
+    assert "지원하지 않는 EDITORIAL_BATCH_KEY_SLOT" in slot_guard["run"]
+
     trusted = steps["Checkout trusted controller from main"]
     assert trusted["with"] == {
         "ref": "${{ github.sha }}",
@@ -213,11 +218,24 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
         "path": "batch",
         "persist-credentials": "false",
     }
-    push_auth = steps["Checkout isolated batch push credential"]
+    push_auth = steps["Checkout isolated batch push credential (primary)"]
+    assert push_auth["if"] == (
+        "steps.precheck.outputs.pending != '0' && vars.EDITORIAL_BATCH_KEY_SLOT != 'next'"
+    )
     assert push_auth["with"] == {
         "ref": "${{ github.sha }}",
         "path": "push-auth",
         "ssh-key": "${{ secrets.EDITORIAL_BATCH_SSH_KEY }}",
+        "persist-credentials": "true",
+    }
+    push_auth_next = steps["Checkout isolated batch push credential (next)"]
+    assert push_auth_next["if"] == (
+        "steps.precheck.outputs.pending != '0' && vars.EDITORIAL_BATCH_KEY_SLOT == 'next'"
+    )
+    assert push_auth_next["with"] == {
+        "ref": "${{ github.sha }}",
+        "path": "push-auth",
+        "ssh-key": "${{ secrets.EDITORIAL_BATCH_SSH_KEY_NEXT }}",
         "persist-credentials": "true",
     }
     assert steps["Install pinned uv"]["with"] == {
@@ -263,16 +281,22 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
     assert 'fetch "$GITHUB_WORKSPACE/batch" HEAD' in push["run"]
     assert 'test "$fetched" = "$expected"' in push["run"]
     assert 'origin "$expected:refs/heads/editorial/batch"' in push["run"]
+    assert 'echo "before_sha=$base" >> "$GITHUB_OUTPUT"' in push["run"]
+    assert 'echo "pushed=false" >> "$GITHUB_OUTPUT"' in push["run"]
+    assert 'echo "pushed=true" >> "$GITHUB_OUTPUT"' in push["run"]
     assert "--force" not in push["run"]
     ensure = steps["Ensure batch PR exists"]
     assert ensure["run"].count("--base main") == 3
 
     assert ordered_names.index("Fetch and apply proposals") < ordered_names.index(
-        "Checkout isolated batch push credential"
+        "Checkout isolated batch push credential (primary)"
     )
-    assert ordered_names.index("Checkout isolated batch push credential") < ordered_names.index(
-        "Push batch branch"
+    primary_auth_index = ordered_names.index(
+        "Checkout isolated batch push credential (primary)"
     )
+    next_auth_index = ordered_names.index("Checkout isolated batch push credential (next)")
+    assert primary_auth_index < next_auth_index
+    assert next_auth_index < ordered_names.index("Push batch branch")
     assert ordered_names.index("Push batch branch") < ordered_names.index("Ensure batch PR exists")
     assert ordered_names.index("Ensure batch PR exists") < ordered_names.index(
         "Dispatch read-only batch quality"
@@ -295,17 +319,22 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
     runbook = (ROOT / "platform/editorial/README.md").read_text(encoding="utf-8")
     assert "queued" in runbook and "in_progress" in runbook and "terminal" in runbook
     for rotation_contract in (
-        "pending 이슈가 0건",
-        "Checkout isolated batch push credential",
-        "Push batch branch",
+        "blue/green",
+        "EDITORIAL_BATCH_SSH_KEY_NEXT",
+        "Issue: #<번호>",
+        "pushed=true",
+        "before_sha != head_sha",
+        "read_only=false",
         "last_used",
-        "이전 key를 제거하지 말고",
+        "즉시 `true`로 재동결·drain",
+        "활성 secret을 직접",
     ):
         assert rotation_contract in runbook
     for rollback_contract in (
         "deploy-key-only ruleset을 비활성화",
         "rollback PR",
-        "deploy key·secret과 비활성 ruleset을 철회",
+        "freeze를 일시",
+        "다시 동결·drain",
         "ruleset을 둔 채 workflow만 revert",
     ):
         assert rollback_contract in runbook

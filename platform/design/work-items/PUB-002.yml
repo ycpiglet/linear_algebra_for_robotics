@@ -67,6 +67,7 @@ verification:
     - required check 설정 증거 기록
     - freeze switch가 새 editorial batch 생성을 막고 해제 후 정상 복귀함
     - editorial/batch는 전용 deploy key를 사용하는 GitHub Actions 외 직접 push가 ruleset으로 제한됨
+    - 통제된 적용 가능 proposal이 새 Issue 트레일러 커밋과 실제 batch ref 변경을 만들고 write deploy key의 사용 시각을 갱신함
 rollback:
   triggers:
     - 정상 PR이 quality job 자체 오류로 실행되지 않음
@@ -76,8 +77,9 @@ rollback:
     - EDITORIAL_FREEZE를 true로 두고 queued·in_progress digest를 terminal 상태까지 drain한 뒤 main·editorial/batch ref와 ruleset·deploy key 상태를 기록한다
     - 구 GITHUB_TOKEN push workflow로 되돌리기 전에 editorial/batch의 deploy-key-only ruleset을 비활성화해 인증 경계 불일치를 막는다
     - 보호된 main에 rollback PR을 만들고 PUB-002 workflow merge commit을 revert한다
-    - 이전 push 경로의 source push·batch PR·read-only quality dispatch 복귀를 검증한 뒤 전용 deploy key·secret과 비활성 ruleset을 철회한다
-    - EDITORIAL_FREEZE를 false로 바꾸고 default-branch repository_dispatch 결과와 batch ref를 다시 확인한다
+    - 적용 가능한 통제 proposal을 준비하고 freeze를 일시 해제해 이전 source push·batch PR·read-only quality dispatch를 검증하며 실패하면 즉시 재동결·drain한다
+    - 검증 성공 뒤 다시 동결·drain하고 전용 deploy key·secret과 비활성 ruleset을 철회한다
+    - EDITORIAL_FREEZE를 false로 바꾸고 zero-pending default-branch repository_dispatch 결과와 batch ref를 다시 확인한다
     - 기존 metadata·link·output 검사는 끄지 않는다
   compatibility_preserved:
     - 기존 make target 이름과 로컬 동작 유지
@@ -92,7 +94,8 @@ definition_of_done:
   - branch ruleset에 required check를 지정할 수 있다
   - dispatch 직전 verified local SHA와 live editorial/batch ref가 일치한다
   - batch push 자격은 개인 PAT가 아닌 저장소 전용 write deploy key로 격리된다
-  - key 회전은 pending 0건 dispatch 성공만으로 판정하지 않고 실제 credential checkout·push와 새 key 사용 시각을 검증한다
+  - key 회전은 활성 secret을 덮어쓰지 않는 primary·next 슬롯으로 수행하고 실패 시 기존 슬롯으로 복귀한다
+  - key 회전은 Issue 트레일러가 있는 새 커밋, before_sha와 다른 head_sha, pushed=true, 원격 ref 일치, 새 key의 read_only=false·사용 시각을 검증한다
   - rollback은 workflow와 ruleset·deploy key·secret을 하나의 동결된 control-plane cutover로 되돌린다
   - front matter·코드·수식·HTML·shortcode·저장소 밖 경로 제안은 자동 반영되지 않는다
 evidence:

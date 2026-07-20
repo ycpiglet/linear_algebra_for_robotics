@@ -42,6 +42,16 @@ jobs:
           echo "pending=$count" >> "$GITHUB_OUTPUT"
           echo "대기 중 제안: ${count}건"
 
+      - name: Validate editorial batch key slot
+        if: steps.precheck.outputs.pending != '0'
+        env:
+          KEY_SLOT: ${{ vars.EDITORIAL_BATCH_KEY_SLOT }}
+        run: |
+          case "$KEY_SLOT" in
+            ""|primary|next) ;;
+            *) echo "지원하지 않는 EDITORIAL_BATCH_KEY_SLOT: $KEY_SLOT" >&2; exit 1 ;;
+          esac
+
       - name: Checkout trusted controller from main
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         if: steps.precheck.outputs.pending != '0'
@@ -146,13 +156,22 @@ jobs:
             --root "$GITHUB_WORKSPACE/batch" \
             --issues /tmp/editorial-issues.json > /tmp/editorial-outcomes.json
 
-      - name: Checkout isolated batch push credential
+      - name: Checkout isolated batch push credential (primary)
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        if: steps.precheck.outputs.pending != '0'
+        if: steps.precheck.outputs.pending != '0' && vars.EDITORIAL_BATCH_KEY_SLOT != 'next'
         with:
           ref: ${{ github.sha }}
           path: push-auth
           ssh-key: ${{ secrets.EDITORIAL_BATCH_SSH_KEY }}
+          persist-credentials: true
+
+      - name: Checkout isolated batch push credential (next)
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        if: steps.precheck.outputs.pending != '0' && vars.EDITORIAL_BATCH_KEY_SLOT == 'next'
+        with:
+          ref: ${{ github.sha }}
+          path: push-auth
+          ssh-key: ${{ secrets.EDITORIAL_BATCH_SSH_KEY_NEXT }}
           persist-credentials: true
 
       - name: Push batch branch
@@ -160,8 +179,10 @@ jobs:
         if: steps.precheck.outputs.pending != '0'
         working-directory: batch
         run: |
+          echo "before_sha=$base" >> "$GITHUB_OUTPUT"
           if [ "$(git rev-parse HEAD)" = "$base" ]; then
             echo "새 커밋 없음 — 푸시 생략"
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
           else
             expected=$(git rev-parse HEAD)
             git -C "$GITHUB_WORKSPACE/push-auth" fetch "$GITHUB_WORKSPACE/batch" HEAD
@@ -169,6 +190,7 @@ jobs:
             test "$fetched" = "$expected"
             git -C "$GITHUB_WORKSPACE/push-auth" push \
               origin "$expected:refs/heads/editorial/batch"
+            echo "pushed=true" >> "$GITHUB_OUTPUT"
           fi
 
           ahead=$(git rev-list --count "$trusted_main"..HEAD)
