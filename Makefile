@@ -18,6 +18,7 @@ validate: sync
 	$(UV) run python platform/scripts/glossary.py build
 	$(UV) run python platform/scripts/glossary.py build --check
 	$(UV) run python platform/scripts/editorial.py lint
+	$(UV) run python platform/scripts/design_backlog.py check
 
 test: validate
 	$(UV) run pytest

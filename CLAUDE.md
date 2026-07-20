@@ -5,6 +5,8 @@
 
 ## 핵심 문서
 
+- `platform/design/README.md`, `platform/design/work-items/` — 디자인 시스템·설명 아티팩트·
+  저장소 개명·품질 CI의 의존성, path lock, worktree, acceptance gate, rollback을 관리하는 실행 백로그
 - `EDITING_SYSTEM_PLAN.md` — 교정 시스템 기획서 + 각 Phase 구현 노트(수동 설정 절차 포함)
 - `EDITING_UX_RESEARCH.md`, `EDITING_UX_RESEARCH_2.md` — 근거 조사(검증 표기 규약 있음)
 - `AUTHORING_MANUAL.md` — 집필 규범(원고 작업 전 필독), `future-scope.qmd` — 예정 노드 54개 계약

@@ -1,0 +1,52 @@
+schema_version: 1
+id: PUB-014
+title: 첫 migration batches 통합 검증
+area: migration
+status: planned
+priority: P2
+change_class: migration
+version_impact: compatible
+owner_role: publishing-ops-steward
+review_roles: [design-system-steward, math-domain-reviewer, render-qa]
+branch: null
+dependencies: [PUB-010, PUB-011, PUB-012, PUB-013]
+decision_refs:
+  - platform/design/README.md#검증-계층
+decision_needed: []
+blocker: null
+scope:
+  in:
+    - 첫 네 batch의 cross-format integration과 baseline ratchet
+    - deprecated use·exception·follow-up 정리
+  out:
+    - 새 디자인 foundation·artifact component 추가
+change_paths:
+  read:
+    - platform/design/work-items/PUB-010.yml
+    - platform/design/work-items/PUB-011.yml
+    - platform/design/work-items/PUB-012.yml
+    - platform/design/work-items/PUB-013.yml
+  write:
+    - artifact baseline·exception·evidence 기록
+  exclusive_locks: [artifact-contract]
+  generated: [_site/**, _book/**, _proof/**]
+verification:
+  source_contract: [make test, make lint, no-new-debt와 deprecated-use check]
+  rendered_contract: [make all, 대표 Web/PDF/EPUB 수동 검수]
+  post_merge: [main 배포와 last-known-good evidence 갱신]
+rollback:
+  triggers: [batch 간 ID·selector·token 충돌 또는 cross-format 회귀]
+  unit: merge_commit
+  steps: [통합 변경만 revert하고 원인 batch는 별도 follow-up으로 처리]
+  compatibility_preserved: [사용처 0 전에는 deprecated alias를 제거하지 않음]
+definition_of_done:
+  - 네 batch가 같은 artifact·design contract 아래 동작한다
+  - 임시 baseline을 검증된 새 수치로 낮췄다
+  - 남은 예외마다 owner·이유·제거 조건·검토일이 있다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  last_known_good: null
+last_reviewed: "2026-07-20"

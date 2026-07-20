@@ -1,0 +1,66 @@
+schema_version: 1
+id: PUB-009
+title: 대표 설명 아티팩트 추적성 수직 조각
+area: artifact
+status: planned
+priority: P1
+change_class: component
+version_impact: additive
+owner_role: artifact-editor
+review_roles: [design-system-steward, math-domain-reviewer, render-qa]
+branch: null
+dependencies: [PUB-006, PUB-007, PUB-008]
+decision_refs:
+  - AUTHORING_MANUAL.md#9-알고리즘과-코드
+  - AUTHORING_MANUAL.md#10-시각화-설계
+decision_needed: []
+blocker: null
+scope:
+  in:
+    - 넓은 표·알고리즘·정적 SVG·lab plot 각 1개
+    - stable ID·caption/alt·단위·축·범례·provenance
+    - output fallback과 reusable authoring recipe
+  out:
+    - 같은 유형의 전체 repository migration
+    - artifact 고유 데이터·축·알고리즘의 전역 token화
+change_paths:
+  read:
+    - platform/design/work-items/PUB-006.yml
+    - platform/design/work-items/PUB-007.yml
+  write:
+    - 대표 QMD·figure·generator·lab
+    - artifact manifest·specimen·contract tests
+  exclusive_locks: [artifact-contract]
+  generated: [_site/**, _book/**]
+verification:
+  source_contract:
+    - make test
+    - make lint
+    - artifact no-new-debt check
+    - deterministic asset check
+  rendered_contract:
+    - make web
+    - book 수록 표본은 make book
+    - dark·static·narrow·wide artifact inspection
+  post_merge:
+    - domain reviewer가 수식·데이터·단위·비교 의미 재확인
+rollback:
+  triggers:
+    - source와 output 불일치
+    - 수학·공학 의미·reading order·접근성 회귀
+  unit: merge_commit
+  steps:
+    - source·generator·output·reference를 같은 merge commit으로 revert한다
+  compatibility_preserved:
+    - 기존 공개 ID와 link target 보존
+definition_of_done:
+  - 네 표현 유형에 재사용 가능한 authoring·verification recipe가 있다
+  - source→generator/output→consumer→license 추적이 가능하다
+  - 구현자와 다른 domain reviewer·render QA가 승인했다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  last_known_good: null
+last_reviewed: "2026-07-20"

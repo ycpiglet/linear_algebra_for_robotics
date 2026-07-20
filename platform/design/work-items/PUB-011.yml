@@ -1,0 +1,47 @@
+schema_version: 1
+id: PUB-011
+title: 알고리즘·의사코드 migration batch 01
+area: migration
+status: planned
+priority: P2
+change_class: migration
+version_impact: compatible
+owner_role: artifact-editor
+review_roles: [math-domain-reviewer, render-qa]
+branch: null
+dependencies: [PUB-009]
+decision_refs:
+  - platform/design/work-items/PUB-009.yml
+decision_needed: []
+blocker: null
+scope:
+  in:
+    - 한 학습 경로 또는 3~5개 원고의 algorithm-card
+    - input·output·assumption·branch·termination·failure contract
+  out:
+    - 알고리즘 동작이나 수학식 변경
+    - algorithm component foundation 변경
+change_paths:
+  read: [대상 알고리즘 설명·구현·test]
+  write: [PR에서 선언한 비중첩 QMD 파일]
+  exclusive_locks: []
+  generated: [_site/**, _book/**, _proof/**]
+verification:
+  source_contract: [make test, make lint, artifact no-new-debt check]
+  rendered_contract: [make web, 수록 profile의 book 또는 proof, code·math wrap 검수]
+  post_merge: [domain reviewer가 branch·termination·실패 조건 확인]
+rollback:
+  triggers: [알고리즘 의미·순서·조건 변경 또는 출력 누락]
+  unit: batch
+  steps: [batch merge commit 전체 revert]
+  compatibility_preserved: [공개 ID와 구현 함수 계약 유지]
+definition_of_done:
+  - 대상 알고리즘의 ID·입출력·가정·종료·실패 조건이 완전하다
+  - 언어 중립 절차와 실제 코드의 경계가 명확하다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  last_known_good: null
+last_reviewed: "2026-07-20"
