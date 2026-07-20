@@ -2,7 +2,7 @@ schema_version: 1
 id: PUB-002
 title: 모든 PR의 read-only 품질 lane과 배포 분리
 area: ci
-status: in_progress
+status: in_review
 priority: P0
 change_class: toolchain
 version_impact: breaking
@@ -90,9 +90,11 @@ definition_of_done:
   - front matter·코드·수식·HTML·shortcode·저장소 밖 경로 제안은 자동 반영되지 않는다
 evidence:
   issue: null
-  pr: null
-  ci_runs: []
-  rendered_artifacts: []
+  pr: 16
+  ci_runs:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29749197342
+  rendered_artifacts:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29749197342/artifacts/8463814311
   post_merge: []
   last_known_good: 225573073f4432ba62e67e9e8def1bbacbae7721
   revert_ref: null
