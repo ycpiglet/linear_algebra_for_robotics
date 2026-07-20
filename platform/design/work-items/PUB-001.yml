@@ -2,7 +2,7 @@ schema_version: 1
 id: PUB-001
 title: 디자인·출판 백로그 레지스트리와 충돌 검사
 area: governance
-status: in_progress
+status: in_review
 priority: P0
 change_class: governance
 version_impact: additive
@@ -64,8 +64,9 @@ definition_of_done:
   - CLAUDE.md가 canonical backlog 위치를 안내한다
 evidence:
   issue: null
-  pr: null
-  ci_runs: []
+  pr: 15
+  ci_runs:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29741637916
   rendered_artifacts: []
   last_known_good: 5a79cae
 last_reviewed: "2026-07-20"
