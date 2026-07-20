@@ -211,6 +211,12 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
         "fetch-depth": "0",
         "ref": "${{ github.sha }}",
         "path": "batch",
+        "persist-credentials": "false",
+    }
+    push_auth = steps["Checkout isolated batch push credential"]
+    assert push_auth["with"] == {
+        "ref": "${{ github.sha }}",
+        "path": "push-auth",
         "ssh-key": "${{ secrets.EDITORIAL_BATCH_SSH_KEY }}",
         "persist-credentials": "true",
     }
@@ -253,10 +259,20 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
     push = steps["Push batch branch"]
     assert push["working-directory"] == "batch"
     assert "env" not in push
-    assert "git push -u origin editorial/batch" in push["run"]
+    assert "expected=$(git rev-parse HEAD)" in push["run"]
+    assert 'fetch "$GITHUB_WORKSPACE/batch" HEAD' in push["run"]
+    assert 'test "$fetched" = "$expected"' in push["run"]
+    assert 'origin "$expected:refs/heads/editorial/batch"' in push["run"]
+    assert "--force" not in push["run"]
     ensure = steps["Ensure batch PR exists"]
     assert ensure["run"].count("--base main") == 3
 
+    assert ordered_names.index("Fetch and apply proposals") < ordered_names.index(
+        "Checkout isolated batch push credential"
+    )
+    assert ordered_names.index("Checkout isolated batch push credential") < ordered_names.index(
+        "Push batch branch"
+    )
     assert ordered_names.index("Push batch branch") < ordered_names.index("Ensure batch PR exists")
     assert ordered_names.index("Ensure batch PR exists") < ordered_names.index(
         "Dispatch read-only batch quality"
