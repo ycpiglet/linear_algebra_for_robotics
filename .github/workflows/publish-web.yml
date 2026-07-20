@@ -2,9 +2,8 @@
 #
 # - main 푸시: 독자용 웹(_site)을 gh-pages 루트에, 교정용 리뷰 빌드(_review,
 #   Hypothesis 주석 활성)를 /review/ 경로에 배포한다.
-# - PR: 리뷰 빌드를 /preview/pr-<번호>/ 에 배포해 병합 전 미리보기를 제공한다.
-#   PR 미리보기는 일회성이다 — 다음 main 배포가 루트를 정리하면서 지워질 수 있다.
-#   지속적인 교정(주석)은 main의 /review/ 에서 한다.
+# - PR: 읽기 전용 검증과 리뷰 빌드 artifact만 만든다. PR workflow에는 배포 토큰이 없다.
+# - main: 같은 읽기 전용 build artifact를 만든 뒤 trusted deploy-pages workflow가 배포한다.
 #
 # 최초 1회 수동 설정: 저장소 Settings → Pages → Source: "Deploy from a branch"
 # → Branch: gh-pages / (root). 이 워크플로우가 첫 실행에서 gh-pages 브랜치를 만든다.
@@ -15,34 +14,81 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: publish-web-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || 'main' }}
+  group: publish-web-${{ github.event_name }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  build-deploy:
+  quality:
+    name: source-contract
     runs-on: ubuntu-latest
-    # 포크에서 온 PR은 배포 토큰이 없으므로 건너뛴다(팀 브랜치 PR만 미리보기).
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-    timeout-minutes: 90
+    permissions:
+      contents: read
+    timeout-minutes: 30
     steps:
-      # 전체 이력 필요: pre-render의 pagehistory.py가 페이지별 git log를 굽는다.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Cache pinned toolchain (quarto/typst/uv)
-        uses: actions/cache@v4
+      - name: Cache pinned toolchain
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .tools
           key: tools-${{ runner.os }}-${{ hashFiles('scripts/bootstrap-tools.sh') }}
 
       - name: Cache Python environment
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .venv
+            ~/.local/share/uv
+          key: venv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+
+      - name: Test source contracts
+        run: make test
+
+      - name: Lint Python and Actions workflows
+        run: make lint
+
+      - name: Check pull request whitespace
+        if: github.event_name == 'pull_request'
+        run: git diff --check "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}"
+
+      - name: Check push whitespace
+        if: github.event_name == 'push'
+        run: git diff --check "${{ github.event.before }}...${{ github.sha }}"
+
+      - name: Verify quality tools left a clean workspace
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  build:
+    name: publication-build
+    needs: quality
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 90
+    steps:
+      # 전체 이력 필요: pre-render의 pagehistory.py가 페이지별 git log를 굽는다.
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Cache pinned toolchain (quarto/typst/uv)
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .tools
+          key: tools-${{ runner.os }}-${{ hashFiles('scripts/bootstrap-tools.sh') }}
+
+      - name: Cache Python environment
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             .venv
@@ -50,7 +96,7 @@ jobs:
           key: venv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
 
       - name: Cache Quarto freeze and Jupyter cache
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             _freeze
@@ -73,18 +119,31 @@ jobs:
           mkdir -p public/review
           cp -a _site/. public/
           cp -a _review/. public/review/
+          printf '%s\n' "${{ github.sha }}" > public/source-commit.txt
 
-      - name: Deploy to gh-pages (main)
+      - name: Upload immutable main Pages artifact
         if: github.event_name == 'push'
-        uses: peaceiris/actions-gh-pages@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          name: pages-main-${{ github.run_id }}
+          path: public
+          if-no-files-found: error
+          retention-days: 3
 
-      - name: Deploy PR preview to gh-pages/preview
+      - name: Upload immutable PR preview artifact
         if: github.event_name == 'pull_request'
-        uses: peaceiris/actions-gh-pages@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_review
-          destination_dir: preview/pr-${{ github.event.number }}
+          name: pages-pr-${{ github.event.number }}-${{ github.run_id }}
+          path: _review
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Upload immutable dispatched review artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pages-dispatch-${{ github.run_id }}
+          path: _review
+          if-no-files-found: error
+          retention-days: 3

@@ -50,7 +50,7 @@ verification:
     - make review
     - 단계 종료 시 make all
   rendered_contract:
-    - 새 Pages root·review·PR preview
+    - 새 Pages root·review·immutable PR review artifact
     - navbar·source·issue·GitHub.dev·editorial desk·history 링크
     - old repository·Pages URL·Hypothesis·saved path
   post_merge:

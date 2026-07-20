@@ -34,3 +34,26 @@
 
 **조회 예시:** 에이전트 개입만 보기 — `git log --grep="^Actor: agent"`,
 사람 커밋만 보기 — `git log --invert-grep --grep="^Actor: agent"`.
+
+## 구조 변경 전 동결·drain
+
+`EDITORIAL_FREEZE`는 새 job의 시작을 막는 repository variable이지 실행 중인 job과의
+트랜잭션 잠금이 아니다. 저장소 개명·대량 이동 전에는 다음 순서를 지킨다.
+
+1. `gh variable set EDITORIAL_FREEZE --body true --repo <owner/repo>`로 먼저 동결한다.
+2. `editorial-digest.yml`의 `queued`·`in_progress` run을 모두 취소하고 terminal 상태가 될 때까지
+   기다린다. 실행 중인 run이 0이 되기 전에는 구조 변경을 시작하지 않는다.
+3. `editorial/batch` ref와 열린 main 대상 batch PR, pending editorial 이슈 수를 기록한다.
+4. ref가 drain 직후 값에서 바뀌지 않았음을 다시 확인한 뒤 cutover를 시작한다.
+5. 작업과 smoke test가 끝난 뒤 variable을 `false`로 바꾸고
+   `gh api --method POST repos/<owner/repo>/dispatches -f event_type=editorial-digest`로
+   default-branch 전용 `repository_dispatch`를 한 번 보내 정상 복귀를 검증한다.
+
+privileged digest에는 임의 ref의 YAML을 실행할 수 있는 `workflow_dispatch`를 두지 않는다.
+예약 실행과 `repository_dispatch`는 모두 default branch의 신뢰된 workflow 정의만 사용한다.
+
+동결을 해제하기 전에 실패한 source push가 없는지 확인한다. 이슈의 댓글·`bridged` 라벨은
+source push, main 대상 batch PR 보장, read-only quality dispatch가 모두 성공한 뒤에만 붙는다.
+`editorial/batch`에는 direct update 제한 ruleset을 적용하고 GitHub Actions integration만
+bridge push용 bypass actor로 둔다. dispatch 직전 workflow가 live ref를 방금 push한 SHA와
+다시 비교하지만, ruleset이 이 비교 사이의 사람 push 경합을 구조적으로 줄이는 1차 경계다.

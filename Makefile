@@ -3,34 +3,38 @@ TOOLS := $(CURDIR)/.tools
 QUARTO := $(TOOLS)/quarto/bin/quarto
 TYPST := $(TOOLS)/typst/typst
 UV := $(TOOLS)/uv/uv
+ACTIONLINT := $(TOOLS)/actionlint/actionlint
 
-.PHONY: bootstrap sync validate test lint web review book proof all preview clean
+.PHONY: bootstrap sync validate test lint workflow-lint web review book proof all preview clean
 
 bootstrap:
 	./scripts/bootstrap-tools.sh
 
 sync: bootstrap
-	$(UV) sync --group dev
+	$(UV) sync --group dev --locked
 
 validate: sync
-	$(UV) run python platform/scripts/atlas.py build
-	$(UV) run python platform/scripts/atlas.py build --check
-	$(UV) run python platform/scripts/glossary.py build
-	$(UV) run python platform/scripts/glossary.py build --check
-	$(UV) run python platform/scripts/editorial.py lint
-	$(UV) run python platform/scripts/design_backlog.py check
+	$(UV) run --locked python platform/scripts/atlas.py build
+	$(UV) run --locked python platform/scripts/atlas.py build --check
+	$(UV) run --locked python platform/scripts/glossary.py build
+	$(UV) run --locked python platform/scripts/glossary.py build --check
+	$(UV) run --locked python platform/scripts/editorial.py lint
+	$(UV) run --locked python platform/scripts/design_backlog.py check
 
 test: validate
-	$(UV) run pytest
+	$(UV) run --locked pytest
 
-lint: sync
-	$(UV) run ruff check platform courseware scripts
+lint: sync workflow-lint
+	$(UV) run --locked ruff check platform courseware scripts
+
+workflow-lint: bootstrap
+	$(ACTIONLINT) $$(find .github/workflows -maxdepth 1 -type f \( -name '*.yml' -o -name '*.yaml' \) -print)
 
 web: validate
 	rm -rf "$(CURDIR)/_site"
 	QUARTO_PYTHON="$(CURDIR)/.venv/bin/python" PATH="$(TOOLS)/typst:$$PATH" $(QUARTO) render --profile web
 	rm -rf "$(CURDIR)/_site/_site" "$(CURDIR)/_site/_book" "$(CURDIR)/_site/_proof"
-	$(UV) run python scripts/verify_outputs.py _site
+	$(UV) run --locked python scripts/verify_outputs.py _site
 
 review: validate
 	rm -rf "$(CURDIR)/_review"
@@ -38,7 +42,7 @@ review: validate
 	# review를 앞에 둬야 output-dir이 _review가 된다(web이 앞이면 _site를 덮어쓴다).
 	QUARTO_PYTHON="$(CURDIR)/.venv/bin/python" PATH="$(TOOLS)/typst:$$PATH" $(QUARTO) render --profile review,web
 	rm -rf "$(CURDIR)/_review/_site" "$(CURDIR)/_review/_book" "$(CURDIR)/_review/_proof" "$(CURDIR)/_review/_review"
-	$(UV) run python scripts/verify_outputs.py _review
+	$(UV) run --locked python scripts/verify_outputs.py _review
 
 book: validate
 	rm -rf "$(CURDIR)/_book"
@@ -46,12 +50,12 @@ book: validate
 	rm -rf "$(CURDIR)/_book/_site" "$(CURDIR)/_book/_book" "$(CURDIR)/_book/_proof"
 	@epub="$$(find _book -maxdepth 1 -name '*.epub' -print -quit)"; \
 	  test -n "$$epub" -a -s "$$epub"; \
-	  $(UV) run python scripts/package_epub_assets.py "$$epub"
+	  $(UV) run --locked python scripts/package_epub_assets.py "$$epub"
 	@epub="$$(find _book -maxdepth 1 -name '*.epub' -print -quit)"; \
 	  pdf="$$(find _book -maxdepth 1 -name '*.pdf' -print -quit)"; \
 	  test -n "$$epub" -a -s "$$epub"; \
 	  test -n "$$pdf" -a -s "$$pdf"; \
-	  $(UV) run python scripts/verify_outputs.py _book "$$epub" "$$pdf"
+	  $(UV) run --locked python scripts/verify_outputs.py _book "$$epub" "$$pdf"
 
 proof: validate
 	rm -rf "$(CURDIR)/_proof"
@@ -59,7 +63,7 @@ proof: validate
 	rm -rf "$(CURDIR)/_proof/_site" "$(CURDIR)/_proof/_book" "$(CURDIR)/_proof/_proof"
 	@pdf="$$(find _proof -maxdepth 1 -name '*.pdf' -print -quit)"; \
 	  test -n "$$pdf" -a -s "$$pdf"; \
-	  $(UV) run python scripts/verify_outputs.py _proof "$$pdf"
+	  $(UV) run --locked python scripts/verify_outputs.py _proof "$$pdf"
 
 all: test lint web book proof
 
