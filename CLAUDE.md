@@ -5,6 +5,8 @@
 
 ## 핵심 문서
 
+- `platform/design/README.md`, `platform/design/work-items/` — 디자인 시스템·설명 아티팩트·
+  저장소 개명·품질 CI의 의존성, path lock, worktree, acceptance gate, rollback을 관리하는 실행 백로그
 - `EDITING_SYSTEM_PLAN.md` — 교정 시스템 기획서 + 각 Phase 구현 노트(수동 설정 절차 포함)
 - `EDITING_UX_RESEARCH.md`, `EDITING_UX_RESEARCH_2.md` — 근거 조사(검증 표기 규약 있음)
 - `AUTHORING_MANUAL.md` — 집필 규범(원고 작업 전 필독), `future-scope.qmd` — 예정 노드 54개 계약
@@ -14,8 +16,9 @@
 
 - `make web`(독자용 _site) / `make review`(교정용 _review — **프로필 순서는 반드시 `review,web`**,
   먼저 나열된 프로필의 스칼라가 우선하므로 뒤집으면 _site를 덮어씀) / `make test` / `make lint`
-- 배포: main 푸시 → `.github/workflows/publish-web.yml` → gh-pages (루트=독자용, `/review/`=교정용,
-  PR은 `/preview/pr-N/`). Pages 활성화 완료, 라이브: https://ycpiglet.github.io/linear_algebra_for_robotics/
+- 배포: main 푸시 → read-only build → trusted deploy → gh-pages (루트=독자용, `/review/`=교정용).
+  PR은 write credential 없이 immutable review artifact를 만든다. Pages 활성화 완료, 라이브:
+  https://ycpiglet.github.io/linear_algebra_for_robotics/
 
 ## 교정 시스템 상태 (Phase 0~3 구현 완료, 가동 중)
 
@@ -27,7 +30,8 @@
 - 처리된 이슈는 `bridged` 라벨(재수거 방지). 라벨 5종 생성 완료(`setup-labels`)
 - 2026-07-19 전체 루프 실증 완료: 이슈 #5 → 자동 반영 → 배치 PR #6 병합·이슈 확정 종결
 - 남은 수동 설정: hypothes.is **비공개 그룹 생성·편집자 초대**만 남음
-- 워크플로우 수동 트리거는 API 토큰 권한 밖(403) — Actions 탭에서 사람이 Run workflow 하거나 예약 실행 대기
+- 교정 digest 수동 점검은 `workflow_dispatch` 대신 default-branch 전용
+  `repository_dispatch(event_type=editorial-digest)`를 사용한다(운영 runbook: `platform/editorial/README.md`).
 
 ## 품질 이력 (2026-07-19 평가·개선 완료)
 
@@ -58,5 +62,9 @@
 
 - 개발 브랜치에서 작업 후 PR, **병합은 merge commit**. 병합된 PR 브랜치는 origin/main에서 재시작
 - 에이전트 커밋은 `Actor:`/`Issue:` 트레일러, PR에 `actor:agent` 라벨
+- PR은 `actor:agent`·`actor:supervisor`·`actor:editor` 중 정확히 한 라벨을 사용한다. agent PR의
+  모든 신규 커밋과 보호된 main merge commit은 literal escape가 아닌 canonical `Actor` trailer 필수
+- Actions workflow와 provenance verifier는 PUB-016 bootstrap 이후 PUB-017의 별도 agent identity·
+  사람 승인 신뢰 결박이 끝날 때까지 모든 역할에 대해 동결한다
 - 원고 수정은 `AUTHORING_MANUAL.md` 준수 + `make test`(30건)·`editorial.py lint` 통과 필수
 - 이벤트 원장(`platform/editorial/events/`)은 append 전용 — 직접 편집 금지, `ingest` 명령 사용

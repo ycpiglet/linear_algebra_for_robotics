@@ -1,0 +1,52 @@
+schema_version: 1
+id: PUB-010
+title: 표 migration batch 01
+area: migration
+status: planned
+priority: P2
+change_class: migration
+version_impact: compatible
+owner_role: artifact-editor
+review_roles: [math-domain-reviewer, render-qa]
+branch: null
+dependencies: [PUB-009]
+decision_refs:
+  - platform/design/work-items/PUB-009.yml
+decision_needed: []
+blocker: null
+status_reason: null
+superseded_by: null
+scope:
+  in:
+    - 한 학습 경로 또는 3~5개 원고의 비교·조회 표
+    - stable ID·caption·header·unit·narrow overflow
+  out:
+    - 표 component foundation 변경
+    - unrelated prose·equation editing
+change_paths:
+  read: [대상 원고의 표 source와 관련 data]
+  write: [PR에서 선언한 비중첩 QMD 파일]
+  exclusive_locks: []
+  generated: [_site/**, _book/**]
+verification:
+  source_contract: [make test, make lint, artifact no-new-debt check]
+  rendered_contract: [make web, book 수록 원고는 make book, narrow·wide 표 검수]
+  post_merge: [stable ID·caption·접근성·provenance 대상 100% 확인]
+rollback:
+  triggers: [ID 단절·데이터 의미 변경·page-level overflow]
+  unit: batch
+  steps: [batch merge commit 전체 revert]
+  compatibility_preserved: [기존 공개 anchor는 migration 전 조사]
+definition_of_done:
+  - 대상 표의 ID·caption·header·unit·출력 검증률이 100%다
+  - 모든 outlier가 PR에 기록되었다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  post_merge: []
+  last_known_good: null
+  revert_ref: null
+  follow_up: null
+last_reviewed: "2026-07-20"

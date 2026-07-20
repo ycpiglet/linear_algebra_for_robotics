@@ -1,0 +1,122 @@
+schema_version: 1
+id: PUB-016
+title: agent provenance trailer 형식 CI gate
+area: ci
+status: done
+priority: P0
+change_class: toolchain
+version_impact: compatible
+owner_role: release-engineer
+review_roles: [publishing-ops-steward]
+branch: agent/pub-016-canary-evidence
+dependencies: [PUB-002]
+decision_refs:
+  - platform/editorial/README.md
+  - CLAUDE.md
+decision_needed: []
+blocker: null
+status_reason: null
+superseded_by: null
+scope:
+  in:
+    - PR·main push·workflow_dispatch의 새 agent 커밋과 main integration merge에서 Actor trailer 검증
+    - main first-parent integration 단위와 dispatch 전체 branch range의 fail-closed 검증
+    - 앞선 main 위반이 다음 정상 push에서 사라지지 않는 trusted-through sticky 검증
+    - PR 변경 코드와 분리되고 PR 객체를 Git data로만 읽는 base-side provenance status publisher
+    - GITHUB_TOKEN 자동 PR의 승인 대기·activity 억제를 보완하는 default-branch dispatch 검증 경로
+    - YAML anchor·alias 해석에 의존하지 않는 bootstrap 이후 workflow·CODEOWNERS·privileged controller 동결
+    - editorial dispatch가 전달한 exact trusted main SHA와 branch 전체 범위 검증
+    - literal escape와 본문 속 유사 문자열을 trailer로 오인하지 않는 회귀 test
+    - PUB-002의 기존 비정규 trailer 커밋을 역사적 예외로 기록하고 새 위반만 차단
+  out:
+    - 보호된 기존 Git history 재작성
+    - 사람 커밋에 Actor trailer 강제
+    - supervisor 신원 인증과 trusted-provenance ruleset required context 활성화
+change_paths:
+  read:
+    - .github/workflows/publish-web.yml
+    - .github/workflows/provenance.yml
+    - platform/editorial/README.md
+    - CLAUDE.md
+  write:
+    - .github/workflows/publish-web.yml
+    - .github/workflows/provenance.yml
+    - .github/workflows/editorial-digest.yml
+    - Makefile
+    - scripts/bootstrap-tools.sh
+    - platform/scripts/verify_provenance.py
+    - platform/tests/test_provenance.py
+    - platform/tests/test_workflow_contract.py
+    - platform/editorial/README.md
+    - CLAUDE.md
+    - platform/design/README.md
+    - platform/design/work-items/PUB-003.yml
+    - platform/design/work-items/PUB-006.yml
+    - platform/design/work-items/PUB-016.yml
+    - platform/design/work-items/PUB-017.yml
+  exclusive_locks: [ci-control-plane, backlog-registry]
+  generated: []
+verification:
+  source_contract:
+    - 새 PR commit range와 main push range의 Actor trailer parser fixture
+    - 한 push의 복수 merge와 dispatch 전체 range를 검사하는 Git graph fixture
+    - 실패 merge 다음 정상 push도 cutline 갱신 전에는 계속 차단하는 fixture
+    - untrusted PR code를 checkout·실행하지 않는 trusted-provenance workflow contract
+    - dispatch PR 번호·head SHA·live PR label·test-merge 부모를 재검증하는 workflow contract
+    - PR #14를 포함해 agent·editor·supervisor workflow 변경을 모두 거부하는 fixture
+    - multiple merge-base로 control-plane path를 숨기지 못하고 latest-main sync는 허용하는 fixture
+    - literal backslash-n과 본문 문자열만 있는 agent commit의 fail-closed test
+    - make test와 make lint
+    - pinned ShellCheck가 로컬·CI Actionlint에서 동일하게 실행됨
+  rendered_contract: []
+  post_merge:
+    - 유효한 agent trailer commit은 통과하고 의도적으로 잘못 만든 fixture는 차단됨
+    - compliant canary의 exact test-merge SHA에 trusted-provenance success가 게시됨
+    - ruleset에는 trusted-provenance를 아직 required로 추가하지 않고 PUB-017 hold를 기록함
+rollback:
+  triggers:
+    - 사람 커밋이나 과거 허용 예외까지 차단함
+    - merge queue·배치 merge의 정상 commit range를 해석하지 못함
+  unit: merge_commit
+  steps:
+    - editorial을 freeze·drain하고 실패 range·event payload·ruleset 전체 JSON을 보존한다
+    - trusted-provenance requirement만 일시 제거한 뒤 supervisor recovery PR에서 내용 revert와 cutline 전진을 함께 수행한다
+    - Actor supervisor merge와 main push 성공 후 required context를 복원하고 canary를 재검증한다
+  compatibility_preserved:
+    - 기존 history와 공개 provenance evidence는 수정하지 않는다
+definition_of_done:
+  - Git trailer parser가 Actor 값 agent를 정확히 하나 인식해야 agent provenance로 판정한다
+  - PR·main push·workflow_dispatch 모두 이벤트에 맞는 전체 새 commit range를 검사한다
+  - main push는 first-parent의 모든 2-parent integration merge와 각 branch-only commit을 검사한다
+  - main push는 trusted-through 이후 전체 범위를 매번 재검사해 실패 상태를 유지한다
+  - trusted-provenance 상태는 base-side verifier가 test-merge SHA에 게시하고 PR head는 Git data로만 읽는다
+  - 자동 batch PR은 live PR metadata와 exact head SHA를 대조한 repository_dispatch로 같은 상태를 게시한다
+  - 외부 신뢰 결박 전에는 actor:supervisor 라벨도 control-plane 변경 권한으로 취급하지 않는다
+  - literal escape·본문 유사 문자열·중복 상충 trailer fixture가 실패한다
+  - PUB-002 완료 SHA를 trusted-through cutline으로 고정해 그 이전 예외만 역사로 보존한다
+evidence:
+  issue: null
+  pr: 23
+  ci_runs:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29763626651
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764116665
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764399691
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764495191
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764495318
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764671197
+  rendered_artifacts:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29763626651/artifacts/8469891042
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764116665/artifacts/8470141279
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29764495191/artifacts/8470252556
+  post_merge:
+    - merge:aaaf2f73c87f7668969f904eabf6660ec5560e19
+    - pages:aaaf2f73c87f7668969f904eabf6660ec5560e19
+    - "PR #24의 test-merge 3d45f14cc2d06748fe73ff8f702572cbfc4ed8be는 부모가 main aaaf2f73c87f7668969f904eabf6660ec5560e19와 head aa001ca4ee344010bc4bdf893b1db67090fa19d4로 정확히 고정됨"
+    - "pull_request_target 29764495318과 repository_dispatch 29764671197가 같은 test-merge SHA에 trusted-provenance success를 게시함"
+    - "main ruleset 19211454에는 source-contract와 publication-build만 required로 유지하고 PUB-017 전 trusted-provenance 승격을 보류함"
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/review/
+  last_known_good: aaaf2f73c87f7668969f904eabf6660ec5560e19
+  revert_ref: null
+  follow_up: PUB-017
+last_reviewed: "2026-07-21"

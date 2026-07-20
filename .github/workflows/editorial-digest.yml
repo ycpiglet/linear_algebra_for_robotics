@@ -7,17 +7,18 @@
 #   3. 반영 불가(서식 걸침·모호·코멘트만)는 소스 위치를 이슈에 회신
 #   4. 배치 PR이 없으면 생성 — 병합은 사람(감독자)이 리뷰 후 결정
 #
-# 주의: GITHUB_TOKEN으로 만든 PR은 다른 워크플로우(publish-web의 PR
-# 미리보기)를 트리거하지 않는다. 미리보기가 필요하면 PR에서 수동으로
-# workflow_dispatch 하거나 PAT를 쓰도록 바꿀 것.
+# GITHUB_TOKEN으로 만든 PR의 opened/synchronize/reopened run은 승인 대기 상태이고
+# labeled/edited run은 생성되지 않으므로, 무인 gate는 default-branch controller로 dispatch한다.
 name: editorial-digest
 
 on:
   schedule:
     - cron: '0 21 * * *'
-  workflow_dispatch:
+  repository_dispatch:
+    types: [editorial-digest]
 
 permissions:
+  actions: write
   contents: write
   issues: write
   pull-requests: write
@@ -28,6 +29,7 @@ concurrency:
 
 jobs:
   digest:
+    if: ${{ vars.EDITORIAL_FREEZE != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -40,54 +42,217 @@ jobs:
           echo "pending=$count" >> "$GITHUB_OUTPUT"
           echo "대기 중 제안: ${count}건"
 
-      - uses: actions/checkout@v4
+      - name: Validate editorial batch key slot
+        if: steps.precheck.outputs.pending != '0'
+        env:
+          KEY_SLOT: ${{ vars.EDITORIAL_BATCH_KEY_SLOT }}
+        run: |
+          case "$KEY_SLOT" in
+            ""|primary|next) ;;
+            *) echo "지원하지 않는 EDITORIAL_BATCH_KEY_SLOT: $KEY_SLOT" >&2; exit 1 ;;
+          esac
+
+      - name: Checkout trusted controller from main
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        if: steps.precheck.outputs.pending != '0'
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          persist-credentials: false
+
+      - name: Checkout isolated batch workspace
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         if: steps.precheck.outputs.pending != '0'
         with:
           fetch-depth: 0
+          ref: ${{ github.sha }}
+          path: batch
+          persist-credentials: false
 
-      - name: Install validator dependency
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
         if: steps.precheck.outputs.pending != '0'
-        run: pip install --quiet jsonschema
+        with:
+          version: "0.11.28"
+          enable-cache: false
+          python-version: "3.12"
+
+      - name: Sync locked editorial runtime
+        if: steps.precheck.outputs.pending != '0'
+        run: uv sync --project controller/platform/editorial-runtime --locked --no-dev
 
       - name: Prepare batch branch
         if: steps.precheck.outputs.pending != '0'
+        working-directory: batch
         run: |
+          trusted_main="${{ github.sha }}"
           git config user.name "editorial-bridge[bot]"
           git config user.email "editorial-bridge@users.noreply.github.com"
           if git ls-remote --exit-code origin editorial/batch > /dev/null 2>&1; then
-            git checkout -B editorial/batch origin/editorial/batch
+            git fetch origin editorial/batch
+            remote_base=$(git rev-parse origin/editorial/batch)
+            if git merge-base --is-ancestor origin/editorial/batch "$trusted_main"; then
+              echo "병합 완료된 기존 batch를 최신 main 위에서 재시작합니다."
+              git checkout -B editorial/batch "$trusted_main"
+            else
+              git checkout -B editorial/batch origin/editorial/batch
+              git merge -m "$(printf "Merge commit '%s' into editorial/batch\n\nActor: agent" "$trusted_main")" \
+                "$trusted_main"
+            fi
           else
-            git checkout -B editorial/batch origin/main
+            git checkout -B editorial/batch "$trusted_main"
+            remote_base=$(git rev-parse HEAD)
           fi
-          echo "base=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "base=$remote_base" >> "$GITHUB_ENV"
+          echo "trusted_main=$trusted_main" >> "$GITHUB_ENV"
+
+      - name: Reject untrusted batch control-plane changes
+        if: steps.precheck.outputs.pending != '0'
+        working-directory: batch
+        run: |
+          for path in \
+            .github/workflows/publish-web.yml \
+            Makefile \
+            scripts/bootstrap-tools.sh \
+            pyproject.toml \
+            uv.lock \
+            platform/scripts/editorial.py \
+            platform/schemas/editorial-event.schema.json \
+            platform/editorial-runtime/pyproject.toml \
+            platform/editorial-runtime/uv.lock \
+            platform/tests/test_workflow_contract.py
+          do
+            diff --brief "$GITHUB_WORKSPACE/controller/$path" "$path"
+          done
+
+          invalid=$(git diff --name-status "$trusted_main"...HEAD | awk -F '\t' '
+            !(($1 == "M" && $2 ~ /\.qmd$/) ||
+              (($1 == "A" || $1 == "M") &&
+               $2 ~ /^platform\/editorial\/events\/[^/]+\.jsonl$/)) { print }
+          ')
+          if [ -n "$invalid" ]; then
+            echo "editorial/batch에 허용되지 않은 변경이 있습니다:" >&2
+            echo "$invalid" >&2
+            exit 1
+          fi
+
+          symlinks=$(git ls-files -s -- '*.qmd' 'platform/editorial/events/*.jsonl' |
+            awk '$1 == "120000" { print $4 }')
+          if [ -n "$symlinks" ]; then
+            echo "교정 대상의 심볼릭 링크를 허용하지 않습니다:" >&2
+            echo "$symlinks" >&2
+            exit 1
+          fi
 
       - name: Fetch and apply proposals
         if: steps.precheck.outputs.pending != '0'
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          python platform/scripts/editorial.py fetch --repo "${{ github.repository }}" > /tmp/editorial-issues.json
-          python platform/scripts/editorial.py apply \
-            --issues /tmp/editorial-issues.json \
-            --repo "${{ github.repository }}"
+          runtime_python=controller/platform/editorial-runtime/.venv/bin/python
+          controller=controller/platform/scripts/editorial.py
+          "$runtime_python" "$controller" fetch \
+            --repo "${{ github.repository }}" > /tmp/editorial-issues.json
+          "$runtime_python" "$controller" apply \
+            --root "$GITHUB_WORKSPACE/batch" \
+            --issues /tmp/editorial-issues.json > /tmp/editorial-outcomes.json
 
-      - name: Push batch and ensure PR exists
+      - name: Checkout isolated batch push credential (primary)
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        if: steps.precheck.outputs.pending != '0' && vars.EDITORIAL_BATCH_KEY_SLOT != 'next'
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          path: push-auth
+          ssh-key: ${{ secrets.EDITORIAL_BATCH_SSH_KEY }}
+          persist-credentials: true
+
+      - name: Checkout isolated batch push credential (next)
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        if: steps.precheck.outputs.pending != '0' && vars.EDITORIAL_BATCH_KEY_SLOT == 'next'
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          path: push-auth
+          ssh-key: ${{ secrets.EDITORIAL_BATCH_SSH_KEY_NEXT }}
+          persist-credentials: true
+
+      - name: Push batch branch
+        id: batch
         if: steps.precheck.outputs.pending != '0'
+        working-directory: batch
+        run: |
+          echo "before_sha=$base" >> "$GITHUB_OUTPUT"
+          if [ "$(git rev-parse HEAD)" = "$base" ]; then
+            echo "새 커밋 없음 — 푸시 생략"
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
+          else
+            expected=$(git rev-parse HEAD)
+            git -C "$GITHUB_WORKSPACE/push-auth" fetch "$GITHUB_WORKSPACE/batch" HEAD
+            fetched=$(git -C "$GITHUB_WORKSPACE/push-auth" rev-parse FETCH_HEAD)
+            test "$fetched" = "$expected"
+            git -C "$GITHUB_WORKSPACE/push-auth" push \
+              origin "$expected:refs/heads/editorial/batch"
+            echo "pushed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          ahead=$(git rev-list --count "$trusted_main"..HEAD)
+          echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          if [ "$ahead" = "0" ]; then
+            echo "branch_ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "branch_ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ensure batch PR exists
+        id: batch-pr
+        if: steps.precheck.outputs.pending != '0' && steps.batch.outputs.branch_ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "$(git rev-parse HEAD)" = "$base" ] && git ls-remote --exit-code origin editorial/batch > /dev/null 2>&1; then
-            echo "새 커밋 없음 — 푸시 생략"
-            exit 0
-          fi
-          git push -u origin editorial/batch
-          open_pr=$(gh pr list --head editorial/batch --state open --json number --jq length)
-          if [ "$open_pr" = "0" ]; then
+          open_pr=$(gh pr list --repo "${{ github.repository }}" --head editorial/batch \
+            --base main --state open --json number --jq '.[0].number // empty')
+          if [ -z "$open_pr" ]; then
             gh pr create \
+              --repo "${{ github.repository }}" \
               --head editorial/batch \
               --base main \
               --title "교정 배치: 리뷰 제안 자동 반영" \
-              --body "$(printf '리뷰 빌드의 수정 제안 이슈를 자동 반영한 배치 PR입니다 (EDITING_SYSTEM_PLAN.md §5.4).\n\n- 교정 1건 = 커밋 1개 — 특정 교정만 기각하려면 해당 커밋을 revert로 상쇄한 뒤 병합하세요.\n- 각 커밋에 편집 이벤트 레코드(platform/editorial/events/)가 동승합니다.\n- 병합은 merge commit으로 해주세요(squash 금지 — 교정별 이력·작성자 보존).\n- 미결 제안이 남아 있으면 병합하지 않습니다.')"
-            new_pr=$(gh pr list --head editorial/batch --state open --json number --jq '.[0].number')
-            gh pr edit "$new_pr" --add-label "actor:agent" || echo "라벨 부여 생략(actor:agent 라벨 미생성?)"
+              --label "actor:agent" \
+              --body "$(printf '리뷰 빌드의 수정 제안 이슈를 자동 반영한 배치 PR입니다 (EDITING_SYSTEM_PLAN.md §5.4).\n\n- 교정 1건 = 커밋 1개 — 특정 교정만 기각하려면 해당 커밋을 revert로 상쇄한 뒤 병합하세요.\n- 각 커밋에 편집 이벤트 레코드(platform/editorial/events/)가 동승합니다.\n- 병합은 merge commit으로 해주세요(squash 금지 — 교정별 이력·작성자 보존).\n- merge commit 본문의 마지막 trailer 블록에 실제 줄바꿈으로 Actor: agent를 넣으세요.\n- 미결 제안이 남아 있으면 병합하지 않습니다.')"
+            open_pr=$(gh pr list --repo "${{ github.repository }}" --head editorial/batch \
+              --base main --state open --json number --jq '.[0].number // empty')
           fi
+          test -n "$open_pr"
+          actor_labels=$(gh pr view --repo "${{ github.repository }}" "$open_pr" \
+            --json labels --jq '[.labels[].name | select(startswith("actor:"))] | sort | join(",")')
+          test "$actor_labels" = "actor:agent"
+          echo "number=$open_pr" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch trusted batch quality and provenance
+        if: steps.precheck.outputs.pending != '0' && steps.batch.outputs.branch_ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          expected="${{ steps.batch.outputs.head_sha }}"
+          pr_number="${{ steps.batch-pr.outputs.number }}"
+          trusted_main="${{ github.sha }}"
+          remote=$(gh api "repos/${{ github.repository }}/git/ref/heads/editorial/batch" \
+            --jq .object.sha)
+          test "$remote" = "$expected"
+          gh workflow run publish-web.yml --repo "${{ github.repository }}" \
+            --ref editorial/batch -f "trusted_main=$trusted_main"
+          gh api --method POST "repos/${{ github.repository }}/dispatches" \
+            -f event_type=trusted-provenance \
+            -F "client_payload[pr_number]=$pr_number" \
+            -f "client_payload[head_sha]=$expected"
+
+      - name: Finalize processed issues after durable push
+        if: success() && steps.precheck.outputs.pending != '0'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          controller/platform/editorial-runtime/.venv/bin/python \
+            controller/platform/scripts/editorial.py finalize \
+            --outcomes /tmp/editorial-outcomes.json \
+            --repo "${{ github.repository }}"

@@ -1,0 +1,62 @@
+# Trusted Pages deployment boundary.
+#
+# pull_request code can only create a read-only artifact in publish-web. This workflow is loaded
+# from the default branch, accepts only a successful main push run, and alone receives write access.
+name: deploy-pages
+
+on:
+  workflow_run:
+    workflows: [publish-web]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gh-pages-main
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: pages-deploy
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    timeout-minutes: 15
+    steps:
+      - name: Verify triggering commit is current main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current_main=$(gh api "repos/${{ github.repository }}/git/ref/heads/main" --jq .object.sha)
+          test "$current_main" = "${{ github.event.workflow_run.head_sha }}"
+
+      - name: Download the triggering main build artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: pages-main-${{ github.event.workflow_run.id }}
+          path: deploy
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Verify deployment artifact shape
+        run: |
+          test -s deploy/index.html
+          test -s deploy/review/index.html
+          test "$(cat deploy/source-commit.txt)" = "${{ github.event.workflow_run.head_sha }}"
+
+      - name: Recheck current main before deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current_main=$(gh api "repos/${{ github.repository }}/git/ref/heads/main" --jq .object.sha)
+          test "$current_main" = "${{ github.event.workflow_run.head_sha }}"
+
+      - name: Deploy trusted main artifact
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./deploy

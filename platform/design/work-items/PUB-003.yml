@@ -1,0 +1,72 @@
+schema_version: 1
+id: PUB-003
+title: Robotics Math Atlas identity와 URL 호환성 결정
+area: identity
+status: decision
+priority: P0
+change_class: breaking
+version_impact: breaking
+owner_role: publishing-ops-steward
+review_roles: [release-engineer]
+branch: null
+dependencies: [PUB-002, PUB-017]
+decision_refs:
+  - README.md
+  - pyproject.toml
+  - _quarto-web.yml
+decision_needed:
+  - repository slug를 robotics-math-atlas로 확정
+  - custom domain 사용 여부와 canonical site URL 확정
+  - 기존 Pages URL 이전 방식과 외부 링크 갱신 책임 확정
+  - Hypothesis URI·기존 주석 호환 전략 확정
+  - JSON Schema $id 유지 또는 새 identity 도입 여부 확정
+  - 열린 PR·clone·webhook·deploy key carry-over 방식 확정
+blocker: null
+status_reason: null
+superseded_by: null
+scope:
+  in:
+    - 표시 브랜드·repository·package·import·site identity 표
+    - 외부 cutover와 rollback 결정 기록
+  out:
+    - GitHub repository 실제 rename
+    - source URL 변경
+change_paths:
+  read:
+    - README.md
+    - pyproject.toml
+    - _quarto*.yml
+    - platform/schemas/*.json
+    - assets/js/atlas.js
+  write:
+    - platform/design/work-items/PUB-003.yml
+  exclusive_locks: []
+  generated: []
+verification:
+  source_contract:
+    - 추적 소스의 old slug와 current brand·package inventory
+  rendered_contract: []
+  post_merge:
+    - 각 결정에 선택·이유·호환성·rollback·확인자를 기록
+rollback:
+  triggers:
+    - 결정이 현재 콘텐츠 범위를 과장하거나 기존 사용자 데이터를 버림
+  unit: merge_commit
+  steps:
+    - 결정 상태를 유지하고 구현 work item을 ready로 승격하지 않는다
+  compatibility_preserved:
+    - 표시 브랜드 Robotics Math Atlas 유지
+    - Python project와 import identity 유지
+definition_of_done:
+  - decision_needed의 모든 항목이 승인된 결정으로 바뀐다
+  - PUB-004가 구현 가능한 URL·호환성 계약을 갖는다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  post_merge: []
+  last_known_good: 5a79cae
+  revert_ref: null
+  follow_up: null
+last_reviewed: "2026-07-20"

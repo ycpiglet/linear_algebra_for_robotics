@@ -1,0 +1,82 @@
+schema_version: 1
+id: PUB-005
+title: robotics-math-atlas repository·Pages cutover
+area: identity
+status: planned
+priority: P0
+change_class: breaking
+version_impact: breaking
+owner_role: release-engineer
+review_roles: [publishing-ops-steward, render-qa]
+branch: null
+dependencies: [PUB-004]
+decision_refs:
+  - platform/design/work-items/PUB-003.yml
+  - platform/design/work-items/PUB-004.yml
+decision_needed: []
+blocker: null
+status_reason: null
+superseded_by: null
+scope:
+  in:
+    - GitHub repository rename과 local remote 갱신
+    - Quarto·review·editorial·운영 URL cutover
+    - reader·reviewer·developer 경로 post-deploy smoke
+  out:
+    - 타이포그래피·컴포넌트 변경
+    - 미승인 schema ID 변경
+change_paths:
+  read:
+    - platform/design/work-items/PUB-003.yml
+    - platform/design/work-items/PUB-004.yml
+  write:
+    - _quarto-web.yml
+    - assets/includes/review-scripts.html
+    - editorial-desk.qmd
+    - platform/tests/test_editorial.py
+    - CLAUDE.md
+    - 승인된 경우에만 platform/schemas/*.json
+  exclusive_locks: [identity-cutover, ci-control-plane]
+  generated:
+    - _site/**
+    - _review/**
+    - _book/**
+    - _proof/**
+verification:
+  source_contract:
+    - make test
+    - make lint
+    - make web
+    - make review
+    - 단계 종료 시 make all
+  rendered_contract:
+    - 새 Pages root·review·immutable PR review artifact
+    - navbar·source·issue·GitHub.dev·editorial desk·history 링크
+    - old repository·Pages URL·Hypothesis·saved path
+  post_merge:
+    - clone·fetch·push와 main deployment smoke
+    - 외부 clone·webhook·문서 갱신 확인
+rollback:
+  triggers:
+    - repository 접근·main deploy·site root/review·수정 제안 중 하나 실패
+  unit: cutover
+  steps:
+    - 공개 공지 전에는 source revert와 설정 복귀를 검토한다
+    - 공개 공지 후에는 이름을 왕복하지 않고 last-known-good deploy 후 forward fix한다
+  compatibility_preserved:
+    - old repository redirect를 위해 이전 이름을 재사용하지 않는다
+    - 사용자 progress key와 export format을 유지한다
+definition_of_done:
+  - 새 canonical identity가 reader·reviewer·developer 경로에서 동작한다
+  - old repository와 Pages URL의 실제 동작이 문서화되었다
+  - freeze를 해제하고 last-known-good evidence를 갱신했다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  post_merge: []
+  last_known_good: null
+  revert_ref: null
+  follow_up: null
+last_reviewed: "2026-07-20"
