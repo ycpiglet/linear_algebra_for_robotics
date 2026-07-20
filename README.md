@@ -32,6 +32,9 @@ make preview
 
 로컬 도구와 Python 환경은 저장소 안의 `.tools/`, `.venv/`에 격리됩니다.
 
+여러 Windows/macOS 장치에서 같은 Linux 개발 호스트를 사용하는 방법은
+[`remote-access/README.md`](remote-access/README.md)에 정리되어 있습니다.
+
 ## 주요 명령
 
 - `make validate`: 개념·증명 메타데이터·링크·선수 그래프와 한영 용어 원본을 검사하고 중앙 용어집 재생성
