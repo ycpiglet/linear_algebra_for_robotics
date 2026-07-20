@@ -135,8 +135,9 @@ Hypothesis는 R1(형광펜·코멘트·작성자 구분)을 개발 없이 즉시
 - 1-3 구현됨: `platform/scripts/editorial.py` — 이슈의 앵커 페이로드 파싱 → 페이지 URL을 `.qmd` 소스로 매핑(사이트 서브패스·`/review/`·`/preview/pr-N/` 접두어 자동 처리) → 렌더링 인용문을 소스에서 정규화 탐색(중복은 prefix/suffix로 판별). **서식·문단 경계를 걸치지 않는 평문 구간만 자동 반영**(Acrobat 'text edits only' 선별성)하고, 나머지(모호·서식 걸침·코멘트만·소실)는 소스 위치를 이슈에 회신해 사람·LLM 경로로 넘긴다. 반영은 교정 1건 = 커밋 1개(전용 author 서명 + `Issue:`/`Actor:` 트레일러). 유닛 테스트 9건 통과.
 - 3-1 구현됨: 이벤트 레코드(§6)가 `platform/schemas/editorial-event.schema.json`으로 검증되어 `platform/editorial/events/YYYY-MM.jsonl`에 적재되며, **자동 반영 커밋에 원고 수정과 함께 동승**한다(기록이 부산물이 되는 구조). `category`는 null 허용 — 분류는 후속 LLM/사람 패스가 채운다.
 - 다이제스트: `.github/workflows/editorial-digest.yml` — 매일 06:00 KST, `bridged` 라벨 없는 editorial 이슈 카운트 조회(토큰 소모 0)로 사전 필터 후, 있을 때만 수거→적용→`editorial/batch` 브랜치 푸시→배치 PR 보장. 처리된 이슈에는 `bridged` 라벨(재처리 방지).
-- v1 단순화: 배치 브랜치가 장별이 아니라 단일(`editorial/batch`)이다 — 제안량이 §5.4의 장별 분리를 정당화할 때 나눈다. GITHUB_TOKEN이 만든 배치 PR의 `pull_request` run은 승인 대기 상태가 될 수 있으므로 digest가 즉시 실행 가능한 read-only `workflow_dispatch` 검증도 명시적으로 시작한다. 두 run이 함께 보이면 중복 오류가 아니라 GitHub의 승인 경계와 즉시 검증 경로가 병존한 결과다.
+- v1 단순화: 배치 브랜치가 장별이 아니라 단일(`editorial/batch`)이다 — 제안량이 §5.4의 장별 분리를 정당화할 때 나눈다. 배치 Git push만 전용 write deploy key를 사용하고, 이슈·PR·read-only 품질 dispatch는 범위가 명시된 `GITHUB_TOKEN`을 사용한다. GITHUB_TOKEN이 만든 배치 PR의 `pull_request` run은 승인 대기 상태가 될 수 있으므로 digest가 즉시 실행 가능한 read-only `workflow_dispatch` 검증도 명시적으로 시작한다. 두 run이 함께 보이면 중복 오류가 아니라 GitHub의 승인 경계와 즉시 검증 경로가 병존한 결과다.
 - 구조 변경 동결은 `platform/editorial/README.md`의 **동결 → queued/in-progress 취소 → terminal drain → batch ref 재확인** 순서를 따른다. `EDITORIAL_FREEZE` 변수만 바꾸고 즉시 cutover를 시작하면 이미 실행 중인 job과 경합하므로 안전한 동결로 보지 않는다.
+- deploy key는 적용·검증이 끝난 뒤 실제 push 직전에만 별도 checkout에 주입하고, 로컬 batch의 예상 SHA를 다시 가져와 일치시킨 뒤 그 SHA만 non-force refspec으로 push한다. key 회전은 활성 값을 덮어쓰지 않는 primary/next secret slot으로 수행하며, Issue 트레일러가 있는 새 커밋·before/head SHA 변화·실제 push·write key의 `last_used`를 모두 확인한다. rollback도 workflow revert만 하지 않고 검증용 일시 해제와 실패 시 재동결, batch ruleset·deploy key·secret 복구를 포함한 control-plane cutover로 수행한다.
 
 **구현 노트 (2026-07-18, 1-4·1-5 구현 커밋):**
 
