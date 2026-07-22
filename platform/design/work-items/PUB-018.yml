@@ -2,7 +2,7 @@ schema_version: 1
 id: PUB-018
 title: PUB-017 보류 기간의 안전한 publication fallback
 area: governance
-status: in_progress
+status: in_review
 priority: P0
 change_class: governance
 version_impact: compatible
@@ -87,8 +87,10 @@ definition_of_done:
   - Actions와 editorial automation이 전환 전 정상 운영값으로 복구된다
 evidence:
   issue: null
-  pr: null
-  ci_runs: []
+  pr: 26
+  ci_runs:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29932980282
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29932978706
   rendered_artifacts: []
   post_merge: []
   last_known_good: 1c2268cbf610ecabc60fef38d71808250315e630
