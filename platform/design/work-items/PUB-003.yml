@@ -2,7 +2,7 @@ schema_version: 1
 id: PUB-003
 title: Robotics Math Atlas identity와 URL 호환성 결정
 area: identity
-status: in_progress
+status: done
 priority: P0
 change_class: breaking
 version_impact: breaking
@@ -68,8 +68,10 @@ definition_of_done:
   - PUB-004가 구현 가능한 URL·호환성 계약을 갖는다
 evidence:
   issue: null
-  pr: null
-  ci_runs: []
+  pr: 29
+  ci_runs:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29935853483
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29935855750
   rendered_artifacts: []
   post_merge:
     - "repository 선택: ycpiglet/robotics-math-atlas; 브랜드와 package identity를 맞추되 GitHub가 보장하는 old repository·Git remote redirect를 사용하고 old slug는 재사용하지 않음; 근거=https://docs.github.com/en/repositories/creating-and-managing-repositories/renaming-a-repository; confirmer=agent/release-engineer"
