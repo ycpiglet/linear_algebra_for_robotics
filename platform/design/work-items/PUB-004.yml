@@ -2,7 +2,7 @@ schema_version: 1
 id: PUB-004
 title: 저장소 rename 사전 호환 계층과 cutover runbook
 area: identity
-status: in_review
+status: done
 priority: P0
 change_class: breaking
 version_impact: compatible
@@ -78,10 +78,22 @@ evidence:
   ci_runs:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29938768236
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29938769412
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29939061775
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29939058840
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29939280057
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29939587148
   rendered_artifacts:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29938768236/artifacts/8537323232
-  post_merge: []
-  last_known_good: 73a5b264478584a9c54f80c2019059c24b0b5175
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/review/
+  post_merge:
+    - "PR #31 merge 495eee614ccd477951a8fb49d6c5d953b0b42831이 prefix-neutral saved path migration과 source-derived DC.identifier를 배포함"
+    - "main publish-web run 29939280057에서 source-contract와 publication-build가 merge SHA 495eee614ccd477951a8fb49d6c5d953b0b42831 대상으로 success"
+    - "deploy-pages run 29939587148이 같은 merge SHA 대상으로 success"
+    - "live reader와 review의 index.qmd가 같은 urn:robotics-math-atlas:document:v1:index.qmd를 제공함"
+    - "live reader와 review의 jacobian.qmd가 같은 urn:robotics-math-atlas:document:v1:content%2Fconcepts%2Frobotics%2Fjacobian.qmd를 제공함"
+    - "실제 repository rename·Pages canonical 전환은 수행하지 않았으며 PUB-005의 별도 사용자 확인 경계를 유지함"
+  last_known_good: 495eee614ccd477951a8fb49d6c5d953b0b42831
   revert_ref: null
   follow_up: PUB-005
 last_reviewed: "2026-07-23"
