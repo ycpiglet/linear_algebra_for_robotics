@@ -6,13 +6,17 @@ UV := $(TOOLS)/uv/uv
 ACTIONLINT := $(TOOLS)/actionlint/actionlint
 SHELLCHECK := $(TOOLS)/shellcheck/shellcheck
 
-.PHONY: bootstrap sync validate test lint workflow-lint web review book proof all preview clean
+.PHONY: bootstrap sync artifact-audit validate test lint workflow-lint web review book proof all preview clean
 
 bootstrap:
 	./scripts/bootstrap-tools.sh
 
 sync: bootstrap
 	$(UV) sync --group dev --locked
+
+artifact-audit: sync
+	$(UV) run --locked python platform/scripts/artifact_inventory.py check
+	$(UV) run --locked python platform/scripts/artifact_inventory.py regenerate
 
 validate: sync
 	$(UV) run --locked python platform/scripts/atlas.py build
@@ -21,6 +25,7 @@ validate: sync
 	$(UV) run --locked python platform/scripts/glossary.py build --check
 	$(UV) run --locked python platform/scripts/editorial.py lint
 	$(UV) run --locked python platform/scripts/design_backlog.py check
+	$(UV) run --locked python platform/scripts/artifact_inventory.py check
 
 test: validate
 	$(UV) run --locked pytest

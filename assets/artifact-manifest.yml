@@ -1,0 +1,175 @@
+schema_version: 1
+scope:
+  inventory_roots:
+    - assets/figures
+  consumer_globs:
+    - content/**/*.qmd
+    - courseware/labs/*.qmd
+legacy_baseline:
+  id: legacy-2026-07-23
+  captured_on: "2026-07-23"
+  debt:
+    missing_figure_id:
+      - content/concepts/estimation/kalman-filter.qmd::assets/figures/kalman-diagnostics.svg
+      - content/concepts/estimation/kalman-filter.qmd::assets/figures/kalman-prior-and-tuning-comparison.svg
+      - content/concepts/estimation/kalman-filter.qmd::assets/figures/kalman-timeseries-and-gain.svg
+      - content/concepts/estimation/kalman-filter.qmd::assets/figures/kalman-uncertainty-geometry.svg
+    missing_caption: []
+    missing_alt: []
+    missing_provenance: []
+artifacts:
+  - id: figure.jacobian-2r-geometry
+    production: generated
+    sources:
+      - scripts/generate_jacobian_2r_geometry_figure.py
+    generator:
+      command: [python, scripts/generate_jacobian_2r_geometry_figure.py]
+      lockfile: uv.lock
+      normalizer: svg-v1
+    output: assets/figures/jacobian-2r-geometry.svg
+    consumers:
+      - content/concepts/robotics/jacobian.qmd
+    license:
+      spdx: CC-BY-NC-SA-4.0
+      basis: pyproject.toml
+
+  - id: figure.jacobian-2r-velocity-map
+    production: generated
+    sources:
+      - scripts/generate_jacobian_velocity_map_figure.py
+    generator:
+      command: [python, scripts/generate_jacobian_velocity_map_figure.py]
+      lockfile: uv.lock
+      normalizer: svg-v1
+    output: assets/figures/jacobian-2r-velocity-map.svg
+    consumers:
+      - content/concepts/robotics/jacobian.qmd
+    license:
+      spdx: CC-BY-NC-SA-4.0
+      basis: pyproject.toml
+
+  - id: figure.jacobian-pseudoinverse-dls
+    production: manual
+    sources:
+      - assets/figures/jacobian-pseudoinverse-dls.svg
+    generator: null
+    output: assets/figures/jacobian-pseudoinverse-dls.svg
+    consumers:
+      - content/concepts/robotics/jacobian.qmd
+    license:
+      spdx: CC-BY-NC-SA-4.0
+      basis: pyproject.toml
+
+  - id: figure.jacobian-singular-value-manipulability
+    production: generated
+    sources:
+      - scripts/generate_jacobian_singularity_curve.py
+    generator:
+      command: [python, scripts/generate_jacobian_singularity_curve.py]
+      lockfile: uv.lock
+      normalizer: svg-v1
+    output: assets/figures/jacobian-singular-value-manipulability.svg
+    consumers:
+      - content/concepts/robotics/jacobian.qmd
+    license:
+      spdx: CC-BY-NC-SA-4.0
+      basis: pyproject.toml
+
+  - id: figure.jacobian-singularity-progression
+    production: manual
+    sources:
+      - assets/figures/jacobian-singularity-progression.svg
+    generator: null
+    output: assets/figures/jacobian-singularity-progression.svg
+    consumers:
+      - content/concepts/robotics/jacobian.qmd
+    license:
+      spdx: CC-BY-NC-SA-4.0
+      basis: pyproject.toml
+
+  - id: figure.kalman-diagnostics
+    production: manual
+    sources:
+      - assets/figures/kalman-diagnostics.svg
+    generator: null
+    output: assets/figures/kalman-diagnostics.svg
+    consumers:
+      - content/concepts/estimation/kalman-filter.qmd
+    license:
+      spdx: CC-BY-NC-SA-4.0
+      basis: pyproject.toml
+
+  - id: figure.kalman-prior-and-tuning-comparison
+    production: generated
+    sources:
+      - scripts/generate_kalman_tuning_figure.py
+    generator:
+      command: [python, scripts/generate_kalman_tuning_figure.py]
+      lockfile: uv.lock
+      normalizer: svg-v1
+    output: assets/figures/kalman-prior-and-tuning-comparison.svg
+    consumers:
+      - content/concepts/estimation/kalman-filter.qmd
+    license:
+      spdx: CC-BY-NC-SA-4.0
+      basis: pyproject.toml
+
+  - id: figure.kalman-timeseries-and-gain
+    production: manual
+    sources:
+      - assets/figures/kalman-timeseries-and-gain.svg
+    generator: null
+    output: assets/figures/kalman-timeseries-and-gain.svg
+    consumers:
+      - content/concepts/estimation/kalman-filter.qmd
+    license:
+      spdx: CC-BY-NC-SA-4.0
+      basis: pyproject.toml
+
+  - id: figure.kalman-uncertainty-geometry
+    production: manual
+    sources:
+      - assets/figures/kalman-uncertainty-geometry.svg
+    generator: null
+    output: assets/figures/kalman-uncertainty-geometry.svg
+    consumers:
+      - content/concepts/estimation/kalman-filter.qmd
+    license:
+      spdx: CC-BY-NC-SA-4.0
+      basis: pyproject.toml
+
+  - id: figure.mle-bernoulli-likelihood
+    production: manual
+    sources:
+      - assets/figures/mle-bernoulli-likelihood.svg
+    generator: null
+    output: assets/figures/mle-bernoulli-likelihood.svg
+    consumers:
+      - content/concepts/statistics/maximum-likelihood-estimation.qmd
+    license:
+      spdx: CC-BY-NC-SA-4.0
+      basis: pyproject.toml
+
+  - id: figure.mle-gaussian-encoder-diagnostics
+    production: manual
+    sources:
+      - assets/figures/mle-gaussian-encoder-diagnostics.svg
+    generator: null
+    output: assets/figures/mle-gaussian-encoder-diagnostics.svg
+    consumers:
+      - content/concepts/statistics/maximum-likelihood-estimation.qmd
+    license:
+      spdx: CC-BY-NC-SA-4.0
+      basis: pyproject.toml
+
+  - id: figure.mle-probability-vs-likelihood
+    production: manual
+    sources:
+      - assets/figures/mle-probability-vs-likelihood.svg
+    generator: null
+    output: assets/figures/mle-probability-vs-likelihood.svg
+    consumers:
+      - content/concepts/statistics/maximum-likelihood-estimation.qmd
+    license:
+      spdx: CC-BY-NC-SA-4.0
+      basis: pyproject.toml

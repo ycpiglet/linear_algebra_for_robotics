@@ -2,13 +2,13 @@ schema_version: 1
 id: PUB-006
 title: 저장소 소유 artifact inventory·manifest 기반
 area: artifact
-status: planned
+status: in_progress
 priority: P1
 change_class: toolchain
 version_impact: additive
 owner_role: publishing-ops-steward
 review_roles: [artifact-editor, math-domain-reviewer]
-branch: null
+branch: agent/pub-006-artifact-inventory
 dependencies: [PUB-002, PUB-018]
 decision_refs:
   - assets/README.md
@@ -30,22 +30,29 @@ change_paths:
     - content/**/*.qmd
     - courseware/labs/*.qmd
     - assets/figures/**
-    - scripts/generate_*figure.py
+    - scripts/generate_*.py
   write:
-    - platform/scripts/*artifact*
-    - platform/tests/*artifact*
-    - platform/schemas/*artifact*
-    - assets의 artifact manifest 또는 sidecar metadata
+    - platform/scripts/artifact_inventory.py
+    - platform/tests/test_artifact_inventory.py
+    - platform/schemas/artifact-manifest.schema.json
+    - Makefile
+    - assets/README.md
+    - assets/artifact-manifest.yml
+    - assets/figures/jacobian-2r-geometry.svg
+    - assets/figures/jacobian-2r-velocity-map.svg
   exclusive_locks: [artifact-contract]
-  generated: [platform/generated/**]
+  generated:
+    - assets/figures/jacobian-2r-geometry.svg
+    - assets/figures/jacobian-2r-velocity-map.svg
+    - assets/figures/jacobian-singular-value-manipulability.svg
+    - assets/figures/kalman-prior-and-tuning-comparison.svg
 verification:
   source_contract:
-    - deterministic inventory test
+    - make artifact-audit
     - make test
     - make lint
-    - 생성 가능한 자산의 임시 디렉터리 재생성 비교
   rendered_contract:
-    - 대표 자산의 source→generator/output→consumer 역추적
+    - .tools/uv/uv run --locked python platform/scripts/artifact_inventory.py trace figure.jacobian-2r-geometry
   post_merge:
     - 새 artifact의 ID·caption/alt·provenance 누락이 no-new-debt gate에서 실패
 rollback:

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="766.422243pt" height="398.736pt" viewBox="0 0 766.422243 398.736" xmlns="http://www.w3.org/2000/svg" version="1.1" role="img" aria-labelledby="jacobian-velocity-map-title jacobian-velocity-map-desc">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="758.175759pt" height="398.736pt" viewBox="0 0 758.175759 398.736" xmlns="http://www.w3.org/2000/svg" version="1.1" role="img" aria-labelledby="jacobian-velocity-map-title jacobian-velocity-map-desc">
   <title id="jacobian-velocity-map-title">자코비안 열의 순간 효과와 말단속도의 가중합</title>
   <desc id="jacobian-velocity-map-desc">왼쪽 패널은 관절각 30도와 60도로 굽힌 2R 팔의 말단에서 자코비안 첫째 열 (-0.500, 0.346)과 둘째 열 (-0.300, 0)을 화살표로 보인다. 오른쪽 패널은 관절속도 0.5와 -0.2 라디안 매 초로 두 열을 가중해 머리-꼬리로 이으면 말단속도 (-0.190, 0.173) 미터 매 초가 됨을 평행사변형으로 보인다.</desc>
  <metadata>
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-07-19T14:14:36.496296</dc:date>
+    <dc:date>1970-01-01T00:00:00+00:00</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
-      <dc:title>Matplotlib v3.11.1, https://matplotlib.org/</dc:title>
+      <dc:title>Matplotlib v3.11.0, https://matplotlib.org/</dc:title>
      </cc:Agent>
     </dc:creator>
    </cc:Work>
@@ -23,231 +23,231 @@
  </defs>
  <g id="figure_1">
   <g id="patch_1">
-   <path d="M 0 398.736 
-L 766.422243 398.736 
-L 766.422243 0 
-L 0 0 
+   <path d="M 0 398.736
+L 758.175759 398.736
+L 758.175759 0
+L 0 0
 z
 " style="fill: #fbfcfe"/>
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path d="M 7.226847 391.536 
-L 386.722426 391.536 
-L 386.722426 77.92507 
-L 7.226847 77.92507 
+    <path d="M 15.86339 391.536
+L 392.383155 391.536
+L 392.383155 80.38425
+L 15.86339 80.38425
 z
 " style="fill: #fbfcfe"/>
    </g>
    <g id="matplotlib.axis_1"/>
    <g id="matplotlib.axis_2"/>
    <g id="line2d_1">
-    <path d="M 181.162321 328.286737 
-L 272.454768 275.579018 
-" clip-path="url(#pf16416b6a3)" style="fill: none; stroke: #34415a; stroke-width: 6; stroke-linecap: round"/>
+    <path d="M 188.434949 328.782706
+L 279.011527 276.488294
+" clip-path="url(#p66b9412767)" style="fill: none; stroke: #34415a; stroke-width: 6; stroke-linecap: round"/>
    </g>
    <g id="line2d_2">
-    <path d="M 272.454768 275.579018 
-L 272.454768 196.517439 
-" clip-path="url(#pf16416b6a3)" style="fill: none; stroke: #34415a; stroke-width: 6; stroke-linecap: round"/>
+    <path d="M 279.011527 276.488294
+L 279.011527 198.046676
+" clip-path="url(#p66b9412767)" style="fill: none; stroke: #34415a; stroke-width: 6; stroke-linecap: round"/>
    </g>
    <g id="patch_3">
-    <path d="M 7.226847 391.536 
-L 7.226847 77.92507 
+    <path d="M 15.86339 391.536
+L 15.86339 80.38425
 " style="fill: none; stroke: #d7dfeb; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_4">
-    <path d="M 386.722426 391.536 
-L 386.722426 77.92507 
+    <path d="M 392.383155 391.536
+L 392.383155 80.38425
 " style="fill: none; stroke: #d7dfeb; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_5">
-    <path d="M 7.226847 391.536 
-L 386.722426 391.536 
+    <path d="M 15.86339 391.536
+L 392.383155 391.536
 " style="fill: none; stroke: #d7dfeb; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_6">
-    <path d="M 7.226847 77.92507 
-L 386.722426 77.92507 
+    <path d="M 15.86339 80.38425
+L 392.383155 80.38425
 " style="fill: none; stroke: #d7dfeb; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="PathCollection_1">
     <defs>
-     <path id="m11b695b181" d="M 0 5.244044 
-C 1.390737 5.244044 2.7247 4.691499 3.708099 3.708099 
-C 4.691499 2.7247 5.244044 1.390737 5.244044 0 
-C 5.244044 -1.390737 4.691499 -2.7247 3.708099 -3.708099 
-C 2.7247 -4.691499 1.390737 -5.244044 0 -5.244044 
-C -1.390737 -5.244044 -2.7247 -4.691499 -3.708099 -3.708099 
-C -4.691499 -2.7247 -5.244044 -1.390737 -5.244044 0 
-C -5.244044 1.390737 -4.691499 2.7247 -3.708099 3.708099 
-C -2.7247 4.691499 -1.390737 5.244044 0 5.244044 
+     <path id="m11b695b181" d="M 0 5.244044
+C 1.390737 5.244044 2.7247 4.691499 3.708099 3.708099
+C 4.691499 2.7247 5.244044 1.390737 5.244044 0
+C 5.244044 -1.390737 4.691499 -2.7247 3.708099 -3.708099
+C 2.7247 -4.691499 1.390737 -5.244044 0 -5.244044
+C -1.390737 -5.244044 -2.7247 -4.691499 -3.708099 -3.708099
+C -4.691499 -2.7247 -5.244044 -1.390737 -5.244044 0
+C -5.244044 1.390737 -4.691499 2.7247 -3.708099 3.708099
+C -2.7247 4.691499 -1.390737 5.244044 0 5.244044
 z
 " style="stroke: #172033; stroke-width: 1.6"/>
     </defs>
-    <g clip-path="url(#pf16416b6a3)">
-     <use xlink:href="#m11b695b181" x="181.162321" y="328.286737" style="fill: #fbfcfe; stroke: #172033; stroke-width: 1.6"/>
+    <g clip-path="url(#p66b9412767)">
+     <use xlink:href="#m11b695b181" x="188.434949" y="328.782706" style="fill: #fbfcfe; stroke: #172033; stroke-width: 1.6"/>
     </g>
    </g>
    <g id="PathCollection_2">
-    <g clip-path="url(#pf16416b6a3)">
-     <use xlink:href="#m11b695b181" x="272.454768" y="275.579018" style="fill: #fbfcfe; stroke: #172033; stroke-width: 1.6"/>
+    <g clip-path="url(#p66b9412767)">
+     <use xlink:href="#m11b695b181" x="279.011527" y="276.488294" style="fill: #fbfcfe; stroke: #172033; stroke-width: 1.6"/>
     </g>
    </g>
    <g id="PathCollection_3">
     <defs>
-     <path id="m3c4117a032" d="M 0 4.1833 
-C 1.109424 4.1833 2.173559 3.742521 2.95804 2.95804 
-C 3.742521 2.173559 4.1833 1.109424 4.1833 0 
-C 4.1833 -1.109424 3.742521 -2.173559 2.95804 -2.95804 
-C 2.173559 -3.742521 1.109424 -4.1833 0 -4.1833 
-C -1.109424 -4.1833 -2.173559 -3.742521 -2.95804 -2.95804 
-C -3.742521 -2.173559 -4.1833 -1.109424 -4.1833 0 
-C -4.1833 1.109424 -3.742521 2.173559 -2.95804 2.95804 
-C -2.173559 3.742521 -1.109424 4.1833 0 4.1833 
+     <path id="m3c4117a032" d="M 0 4.1833
+C 1.109424 4.1833 2.173559 3.742521 2.95804 2.95804
+C 3.742521 2.173559 4.1833 1.109424 4.1833 0
+C 4.1833 -1.109424 3.742521 -2.173559 2.95804 -2.95804
+C 2.173559 -3.742521 1.109424 -4.1833 0 -4.1833
+C -1.109424 -4.1833 -2.173559 -3.742521 -2.95804 -2.95804
+C -3.742521 -2.173559 -4.1833 -1.109424 -4.1833 0
+C -4.1833 1.109424 -3.742521 2.173559 -2.95804 2.95804
+C -2.173559 3.742521 -1.109424 4.1833 0 4.1833
 z
 " style="stroke: #172033"/>
     </defs>
-    <g clip-path="url(#pf16416b6a3)">
-     <use xlink:href="#m3c4117a032" x="272.454768" y="196.517439" style="fill: #172033; stroke: #172033"/>
+    <g clip-path="url(#p66b9412767)">
+     <use xlink:href="#m3c4117a032" x="279.011527" y="198.046676" style="fill: #172033; stroke: #172033"/>
     </g>
    </g>
    <g id="text_1">
-    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #a92f49" x="135.414698" y="97.318833" transform="rotate(-0 135.414698 97.318833)">j₁ = (-0.500, 0.346)</text>
+    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #a92f49" x="143.046057" y="99.625937" transform="rotate(-0 143.046057 99.625937)">j₁ = (-0.500, 0.346)</text>
    </g>
    <g id="text_2">
-    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #1459b8" x="188.122417" y="211.012061" transform="rotate(-0 188.122417 211.012061)">j₂ = (-0.300, 0)</text>
+    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #1459b8" x="195.340469" y="212.42764" transform="rotate(-0 195.340469 212.42764)">j₂ = (-0.300, 0)</text>
    </g>
    <g id="text_3">
-    <text style="font-size: 10px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #5b6578" x="223.328496" y="348.052132" transform="rotate(-0 223.328496 348.052132)">q₁=30°, q₂=60°</text>
+    <text style="font-size: 10px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #5b6578" x="230.270479" y="348.39311" transform="rotate(-0 230.270479 348.39311)">q₁=30°, q₂=60°</text>
    </g>
    <g id="text_4">
-    <text style="font-size: 9.3px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #5b6578" x="17.768391" y="378.35907" transform="rotate(-0 17.768391 378.35907)">빨강 j₁: 관절 1만 1 rad/s · 파랑 j₂: 관절 2만 1 rad/s일 때의 말단속도</text>
+    <text style="font-size: 9.3px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #5b6578" x="26.322273" y="378.462397" transform="rotate(-0 26.322273 378.462397)">빨강 j₁: 관절 1만 1 rad/s · 파랑 j₂: 관절 2만 1 rad/s일 때의 말단속도</text>
    </g>
    <g id="text_5">
-    <text style="font-size: 12.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="7.226847" y="67.92507" transform="rotate(-0 7.226847 67.92507)">A · 현재 자세와 자코비안 두 열</text>
+    <text style="font-size: 12.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="15.86339" y="70.38425" transform="rotate(-0 15.86339 70.38425)">A · 현재 자세와 자코비안 두 열</text>
    </g>
    <g id="patch_7">
-    <path d="M 272.454768 196.517439 
-Q 206.570119 150.871215 142.891114 106.753106 
+    <path d="M 279.011527 198.046676
+Q 213.643513 152.758387 150.481142 108.998213
 " style="fill: none; stroke: #a92f49; stroke-width: 2.4; stroke-linecap: round"/>
-    <path d="M 145.040104 110.675075 
-L 142.891114 106.753106 
-L 147.318083 107.387095 
+    <path d="M 152.630132 112.920182
+L 150.481142 108.998213
+L 154.908111 109.632203
 z
 " style="fill: #a92f49; stroke: #a92f49; stroke-width: 2.4; stroke-linecap: round"/>
    </g>
    <g id="patch_8">
-    <path d="M 272.454768 196.517439 
-Q 232.923979 196.517439 196.076471 196.517439 
+    <path d="M 279.011527 198.046676
+Q 239.790719 198.046676 203.253191 198.046676
 " style="fill: none; stroke: #1459b8; stroke-width: 2.4; stroke-linecap: round"/>
-    <path d="M 200.076471 198.517439 
-L 196.076471 196.517439 
-L 200.076471 194.517439 
+    <path d="M 207.253191 200.046676
+L 203.253191 198.046676
+L 207.253191 196.046676
 z
 " style="fill: #1459b8; stroke: #1459b8; stroke-width: 2.4; stroke-linecap: round"/>
    </g>
   </g>
   <g id="axes_2">
    <g id="patch_9">
-    <path d="M 479.212484 391.536 
-L 759.222243 391.536 
-L 759.222243 77.92507 
-L 479.212484 77.92507 
+    <path d="M 473.161696 391.536
+L 750.975759 391.536
+L 750.975759 80.38425
+L 473.161696 80.38425
 z
 " style="fill: #fbfcfe"/>
    </g>
    <g id="line2d_3">
-    <path d="M 703.220291 279.532097 
-L 563.215412 182.533871 
-" clip-path="url(#pcec07eea74)" style="fill: none; stroke-dasharray: 3.7,1.6; stroke-dashoffset: 0; stroke: #5b6578"/>
+    <path d="M 695.412946 280.410375
+L 556.505915 184.172761
+" clip-path="url(#p8a84aa7c72)" style="fill: none; stroke-dasharray: 3.7,1.6; stroke-dashoffset: 0; stroke: #5b6578"/>
    </g>
    <g id="line2d_4">
-    <path d="M 669.61912 279.532097 
-L 703.220291 279.532097 
-" clip-path="url(#pcec07eea74)" style="fill: none; stroke-dasharray: 3.7,1.6; stroke-dashoffset: 0; stroke: #5b6578"/>
+    <path d="M 662.075259 280.410375
+L 695.412946 280.410375
+" clip-path="url(#p8a84aa7c72)" style="fill: none; stroke-dasharray: 3.7,1.6; stroke-dashoffset: 0; stroke: #5b6578"/>
    </g>
    <g id="matplotlib.axis_3"/>
    <g id="matplotlib.axis_4"/>
    <g id="patch_10">
-    <path d="M 479.212484 391.536 
-L 479.212484 77.92507 
+    <path d="M 473.161696 391.536
+L 473.161696 80.38425
 " style="fill: none; stroke: #d7dfeb; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_11">
-    <path d="M 759.222243 391.536 
-L 759.222243 77.92507 
+    <path d="M 750.975759 391.536
+L 750.975759 80.38425
 " style="fill: none; stroke: #d7dfeb; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_12">
-    <path d="M 479.212484 391.536 
-L 759.222243 391.536 
+    <path d="M 473.161696 391.536
+L 750.975759 391.536
 " style="fill: none; stroke: #d7dfeb; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="patch_13">
-    <path d="M 479.212484 77.92507 
-L 759.222243 77.92507 
+    <path d="M 473.161696 80.38425
+L 750.975759 80.38425
 " style="fill: none; stroke: #d7dfeb; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_6">
-    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: middle; fill: #a92f49" x="588.41629" y="254.553803" transform="rotate(-0 588.41629 254.553803)">0.5 j₁</text>
+    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: middle; fill: #a92f49" x="581.50918" y="255.627949" transform="rotate(-0 581.50918 255.627949)">0.5 j₁</text>
    </g>
    <g id="text_7">
-    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: middle; fill: #1459b8" x="546.414826" y="167.690981" transform="rotate(-0 546.414826 167.690981)">-0.2 j₂</text>
+    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: middle; fill: #1459b8" x="539.837071" y="169.407614" transform="rotate(-0 539.837071 169.407614)">-0.2 j₂</text>
    </g>
    <g id="text_8">
-    <text style="font-weight: 700; font-size: 11px; font-family: 'Noto Sans CJK KR'; text-anchor: middle; fill: #087f78" x="568.815607" y="144.452544" transform="rotate(-0 568.815607 144.452544)">ṗ = (-0.190, 0.173) m/s</text>
+    <text style="font-weight: 700; font-size: 11px; font-family: 'Noto Sans CJK KR'; text-anchor: middle; fill: #087f78" x="562.062196" y="146.390048" transform="rotate(-0 562.062196 146.390048)">ṗ = (-0.190, 0.173) m/s</text>
    </g>
    <g id="text_9">
-    <text style="font-size: 10px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #5b6578" x="496.01307" y="343.934341" transform="rotate(-0 496.01307 343.934341)">q̇₁ = 0.5 rad/s,  q̇₂ = -0.2 rad/s</text>
+    <text style="font-size: 10px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #5b6578" x="489.83054" y="344.307609" transform="rotate(-0 489.83054 344.307609)">q̇₁ = 0.5 rad/s,  q̇₂ = -0.2 rad/s</text>
    </g>
    <g id="text_10">
-    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="496.01307" y="371.935317" transform="rotate(-0 496.01307 371.935317)">ṗ = j₁q̇₁ + j₂q̇₂ = J(q)q̇</text>
+    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="489.83054" y="372.089016" transform="rotate(-0 489.83054 372.089016)">ṗ = j₁q̇₁ + j₂q̇₂ = J(q)q̇</text>
    </g>
    <g id="text_11">
-    <text style="font-size: 12.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="479.212484" y="67.92507" transform="rotate(-0 479.212484 67.92507)">B · q̇ 성분으로 가중해 더하기</text>
+    <text style="font-size: 12.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="473.161696" y="70.38425" transform="rotate(-0 473.161696 70.38425)">B · q̇ 성분으로 가중해 더하기</text>
    </g>
    <g id="patch_14">
-    <path d="M 669.61912 279.532097 
-Q 599.616681 231.032984 531.819885 184.061986 
+    <path d="M 662.075259 280.410375
+Q 592.621743 232.291568 525.373871 185.700876
 " style="fill: none; stroke: #a92f49; stroke-width: 2.4; stroke-linecap: round"/>
-    <path d="M 533.968875 187.983955 
-L 531.819885 184.061986 
-L 536.246854 184.695975 
+    <path d="M 527.522861 189.622845
+L 525.373871 185.700876
+L 529.80084 186.334865
 z
 " style="fill: #a92f49; stroke: #a92f49; stroke-width: 2.4; stroke-linecap: round"/>
    </g>
    <g id="patch_15">
-    <path d="M 529.614241 182.533871 
-Q 546.414826 182.533871 560.53213 182.533871 
+    <path d="M 523.168227 184.172761
+Q 539.837071 184.172761 553.822633 184.172761
 " style="fill: none; stroke: #1459b8; stroke-width: 2.4; stroke-linecap: round"/>
-    <path d="M 556.53213 180.533871 
-L 560.53213 182.533871 
-L 556.53213 184.533871 
+    <path d="M 549.822633 182.172761
+L 553.822633 184.172761
+L 549.822633 186.172761
 z
 " style="fill: #1459b8; stroke: #1459b8; stroke-width: 2.4; stroke-linecap: round"/>
    </g>
    <g id="patch_16">
-    <path d="M 669.61912 279.532097 
-Q 616.417266 231.032984 565.85939 184.944136 
+    <path d="M 662.075259 280.410375
+Q 609.290587 232.291568 559.149893 186.583026
 " style="fill: none; stroke: #087f78; stroke-width: 3.2; stroke-linecap: round"/>
-    <path d="M 567.468068 189.116924 
-L 565.85939 184.944136 
-L 570.162827 186.160866 
+    <path d="M 560.758571 190.755814
+L 559.149893 186.583026
+L 563.45333 187.799756
 z
 " style="fill: #087f78; stroke: #087f78; stroke-width: 3.2; stroke-linecap: round"/>
    </g>
   </g>
   <g id="text_12">
-   <text style="font-size: 13.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="7.2" y="17.456836" transform="rotate(-0 7.2 17.456836)">자코비안의 열은 관절 하나의 순간 효과이고, 말단속도는 그 가중합이다</text>
+   <text style="font-size: 13.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="7.2" y="19.08" transform="rotate(-0 7.2 19.08)">자코비안의 열은 관절 하나의 순간 효과이고, 말단속도는 그 가중합이다</text>
   </g>
  </g>
  <defs>
-  <clipPath id="pf16416b6a3">
-   <rect x="7.226847" y="77.92507" width="379.495579" height="313.61093"/>
+  <clipPath id="p66b9412767">
+   <rect x="15.86339" y="80.38425" width="376.519765" height="311.15175"/>
   </clipPath>
-  <clipPath id="pcec07eea74">
-   <rect x="479.212484" y="77.92507" width="280.009759" height="313.61093"/>
+  <clipPath id="p8a84aa7c72">
+   <rect x="473.161696" y="80.38425" width="277.814062" height="311.15175"/>
   </clipPath>
  </defs>
 </svg>
