@@ -12,6 +12,7 @@ __pycache__/
 .jupyter_cache/
 
 _site/
+_review/
 _book/
 _proof/
 _freeze/

@@ -50,6 +50,7 @@ format:
     include-after-body: assets/includes/atlas-scripts.html
 
 filters:
+  - platform/extension/document-identity.lua
   - platform/extension/atlas-metadata.lua
   - platform/extension/static-page-glossary.lua
   - platform/extension/epub-links.lua

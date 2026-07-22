@@ -21,6 +21,7 @@
 ```text
 platform/design/
 ├── README.md
+├── repository-rename-runbook.md
 └── work-items/
     ├── PUB-001.yml
     ├── PUB-002.yml

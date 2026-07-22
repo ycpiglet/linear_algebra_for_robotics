@@ -2,19 +2,19 @@ schema_version: 1
 id: PUB-004
 title: 저장소 rename 사전 호환 계층과 cutover runbook
 area: identity
-status: planned
+status: in_review
 priority: P0
 change_class: breaking
 version_impact: compatible
 owner_role: release-engineer
 review_roles: [publishing-ops-steward, render-qa]
-branch: null
+branch: agent/pub-004-url-compat
 dependencies: [PUB-002, PUB-003]
 decision_refs:
   - platform/design/work-items/PUB-003.yml
 decision_needed: []
 blocker: null
-status_reason: null
+status_reason: "old/new Pages에서 같은 source identity와 prefix-neutral saved state를 먼저 배포하고 실제 외부 rename은 PUB-005 사용자 확인까지 보류한다."
 superseded_by: null
 scope:
   in:
@@ -31,11 +31,20 @@ change_paths:
     - editorial-desk.qmd
     - assets/js/atlas.js
     - platform/scripts/editorial.py
+    - scripts/verify_outputs.py
   write:
+    - .gitignore
+    - _quarto.yml
     - assets/js/atlas.js
+    - platform/extension/document-identity.lua
+    - platform/tests/test_design_contract.py
     - platform/tests/test_editorial.py
-    - 관련 사용자 상태 migration test
-    - cutover inventory 문서
+    - platform/tests/test_url_compat.py
+    - courseware/tests/test_output_verifier.py
+    - scripts/verify_outputs.py
+    - platform/design/repository-rename-runbook.md
+    - platform/design/README.md
+    - platform/design/work-items/PUB-004.yml
   exclusive_locks: [identity-cutover]
   generated: []
 verification:
@@ -65,11 +74,14 @@ definition_of_done:
   - cutover 중단·rollback checklist가 검토되었다
 evidence:
   issue: null
-  pr: null
-  ci_runs: []
-  rendered_artifacts: []
+  pr: 31
+  ci_runs:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29938768236
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29938769412
+  rendered_artifacts:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29938768236/artifacts/8537323232
   post_merge: []
-  last_known_good: null
+  last_known_good: 73a5b264478584a9c54f80c2019059c24b0b5175
   revert_ref: null
-  follow_up: null
-last_reviewed: "2026-07-20"
+  follow_up: PUB-005
+last_reviewed: "2026-07-23"

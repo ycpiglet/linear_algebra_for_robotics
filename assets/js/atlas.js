@@ -4,6 +4,9 @@
   const SITE_ROOT = window.__ROBOTICS_MATH_ATLAS_ROOT__ || new URL('./', document.baseURI).href;
   const MANIFEST_URL = new URL('platform/generated/concept-manifest.json', SITE_ROOT).href;
   const STORAGE_KEY = 'robotics-math-atlas.progress.v1';
+  const LEGACY_REPOSITORY_SLUG = 'linear_algebra_for_robotics';
+  const CANONICAL_REPOSITORY_SLUG = 'robotics-math-atlas';
+  const SAVED_PATH_MIGRATION = 'savedPathsV1';
   const DEPTHS = [
     { id: 'intuition', label: '직관', rank: 0 },
     { id: 'application', label: '계산·적용', rank: 1 },
@@ -273,12 +276,53 @@
     return new URL(String(path).replace(/^\//, ''), SITE_ROOT).href;
   };
 
+  const projectRootUrl = (siteRoot = SITE_ROOT, origin = window.location.origin) => {
+    const root = new URL(siteRoot, `${origin}/`);
+    const parts = root.pathname.split('/').filter(Boolean);
+    const repositoryIndex = parts.findIndex((part) => (
+      part === LEGACY_REPOSITORY_SLUG || part === CANONICAL_REPOSITORY_SLUG
+    ));
+    if (root.origin !== origin || repositoryIndex < 0) return root;
+    root.pathname = `/${parts.slice(0, repositoryIndex + 1).join('/')}/`;
+    root.search = '';
+    root.hash = '';
+    return root;
+  };
+
+  const siteRelativePath = (value, siteRoot = SITE_ROOT, origin = window.location.origin) => {
+    if (typeof value !== 'string' || !value) return value;
+    let candidate;
+    let projectRoot;
+    try {
+      projectRoot = projectRootUrl(siteRoot, origin);
+      candidate = new URL(value, projectRoot);
+    } catch (_error) {
+      return value;
+    }
+    if (!['http:', 'https:'].includes(candidate.protocol) || candidate.origin !== origin) {
+      return value;
+    }
+
+    const parts = candidate.pathname.split('/').filter(Boolean);
+    if (parts[0] === LEGACY_REPOSITORY_SLUG
+      || parts[0] === CANONICAL_REPOSITORY_SLUG) {
+      return `${parts.slice(1).join('/')}${candidate.search}${candidate.hash}`;
+    }
+    const rootPath = projectRoot.pathname.replace(/\/+$/, '/');
+    if (candidate.pathname.startsWith(rootPath)) {
+      return `${candidate.pathname.slice(rootPath.length)}${candidate.search}${candidate.hash}`;
+    }
+    return value;
+  };
+
   const safeSavedUrl = (value) => {
     try {
-      const url = new URL(String(value || ''), window.location.href);
-      if (!['http:', 'https:'].includes(url.protocol) || url.origin !== window.location.origin) {
-        return '#';
-      }
+      const projectRoot = projectRootUrl();
+      const relative = siteRelativePath(value);
+      const url = new URL(String(relative || ''), projectRoot);
+      if (!['http:', 'https:'].includes(url.protocol)
+        || url.origin !== window.location.origin
+        || !url.pathname.startsWith(projectRoot.pathname)) return '#';
       return url.href;
     } catch (_error) {
       return '#';
@@ -291,6 +335,54 @@
     return url.href;
   };
 
+  const migrateSavedMap = (entries, normalize) => {
+    const migrated = {};
+    const priorities = {};
+    let changed = false;
+    Object.entries(entries || {}).forEach(([key, rawEntry]) => {
+      const migratedKey = normalize(key);
+      const migratedEntry = rawEntry && typeof rawEntry === 'object' && !Array.isArray(rawEntry)
+        ? { ...rawEntry, url: normalize(rawEntry.url) }
+        : rawEntry;
+      changed ||= migratedKey !== key
+        || migratedEntry?.url !== rawEntry?.url;
+      const previous = migrated[migratedKey];
+      const timestamp = String(migratedEntry?.updatedAt || '');
+      const previousTimestamp = String(previous?.updatedAt || '');
+      const priority = migratedKey === key ? 1 : 0;
+      if (previous === undefined || timestamp > previousTimestamp
+        || (timestamp === previousTimestamp && priority > (priorities[migratedKey] || 0))) {
+        migrated[migratedKey] = migratedEntry;
+        priorities[migratedKey] = priority;
+      }
+    });
+    return { entries: migrated, changed };
+  };
+
+  const migrateProgressPaths = (
+    state,
+    siteRoot = SITE_ROOT,
+    origin = window.location.origin,
+  ) => {
+    const normalize = (value) => siteRelativePath(value, siteRoot, origin);
+    let changed = false;
+    ['bookmarks', 'favorites', 'lastRead'].forEach((field) => {
+      const result = migrateSavedMap(state[field], normalize);
+      state[field] = result.entries;
+      changed ||= result.changed;
+    });
+    state.migrations = state.migrations && typeof state.migrations === 'object'
+      ? state.migrations
+      : {};
+    if (state.migrations[SAVED_PATH_MIGRATION] !== true) {
+      state.migrations[SAVED_PATH_MIGRATION] = true;
+      changed = true;
+    }
+    return changed;
+  };
+
+  const currentPageKey = () => siteRelativePath(window.location.href);
+
   const loadProgress = () => {
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -301,6 +393,9 @@
         bookmarks: parsed.bookmarks && typeof parsed.bookmarks === 'object' ? parsed.bookmarks : {},
         favorites: parsed.favorites && typeof parsed.favorites === 'object' ? parsed.favorites : {},
         lastRead: parsed.lastRead && typeof parsed.lastRead === 'object' ? parsed.lastRead : {},
+        migrations: parsed.migrations && typeof parsed.migrations === 'object'
+          ? parsed.migrations
+          : {},
         updatedAt: parsed.updatedAt || null,
       };
     } catch (_error) {
@@ -311,12 +406,14 @@
         bookmarks: {},
         favorites: {},
         lastRead: {},
+        migrations: {},
         updatedAt: null,
       };
     }
   };
 
   const progress = loadProgress();
+  const progressPathsMigrated = migrateProgressPaths(progress);
 
   const persistProgress = () => {
     try {
@@ -327,6 +424,10 @@
       return false;
     }
   };
+
+  // The old and new project Pages sites share the github.io origin. Persist
+  // prefix-neutral paths before any reader tool consumes the maps.
+  if (progressPathsMigrated) persistProgress();
 
   const saveProgress = () => {
     progress.updatedAt = new Date().toISOString();
@@ -1032,6 +1133,7 @@
         } else {
           throw new Error('지원하지 않는 파일 형식입니다.');
         }
+        migrateProgressPaths(progress);
         saveProgress();
         window.location.reload();
       } catch (error) {
@@ -1092,7 +1194,7 @@
     const quickStart = article.querySelector('.concept-hero');
     if (quickStart && !quickStart.id) quickStart.id = 'concept-quick-start';
     const quickStartHref = quickStart ? `#${quickStart.id}` : '#';
-    const pageKey = window.location.pathname;
+    const pageKey = currentPageKey();
     const pageTitle = document.querySelector('h1.title')?.textContent.trim() || document.title;
     const initialRecord = progress.lastRead[pageKey];
     let activeHeading = headings[0] || null;
@@ -1244,7 +1346,7 @@
     const commitLastRead = (ratio = lastComputedRatio) => {
       if (!userMoved) return;
       progress.lastRead[pageKey] = {
-        url: window.location.href,
+        url: siteRelativePath(window.location.href),
         title: pageTitle,
         sectionId: activeHeading?.id || '',
         sectionTitle: activeHeading?.title || '',
@@ -1348,7 +1450,7 @@
       if (progress.bookmarks[key]) delete progress.bookmarks[key];
       else {
         progress.bookmarks[key] = {
-          url: `${window.location.pathname}${activeHeading?.id ? `#${activeHeading.id}` : ''}`,
+          url: `${pageKey}${activeHeading?.id ? `#${activeHeading.id}` : ''}`,
           pageTitle,
           sectionId: activeHeading?.id || '',
           sectionTitle: activeHeading?.title || '',
@@ -1513,6 +1615,16 @@
       installMotion();
     }
   };
+
+  if (typeof window.__ATLAS_TEST_HOOK__ === 'function') {
+    window.__ATLAS_TEST_HOOK__({
+      currentPageKey,
+      migrateProgressPaths,
+      projectRootUrl,
+      safeSavedUrl,
+      siteRelativePath,
+    });
+  }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot, { once: true });
