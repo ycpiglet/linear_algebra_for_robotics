@@ -22,6 +22,14 @@ FLAGSHIP_HTML = (
     "content/concepts/statistics/maximum-likelihood-estimation.html",
     "content/concepts/estimation/kalman-filter.html",
 )
+DOCUMENT_ID_PREFIX = "urn:robotics-math-atlas:document:v1:"
+DOCUMENT_ID_FORBIDDEN = (
+    "linear_algebra_for_robotics",
+    "robotics-math-atlas/",
+    "github.io",
+    "/review/",
+    "/preview/",
+)
 REFERENCE_TITLES = (
     "자코비안 장의 참고문헌",
     "최대우도추정 장의 참고문헌",
@@ -36,14 +44,36 @@ class DocumentParser(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.links: list[str] = []
         self.identifiers: set[str] = set()
+        self.document_identifiers: list[str] = []
+        self.has_main = False
+        self._in_title = False
+        self.title_parts: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = dict(attrs)
+        if tag == "main":
+            self.has_main = True
+        elif tag == "title":
+            self._in_title = True
         identifier = values.get("id") or values.get("name")
         if identifier:
             self.identifiers.add(identifier)
+        if tag == "meta" and (values.get("name") or "").casefold() == "dc.identifier":
+            self.document_identifiers.append(values.get("content") or "")
         if tag in {"a", "area"} and values.get("href") is not None:
             self.links.append(values["href"] or "")
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "title":
+            self._in_title = False
+
+    def handle_data(self, data: str) -> None:
+        if self._in_title:
+            self.title_parts.append(data)
+
+    @property
+    def is_redirect(self) -> bool:
+        return "".join(self.title_parts).strip() == "Redirect" and not self.has_main
 
 
 def parse_document(text: str) -> DocumentParser:
@@ -117,6 +147,40 @@ def verify_html_tree(root: Path) -> list[str]:
         errors.append(f"{root}: no HTML files found")
 
     if (root / "atlas.html").is_file():
+        document_id_sources: dict[str, str] = {}
+        for source in html_files:
+            source_label = _display(source, root)
+            document = parsed(source)
+            if document.is_redirect:
+                continue
+            document_ids = document.document_identifiers
+            if len(document_ids) != 1:
+                errors.append(
+                    f"{source_label}: expected exactly one DC.identifier, "
+                    f"found {len(document_ids)}"
+                )
+                continue
+            document_id = document_ids[0]
+            if not document_id.startswith(DOCUMENT_ID_PREFIX):
+                errors.append(f"{source_label}: invalid DC.identifier: {document_id}")
+                continue
+            lowered = document_id.casefold()
+            forbidden = next(
+                (value for value in DOCUMENT_ID_FORBIDDEN if value.casefold() in lowered),
+                None,
+            )
+            if forbidden is not None:
+                errors.append(
+                    f"{source_label}: URL-dependent DC.identifier contains {forbidden!r}"
+                )
+            previous = document_id_sources.get(document_id)
+            if previous is not None:
+                errors.append(
+                    f"{source_label}: duplicate DC.identifier also used by {previous}"
+                )
+            else:
+                document_id_sources[document_id] = source_label
+
         forbidden = (
             root / "AUTHORING_MANUAL.html",
             root / "platform/templates",

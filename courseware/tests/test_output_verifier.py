@@ -14,11 +14,25 @@ verify_outputs = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(verify_outputs)
 
 
+def _html(relative: str, body: str) -> str:
+    identifier = (
+        verify_outputs.DOCUMENT_ID_PREFIX
+        + relative.removesuffix(".html").replace("/", "%2F")
+        + ".qmd"
+    )
+    return f'<html><head><meta name="DC.identifier" content="{identifier}"></head>{body}</html>'
+
+
 def _write_minimal_atlas_site(root: Path) -> None:
+    atlas = root / "atlas.html"
+    atlas.write_text(_html("atlas.html", "<main>atlas</main>"), encoding="utf-8")
     for relative in verify_outputs.FLAGSHIP_HTML:
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text('<main class="page-glossary--static"></main>', encoding="utf-8")
+        path.write_text(
+            _html(relative, '<main class="page-glossary--static"></main>'),
+            encoding="utf-8",
+        )
     for relative, payload in (
         ("assets/js/atlas.js", b"// fixture"),
         ("assets/fonts/AtlasSansKR-Regular.woff2", b"fixture"),
@@ -120,7 +134,6 @@ def test_html_verifier_rejects_missing_and_source_links(tmp_path: Path) -> None:
 
 
 def test_html_verifier_checks_runtime_manifest_urls(tmp_path: Path) -> None:
-    (tmp_path / "atlas.html").write_text("<main>atlas</main>", encoding="utf-8")
     _write_minimal_atlas_site(tmp_path)
     generated = tmp_path / "platform" / "generated"
     generated.mkdir(parents=True)
@@ -137,13 +150,41 @@ def test_html_verifier_checks_runtime_manifest_urls(tmp_path: Path) -> None:
     )
     target = tmp_path / "content" / "concepts"
     target.mkdir(parents=True, exist_ok=True)
-    (target / "present.html").write_text('<h2 id="answer">42</h2>', encoding="utf-8")
+    (target / "present.html").write_text(
+        _html("content/concepts/present.html", '<h2 id="answer">42</h2>'),
+        encoding="utf-8",
+    )
 
     errors = verify_outputs.verify_html_tree(tmp_path)
     assert errors == [
         "platform/generated/concept-manifest.json: missing target for "
         "/content/concepts/missing.html"
     ]
+
+
+def test_html_verifier_rejects_missing_duplicate_and_url_dependent_identity(
+    tmp_path: Path,
+) -> None:
+    _write_minimal_atlas_site(tmp_path)
+    flagship = tmp_path / verify_outputs.FLAGSHIP_HTML[0]
+    flagship.write_text('<main class="page-glossary--static"></main>', encoding="utf-8")
+    duplicate = tmp_path / verify_outputs.FLAGSHIP_HTML[1]
+    duplicate.write_text(
+        _html("atlas.html", '<main class="page-glossary--static"></main>'),
+        encoding="utf-8",
+    )
+    dependent = tmp_path / verify_outputs.FLAGSHIP_HTML[2]
+    dependent.write_text(
+        '<meta name="DC.identifier" content="urn:robotics-math-atlas:document:v1:'
+        'https%3A%2F%2Fycpiglet.github.io%2Flinear_algebra_for_robotics%2Fpage">'
+        '<main class="page-glossary--static"></main>',
+        encoding="utf-8",
+    )
+
+    errors = verify_outputs.verify_html_tree(tmp_path)
+    assert any("expected exactly one DC.identifier, found 0" in error for error in errors)
+    assert any("duplicate DC.identifier" in error for error in errors)
+    assert any("URL-dependent DC.identifier" in error for error in errors)
 
 
 def test_epub_verifier_checks_members_and_fragments(tmp_path: Path) -> None:

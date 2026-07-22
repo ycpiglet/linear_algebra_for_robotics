@@ -215,6 +215,32 @@ def test_static_page_glossary_survives_without_javascript() -> None:
     assert ".includes(english.toLocaleLowerCase('en'))" in script
 
 
+def test_web_documents_use_url_independent_dublin_core_identity() -> None:
+    config = (ROOT / "_quarto.yml").read_text(encoding="utf-8")
+    identity_filter = (
+        ROOT / "platform/extension/document-identity.lua"
+    ).read_text(encoding="utf-8")
+    verifier = (ROOT / "scripts/verify_outputs.py").read_text(encoding="utf-8")
+
+    assert "platform/extension/document-identity.lua" in config
+    for contract in (
+        'quarto.doc.is_format("html:js")',
+        "quarto.doc.input_file",
+        "quarto.project.directory",
+        "pandoc.path.make_relative",
+        'quarto.doc.include_text(',
+        'name=\"DC.identifier\"',
+        "urn:robotics-math-atlas:document:v1:",
+    ):
+        assert contract in identity_filter
+    for forbidden in ("github.io", "linear_algebra_for_robotics", "/review/", "/preview/"):
+        assert forbidden not in identity_filter
+    assert "expected exactly one DC.identifier" in verifier
+    assert "if document.is_redirect:" in verifier
+    assert "duplicate DC.identifier" in verifier
+    assert "URL-dependent DC.identifier" in verifier
+
+
 def test_design_system_renders_operational_block_and_control_specimens() -> None:
     design = (ROOT / "design-system.qmd").read_text(encoding="utf-8")
 

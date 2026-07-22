@@ -78,11 +78,23 @@ class EditorialTestCase(unittest.TestCase):
         self.assertEqual(proposal.paragraph_id, "p-deadbeef")
 
     def test_page_url_maps_through_site_and_review_prefixes(self) -> None:
-        for prefix in ("", "review/", "preview/pr-12/", "linear_algebra_for_robotics/review/"):
+        for prefix in (
+            "",
+            "review/",
+            "preview/pr-12/",
+            "linear_algebra_for_robotics/review/",
+            "robotics-math-atlas/review/",
+            "robotics-math-atlas/review/preview/pr-12/",
+        ):
             url = f"https://example.org/{prefix}content/concepts/estimation/kalman-filter.html"
             self.assertEqual(editorial.page_to_source(url, self.root), self.source,
                              msg=f"prefix={prefix!r}")
         self.assertIsNone(editorial.page_to_source("https://example.org/none.html", self.root))
+        future = (
+            "https://ycpiglet.github.io/robotics-math-atlas/review/"
+            "content/concepts/estimation/kalman-filter.html?review=1#p-deadbeef"
+        )
+        self.assertEqual(editorial.page_to_source(future, self.root), self.source)
 
     def test_page_mapping_cannot_escape_repository_root(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
