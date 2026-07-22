@@ -35,7 +35,7 @@ toc: true
    **본문 위치:** [연쇄법칙과 직렬 연결](../concepts/robotics/jacobian.qmd#sec-jacobian-chain-rule), [좌표계 변환](../concepts/robotics/jacobian.qmd#sec-jacobian-frame-change).
 2. Bruno Siciliano, Lorenzo Sciavicco, Luigi Villani, Giuseppe Oriolo, [`Robotics: Modelling, Planning and Control`](https://doi.org/10.1007/978-1-84628-642-1), Springer, 2009. 미분기구학, 기하/해석 자코비안, 특이점, 역기구학의 표준 교재다.  
    **본문 위치:** [기하/해석 자코비안 비교](../concepts/robotics/jacobian.qmd#sec-jacobian-geometric-analytic), [특이점](../concepts/robotics/jacobian.qmd#sec-jacobian-singularity).
-3. John J. Craig, `Introduction to Robotics: Mechanics and Control`, Pearson. 전진·미분기구학과 정역학의 고전적 입문서다.  
+3. John J. Craig, `Introduction to Robotics: Mechanics and Control`, Pearson. 순기구학·미분기구학과 정역학의 고전적 입문서다.\
    **본문 위치:** [2R 속도 계산](../concepts/robotics/jacobian.qmd#sec-jacobian-forward-velocity), [가상일과 전치](../concepts/robotics/jacobian.qmd#sec-jacobian-duality).
 4. Yoshihiko Nakamura, `Advanced Robotics: Redundancy and Optimization`, Addison-Wesley, 1991. 여유자유도, 영공간, 특이점과 최적화를 심화한다.  
    **본문 위치:** [계수와 영공간](../concepts/robotics/jacobian.qmd#sec-jacobian-rank), [의사역행렬 역속도](../concepts/robotics/jacobian.qmd#sec-jacobian-inverse-velocity).
