@@ -40,7 +40,7 @@ change_paths:
     - assets/artifact-manifest.yml
     - assets/figures/jacobian-2r-geometry.svg
     - assets/figures/jacobian-2r-velocity-map.svg
-  exclusive_locks: [artifact-contract]
+  exclusive_locks: [artifact-contract, ci-control-plane]
   generated:
     - assets/figures/jacobian-2r-geometry.svg
     - assets/figures/jacobian-2r-velocity-map.svg
