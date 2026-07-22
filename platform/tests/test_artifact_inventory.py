@@ -153,7 +153,13 @@ def test_representative_trace_spans_source_output_consumer_and_license() -> None
     trace = artifact_inventory.trace_artifact("figure.jacobian-2r-geometry", ROOT)
 
     assert trace["production"] == "generated"
-    assert trace["sources"] == ["scripts/generate_jacobian_2r_geometry_figure.py"]
+    assert trace["sources"] == [
+        "scripts/generate_jacobian_2r_geometry_figure.py",
+        "scripts/atlas_matplotlib_fonts.py",
+        "scripts/build_atlas_native_fonts.py",
+        "assets/fonts/AtlasSansKR-Regular.otf",
+        "assets/fonts/AtlasSansKR-Bold.otf",
+    ]
     assert trace["generator"] == {
         "command": ["python", "scripts/generate_jacobian_2r_geometry_figure.py"],
         "lockfile": "uv.lock",

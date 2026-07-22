@@ -48,6 +48,28 @@ make artifact-audit
 디렉터리 재생성을 실행한다. system Python으로 직접 재생성하면 잠금된 Matplotlib·NumPy를
 사용한다는 보장이 없으므로 재현성 증거로 인정하지 않는다.
 
+Matplotlib 생성 그림은 운영체제의 font discovery 결과를 사용하지 않는다.
+`scripts/atlas_matplotlib_fonts.py`가 아래 저장소 OTF를 처음 필요할 때만 정확한 경로로
+등록하고, 네 generator는 `Atlas Sans KR` 400/700 face만 사용한다.
+
+| 파일 | weight | SHA-256 |
+|---|---:|---|
+| `fonts/AtlasSansKR-Regular.otf` | 400 | `4a4cc415f918e44a73c3f3b8614d582d909ccc3af651bc2fdc79de8d09f11818` |
+| `fonts/AtlasSansKR-Bold.otf` | 700 | `b8432223280a4a3261978a4c90a1e01687e476157388ebd9e1e03053d76eeabc` |
+
+OTF를 갱신할 때는 임의의 `Noto Sans CJK` 설치본을 쓰지 않는다. Ubuntu Noto CJK의
+Regular TTC SHA-256 `b76b0433203017ca80401b2ee0dd69350349871c4b19d504c34dbdd80541690a`와
+Bold TTC SHA-256 `faa5f3656a78b2e2d450d27fe8382c778bc2b6bb5ea29c986664a6a435056ceb`만
+허용하며, 다음 명령이 source hash·TTC index 1 family·400/700 weight·CFF outline을 검증한 뒤
+OTF를 만든다. 글꼴 재배포 근거는 같은 디렉터리의 `OFL.txt`다.
+
+```bash
+.tools/uv/uv run --locked python scripts/build_atlas_native_fonts.py
+```
+
+생성 후 명령을 한 번 더 실행해 두 OTF의 SHA-256이 위 값과 같은지 확인하고,
+`make artifact-audit`로 격리된 임시 디렉터리에서 네 SVG가 정확히 재현되는지 확인한다.
+
 `legacy_baseline`은 2026-07-23에 이미 존재하던 누락만 식별자 단위로 고정한다. 새 그림이나 새
 consumer의 ID·caption·alt·provenance 누락은 실패하며, 기존 누락을 고쳤다면 같은 변경에서
 baseline 항목도 제거해야 한다. baseline에 새 예외를 추가하는 것은 자동 면제가 아니라 별도

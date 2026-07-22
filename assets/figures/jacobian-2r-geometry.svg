@@ -8,11 +8,10 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>1970-01-01T00:00:00+00:00</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
-      <dc:title>Matplotlib v3.11.0, https://matplotlib.org/</dc:title>
+      <dc:title>Robotics Math Atlas deterministic generator</dc:title>
      </cc:Agent>
     </dc:creator>
    </cc:Work>
@@ -89,13 +88,13 @@ z
 " style="fill: #5b6578; stroke: #5b6578; stroke-width: 1.4; stroke-linecap: round"/>
    </g>
    <g id="text_1">
-    <text style="font-size: 12px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #5b6578" x="316.965405" y="314.155135" transform="rotate(-0 316.965405 314.155135)">x</text>
+    <text style="font-size: 12px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #5b6578" x="316.965405" y="314.155135" transform="rotate(-0 316.965405 314.155135)">x</text>
    </g>
    <g id="text_2">
-    <text style="font-size: 12px; font-family: 'Noto Sans CJK KR'; text-anchor: end; fill: #5b6578" x="62.879351" y="50.685405" transform="rotate(-0 62.879351 50.685405)">y</text>
+    <text style="font-size: 12px; font-family: 'Atlas Sans KR'; text-anchor: end; fill: #5b6578" x="62.879351" y="50.685405" transform="rotate(-0 62.879351 50.685405)">y</text>
    </g>
    <g id="text_3">
-    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #5b6578" x="81.700541" y="319.279459" transform="rotate(-0 81.700541 319.279459)">기준좌표계 {0} 원점</text>
+    <text style="font-size: 10.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #5b6578" x="81.700541" y="319.279459" transform="rotate(-0 81.700541 319.279459)">기준좌표계 {0} 원점</text>
    </g>
    <g id="PathCollection_1">
     <defs>
@@ -139,28 +138,28 @@ z
     </g>
    </g>
    <g id="text_4">
-    <text style="font-weight: 700; font-size: 12.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #1459b8" x="126.792973" y="284.773946" transform="rotate(-0 126.792973 284.773946)">q₁</text>
+    <text style="font-weight: 700; font-size: 12.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #1459b8" x="126.792973" y="284.773946" transform="rotate(-0 126.792973 284.773946)">q1</text>
    </g>
    <g id="text_5">
-    <text style="font-weight: 700; font-size: 12.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #087f78" x="250.859963" y="185.962703" transform="rotate(-0 250.859963 185.962703)">q₂</text>
+    <text style="font-weight: 700; font-size: 12.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #087f78" x="250.859963" y="185.962703" transform="rotate(-0 250.859963 185.962703)">q2</text>
    </g>
    <g id="text_6">
-    <text style="font-size: 11.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="148.831441" y="276.147568" transform="rotate(-0 148.831441 276.147568)">l₁ = 0.4 m</text>
+    <text style="font-size: 11.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #172033" x="148.831441" y="276.147568" transform="rotate(-0 148.831441 276.147568)">l1 = 0.4 m</text>
    </g>
    <g id="text_7">
-    <text style="font-size: 11.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="216.746557" y="160.475676" transform="rotate(-0 216.746557 160.475676)">l₂ = 0.3 m</text>
+    <text style="font-size: 11.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #172033" x="216.746557" y="160.475676" transform="rotate(-0 216.746557 160.475676)">l2 = 0.3 m</text>
    </g>
    <g id="text_8">
-    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="221.451855" y="238.334595" transform="rotate(-0 221.451855 238.334595)">관절 2</text>
+    <text style="font-size: 10.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #172033" x="221.451855" y="238.334595" transform="rotate(-0 221.451855 238.334595)">관절 2</text>
    </g>
    <g id="text_9">
-    <text style="font-size: 11.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="219.491314" y="96.954162" transform="rotate(-0 219.491314 96.954162)">말단 p = (x, y)</text>
+    <text style="font-size: 11.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #172033" x="219.491314" y="96.954162" transform="rotate(-0 219.491314 96.954162)">말단 p = (x, y)</text>
    </g>
    <g id="text_10">
-    <text style="font-size: 10px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #5b6578" x="274.386449" y="206.352324" transform="rotate(-0 274.386449 206.352324)">q₂는 링크 1에 대한 상대각</text>
+    <text style="font-size: 10px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #5b6578" x="274.386449" y="206.352324" transform="rotate(-0 274.386449 206.352324)">q2는 링크 1에 대한 상대각</text>
    </g>
    <g id="text_11">
-    <text style="font-size: 13.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="7.2" y="19.08" transform="rotate(-0 7.2 19.08)">2R 평면팔의 기하: 두 회전관절과 링크 길이</text>
+    <text style="font-size: 13.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #172033" x="7.2" y="19.08" transform="rotate(-0 7.2 19.08)">2R 평면팔의 기하: 두 회전관절과 링크 길이</text>
    </g>
   </g>
  </g>

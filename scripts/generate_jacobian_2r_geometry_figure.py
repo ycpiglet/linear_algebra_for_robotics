@@ -11,6 +11,12 @@ from pathlib import Path
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+from atlas_matplotlib_fonts import (
+    ATLAS_FONT_FAMILY,
+    SVG_METADATA,
+    register_atlas_fonts,
+    stabilize_svg_text,
+)
 from matplotlib.patches import Arc
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -68,9 +74,10 @@ def inject_accessibility(svg_text: str) -> str:
 
 
 def main() -> None:
+    register_atlas_fonts()
     mpl.rcParams.update(
         {
-            "font.family": "Noto Sans CJK KR",
+            "font.family": ATLAS_FONT_FAMILY,
             "svg.fonttype": "none",
             "svg.hashsalt": "jacobian-2r-geometry-v1",
             "axes.unicode_minus": False,
@@ -113,33 +120,39 @@ def main() -> None:
     # 관절각 호
     axis.add_patch(Arc(origin, 0.24, 0.24, angle=0.0, theta1=0.0, theta2=Q1_DEG,
                        color=BLUE, linewidth=1.8, zorder=2))
-    axis.text(0.145, 0.033, "q₁", color=BLUE, fontsize=12.5, fontweight="bold")
+    axis.text(0.145, 0.033, "q1", color=BLUE, fontsize=12.5, fontweight="bold")
     axis.add_patch(Arc(joint2, 0.20, 0.20, angle=Q1_DEG, theta1=0.0, theta2=Q2_DEG,
                        color=TEAL, linewidth=1.8, zorder=2))
-    axis.text(joint2[0] + 0.115, joint2[1] + 0.085, "q₂", color=TEAL,
+    axis.text(joint2[0] + 0.115, joint2[1] + 0.085, "q2", color=TEAL,
               fontsize=12.5, fontweight="bold")
 
     # 링크·말단 라벨 (링크에서 수직으로 띄워 겹침 방지)
     mid1 = 0.5 * (origin + joint2)
-    axis.text(mid1[0] + 0.028, mid1[1] - 0.045, "l₁ = 0.4 m", color=INK, fontsize=11.5)
+    axis.text(mid1[0] + 0.028, mid1[1] - 0.045, "l1 = 0.4 m", color=INK, fontsize=11.5)
     mid2 = 0.5 * (joint2 + tip)
-    axis.text(mid2[0] + 0.028, mid2[1], "l₂ = 0.3 m", color=INK, fontsize=11.5)
+    axis.text(mid2[0] + 0.028, mid2[1], "l2 = 0.3 m", color=INK, fontsize=11.5)
     axis.text(joint2[0] + 0.04, joint2[1] - 0.025, "관절 2", color=INK,
               fontsize=10.5, ha="left", va="top")
     axis.text(tip[0] + 0.035, tip[1] + 0.012, "말단 p = (x, y)", color=INK,
               fontsize=11.5, ha="left")
     axis.text(joint2[0] + 0.175, joint2[1] + 0.033,
-              "q₂는 링크 1에 대한 상대각", color=MUTED, fontsize=10, ha="left")
+              "q2는 링크 1에 대한 상대각", color=MUTED, fontsize=10, ha="left")
 
     axis.set_xlim(-0.16, 0.95)
     axis.set_ylim(-0.12, 0.68)
     axis.set_title("2R 평면팔의 기하: 두 회전관절과 링크 길이", loc="left",
                    fontsize=13.5, color=INK, pad=12)
 
-    figure.savefig(OUTPUT, format="svg", bbox_inches="tight", facecolor=CANVAS)
+    figure.savefig(
+        OUTPUT,
+        format="svg",
+        bbox_inches="tight",
+        facecolor=CANVAS,
+        metadata=SVG_METADATA,
+    )
     plt.close(figure)
     svg_text = OUTPUT.read_text(encoding="utf-8")
-    OUTPUT.write_text(inject_accessibility(svg_text), encoding="utf-8")
+    OUTPUT.write_text(stabilize_svg_text(inject_accessibility(svg_text)), encoding="utf-8")
     print(f"joint2=({joint2[0]:.4f}, {joint2[1]:.4f}) m · tip=({tip[0]:.4f}, {tip[1]:.4f}) m")
 
 

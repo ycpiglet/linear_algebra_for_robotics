@@ -7,6 +7,12 @@ from pathlib import Path
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+from atlas_matplotlib_fonts import (
+    ATLAS_FONT_FAMILY,
+    SVG_METADATA,
+    register_atlas_fonts,
+    stabilize_svg_text,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "assets/figures/jacobian-singular-value-manipulability.svg"
@@ -123,9 +129,10 @@ def style_axis(axis: plt.Axes) -> None:
 
 
 def main() -> None:
+    register_atlas_fonts()
     mpl.rcParams.update(
         {
-            "font.family": "Noto Sans CJK KR",
+            "font.family": ATLAS_FONT_FAMILY,
             "svg.fonttype": "none",
             "svg.hashsalt": "jacobian-singular-value-manipulability-v1",
             "axes.unicode_minus": False,
@@ -245,14 +252,11 @@ def main() -> None:
         OUTPUT,
         format="svg",
         facecolor=figure.get_facecolor(),
-        metadata={
-            "Date": None,
-            "Creator": "Robotics Math Atlas deterministic generator",
-        },
+        metadata=SVG_METADATA,
     )
     plt.close(figure)
     svg_text = OUTPUT.read_text(encoding="utf-8")
-    OUTPUT.write_text(inject_accessibility(svg_text), encoding="utf-8")
+    OUTPUT.write_text(stabilize_svg_text(inject_accessibility(svg_text)), encoding="utf-8")
 
     print(
         f"w_max={np.max(manipulability):.6f} m²/rad² · "

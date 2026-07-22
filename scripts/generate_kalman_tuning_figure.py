@@ -7,6 +7,12 @@ from pathlib import Path
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+from atlas_matplotlib_fonts import (
+    ATLAS_FONT_FAMILY,
+    SVG_METADATA,
+    register_atlas_fonts,
+    stabilize_svg_text,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "assets/figures/kalman-prior-and-tuning-comparison.svg"
@@ -109,10 +115,12 @@ def inject_accessibility(svg_text: str) -> str:
 
 
 def main() -> None:
+    register_atlas_fonts()
     mpl.rcParams.update(
         {
-            "font.family": "Noto Sans CJK KR",
+            "font.family": ATLAS_FONT_FAMILY,
             "svg.fonttype": "none",
+            "svg.hashsalt": "kalman-prior-and-tuning-comparison-v1",
             "axes.unicode_minus": False,
         }
     )
@@ -235,9 +243,17 @@ def main() -> None:
     figure.subplots_adjust(left=0.09, right=0.98, top=0.91, bottom=0.10)
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    figure.savefig(OUTPUT, format="svg", facecolor=figure.get_facecolor())
+    figure.savefig(
+        OUTPUT,
+        format="svg",
+        facecolor=figure.get_facecolor(),
+        metadata=SVG_METADATA,
+    )
     plt.close(figure)
-    OUTPUT.write_text(inject_accessibility(OUTPUT.read_text(encoding="utf-8")), encoding="utf-8")
+    OUTPUT.write_text(
+        stabilize_svg_text(inject_accessibility(OUTPUT.read_text(encoding="utf-8"))),
+        encoding="utf-8",
+    )
 
     for label, result in results.items():
         rmse_m = float(np.sqrt(np.mean((result["posterior_m"] - truth_m) ** 2)))

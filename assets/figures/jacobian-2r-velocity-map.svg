@@ -8,11 +8,10 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>1970-01-01T00:00:00+00:00</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
-      <dc:title>Matplotlib v3.11.0, https://matplotlib.org/</dc:title>
+      <dc:title>Robotics Math Atlas deterministic generator</dc:title>
      </cc:Agent>
     </dc:creator>
    </cc:Work>
@@ -113,19 +112,19 @@ z
     </g>
    </g>
    <g id="text_1">
-    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #a92f49" x="143.046057" y="99.625937" transform="rotate(-0 143.046057 99.625937)">j₁ = (-0.500, 0.346)</text>
+    <text style="font-size: 10.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #a92f49" x="143.046057" y="99.625937" transform="rotate(-0 143.046057 99.625937)">j1 = (-0.500, 0.346)</text>
    </g>
    <g id="text_2">
-    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #1459b8" x="195.340469" y="212.42764" transform="rotate(-0 195.340469 212.42764)">j₂ = (-0.300, 0)</text>
+    <text style="font-size: 10.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #1459b8" x="195.340469" y="212.42764" transform="rotate(-0 195.340469 212.42764)">j2 = (-0.300, 0)</text>
    </g>
    <g id="text_3">
-    <text style="font-size: 10px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #5b6578" x="230.270479" y="348.39311" transform="rotate(-0 230.270479 348.39311)">q₁=30°, q₂=60°</text>
+    <text style="font-size: 10px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #5b6578" x="230.270479" y="348.39311" transform="rotate(-0 230.270479 348.39311)">q1=30°, q2=60°</text>
    </g>
    <g id="text_4">
-    <text style="font-size: 9.3px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #5b6578" x="26.322273" y="378.462397" transform="rotate(-0 26.322273 378.462397)">빨강 j₁: 관절 1만 1 rad/s · 파랑 j₂: 관절 2만 1 rad/s일 때의 말단속도</text>
+    <text style="font-size: 9.3px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #5b6578" x="26.322273" y="378.462397" transform="rotate(-0 26.322273 378.462397)">빨강 j1: 관절 1만 1 rad/s · 파랑 j2: 관절 2만 1 rad/s일 때의 말단속도</text>
    </g>
    <g id="text_5">
-    <text style="font-size: 12.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="15.86339" y="70.38425" transform="rotate(-0 15.86339 70.38425)">A · 현재 자세와 자코비안 두 열</text>
+    <text style="font-size: 12.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #172033" x="15.86339" y="70.38425" transform="rotate(-0 15.86339 70.38425)">A · 현재 자세와 자코비안 두 열</text>
    </g>
    <g id="patch_7">
     <path d="M 279.011527 198.046676
@@ -190,22 +189,22 @@ L 750.975759 80.38425
 " style="fill: none; stroke: #d7dfeb; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_6">
-    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: middle; fill: #a92f49" x="581.50918" y="255.627949" transform="rotate(-0 581.50918 255.627949)">0.5 j₁</text>
+    <text style="font-size: 10.5px; font-family: 'Atlas Sans KR'; text-anchor: middle; fill: #a92f49" x="581.50918" y="255.627949" transform="rotate(-0 581.50918 255.627949)">0.5 j1</text>
    </g>
    <g id="text_7">
-    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: middle; fill: #1459b8" x="539.837071" y="169.407614" transform="rotate(-0 539.837071 169.407614)">-0.2 j₂</text>
+    <text style="font-size: 10.5px; font-family: 'Atlas Sans KR'; text-anchor: middle; fill: #1459b8" x="539.837071" y="169.407614" transform="rotate(-0 539.837071 169.407614)">-0.2 j2</text>
    </g>
    <g id="text_8">
-    <text style="font-weight: 700; font-size: 11px; font-family: 'Noto Sans CJK KR'; text-anchor: middle; fill: #087f78" x="562.062196" y="146.390048" transform="rotate(-0 562.062196 146.390048)">ṗ = (-0.190, 0.173) m/s</text>
+    <text style="font-weight: 700; font-size: 11px; font-family: 'Atlas Sans KR'; text-anchor: middle; fill: #087f78" x="562.062196" y="146.390048" transform="rotate(-0 562.062196 146.390048)">ṗ = (-0.190, 0.173) m/s</text>
    </g>
    <g id="text_9">
-    <text style="font-size: 10px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #5b6578" x="489.83054" y="344.307609" transform="rotate(-0 489.83054 344.307609)">q̇₁ = 0.5 rad/s,  q̇₂ = -0.2 rad/s</text>
+    <text style="font-size: 10px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #5b6578" x="489.83054" y="344.307609" transform="rotate(-0 489.83054 344.307609)">q̇1 = 0.5 rad/s,  q̇2 = -0.2 rad/s</text>
    </g>
    <g id="text_10">
-    <text style="font-size: 10.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="489.83054" y="372.089016" transform="rotate(-0 489.83054 372.089016)">ṗ = j₁q̇₁ + j₂q̇₂ = J(q)q̇</text>
+    <text style="font-size: 10.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #172033" x="489.83054" y="372.089016" transform="rotate(-0 489.83054 372.089016)">ṗ = j1q̇1 + j2q̇2 = J(q)q̇</text>
    </g>
    <g id="text_11">
-    <text style="font-size: 12.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="473.161696" y="70.38425" transform="rotate(-0 473.161696 70.38425)">B · q̇ 성분으로 가중해 더하기</text>
+    <text style="font-size: 12.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #172033" x="473.161696" y="70.38425" transform="rotate(-0 473.161696 70.38425)">B · q̇ 성분으로 가중해 더하기</text>
    </g>
    <g id="patch_14">
     <path d="M 662.075259 280.410375
@@ -239,7 +238,7 @@ z
    </g>
   </g>
   <g id="text_12">
-   <text style="font-size: 13.5px; font-family: 'Noto Sans CJK KR'; text-anchor: start; fill: #172033" x="7.2" y="19.08" transform="rotate(-0 7.2 19.08)">자코비안의 열은 관절 하나의 순간 효과이고, 말단속도는 그 가중합이다</text>
+   <text style="font-size: 13.5px; font-family: 'Atlas Sans KR'; text-anchor: start; fill: #172033" x="7.2" y="19.08" transform="rotate(-0 7.2 19.08)">자코비안의 열은 관절 하나의 순간 효과이고, 말단속도는 그 가중합이다</text>
   </g>
  </g>
  <defs>

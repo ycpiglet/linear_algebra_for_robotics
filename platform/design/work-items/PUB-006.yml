@@ -22,6 +22,7 @@ scope:
     - repository-owned deterministic artifact inventory
     - source·generator·output·consumer·license·stable ID manifest contract
     - legacy baseline과 no-new-debt gate
+    - generated SVG용 repository-owned OTF와 system font discovery 제거
   out:
     - 모든 legacy artifact 즉시 migration
     - 수동 SVG에 억지 generator 추가
@@ -38,8 +39,19 @@ change_paths:
     - Makefile
     - assets/README.md
     - assets/artifact-manifest.yml
+    - assets/fonts/AtlasSansKR-Regular.otf
+    - assets/fonts/AtlasSansKR-Bold.otf
     - assets/figures/jacobian-2r-geometry.svg
     - assets/figures/jacobian-2r-velocity-map.svg
+    - assets/figures/jacobian-singular-value-manipulability.svg
+    - assets/figures/kalman-prior-and-tuning-comparison.svg
+    - scripts/atlas_matplotlib_fonts.py
+    - scripts/build_atlas_native_fonts.py
+    - scripts/generate_jacobian_2r_geometry_figure.py
+    - scripts/generate_jacobian_velocity_map_figure.py
+    - scripts/generate_jacobian_singularity_curve.py
+    - scripts/generate_kalman_tuning_figure.py
+    - platform/tests/test_artifact_fonts.py
   exclusive_locks: [artifact-contract, ci-control-plane]
   generated:
     - assets/figures/jacobian-2r-geometry.svg
@@ -51,6 +63,7 @@ verification:
     - make artifact-audit
     - make test
     - make lint
+    - native OTF를 두 번 생성한 SHA-256이 일치
   rendered_contract:
     - .tools/uv/uv run --locked python platform/scripts/artifact_inventory.py trace figure.jacobian-2r-geometry
   post_merge:

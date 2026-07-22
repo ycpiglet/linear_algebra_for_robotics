@@ -12,6 +12,12 @@ from pathlib import Path
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+from atlas_matplotlib_fonts import (
+    ATLAS_FONT_FAMILY,
+    SVG_METADATA,
+    register_atlas_fonts,
+    stabilize_svg_text,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "assets/figures/jacobian-2r-velocity-map.svg"
@@ -88,9 +94,10 @@ def inject_accessibility(svg_text: str) -> str:
 
 
 def main() -> None:
+    register_atlas_fonts()
     mpl.rcParams.update(
         {
-            "font.family": "Noto Sans CJK KR",
+            "font.family": ATLAS_FONT_FAMILY,
             "svg.fonttype": "none",
             "svg.hashsalt": "jacobian-2r-velocity-map-v2",
             "axes.unicode_minus": False,
@@ -124,12 +131,12 @@ def main() -> None:
     draw_arrow(axis_pose, tip, j2, BLUE)
     # j1은 왼쪽 위, j2는 왼쪽 아래로 뻗는다 — 라벨은 화살표 끝 반대편 여백에 둔다.
     axis_pose.text(tip[0] + j1[0] - 0.02, tip[1] + j1[1] + 0.03,
-                   "j₁ = (-0.500, 0.346)", color=CORAL, fontsize=10.5, ha="left")
+                   "j1 = (-0.500, 0.346)", color=CORAL, fontsize=10.5, ha="left")
     axis_pose.text(tip[0] + j2[0] - 0.02, tip[1] + j2[1] - 0.055,
-                   "j₂ = (-0.300, 0)", color=BLUE, fontsize=10.5, ha="left")
-    axis_pose.text(0.16, -0.075, "q₁=30°, q₂=60°", color=MUTED, fontsize=10)
+                   "j2 = (-0.300, 0)", color=BLUE, fontsize=10.5, ha="left")
+    axis_pose.text(0.16, -0.075, "q1=30°, q2=60°", color=MUTED, fontsize=10)
     axis_pose.text(-0.62, -0.19,
-                   "빨강 j₁: 관절 1만 1 rad/s · 파랑 j₂: 관절 2만 1 rad/s일 때의 말단속도",
+                   "빨강 j1: 관절 1만 1 rad/s · 파랑 j2: 관절 2만 1 rad/s일 때의 말단속도",
                    color=MUTED, fontsize=9.3)
     axis_pose.set_xlim(-0.66, 0.78)
     axis_pose.set_ylim(-0.24, 0.95)
@@ -148,16 +155,16 @@ def main() -> None:
     axis_sum.plot([0, v2[0]], [0, v2[1]], color=MUTED, linewidth=1.0,
                   linestyle="--", zorder=1)
 
-    axis_sum.text(v1[0] * 0.5 - 0.02, v1[1] * 0.5 - 0.042, "0.5 j₁",
+    axis_sum.text(v1[0] * 0.5 - 0.02, v1[1] * 0.5 - 0.042, "0.5 j1",
                   color=CORAL, fontsize=10.5, ha="center")
-    axis_sum.text(v1[0] + v2[0] * 0.5, v1[1] + 0.022, "-0.2 j₂",
+    axis_sum.text(v1[0] + v2[0] * 0.5, v1[1] + 0.022, "-0.2 j2",
                   color=BLUE, fontsize=10.5, ha="center", va="bottom")
     axis_sum.text(tip_velocity[0] + 0.01, tip_velocity[1] + 0.068,
-                  "ṗ = (-0.190, 0.173) m/s", color=TEAL, fontsize=11,
+                  "ṗ = (-0.190, 0.173) m/s", color=TEAL, fontsize=11,
                   ha="center", fontweight="bold")
-    axis_sum.text(-0.31, -0.115, "q̇₁ = 0.5 rad/s,  q̇₂ = -0.2 rad/s",
+    axis_sum.text(-0.31, -0.115, "q̇1 = 0.5 rad/s,  q̇2 = -0.2 rad/s",
                   color=MUTED, fontsize=10)
-    axis_sum.text(-0.31, -0.165, "ṗ = j₁q̇₁ + j₂q̇₂ = J(q)q̇",
+    axis_sum.text(-0.31, -0.165, "ṗ = j1q̇1 + j2q̇2 = J(q)q̇",
                   color=INK, fontsize=10.5)
     axis_sum.set_xlim(-0.34, 0.16)
     axis_sum.set_ylim(-0.20, 0.36)
@@ -166,10 +173,16 @@ def main() -> None:
                     x=0.02, ha="left", fontsize=13.5, color=INK)
     figure.tight_layout(rect=(0, 0, 1, 0.94))
 
-    figure.savefig(OUTPUT, format="svg", bbox_inches="tight", facecolor=CANVAS)
+    figure.savefig(
+        OUTPUT,
+        format="svg",
+        bbox_inches="tight",
+        facecolor=CANVAS,
+        metadata=SVG_METADATA,
+    )
     plt.close(figure)
     svg_text = OUTPUT.read_text(encoding="utf-8")
-    OUTPUT.write_text(inject_accessibility(svg_text), encoding="utf-8")
+    OUTPUT.write_text(stabilize_svg_text(inject_accessibility(svg_text)), encoding="utf-8")
     print(
         f"j1=({j1[0]:.3f}, {j1[1]:.3f}) · j2=({j2[0]:.3f}, {j2[1]:.3f}) · "
         f"pdot=({tip_velocity[0]:.3f}, {tip_velocity[1]:.3f}) m/s"

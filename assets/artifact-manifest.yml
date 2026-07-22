@@ -22,6 +22,10 @@ artifacts:
     production: generated
     sources:
       - scripts/generate_jacobian_2r_geometry_figure.py
+      - scripts/atlas_matplotlib_fonts.py
+      - scripts/build_atlas_native_fonts.py
+      - assets/fonts/AtlasSansKR-Regular.otf
+      - assets/fonts/AtlasSansKR-Bold.otf
     generator:
       command: [python, scripts/generate_jacobian_2r_geometry_figure.py]
       lockfile: uv.lock
@@ -37,6 +41,10 @@ artifacts:
     production: generated
     sources:
       - scripts/generate_jacobian_velocity_map_figure.py
+      - scripts/atlas_matplotlib_fonts.py
+      - scripts/build_atlas_native_fonts.py
+      - assets/fonts/AtlasSansKR-Regular.otf
+      - assets/fonts/AtlasSansKR-Bold.otf
     generator:
       command: [python, scripts/generate_jacobian_velocity_map_figure.py]
       lockfile: uv.lock
@@ -64,6 +72,10 @@ artifacts:
     production: generated
     sources:
       - scripts/generate_jacobian_singularity_curve.py
+      - scripts/atlas_matplotlib_fonts.py
+      - scripts/build_atlas_native_fonts.py
+      - assets/fonts/AtlasSansKR-Regular.otf
+      - assets/fonts/AtlasSansKR-Bold.otf
     generator:
       command: [python, scripts/generate_jacobian_singularity_curve.py]
       lockfile: uv.lock
@@ -103,6 +115,10 @@ artifacts:
     production: generated
     sources:
       - scripts/generate_kalman_tuning_figure.py
+      - scripts/atlas_matplotlib_fonts.py
+      - scripts/build_atlas_native_fonts.py
+      - assets/fonts/AtlasSansKR-Regular.otf
+      - assets/fonts/AtlasSansKR-Bold.otf
     generator:
       command: [python, scripts/generate_kalman_tuning_figure.py]
       lockfile: uv.lock
