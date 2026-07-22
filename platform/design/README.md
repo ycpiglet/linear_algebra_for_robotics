@@ -131,8 +131,10 @@ PUB-008 + PUB-017 → PUB-019 (deferred CI activation)
   `source-contract`·`publication-build`를 유지한다. 이는 agent와 supervisor의 권한 분리를
   증명하지 않으므로 `trusted-provenance`를 required로 승격하지 않는다.
 - PUB-017 보류 중에도 콘텐츠, artifact inventory, typography foundation, 로컬 rendered matrix는
-  진행할 수 있다. workflow·verifier·ruleset·App permission·배포 credential 변경은 계속 동결하고,
-  PUB-008의 CI 연결만 `PUB-019`로 분리한다.
+  진행할 수 있다. `.github/workflows/**`, 세 CODEOWNERS 후보, provenance verifier,
+  `platform/scripts/editorial.py`, editorial event schema, editorial-runtime package·lock,
+  ruleset·App permission·배포 credential 변경은 계속 동결하고, PUB-008의 CI 연결만
+  `PUB-019`로 분리한다.
 - `PUB-006`은 저장소 소유 inventory·manifest 기반만 만들므로 identity lane과 병렬 진행할 수 있다.
 - 저장소 개명은 typography 계약의 선행 조건이 아니다. 나중에 `PUB-005`를 수행하면 canonical URL
   smoke와 대표 visual matrix를 다시 실행하되, 렌더가 같다면 baseline을 불필요하게 갱신하지 않는다.
@@ -151,6 +153,12 @@ PUB-008 + PUB-017 → PUB-019 (deferred CI activation)
 - 모든 merge는 `--match-head-commit`으로 검사한 head를 고정하고 역할과 같은 `Actor` trailer를
   merge commit에 남긴다. required check나 exact-head 고정이 불가능하면 publish하지 않고 로컬
   결과와 blocker만 보존한다.
+- `PUB-019` 전에도 PUB-009~015는 진행할 수 있지만, 각 PR은 PUB-008 명령을 clean environment에서
+  실행한 결과와 검토 산출물을 첨부하고 이를 required CI가 강제했다고 주장하지 않는다. PUB-019
+  활성화 뒤 첫 통합 검증에서 이 임시 evidence를 다시 실행해 CI baseline으로 승격한다.
+- 현재 사용자 token으로는 설치 App의 임시 Workflows permission 철회 여부를 조회할 수 없다.
+  이 App은 임시 mode에서 사용하지 않으며, 권한 상태는 미확인 residual risk로 기록한다. PUB-017을
+  재개하거나 App을 다시 사용하기 전 owner가 permission·installation·private-key 상태를 확인한다.
 
 열린 PR, branch ruleset, editorial queue, main·배포 SHA처럼 시간에 따라 바뀌는 기준선은
 README에 고정하지 않는다. 해당 work item의 날짜 있는 evidence에 기록하고 cutover 직전에

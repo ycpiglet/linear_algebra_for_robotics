@@ -66,8 +66,10 @@
   모든 신규 커밋과 보호된 main merge commit은 literal escape가 아닌 canonical `Actor` trailer 필수
 - Actions workflow와 provenance verifier는 PUB-016 bootstrap 이후 PUB-017의 별도 agent identity·
   사람 승인 신뢰 결박이 끝날 때까지 모든 역할에 대해 동결한다
-- PUB-017 trust transition은 owner 결정으로 보류 중이다. 이 동결은 workflow·verifier·ruleset·App
-  permission·배포 credential에만 적용하며, 콘텐츠·artifact inventory·design foundation·로컬 rendered
-  품질 명령은 `platform/design/README.md`의 분리된 merge train에 따라 진행한다
+- PUB-017 trust transition은 owner 결정으로 보류 중이다. 동결 경로는 `.github/workflows/**`,
+  `.github/CODEOWNERS`·`CODEOWNERS`·`docs/CODEOWNERS`, provenance verifier,
+  `platform/scripts/editorial.py`, editorial event schema, editorial-runtime package·lock이며 ruleset·App
+  permission·배포 credential도 바꾸지 않는다. 콘텐츠·artifact inventory·design foundation·로컬
+  rendered 품질 명령은 `platform/design/README.md`의 분리된 merge train에 따라 진행한다
 - 원고 수정은 `AUTHORING_MANUAL.md` 준수 + `make test`(30건)·`editorial.py lint` 통과 필수
 - 이벤트 원장(`platform/editorial/events/`)은 append 전용 — 직접 편집 금지, `ingest` 명령 사용

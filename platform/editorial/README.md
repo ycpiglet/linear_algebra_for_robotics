@@ -78,10 +78,11 @@ one-shot transition이다. `source-contract`를 제거하거나 self-asserted `a
 
 2026-07-23 owner 결정으로 이 transition과 Windows broker recovery는 보류했다. PR #25와 기존
 증거는 감사 이력으로 남기되 transition ref를 재사용하거나 후속 live patch를 만들지 않는다.
-이 보류는 workflow·verifier·ruleset·App permission·배포 credential의 통제면 동결을 유지한다는
-뜻이며, 콘텐츠·artifact inventory·design foundation·로컬 rendered 품질 검증까지 중단한다는
-뜻은 아니다. 로컬 matrix의 CI activation은 `PUB-019`로 분리하며 `PUB-017` 재개 전에는 시작하지
-않는다.
+이 보류는 `.github/workflows/**`, `.github/CODEOWNERS`·`CODEOWNERS`·`docs/CODEOWNERS`,
+provenance verifier, `platform/scripts/editorial.py`, editorial event schema, editorial-runtime
+package·lock과 ruleset·App permission·배포 credential의 통제면 동결을 유지한다는 뜻이다.
+콘텐츠·artifact inventory·design foundation·로컬 rendered 품질 검증까지 중단한다는 뜻은 아니다.
+로컬 matrix의 CI activation은 `PUB-019`로 분리하며 `PUB-017` 재개 전에는 시작하지 않는다.
 
 **병합과 사고 복구:** 최종 merge commit은 PR 검사 전에 존재하지 않으므로 UI 기본 병합이나
 auto-merge에 맡기지 않는다. 역할에 맞는 trailer를 stdin 파일로 전달하는 통제 명령만 사용한다.

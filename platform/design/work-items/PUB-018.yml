@@ -1,6 +1,6 @@
 schema_version: 1
 id: PUB-018
-title: PUB-017 보류 기간의 안전한 publication fallback
+title: PUB-017 보류 기간의 임시 publication fallback
 area: governance
 status: in_review
 priority: P0
@@ -25,11 +25,13 @@ scope:
     - 같은 owner 계정 세션에서는 독립 승인을 강제할 수 없다는 accepted risk와 exact-head merge 계약
     - 콘텐츠·artifact·foundation·로컬 rendered 작업을 control-plane 변경과 분리
     - 실패한 transition이 남긴 Actions disabled·editorial freeze 상태를 정상 운영값으로 복구
+    - 실패한 transition이 남긴 main ruleset review parameters를 pre-PUB-017 값으로 복구
     - PUB-008 로컬 matrix와 PUB-019 CI activation 범위 분리
   out:
     - GitHub App·Windows broker trust transition 재시도
     - trusted-provenance required 승격
-    - workflow·verifier·ruleset·App permission·배포 credential 변경
+    - 복구를 제외한 workflow·verifier·ruleset·App permission·배포 credential 변경
+    - 세 CODEOWNERS 후보와 privileged editorial controller 의존성 변경
     - 임시 모드를 독립된 agent·supervisor 권한 분리로 주장
 change_paths:
   read:
@@ -61,11 +63,12 @@ verification:
     - make lint
     - git diff --check
     - 기존 source-contract·publication-build required 설정 불변 확인
+    - main ruleset이 approval 0·CODEOWNER false·last-push false·merge-only로 복구됨
     - agent branch·trailer·label과 exact-head merge 계약의 문서 일치 확인
   rendered_contract: []
   post_merge:
     - Actions enabled와 EDITORIAL_FREEZE false 재확인
-    - PR #25와 transition evidence 보존 확인
+    - PR #25 closed와 transition branch·evidence 보존 확인
     - PUB-003·PUB-006·PUB-007이 PUB-017 없이 시작 가능한 의존 그래프 확인
 rollback:
   triggers:
@@ -85,6 +88,7 @@ definition_of_done:
   - 임시 모드의 보장하지 않는 사항과 재개 조건이 문서화된다
   - 통제면·외부 cutover는 별도 사용자 확인 없이는 실행하지 않는 경계가 문서화된다
   - Actions와 editorial automation이 전환 전 정상 운영값으로 복구된다
+  - App permission을 현재 credential로 확인하지 못한 사실과 재사용 전 owner 확인 조건이 residual risk로 남는다
 evidence:
   issue: null
   pr: 26

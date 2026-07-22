@@ -21,7 +21,7 @@ decision_needed:
   - required review와 trusted-provenance status를 ruleset에 적용·복구하는 승인자 확정
   - PUB-017 전환 PR에 선행 적용할 1인 승인·stale 승인 무효화·last-push 승인 ruleset 확정
 blocker: null
-status_reason: PR #25와 생성된 증거는 보존하되 현재 브랜치·transition ref를 재사용하거나 r6 패치를 만들지 않으며, 재개 시 live 복구가 아닌 설계 재감사부터 새로 시작함
+status_reason: PR #25는 2026-07-23 보류 사유를 기록하고 닫았으며 branch·transition ref·증거는 보존하되 재사용하거나 r6 패치를 만들지 않음; 재개 시 live 복구가 아닌 설계 재감사부터 새로 시작함
 superseded_by: null
 scope:
   in:
