@@ -1,6 +1,6 @@
 schema_version: 1
 id: PUB-008
-title: rendered web·접근성·출판 품질 matrix
+title: 로컬 rendered web·접근성·출판 품질 matrix
 area: ci
 status: planned
 priority: P1
@@ -18,21 +18,20 @@ status_reason: null
 superseded_by: null
 scope:
   in:
-    - canonical web·DOM·a11y·keyboard·overflow gate
+    - canonical web·DOM·a11y·keyboard·overflow 로컬 gate
     - component specimen crop 중심 visual regression
-    - 관련 변경의 PDF·EPUB build·검증 lane
+    - 관련 변경의 PDF·EPUB build·검증 command
   out:
     - 전 페이지 full screenshot baseline
     - CI의 자동 visual baseline 승인
+    - .github/workflows integration과 required check 변경
 change_paths:
   read:
     - Makefile
-    - .github/workflows/**
     - design-system.qmd
     - scripts/verify_outputs.py
   write:
     - Makefile
-    - .github/workflows/**
     - browser·visual·publication test와 승인 baseline
   exclusive_locks: [ci-control-plane]
   generated: [_site/**, _book/**, _proof/**, test-results/**]
@@ -46,7 +45,7 @@ verification:
     - keyboard·overflow·automated accessibility smoke
     - PDF·EPUB font·link·reflow·static fallback
   post_merge:
-    - main과 release candidate에서 full matrix
+    - main checkout과 release candidate 입력에서 로컬 full matrix
 rollback:
   triggers:
     - visual noise가 실제 회귀보다 많음
@@ -57,10 +56,12 @@ rollback:
     - 기존 test·lint·output verifier는 유지한다
   compatibility_preserved:
     - baseline update와 check command 분리
+    - 기존 source-contract·publication-build required checks 유지
 definition_of_done:
   - 이후 artifact migration을 보호할 stable rendered contract가 있다
-  - deploy가 검증된 build artifact만 사용한다
+  - 같은 명령이 로컬과 clean environment에서 동일한 판정을 낸다
   - baseline diff마다 사람 승인 evidence가 필요하다
+  - CI activation 잔여 범위가 PUB-019로 분리되어 있다
 evidence:
   issue: null
   pr: null
@@ -70,4 +71,4 @@ evidence:
   last_known_good: null
   revert_ref: null
   follow_up: null
-last_reviewed: "2026-07-20"
+last_reviewed: "2026-07-23"

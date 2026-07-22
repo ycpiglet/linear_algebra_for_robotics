@@ -9,7 +9,7 @@ version_impact: compatible
 owner_role: design-system-steward
 review_roles: [math-domain-reviewer, render-qa]
 branch: null
-dependencies: [PUB-005]
+dependencies: [PUB-002, PUB-018]
 decision_refs:
   - AUTHORING_MANUAL.md#0-이-매뉴얼을-사용하는-법
   - design-system.qmd
@@ -58,6 +58,7 @@ verification:
     - mixed Korean·Latin·math, PDF font/pagination, EPUB reflow·font override
   post_merge:
     - main 출력에서 동일한 font metadata와 hierarchy 재확인
+    - PUB-005 identity cutover를 나중에 수행하면 canonical URL smoke와 대표 visual matrix를 다시 실행
 rollback:
   triggers:
     - glyph 누락·synthetic weight 의존·page-level overflow
@@ -68,6 +69,7 @@ rollback:
   compatibility_preserved:
     - 전체 migration 전 기존 token alias 유지
     - 콘텐츠 의미·reading order 유지
+    - repository slug와 Pages URL은 typography·token 계약의 입력으로 고정하지 않음
 definition_of_done:
   - 세 출력에서 동등한 위계와 가독성을 가진 real consumer가 있다
   - author-facing type role과 금지 사용법이 specimen에 문서화되었다
@@ -81,4 +83,4 @@ evidence:
   last_known_good: null
   revert_ref: null
   follow_up: null
-last_reviewed: "2026-07-20"
+last_reviewed: "2026-07-23"

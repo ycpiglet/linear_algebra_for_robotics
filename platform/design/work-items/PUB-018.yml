@@ -1,0 +1,103 @@
+schema_version: 1
+id: PUB-018
+title: PUB-017 보류 기간의 임시 publication fallback
+area: governance
+status: in_review
+priority: P0
+change_class: governance
+version_impact: compatible
+owner_role: publishing-ops-steward
+review_roles: [release-engineer]
+branch: agent/non-pub017-backlog
+dependencies: [PUB-002, PUB-016]
+decision_refs:
+  - platform/design/README.md
+  - platform/design/work-items/PUB-017.yml
+  - platform/editorial/README.md
+decision_needed: []
+blocker: null
+status_reason: null
+superseded_by: null
+scope:
+  in:
+    - PUB-017 transition·recovery를 감사 가능한 보류 상태로 보존
+    - 기존 source-contract·publication-build를 유지하는 임시 publication 경계
+    - 같은 owner 계정 세션에서는 독립 승인을 강제할 수 없다는 accepted risk와 exact-head merge 계약
+    - 콘텐츠·artifact·foundation·로컬 rendered 작업을 control-plane 변경과 분리
+    - 실패한 transition이 남긴 Actions disabled·editorial freeze 상태를 정상 운영값으로 복구
+    - 실패한 transition이 남긴 main ruleset review parameters를 pre-PUB-017 값으로 복구
+    - PUB-008 로컬 matrix와 PUB-019 CI activation 범위 분리
+  out:
+    - GitHub App·Windows broker trust transition 재시도
+    - trusted-provenance required 승격
+    - 복구를 제외한 workflow·verifier·ruleset·App permission·배포 credential 변경
+    - 세 CODEOWNERS 후보와 privileged editorial controller 의존성 변경
+    - 임시 모드를 독립된 agent·supervisor 권한 분리로 주장
+change_paths:
+  read:
+    - CLAUDE.md
+    - platform/design/README.md
+    - platform/design/work-items/PUB-003.yml
+    - platform/design/work-items/PUB-006.yml
+    - platform/design/work-items/PUB-007.yml
+    - platform/design/work-items/PUB-008.yml
+    - platform/design/work-items/PUB-017.yml
+    - platform/editorial/README.md
+  write:
+    - CLAUDE.md
+    - platform/design/README.md
+    - platform/design/work-items/PUB-003.yml
+    - platform/design/work-items/PUB-006.yml
+    - platform/design/work-items/PUB-007.yml
+    - platform/design/work-items/PUB-008.yml
+    - platform/design/work-items/PUB-017.yml
+    - platform/design/work-items/PUB-018.yml
+    - platform/design/work-items/PUB-019.yml
+    - platform/editorial/README.md
+  exclusive_locks: [backlog-registry]
+  generated: []
+verification:
+  source_contract:
+    - design backlog check와 schema tests
+    - make test
+    - make lint
+    - git diff --check
+    - 기존 source-contract·publication-build required 설정 불변 확인
+    - main ruleset이 approval 0·CODEOWNER false·last-push false·merge-only로 복구됨
+    - agent branch·trailer·label과 exact-head merge 계약의 문서 일치 확인
+  rendered_contract: []
+  post_merge:
+    - Actions enabled와 EDITORIAL_FREEZE false 재확인
+    - PR #25 closed와 transition branch·evidence 보존 확인
+    - PUB-003·PUB-006·PUB-007이 PUB-017 없이 시작 가능한 의존 그래프 확인
+rollback:
+  triggers:
+    - control-plane 동결 범위가 의도치 않게 해제됨
+    - trusted-provenance를 권한 분리 없이 required로 승격함
+    - 기존 source-contract·publication-build를 제거하거나 약화함
+  unit: merge_commit
+  steps:
+    - publication fallback merge commit을 revert한다
+    - PUB-017 보류 상태와 기존 required checks를 유지한다
+  compatibility_preserved:
+    - 콘텐츠·공개 URL·Git history를 바꾸지 않는다
+    - PR #25와 기존 transition evidence를 삭제하거나 재사용하지 않는다
+definition_of_done:
+  - PUB-017과 PUB-019만 control-plane trust 작업으로 격리된다
+  - 비-PUB-017 작업이 검증 가능한 의존 그래프에서 시작 가능하다
+  - 임시 모드의 보장하지 않는 사항과 재개 조건이 문서화된다
+  - 통제면·외부 cutover는 별도 사용자 확인 없이는 실행하지 않는 경계가 문서화된다
+  - Actions와 editorial automation이 전환 전 정상 운영값으로 복구된다
+  - App permission을 현재 credential로 확인하지 못한 사실과 재사용 전 owner 확인 조건이 residual risk로 남는다
+evidence:
+  issue: null
+  pr: 26
+  ci_runs:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29932980282
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29932978706
+  rendered_artifacts: []
+  post_merge: []
+  last_known_good: 1c2268cbf610ecabc60fef38d71808250315e630
+  revert_ref: null
+  follow_up: null
+last_reviewed: "2026-07-23"

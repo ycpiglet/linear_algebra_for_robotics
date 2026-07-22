@@ -9,7 +9,7 @@ version_impact: breaking
 owner_role: publishing-ops-steward
 review_roles: [release-engineer]
 branch: null
-dependencies: [PUB-002, PUB-017]
+dependencies: [PUB-002, PUB-018]
 decision_refs:
   - README.md
   - pyproject.toml
@@ -69,4 +69,4 @@ evidence:
   last_known_good: 5a79cae
   revert_ref: null
   follow_up: null
-last_reviewed: "2026-07-20"
+last_reviewed: "2026-07-23"

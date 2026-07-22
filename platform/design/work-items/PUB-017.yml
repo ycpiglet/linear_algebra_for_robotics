@@ -21,7 +21,7 @@ decision_needed:
   - required review와 trusted-provenance status를 ruleset에 적용·복구하는 승인자 확정
   - PUB-017 전환 PR에 선행 적용할 1인 승인·stale 승인 무효화·last-push 승인 ruleset 확정
 blocker: null
-status_reason: null
+status_reason: PR #25는 2026-07-23 보류 사유를 기록하고 닫았으며 branch·transition ref·증거는 보존하되 재사용하거나 r6 패치를 만들지 않음; 재개 시 live 복구가 아닌 설계 재감사부터 새로 시작함
 superseded_by: null
 scope:
   in:
@@ -77,11 +77,11 @@ definition_of_done:
   - required context 활성화 전후 canary와 역패치가 검증된다
 evidence:
   issue: null
-  pr: null
+  pr: 25
   ci_runs: []
   rendered_artifacts: []
   post_merge: []
-  last_known_good: null
+  last_known_good: 1c2268cbf610ecabc60fef38d71808250315e630
   revert_ref: null
   follow_up: null
-last_reviewed: "2026-07-21"
+last_reviewed: "2026-07-23"

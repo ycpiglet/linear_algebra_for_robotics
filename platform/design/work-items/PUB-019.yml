@@ -1,0 +1,79 @@
+schema_version: 1
+id: PUB-019
+title: rendered 품질 matrix CI activation
+area: ci
+status: planned
+priority: P2
+change_class: toolchain
+version_impact: additive
+owner_role: release-engineer
+review_roles: [publishing-ops-steward, design-system-steward, render-qa]
+branch: null
+dependencies: [PUB-008, PUB-017]
+decision_refs:
+  - platform/design/work-items/PUB-008.yml
+  - platform/design/work-items/PUB-017.yml
+  - platform/editorial/README.md
+decision_needed: []
+blocker: null
+status_reason: null
+superseded_by: null
+scope:
+  in:
+    - PUB-008의 검증 명령을 read-only fast·rendered web·publication CI lane에 연결
+    - path-impact matrix의 ambiguous fallback과 immutable artifact 전달
+    - baseline 변경을 check와 분리하고 사람 승인 evidence를 요구
+    - canary 뒤 rendered status context와 integration ID를 main ruleset required checks에 명시적으로 승격
+  out:
+    - PUB-017 trust transition 재설계
+    - CI의 자동 visual baseline 승인
+change_paths:
+  read:
+    - Makefile
+    - .github/workflows/**
+    - platform/design/work-items/PUB-008.yml
+  write:
+    - .github/workflows/**
+    - platform/tests/test_workflow_contract.py
+  exclusive_locks: [ci-control-plane]
+  generated: [test-results/**]
+verification:
+  source_contract:
+    - make test
+    - make lint
+    - actionlint
+    - path-impact matrix와 ambiguous fallback fixture
+  rendered_contract:
+    - draft PR의 web·a11y·visual artifact
+    - 관련 변경의 PDF·EPUB artifact
+  post_merge:
+    - main과 release candidate에서 full matrix
+    - exact context·integration ID가 고정된 required check를 새 commit에서 재실행
+rollback:
+  triggers:
+    - workflow가 fork PR에서 write credential을 노출함
+    - path filter가 필요한 gate를 건너뜀
+    - visual noise가 실제 회귀보다 많음
+  unit: merge_commit
+  steps:
+    - ruleset에서 새 rendered context만 제거해 advisory로 낮춘다
+    - 필요하면 activation merge commit을 revert한다
+    - PUB-008 로컬 명령과 기존 source-contract·publication-build는 유지한다
+  compatibility_preserved:
+    - deploy credential은 검증 lane과 분리
+    - baseline update와 check command 분리
+definition_of_done:
+  - PUB-008 명령이 최소 권한 read-only CI lane에서 실행된다
+  - deploy는 검증된 immutable build artifact만 사용한다
+  - intended baseline diff마다 사람 승인 evidence가 있다
+  - required 승격 전후 canary와 ruleset 역패치가 검증된다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  post_merge: []
+  last_known_good: null
+  revert_ref: null
+  follow_up: null
+last_reviewed: "2026-07-23"
