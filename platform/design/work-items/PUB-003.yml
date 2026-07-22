@@ -2,32 +2,33 @@ schema_version: 1
 id: PUB-003
 title: Robotics Math Atlas identity와 URL 호환성 결정
 area: identity
-status: decision
+status: done
 priority: P0
 change_class: breaking
 version_impact: breaking
 owner_role: publishing-ops-steward
 review_roles: [release-engineer]
-branch: null
+branch: agent/pub-003-identity-decision
 dependencies: [PUB-002, PUB-018]
 decision_refs:
   - README.md
   - pyproject.toml
   - _quarto-web.yml
-decision_needed:
-  - repository slug를 robotics-math-atlas로 확정
-  - custom domain 사용 여부와 canonical site URL 확정
-  - 기존 Pages URL 이전 방식과 외부 링크 갱신 책임 확정
-  - Hypothesis URI·기존 주석 호환 전략 확정
-  - JSON Schema $id 유지 또는 새 identity 도입 여부 확정
-  - 열린 PR·clone·webhook·deploy key carry-over 방식 확정
+decision_needed: []
 blocker: null
-status_reason: null
+status_reason: "2026-07-23에 표시 브랜드·repository·package·site·annotation·schema identity와 cutover 책임을 확정했으며 실제 외부 rename은 PUB-005의 별도 사용자 확인 전까지 실행하지 않는다."
 superseded_by: null
 scope:
   in:
     - 표시 브랜드·repository·package·import·site identity 표
     - 외부 cutover와 rollback 결정 기록
+    - repository slug는 robotics-math-atlas, 표시 브랜드는 Robotics Math Atlas로 확정
+    - Python distribution robotics-math-atlas와 import robotics_math_atlas는 유지
+    - custom domain은 이번 cutover에서 사용하지 않고 canonical site는 https://ycpiglet.github.io/robotics-math-atlas/로 확정
+    - GitHub repository redirect와 redirect가 보장되지 않는 project Pages URL을 서로 다른 호환성 경계로 취급
+    - Hypothesis는 rename 전에 URL 독립 Dublin Core document identity를 배포·검증해 기존 주석을 old·new URL에 결박
+    - 기존 linear-algebra-for-robotics.local JSON Schema $id는 repository URL이 아닌 안정 식별자로 유지
+    - tracked URL·clone·workflow는 release-engineer, 외부 profile·bookmark·webhook·deploy key 확인은 publishing-ops-steward가 담당
   out:
     - GitHub repository 실제 rename
     - source URL 변경
@@ -45,6 +46,8 @@ change_paths:
 verification:
   source_contract:
     - 추적 소스의 old slug와 current brand·package inventory
+    - old repository slug가 runtime·editorial·Quarto·문서·운영 evidence에 나타나는 위치 분류
+    - 새 slug와 새 Pages prefix가 기존 progress key·export format·schema $id를 바꾸지 않는 계약
   rendered_contract: []
   post_merge:
     - 각 결정에 선택·이유·호환성·rollback·확인자를 기록
@@ -57,16 +60,28 @@ rollback:
   compatibility_preserved:
     - 표시 브랜드 Robotics Math Atlas 유지
     - Python project와 import identity 유지
+    - robotics-math-atlas.progress.v1과 기존 progress export format 유지
+    - 기존 JSON Schema $id와 stable concept·path·proof ID 유지
+    - old repository 이름을 재사용하지 않아 GitHub redirect 보존
 definition_of_done:
   - decision_needed의 모든 항목이 승인된 결정으로 바뀐다
   - PUB-004가 구현 가능한 URL·호환성 계약을 갖는다
 evidence:
   issue: null
-  pr: null
-  ci_runs: []
+  pr: 29
+  ci_runs:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29935853483
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29935855750
   rendered_artifacts: []
-  post_merge: []
-  last_known_good: 5a79cae
+  post_merge:
+    - "repository 선택: ycpiglet/robotics-math-atlas; 브랜드와 package identity를 맞추되 GitHub가 보장하는 old repository·Git remote redirect를 사용하고 old slug는 재사용하지 않음; 근거=https://docs.github.com/en/repositories/creating-and-managing-repositories/renaming-a-repository; confirmer=agent/release-engineer"
+    - "site 선택: custom domain 없음, canonical=https://ycpiglet.github.io/robotics-math-atlas/; GitHub가 project Pages URL redirect를 보장하지 않으므로 PUB-004 inventory와 PUB-005 smoke 실패 시 cutover 중단; 근거=https://docs.github.com/en/repositories/creating-and-managing-repositories/renaming-a-repository; confirmer=agent/release-engineer"
+    - "외부 링크 책임: release-engineer가 tracked source·clone·workflow를 갱신하고 publishing-ops-steward가 profile·bookmark·webhook·deploy key를 inventory·확인; 누락 시 old repository redirect는 유지하고 Pages 공개 전 forward-fix; confirmer=agent/publishing-ops-steward"
+    - "Hypothesis 선택: PUB-004에서 URL 독립 Dublin Core identifier를 old site에 먼저 배포한 뒤 같은 identifier를 new site에 유지하고 annotation export·old/new fixture를 검증; equivalence 실패 시 rename하지 않음; 근거=https://web.hypothes.is/help/how-to-establish-or-avoid-document-equivalence-in-the-hypothesis-system/; confirmer=agent/render-qa"
+    - "schema 선택: https://linear-algebra-for-robotics.local/schemas/* $id 유지; $id는 schema resource identity/base URI이므로 repository rename과 결합하지 않고 별도 versioned migration 없이는 변경하지 않음; 근거=https://json-schema.org/understanding-json-schema/structuring; confirmer=agent/release-engineer"
+    - "carry-over 선택: PUB-005 직전에 열린 PR을 drain하고 repository ID·ruleset·Actions·webhook·deploy key·App installation snapshot을 기록; clone/fetch/push는 old/new 양쪽 smoke 후 local remote를 new URL로 갱신하며 하나라도 실패하면 cutover 중단; confirmer=agent/publishing-ops-steward"
+    - "external control-plane boundary: 실제 GitHub rename·Pages canonical 전환·외부 webhook 변경은 별도 사용자 확인이 있어야 PUB-005에서 실행"
+  last_known_good: d6228373df7d1221c7862d3133376eeb0efdd856
   revert_ref: null
-  follow_up: null
+  follow_up: PUB-004
 last_reviewed: "2026-07-23"
