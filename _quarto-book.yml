@@ -19,11 +19,14 @@ book:
         - content/concepts/foundations/change-and-accumulation.qmd
         - content/concepts/linalg/linear-systems.qmd
         - content/concepts/linalg/orthogonal-projection.qmd
+        - content/concepts/linalg/eigenvalues.qmd
+        - content/concepts/linalg/svd.qmd
         - content/concepts/probability/mean-covariance.qmd
         - content/concepts/probability/gaussian-conditioning.qmd
         - content/concepts/systems/state-space.qmd
     - part: "로봇 미분기구학"
       chapters:
+        - content/concepts/robotics/rotation-representations.qmd
         - content/concepts/robotics/jacobian.qmd
         - content/references/jacobian-references.qmd
     - part: "제어에서 시작하기"
@@ -40,6 +43,7 @@ book:
         - content/concepts/estimation/kalman-filter.qmd
         - content/references/kalman-filter-references.qmd
         - content/paths/kalman-filter.qmd
+        - content/concepts/estimation/extended-kalman-filter.qmd
     - part: "입자 필터(Particle filter)와 순차몬테카를로(SMC)"
       chapters:
         - content/concepts/probability/measure-probability-foundations.qmd
@@ -55,6 +59,8 @@ book:
         - content/concepts/probability/markov-chain.qmd
         - content/concepts/probability/detailed-balance.qmd
         - content/concepts/probability/metropolis-hastings.qmd
+        - content/concepts/probability/gibbs-sampling.qmd
+        - content/concepts/probability/mcmc-diagnostics.qmd
         - content/paths/mcmc.qmd
     - part: "부록"
       chapters:
