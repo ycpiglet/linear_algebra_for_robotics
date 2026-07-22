@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Repository-owned figure artifact manifest",
+  "type": "object",
+  "required": ["schema_version", "scope", "legacy_baseline", "artifacts"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "scope": {
+      "type": "object",
+      "required": ["inventory_roots", "consumer_globs"],
+      "properties": {
+        "inventory_roots": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/repositoryPath" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "consumer_globs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/repositoryPath" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "legacy_baseline": {
+      "type": "object",
+      "required": ["id", "captured_on", "debt"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^legacy-[a-z0-9-]+$" },
+        "captured_on": { "type": "string", "pattern": "^20[0-9]{2}-[0-9]{2}-[0-9]{2}$" },
+        "debt": {
+          "type": "object",
+          "required": [
+            "missing_figure_id",
+            "missing_caption",
+            "missing_alt",
+            "missing_provenance"
+          ],
+          "properties": {
+            "missing_figure_id": { "$ref": "#/$defs/debtList" },
+            "missing_caption": { "$ref": "#/$defs/debtList" },
+            "missing_alt": { "$ref": "#/$defs/debtList" },
+            "missing_provenance": { "$ref": "#/$defs/debtList" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifacts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifact" },
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "repositoryPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[^\\u0000]+$"
+    },
+    "debtList": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "generator": {
+      "type": "object",
+      "required": ["command", "lockfile", "normalizer"],
+      "properties": {
+        "command": {
+          "type": "array",
+          "prefixItems": [
+            { "const": "python" },
+            { "$ref": "#/$defs/repositoryPath" }
+          ],
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "lockfile": { "$ref": "#/$defs/repositoryPath" },
+        "normalizer": { "const": "svg-v1" }
+      },
+      "additionalProperties": false
+    },
+    "license": {
+      "type": "object",
+      "required": ["spdx", "basis"],
+      "properties": {
+        "spdx": { "const": "CC-BY-NC-SA-4.0" },
+        "basis": { "$ref": "#/$defs/repositoryPath" }
+      },
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": "object",
+      "required": [
+        "id",
+        "production",
+        "sources",
+        "generator",
+        "output",
+        "consumers",
+        "license"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^figure\\.[a-z0-9]+(?:[.-][a-z0-9]+)*$"
+        },
+        "production": { "enum": ["generated", "manual"] },
+        "sources": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/repositoryPath" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "generator": {
+          "oneOf": [
+            { "$ref": "#/$defs/generator" },
+            { "type": "null" }
+          ]
+        },
+        "output": { "$ref": "#/$defs/repositoryPath" },
+        "consumers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/repositoryPath" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "license": { "$ref": "#/$defs/license" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "production": { "const": "generated" } },
+            "required": ["production"]
+          },
+          "then": { "properties": { "generator": { "$ref": "#/$defs/generator" } } }
+        },
+        {
+          "if": {
+            "properties": { "production": { "const": "manual" } },
+            "required": ["production"]
+          },
+          "then": { "properties": { "generator": { "type": "null" } } }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
