@@ -2,7 +2,7 @@ schema_version: 1
 id: PUB-006
 title: 저장소 소유 artifact inventory·manifest 기반
 area: artifact
-status: in_progress
+status: done
 priority: P1
 change_class: toolchain
 version_impact: additive
@@ -15,7 +15,7 @@ decision_refs:
   - AUTHORING_MANUAL.md#10-시각화-설계
 decision_needed: []
 blocker: null
-status_reason: null
+status_reason: "repository-owned OTF로 네 generated SVG의 clean-runner 재현성을 고정하고 PR·main·live 배포에서 같은 산출물을 확인했다."
 superseded_by: null
 scope:
   in:
@@ -83,11 +83,27 @@ definition_of_done:
   - legacy baseline을 악화시키는 새 변경을 거부한다
 evidence:
   issue: null
-  pr: null
-  ci_runs: []
-  rendered_artifacts: []
-  post_merge: []
-  last_known_good: null
+  pr: 33
+  ci_runs:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29945516820
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29945517171
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29945774887
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29946097919
+  rendered_artifacts:
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29945516820/artifacts/8540041334
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29945774887/artifacts/8540182770
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/assets/figures/jacobian-2r-geometry.svg
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/assets/figures/jacobian-2r-velocity-map.svg
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/assets/figures/jacobian-singular-value-manipulability.svg
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/assets/figures/kalman-prior-and-tuning-comparison.svg
+  post_merge:
+    - "PR #33 merge 8d2c202e0cccc27eb7c08c396618ca06734d71ec가 12-artifact inventory와 repository-owned generator OTF를 main에 반영함"
+    - "PR exact-head run 29945516820에서 source-contract 33초와 publication-build 2분 5초 success"
+    - "main run 29945774887에서 source-contract와 reader·review publication-build success"
+    - "deploy-pages run 29946097919가 merge SHA 8d2c202e0cccc27eb7c08c396618ca06734d71ec를 success로 배포함"
+    - "live source-commit.txt가 8d2c202e0cccc27eb7c08c396618ca06734d71ec를 반환함"
+    - "live 네 generated SVG SHA-256이 각각 acff76dc71beaf65ab5a9bc826e2204498430a604a2aea174c2f8f0bc78763ae, 9c159f0d0e0b72d3ed25d5f198b6e549bc757db5031bd05045fe589f7f9cec00, 22555d02c3328cfbfd197adebf5e3b08886afa359d6bdfa004de0f380296b8bc, d073f2b3fc3f3483cec4d452347d33e8afadd5d02989ac65201d76f7b6b75eb7로 tracked bytes와 일치함"
+  last_known_good: 8d2c202e0cccc27eb7c08c396618ca06734d71ec
   revert_ref: null
-  follow_up: null
+  follow_up: PUB-008
 last_reviewed: "2026-07-23"
