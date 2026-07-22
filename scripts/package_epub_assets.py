@@ -20,10 +20,19 @@ CONTAINER_NS = "urn:oasis:names:tc:opendocument:xmlns:container"
 DC_NS = "http://purl.org/dc/elements/1.1/"
 VIEWER_STATE_MEMBERS = {"META-INF/calibre_bookmarks.txt"}
 
+# The paragraph-anchor filter can prepend its empty span to Quarto's raw
+# figcaption paragraph. The span is EPUB-only repair debris, not caption text.
+OPTIONAL_PARAGRAPH_ANCHOR = (
+    r"(?:<span\b[^>]*\sclass\s*=\s*(?:"
+    r'"[^"]*\bparagraph-anchor\b[^"]*"|'
+    r"'[^']*\bparagraph-anchor\b[^']*'"
+    r")[^>]*(?:/>\s*|>\s*</span>\s*))?"
+)
 MALFORMED_MERMAID_FIGURE = re.compile(
     r"<p><figure(?:\s+class(?:=(?:\"[^\"]*\"|'[^']*'))?)?></p>\s*"
     r"<div>\s*<p>(?P<image><img\b[^>]*?/>)</p>\s*</div>\s*"
-    r"<p><figcaption>\s*(?P<caption>.*?)\s*</figcaption>\s*</figure></p>",
+    rf"<p>{OPTIONAL_PARAGRAPH_ANCHOR}<figcaption>\s*"
+    r"(?P<caption>.*?)\s*</figcaption>\s*</figure></p>",
     re.DOTALL,
 )
 FILENAME_TITLE = re.compile(r"<title>\s*(?:ch\d+|nav)\.xhtml\s*</title>")

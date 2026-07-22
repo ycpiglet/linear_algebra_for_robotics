@@ -166,6 +166,17 @@ def test_book_contains_all_flagship_chapters_and_reference_pages() -> None:
         assert chapter in config
 
 
+def test_book_contains_every_concept_source() -> None:
+    config = (ROOT / "_quarto-book.yml").read_text(encoding="utf-8")
+    configured = set(re.findall(r"-\s+(content/concepts/[^\s]+\.qmd)", config))
+    sources = {
+        path.relative_to(ROOT).as_posix()
+        for path in (ROOT / "content/concepts").rglob("*.qmd")
+    }
+
+    assert configured == sources
+
+
 def test_internal_authoring_sources_are_not_standalone_pages() -> None:
     ignored = (ROOT / ".quartoignore").read_text(encoding="utf-8")
     web = (ROOT / "_quarto-web.yml").read_text(encoding="utf-8")
