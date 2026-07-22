@@ -2,7 +2,7 @@ schema_version: 1
 id: PUB-018
 title: PUB-017 보류 기간의 임시 publication fallback
 area: governance
-status: in_review
+status: done
 priority: P0
 change_class: governance
 version_impact: compatible
@@ -95,9 +95,25 @@ evidence:
   ci_runs:
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29932980282
     - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29932978706
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29934198010
+    - https://github.com/ycpiglet/linear_algebra_for_robotics/actions/runs/29934491164
   rendered_artifacts: []
-  post_merge: []
-  last_known_good: 1c2268cbf610ecabc60fef38d71808250315e630
+  post_merge:
+    - merge:87b39a81c64b161f050c0985b3cebb2b16fd6152
+    - "main publish-web run 29934198010에서 source-contract와 publication-build가 87b39a81c64b161f050c0985b3cebb2b16fd6152 대상으로 success"
+    - "deploy-pages run 29934491164가 87b39a81c64b161f050c0985b3cebb2b16fd6152 대상으로 success"
+    - pages:0fe7c8c46b339a338bcf57c19d5800559f5dd913
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/
+    - https://ycpiglet.github.io/linear_algebra_for_robotics/review/
+    - "reader와 review live URL smoke가 모두 HTTP 200"
+    - "Actions enabled=true, EDITORIAL_FREEZE=false"
+    - "main ruleset 19211454는 active, bypass 없음, deletion·non-fast-forward 차단"
+    - "main ruleset 19211454 pull request는 merge-only, approvals=0, codeowner=false, last-push=false, stale=false, thread-resolution=false"
+    - "main ruleset 19211454의 strict required checks는 source-contract·publication-build이며 둘 다 integration_id=15368"
+    - "PR #25는 closed·unmerged이고 agent/pub-017-trust-transition ref와 head ac0e0d1f093cac393b92796d4f5e6cc6530efa55가 보존됨"
+    - "PUB-003·PUB-006·PUB-007은 PUB-018 완료 후 PUB-017 없이 시작 가능한 의존 그래프"
+    - "residual risk: 현재 OAuth credential로 GitHub App permission state를 검증할 수 없고 App은 fallback에 사용하지 않으며 재사용 전 owner 확인이 필요함"
+  last_known_good: 87b39a81c64b161f050c0985b3cebb2b16fd6152
   revert_ref: null
   follow_up: null
 last_reviewed: "2026-07-23"
