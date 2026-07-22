@@ -8,10 +8,17 @@ execute:
 ---
 
 ```{python}
+#| label: fig-kalman-lab-type-pilot
+#| fig-cap: "같은 합성 자료에서 위치 센서, 참 위치, 칼만 추정, 불확실성 띠와 칼만 이득을 비교한다."
+#| fig-alt: "위 패널은 시간에 따른 위치 센서 점, 참 위치 선, 칼만 추정 선과 플러스마이너스 2시그마 띠를, 아래 패널은 위치와 속도 칼만 이득을 보여 주는 합성 실험 그래프다."
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 from robotics_math_atlas import constant_velocity_kalman
+from robotics_math_atlas.plot_style import ATLAS_PLOT_COLORS, apply_atlas_plot_style
+
+apply_atlas_plot_style()
 
 result = constant_velocity_kalman()
 time = result["time"]
@@ -22,16 +29,27 @@ print(f"Kalman estimate RMSE:  {result['estimate_rmse']:.3f}")
 
 fig, axes = plt.subplots(2, 1, figsize=(9, 6.5), sharex=True)
 axes[0].scatter(time, result["measurements"], s=10, alpha=0.35, label="position sensor")
-axes[0].plot(time, result["truth"][:, 0], color="black", label="true position")
-axes[0].plot(time, result["estimates"][:, 0], color="#1459b8", label="Kalman estimate")
+axes[0].plot(
+    time,
+    result["truth"][:, 0],
+    color=ATLAS_PLOT_COLORS["ink"],
+    label="true position",
+)
+axes[0].plot(
+    time,
+    result["estimates"][:, 0],
+    color=ATLAS_PLOT_COLORS["blue"],
+    label="Kalman estimate",
+)
 axes[0].fill_between(
     time,
     result["estimates"][:, 0] - 2 * sigma,
     result["estimates"][:, 0] + 2 * sigma,
-    color="#1459b8",
+    color=ATLAS_PLOT_COLORS["blue"],
     alpha=0.15,
     label="±2σ",
 )
+axes[0].set_title("측정과 추정의 위치 궤적")
 axes[1].plot(time, result["gains"][:, 0], label="position gain")
 axes[1].plot(time, result["gains"][:, 1], label="velocity gain")
 axes[0].set_ylabel("position")
@@ -46,4 +64,3 @@ plt.tight_layout()
 `measurement_std`를 키우면 필터는 센서를 덜 신뢰하고, `acceleration_std`를 키우면 모델을
 덜 신뢰합니다. 두 값은 단순한 튜닝 손잡이가 아니라 각각 측정·과정 잡음에 관한 확률
 가정입니다.
-

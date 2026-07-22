@@ -17,4 +17,3 @@ __all__ = [
     "simulate_pid",
     "systematic_resample",
 ]
-

@@ -33,7 +33,7 @@
 
 #quarto-document-content strong {
   color: var(--atlas-strong);
-  font-weight: 780;
+  font-weight: var(--atlas-type-heading-weight);
 }
 
 #quarto-document-content em {
@@ -60,7 +60,10 @@ mark,
 code,
 kbd,
 samp {
-  font-family: var(--atlas-font-mono);
+  font-family: var(--atlas-type-code-family);
+  font-size: var(--atlas-type-code-size);
+  font-weight: var(--atlas-type-code-weight);
+  line-height: var(--atlas-type-code-leading);
   letter-spacing: 0;
   overflow-wrap: anywhere;
   word-break: normal;
@@ -73,6 +76,48 @@ blockquote {
   background: var(--atlas-surface-2);
   border-left: 4px solid var(--atlas-line-strong);
   border-radius: 0 var(--atlas-radius-sm) var(--atlas-radius-sm) 0;
+}
+
+/* Stable rendered specimen for the semantic type-role contract. */
+.type-role-specimen {
+  display: grid;
+  gap: var(--atlas-space-5);
+  margin: var(--atlas-block-gap) 0;
+  padding: var(--atlas-space-6);
+  background: var(--atlas-surface);
+  border: 1px solid var(--atlas-line);
+  border-radius: var(--atlas-radius);
+}
+
+.type-role-specimen__row {
+  min-width: 0;
+  padding-bottom: var(--atlas-space-5);
+  border-bottom: 1px solid var(--atlas-line);
+}
+
+.type-role-specimen__row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+#quarto-document-content .type-role-specimen__name {
+  margin: 0 0 var(--atlas-space-2);
+  color: var(--atlas-muted);
+  font-family: var(--atlas-type-label-family);
+  font-size: var(--atlas-type-label-size);
+  font-weight: var(--atlas-type-label-weight);
+  letter-spacing: var(--atlas-type-label-tracking);
+  line-height: var(--atlas-type-label-leading);
+}
+
+#quarto-document-content .type-role-specimen :is(p, figure, pre, .math.display) {
+  margin-block: 0;
+}
+
+#quarto-document-content .type-role-specimen figure {
+  padding: var(--atlas-space-4);
+  background: var(--atlas-surface-2);
+  border-radius: var(--atlas-radius-sm);
 }
 
 /* Every concept opens with a visual executive summary. */
@@ -95,7 +140,7 @@ blockquote {
   bottom: -1.35rem;
   z-index: -1;
   color: color-mix(in srgb, var(--atlas-blue) 10%, transparent);
-  font: 800 clamp(4.3rem, 13vw, 9rem) / 1 var(--atlas-font-mono);
+  font: var(--atlas-type-heading-weight) clamp(4.3rem, 13vw, 9rem) / 1 var(--atlas-type-code-family);
   content: "∇ · Σ · P";
   letter-spacing: -0.13em;
   transform: rotate(-4deg);
@@ -166,7 +211,7 @@ blockquote {
   width: 2.15rem;
   height: 2.15rem;
   color: var(--atlas-surface);
-  font: 780 0.82rem / 1 var(--atlas-font-body);
+  font: var(--atlas-type-label-weight) var(--atlas-type-label-size) / var(--atlas-type-label-leading) var(--atlas-type-label-family);
   content: var(--block-icon);
   background: var(--block-accent);
   border-radius: 0.72rem;
@@ -189,7 +234,7 @@ blockquote {
 ) > :is(h2, h3, h4):first-child {
   margin: 0 0 var(--atlas-space-3) !important;
   color: var(--block-accent);
-  font-size: 1.06rem;
+  font-size: var(--atlas-type-h4-size);
 }
 
 :is(
@@ -247,8 +292,11 @@ blockquote {
 #quarto-document-content .concept-toolbar__reading-time-title {
   margin: 0;
   color: var(--atlas-violet);
-  font-size: 0.82rem;
-  font-weight: 760;
+  font-family: var(--atlas-type-label-family);
+  font-size: var(--atlas-type-label-size);
+  font-weight: var(--atlas-type-label-weight);
+  letter-spacing: var(--atlas-type-label-tracking);
+  line-height: var(--atlas-type-label-leading);
 }
 
 .concept-toolbar__reading-time-list {
@@ -268,7 +316,8 @@ blockquote {
   gap: 0.38rem;
   padding: 0.3rem 0.62rem;
   color: var(--atlas-ink-soft);
-  font-size: 0.8rem;
+  font-size: var(--atlas-type-caption-size);
+  line-height: var(--atlas-type-caption-leading);
   background: var(--atlas-surface);
   border: 1px solid var(--atlas-line);
   border-radius: 999px;
@@ -300,20 +349,20 @@ blockquote {
 #quarto-document-content .prerequisite-group__heading h3 {
   margin: 0 !important;
   color: var(--atlas-strong);
-  font-size: 0.9rem;
+  font-size: var(--atlas-type-label-size);
 }
 
 .prerequisite-group__heading h3 span {
   color: var(--atlas-muted);
-  font-size: 0.75rem;
-  font-weight: 620;
+  font-size: var(--atlas-type-caption-size);
+  font-weight: var(--atlas-type-caption-weight);
 }
 
 #quarto-document-content .prerequisite-group__heading p {
   margin: 0;
   color: var(--atlas-muted);
-  font-size: 0.78rem;
-  line-height: var(--atlas-leading-compact);
+  font-size: var(--atlas-type-caption-size);
+  line-height: var(--atlas-type-caption-leading);
   text-align: right;
 }
 
@@ -336,7 +385,7 @@ blockquote {
   inline-size: 1.15rem;
   block-size: 1.15rem;
   color: var(--atlas-muted);
-  font-weight: 780;
+  font-weight: var(--atlas-type-label-weight);
   place-items: center;
 }
 
@@ -353,8 +402,8 @@ blockquote {
   align-items: center;
   padding: 0.25rem 0.62rem;
   color: var(--atlas-ink);
-  font: 700 0.78rem / 1.2 var(--atlas-font-body);
-  letter-spacing: 0.01em;
+  font: var(--atlas-type-label-weight) var(--atlas-type-label-size) / var(--atlas-type-label-leading) var(--atlas-type-label-family);
+  letter-spacing: var(--atlas-type-label-tracking);
   background: var(--atlas-surface);
   border: 1px solid var(--atlas-line);
   border-radius: 999px;
@@ -403,13 +452,13 @@ blockquote {
 }
 
 .derivation-step strong:first-of-type { color: var(--atlas-violet); }
-.simulation-placeholder__label { font-weight: 750; }
+.simulation-placeholder__label { font-weight: var(--atlas-type-label-weight); }
 .simulation-placeholder__control {
   display: inline-block;
   min-width: 12rem;
   margin-inline: var(--atlas-space-2);
   color: var(--atlas-teal);
-  font-family: var(--atlas-font-mono);
+  font-family: var(--atlas-type-code-family);
   letter-spacing: -0.08em;
 }
 
@@ -469,8 +518,11 @@ blockquote {
 #quarto-document-content figcaption {
   margin-top: var(--atlas-space-3);
   color: var(--atlas-muted);
-  font-size: 0.9rem;
-  line-height: var(--atlas-leading-compact);
+  font-family: var(--atlas-type-caption-family);
+  font-size: var(--atlas-type-caption-size);
+  font-weight: var(--atlas-type-caption-weight);
+  letter-spacing: var(--atlas-type-caption-tracking);
+  line-height: var(--atlas-type-caption-leading);
   text-align: center;
 }
 
@@ -485,7 +537,7 @@ blockquote {
 abbr[title] {
   padding-inline: 0.12em;
   color: var(--atlas-blue-strong);
-  font-weight: 680;
+  font-weight: var(--atlas-type-label-weight);
   text-decoration: underline dotted color-mix(in srgb, var(--atlas-blue) 68%, transparent) 0.1em;
   text-underline-offset: 0.2em;
   background: color-mix(in srgb, var(--atlas-blue-soft) 58%, transparent);
@@ -536,14 +588,14 @@ abbr[title]:focus-visible {
 
 .page-glossary summary {
   color: var(--atlas-violet);
-  font-weight: 760;
+  font-weight: var(--atlas-type-label-weight);
   cursor: pointer;
 }
 
 .page-glossary--static > p:first-child {
   margin: 0;
   color: var(--atlas-violet);
-  font-weight: 760;
+  font-weight: var(--atlas-type-label-weight);
 }
 
 .page-glossary dl {
@@ -553,7 +605,7 @@ abbr[title]:focus-visible {
   margin: var(--atlas-space-5) 0 0;
 }
 
-.page-glossary dt { font-weight: 760; }
+.page-glossary dt { font-weight: var(--atlas-type-label-weight); }
 .page-glossary dd { margin: 0; color: var(--atlas-ink-soft); }
 
 /* Inline and display math must remain readable in prose and reflow at 320 px. */
@@ -561,7 +613,7 @@ abbr[title]:focus-visible {
   display: inline-block;
   max-width: 100%;
   margin-inline: 0.08em;
-  line-height: 1.2;
+  line-height: var(--atlas-type-math-leading);
   vertical-align: -0.12em;
   white-space: nowrap;
 }
@@ -577,6 +629,12 @@ abbr[title]:focus-visible {
   border: 1px solid color-mix(in srgb, var(--atlas-blue) 16%, var(--atlas-line));
   border-radius: var(--atlas-radius-sm);
   -webkit-overflow-scrolling: touch;
+}
+
+math {
+  font-family: var(--atlas-type-math-family);
+  font-size: var(--atlas-type-math-size);
+  font-weight: var(--atlas-type-math-weight);
 }
 
 /* MathJax nests a display container inside Pandoc's .math.display wrapper.
@@ -666,7 +724,7 @@ body.atlas-reader-active.atlas-reader-collapsed { padding-bottom: 4rem; }
   gap: 0.25rem;
   padding: 0.12rem 0.6rem;
   color: var(--atlas-muted);
-  font: 680 0.78rem / 1.4 var(--atlas-font-body);
+  font: var(--atlas-type-label-weight) var(--atlas-type-label-size) / var(--atlas-type-label-leading) var(--atlas-type-label-family);
   background: var(--atlas-surface);
   border: 1px solid var(--atlas-line);
   border-radius: 999px;
@@ -713,7 +771,7 @@ body.atlas-reader-active.atlas-reader-collapsed { padding-bottom: 4rem; }
   gap: 0.35rem;
   padding: 0.45rem 0.7rem;
   color: var(--atlas-ink);
-  font: 680 0.82rem / 1.2 var(--atlas-font-body);
+  font: var(--atlas-type-label-weight) var(--atlas-type-label-size) / var(--atlas-type-label-leading) var(--atlas-type-label-family);
   background: var(--atlas-surface-2);
   border: 1px solid var(--atlas-line);
   border-radius: 999px;
@@ -747,11 +805,11 @@ body.atlas-reader-active.atlas-reader-collapsed { padding-bottom: 4rem; }
 
 .reader-tools__toc ol { margin: 0; padding-left: 1.3rem; }
 .reader-tools__toc li + li { margin-top: var(--atlas-space-2); }
-.reader-tools__toc-h3 { margin-left: var(--atlas-space-4); font-size: 0.9em; }
-.reader-tools__saved h3 { margin: 0 0 var(--atlas-space-2); font-size: 0.9rem; }
+.reader-tools__toc-h3 { margin-left: var(--atlas-space-4); font-size: var(--atlas-type-caption-size); }
+.reader-tools__saved h3 { margin: 0 0 var(--atlas-space-2); font-size: var(--atlas-type-label-size); }
 .reader-tools__saved h3:not(:first-child) { margin-top: var(--atlas-space-4); }
 .reader-tools__saved :is(ul, p) { margin: 0; padding-left: 1.2rem; }
-.reader-tools__saved p { padding-left: 0; color: var(--atlas-muted); font-size: 0.82rem; }
+.reader-tools__saved p { padding-left: 0; color: var(--atlas-muted); font-size: var(--atlas-type-caption-size); }
 .reader-tools__saved li + li { margin-top: var(--atlas-space-2); }
 .reader-tools__saved a { display: grid; text-decoration: none; }
 .reader-tools__saved small { color: var(--atlas-muted); }
@@ -761,7 +819,11 @@ body.atlas-reader-active.atlas-reader-collapsed { padding-bottom: 4rem; }
   grid-template-columns: minmax(8rem, 1fr) minmax(8rem, 2.5fr) 3.2rem;
   padding-inline: var(--atlas-space-2);
   color: var(--atlas-muted);
-  font-size: 0.78rem;
+  font-family: var(--atlas-type-label-family);
+  font-size: var(--atlas-type-label-size);
+  font-weight: var(--atlas-type-label-weight);
+  letter-spacing: var(--atlas-type-label-tracking);
+  line-height: var(--atlas-type-label-leading);
 }
 
 .reader-tools__position > span {
@@ -788,6 +850,13 @@ body.atlas-reader-active.atlas-reader-collapsed { padding-bottom: 4rem; }
   margin: var(--atlas-space-5) 0;
   background: var(--atlas-surface);
   backdrop-filter: none;
+}
+
+/* The specimen can sit in Quarto's narrow middle column even on a wide
+ * viewport. Let its controls shrink to the available column instead of
+ * inheriting the fixed reader toolbar's desktop minimums. */
+.reader-tools--specimen .reader-tools__position {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2.5fr) auto;
 }
 
 .reader-tools--specimen .reader-tool[aria-disabled="true"] {

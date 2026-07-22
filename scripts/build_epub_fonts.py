@@ -1,7 +1,8 @@
-"""Noto CJK에서 EPUB용 한국어 WOFF2 부분집합 글꼴을 만든다."""
+"""Noto CJK에서 Atlas용 한국어 OTF/WOFF2 부분집합 글꼴을 만든다."""
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
 from fontTools import subset
@@ -13,8 +14,38 @@ SOURCES = {
     "Regular": Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"),
     "Bold": Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc"),
 }
-SOURCE_SUFFIXES = {".qmd", ".md", ".yml", ".yaml", ".json", ".py", ".js", ".scss", ".css"}
-IGNORED_PARTS = {".git", ".quarto", ".tools", ".venv", "_book", "_proof", "_site"}
+SOURCE_SHA256 = {
+    "Regular": "b76b0433203017ca80401b2ee0dd69350349871c4b19d504c34dbdd80541690a",
+    "Bold": "faa5f3656a78b2e2d450d27fe8382c778bc2b6bb5ea29c986664a6a435056ceb",
+}
+SOURCE_FAMILY = "Noto Sans CJK KR"
+SOURCE_SUFFIXES = {
+    ".qmd",
+    ".md",
+    ".yml",
+    ".yaml",
+    ".json",
+    ".py",
+    ".js",
+    ".scss",
+    ".css",
+    ".typ",
+}
+IGNORED_PARTS = {
+    ".git",
+    ".pytest_cache",
+    ".quarto",
+    ".tools",
+    ".venv",
+    "__pycache__",
+    "_book",
+    "_freeze",
+    "_proof",
+    "_review",
+    "_site",
+    "generated",
+    "test-results",
+}
 
 
 def required_codepoints() -> set[int]:
@@ -75,14 +106,34 @@ def rename_font(font, style: str) -> None:
     font["OS/2"].usWeightClass = 700 if style == "Bold" else 400
 
 
-def build_one(source: Path, style: str, codepoints: set[int]) -> Path:
+def build_one(source: Path, style: str, codepoints: set[int]) -> tuple[Path, Path]:
     if not source.is_file():
         raise FileNotFoundError(f"원본 Noto 글꼴을 찾을 수 없습니다: {source}")
+    actual_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    expected_hash = SOURCE_SHA256[style]
+    if actual_hash != expected_hash:
+        raise ValueError(
+            f"원본 Noto 글꼴 hash가 다릅니다: {source} "
+            f"(expected {expected_hash}, got {actual_hash})"
+        )
     collection = TTCollection(source)
     try:
         font = collection.fonts[1]  # Noto Sans CJK KR
+        family_names = {
+            record.toUnicode()
+            for record in font["name"].names
+            if record.nameID in {1, 16}
+        }
+        if family_names != {SOURCE_FAMILY}:
+            raise ValueError(
+                f"TTC index 1 family가 {SOURCE_FAMILY!r}가 아닙니다: "
+                f"{sorted(family_names)!r}"
+            )
+        # TTFont otherwise writes the current time into `head.modified`, which
+        # changes WOFF2 bytes and even compressed size on every regeneration.
+        # Preserve the upstream fixed timestamp so clean builds are identical.
+        font.recalcTimestamp = False
         options = subset.Options()
-        options.flavor = "woff2"
         options.layout_features = ["*"]
         options.name_legacy = True
         options.name_languages = ["*"]
@@ -94,10 +145,17 @@ def build_one(source: Path, style: str, codepoints: set[int]) -> Path:
         rename_font(font, style)
 
         OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        output = OUTPUT_DIR / f"AtlasSansKR-{style}.woff2"
-        font.flavor = "woff2"
-        font.save(output)
-        return output
+        outputs: list[Path] = []
+        # Save both adapters from the exact same subset and name tables. OTF is
+        # consumed by Matplotlib/Typst; WOFF2 is consumed by Web/EPUB.
+        # The Noto CJK source uses CFF outlines (`sfntVersion == "OTTO"`), so
+        # the native artifact must use the `.otf` extension.
+        for suffix, flavor in (("otf", None), ("woff2", "woff2")):
+            output = OUTPUT_DIR / f"AtlasSansKR-{style}.{suffix}"
+            font.flavor = flavor
+            font.save(output)
+            outputs.append(output)
+        return outputs[0], outputs[1]
     finally:
         collection.close()
 
@@ -105,8 +163,9 @@ def build_one(source: Path, style: str, codepoints: set[int]) -> Path:
 def main() -> None:
     codepoints = required_codepoints()
     for style, source in SOURCES.items():
-        output = build_one(source, style, codepoints)
-        print(f"{output.relative_to(ROOT)}: {output.stat().st_size:,} bytes")
+        outputs = build_one(source, style, codepoints)
+        for output in outputs:
+            print(f"{output.relative_to(ROOT)}: {output.stat().st_size:,} bytes")
 
 
 if __name__ == "__main__":

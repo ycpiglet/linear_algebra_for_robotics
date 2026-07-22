@@ -5,6 +5,8 @@ import json
 import zipfile
 from pathlib import Path
 
+from pypdf.generic import ArrayObject, DictionaryObject, NameObject, StreamObject
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "verify_outputs", ROOT / "scripts" / "verify_outputs.py"
@@ -21,6 +23,47 @@ def _html(relative: str, body: str) -> str:
         + ".qmd"
     )
     return f'<html><head><meta name="DC.identifier" content="{identifier}"></head>{body}</html>'
+
+
+def _embedded_font(style: str) -> DictionaryObject:
+    descriptor = DictionaryObject(
+        {
+            NameObject("/FontName"): NameObject(f"/ABCDEF+AtlasSansKR-{style}"),
+            NameObject("/FontFile3"): StreamObject(),
+        }
+    )
+    descendant = DictionaryObject(
+        {
+            NameObject("/BaseFont"): NameObject(f"/ABCDEF+AtlasSansKR-{style}"),
+            NameObject("/FontDescriptor"): descriptor,
+        }
+    )
+    return DictionaryObject(
+        {
+            NameObject("/BaseFont"): NameObject(f"/ABCDEF+AtlasSansKR-{style}"),
+            NameObject("/DescendantFonts"): ArrayObject([descendant]),
+        }
+    )
+
+
+def test_pdf_font_helpers_recognize_embedded_atlas_descendant_styles() -> None:
+    regular = _embedded_font("Regular")
+    bold = _embedded_font("Bold")
+
+    assert verify_outputs._font_is_embedded(regular)
+    assert verify_outputs._font_names(regular) == {"/ABCDEF+AtlasSansKR-Regular"}
+    assert verify_outputs._embedded_atlas_styles(regular) == {"regular"}
+    assert verify_outputs._embedded_atlas_styles(bold) == {"bold"}
+
+
+def test_pdf_font_helper_rejects_unembedded_or_unrecognized_atlas_fonts() -> None:
+    unembedded = _embedded_font("Regular")
+    descriptor = unembedded["/DescendantFonts"][0]["/FontDescriptor"]
+    del descriptor["/FontFile3"]
+    unrelated = _embedded_font("Italic")
+
+    assert verify_outputs._embedded_atlas_styles(unembedded) == set()
+    assert verify_outputs._embedded_atlas_styles(unrelated) == set()
 
 
 def _write_minimal_atlas_site(root: Path) -> None:

@@ -43,11 +43,86 @@ platform/templates/
 | 본문 자간 | `0.016em` | 기존 음수 자간을 제거하고 한글 획 사이 여유 확보 |
 | 제목 자간 | `-0.016em` | 큰 글자에서만 약하게 응집 |
 | 권장 행 길이 | 최대 `76ch` | 긴 문장의 좌우 탐색 부담 제한 |
-| 문단 하단 | `1.55rem` 토큰 | 문단 경계를 빈 줄처럼 인식 |
+| 문단 하단 | `1.85rem` 토큰 | 문단 경계를 빈 줄처럼 인식 |
 | 수식 전후 | `2rem` 토큰 | 평문과 계산 단계를 시각적으로 분리 |
 | 표·그림 전후 | `2.75rem` 토큰 | 설명–시각화–해석의 세 단위를 분리 |
 
 평문은 중립색을 유지한다. **굵게(bold)**는 결론·조건·금지 사항에, *기울임(italic)*은 처음 등장하는 기술 용어와 대비에만 사용한다. <mark>형광 강조는 한 문단에서 한두 곳</mark>으로 제한한다.
+
+### semantic type role 계약
+
+`assets/styles/_tokens.scss`가 type role의 canonical source다. 저자는 크기 class를 고르지
+않고 문서 의미에 맞는 요소를 쓴다. 기존 `--atlas-font-body`, `--atlas-font-mono`,
+`--atlas-leading-body` alias는 전체 migration이 끝날 때까지 유지한다.
+
+| 역할 | 저자 vocabulary | Web | PDF | EPUB | 금지 |
+|---|---|---|---|---|---|
+| body | 문단·목록 | Atlas Sans KR 400, `1rem–1.075rem`, 1.90 | Atlas Sans KR 400 | Atlas Sans KR 400, `1em`, 1.86 | 작은 글씨로 분량 압축 |
+| heading | 실제 `h1`–`h4` 순서 | Atlas Sans KR 700, role scale | Atlas Sans KR 700 | Atlas Sans KR 700, relative scale | 모양 때문에 heading level 건너뛰기 |
+| caption | `figcaption`, 보조 설명 | Atlas Sans KR 400, `0.9rem`, 1.55 | main family의 caption mapping | Atlas Sans KR 400, `0.9em`, 1.55 | 본문 결론을 caption에만 숨기기 |
+| label | `label`, badge·control label | Atlas Sans KR 700, `0.875rem`, 1.35 | main family 700 | Atlas Sans KR 700, `0.875em`, 1.35 | 400/700 밖 synthetic weight |
+| code | `code`, `pre`, `kbd`, `samp` | Korean-capable mono 400 | Noto Sans Mono CJK KR 400 | Korean-capable mono 400 | body family로 공백 정렬 흉내내기 |
+| math | inline/display math | MathJax + math fallback 400 | Typst math font | MathML + reader math fallback 400 | 수식을 image text로만 제공하기 |
+
+caption과 label은 가장 작은 author-facing role이다. 중요한 정보에 그보다 작은 local
+size를 만들지 않는다. Atlas Sans KR은 Regular 400과 Bold 700만 번들하므로 Web과 EPUB은
+`font-synthesis: none`을 유지한다. italic face는 없으며 `em`은 색·밑줄도 함께 사용한다.
+font source·hash·glyph·license·재생성 계약은 `assets/README.md`를 따른다.
+
+::: {#type-role-specimen .type-role-specimen .concept-scorecard aria-label="semantic type role 렌더링 표본"}
+::: {.type-role-specimen__row}
+<p class="type-role-specimen__name">body · 긴 설명과 한영 혼합 inline math</p>
+
+로봇의 위치 **state estimate** 3개와 측정값 $z_k\in\mathbb R^3$을 비교한다. 한글·Latin·숫자·문장부호가 같은 행간에서 겹치지 않고, 200% 확대에서도 문장 전체가 다시 흐른다.
+:::
+
+::: {.type-role-specimen__row}
+<p class="type-role-specimen__name">heading · 문서 계층을 보존하는 제목</p>
+
+#### 예측과 측정은 같은 단위에서 비교한다
+:::
+
+::: {.type-role-specimen__row}
+<p class="type-role-specimen__name">caption · figure와 분리되지 않는 설명</p>
+
+<figure>
+  <p aria-hidden="true">가나다 · Atlas 0123 · Ω → ∑</p>
+  <figcaption>그림 1 · 한글·Latin·Greek·수학 기호의 glyph와 400 weight를 확인하는 caption 표본.</figcaption>
+</figure>
+:::
+
+::: {.type-role-specimen__row}
+<p class="type-role-specimen__name">label · 짧은 control·badge 문구</p>
+
+<label for="type-role-specimen-input">측정 잡음 배율 · 현재 1.0</label>
+<input id="type-role-specimen-input" type="text" value="준비 중" disabled="disabled" />
+:::
+
+::: {.type-role-specimen__row}
+<p class="type-role-specimen__name">code · 한글 주석과 모호한 glyph</p>
+
+```python
+innovation_0OIl = measurement - prediction  # 혁신 벡터
+```
+:::
+
+::: {.type-role-specimen__row}
+<p class="type-role-specimen__name">math · inline과 display baseline</p>
+
+본문의 $x_k^-=Fx_{k-1}^+$와 display 수식은 서로 다른 renderer에서도 같은 위계를 유지한다.
+
+$$
+K_k=P_k^-H^\mathsf{T}(HP_k^-H^\mathsf{T}+R)^{-1}
+$$
+:::
+:::
+
+Web은 token을 직접 소비한다. PDF는 번들 OTF를 Typst `font-paths`, `mainfont`,
+그리고 book template용 `assets/styles/typst-fonts.typ` adapter로 embed한다. EPUB은
+reader-safe native CSS를 유지하고 사용자 font override를 막지 않는다. plot은 같은 번들
+OTF를 등록한 `robotics_math_atlas.plot_style`의 body·heading·caption·label role을 사용하며,
+색·weight·family parity는 contract test로 고정한다. 출력 간 숫자 일치보다 위계·가독성·
+glyph 보존을 요구한다.
 
 ::: {.annotation-note}
 ### 저자 노트 · Author note

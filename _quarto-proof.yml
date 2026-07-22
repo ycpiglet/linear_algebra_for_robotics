@@ -58,4 +58,7 @@ format:
   typst:
     toc: true
     section-numbering: "1.1.1"
-    mainfont: "Noto Sans CJK KR"
+    font-paths: [assets/fonts]
+    mainfont: "Atlas Sans KR"
+    codefont: "Noto Sans Mono CJK KR"
+    include-before-body: assets/styles/typst-fonts.typ

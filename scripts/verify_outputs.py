@@ -514,6 +514,43 @@ def _font_is_embedded(font: object) -> bool:
     return False
 
 
+def _font_names(font: object) -> set[str]:
+    """Return PostScript names advertised by a PDF font and its descendants."""
+    names: set[str] = set()
+    try:
+        value = font.get_object()
+        descendants = value.get("/DescendantFonts", [])
+        candidates = [value, *(entry.get_object() for entry in descendants)]
+        for candidate in candidates:
+            base_font = candidate.get("/BaseFont")
+            if base_font is not None:
+                names.add(str(base_font))
+            descriptor = candidate.get("/FontDescriptor")
+            if descriptor is None:
+                continue
+            font_name = descriptor.get_object().get("/FontName")
+            if font_name is not None:
+                names.add(str(font_name))
+    except (AttributeError, KeyError, TypeError):
+        return names
+    return names
+
+
+def _embedded_atlas_styles(font: object) -> set[str]:
+    """Return the real Atlas styles embedded by a PDF font resource."""
+    if not _font_is_embedded(font):
+        return set()
+    normalized_names = {
+        name.removeprefix("/").split("+", maxsplit=1)[-1].casefold()
+        for name in _font_names(font)
+    }
+    return {
+        style
+        for style in ("regular", "bold")
+        if any(name == f"atlassanskr-{style}" for name in normalized_names)
+    }
+
+
 def verify_pdf(path: Path) -> list[str]:
     errors: list[str] = []
     try:
@@ -542,6 +579,7 @@ def verify_pdf(path: Path) -> list[str]:
 
     internal_links = 0
     embedded_font = False
+    embedded_atlas_styles: set[str] = set()
     extracted_parts: list[str] = []
     for page in reader.pages:
         resources = page.get("/Resources")
@@ -550,7 +588,10 @@ def verify_pdf(path: Path) -> list[str]:
             fonts = resources.get("/Font", {})
             if hasattr(fonts, "get_object"):
                 fonts = fonts.get_object()
-            embedded_font = embedded_font or any(_font_is_embedded(font) for font in fonts.values())
+            for font in fonts.values():
+                is_embedded = _font_is_embedded(font)
+                embedded_font = embedded_font or is_embedded
+                embedded_atlas_styles.update(_embedded_atlas_styles(font))
         annotations = page.get("/Annots", [])
         for reference in annotations:
             annotation = reference.get_object()
@@ -569,6 +610,12 @@ def verify_pdf(path: Path) -> list[str]:
 
     if not embedded_font:
         errors.append(f"{path}: no embedded PDF font was detected")
+    missing_atlas_styles = {"regular", "bold"} - embedded_atlas_styles
+    if missing_atlas_styles:
+        errors.append(
+            f"{path}: embedded Atlas Sans KR PDF styles are missing: "
+            f"{', '.join(sorted(missing_atlas_styles))}"
+        )
     if internal_links == 0:
         errors.append(f"{path}: no internal PDF links were detected")
     if is_full_book:

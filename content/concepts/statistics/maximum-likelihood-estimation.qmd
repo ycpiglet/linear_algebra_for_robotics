@@ -102,7 +102,7 @@ review:
 tags: [MLE, likelihood, log-likelihood, score, Fisher-information, Gaussian, Bernoulli, calibration]
 ---
 
-::: {.concept-hero}
+::: {.concept-hero .type-role-pilot}
 ## 30초 핵심
 
 **최대우도추정**(*maximum likelihood estimation*, <abbr title="Maximum Likelihood Estimation">MLE</abbr>)은 이미 관측한 데이터 $x_{1:n}$을 고정하고, 그 데이터가 나타나는 정도를 가장 크게 만드는 [모수]{.atlas-term data-en="parameter" data-definition="확률모형이나 물리모형의 모양을 결정하지만 관측 데이터에서 추정해야 하는 값이다. 통계의 모수와 프로그램 함수에 전달하는 매개변수를 문맥으로 구분한다."}(*parameter*) $\theta$를 찾는다.

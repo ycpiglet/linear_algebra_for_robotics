@@ -31,14 +31,54 @@
   --atlas-emphasis: #6340a5;
   --atlas-highlight: #ffe58f;
 
-  /* Type */
-  --atlas-font-body: "Pretendard Variable", Pretendard, "Noto Sans KR", "Noto Sans CJK KR", "Apple SD Gothic Neo", "Atlas Sans KR", Inter, system-ui, -apple-system, sans-serif;
-  --atlas-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  --atlas-font-size-body: clamp(1rem, 0.97rem + 0.12vw, 1.075rem);
-  --atlas-leading-body: 1.9;
-  --atlas-leading-compact: 1.52;
-  --atlas-tracking-body: 0.016em;
-  --atlas-tracking-heading: -0.016em;
+  /* Font foundations. Atlas Sans KR ships only real 400 and 700 weights. */
+  --atlas-font-sans: "Atlas Sans KR", "Noto Sans CJK KR", "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
+  --atlas-font-mono-stack: "Noto Sans Mono CJK KR", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --atlas-font-math-stack: "STIX Two Math", "Cambria Math", "New Computer Modern Math", math;
+  --atlas-font-weight-regular: 400;
+  --atlas-font-weight-bold: 700;
+
+  /* Semantic type roles. Output adapters may map sizes, but not role meaning. */
+  --atlas-type-body-family: var(--atlas-font-sans);
+  --atlas-type-body-size: clamp(1rem, 0.97rem + 0.12vw, 1.075rem);
+  --atlas-type-body-weight: var(--atlas-font-weight-regular);
+  --atlas-type-body-leading: 1.9;
+  --atlas-type-body-tracking: 0.016em;
+  --atlas-type-heading-family: var(--atlas-font-sans);
+  --atlas-type-heading-weight: var(--atlas-font-weight-bold);
+  --atlas-type-heading-leading: 1.3;
+  --atlas-type-heading-tracking: -0.016em;
+  --atlas-type-title-size: clamp(2rem, 3.4vw, 2.8rem);
+  --atlas-type-h2-size: clamp(1.55rem, 1.42rem + 0.42vw, 1.85rem);
+  --atlas-type-h3-size: clamp(1.28rem, 1.2rem + 0.28vw, 1.48rem);
+  --atlas-type-h4-size: 1.125rem;
+  --atlas-type-caption-family: var(--atlas-font-sans);
+  --atlas-type-caption-size: 0.9rem;
+  --atlas-type-caption-weight: var(--atlas-font-weight-regular);
+  --atlas-type-caption-leading: 1.55;
+  --atlas-type-caption-tracking: 0.01em;
+  --atlas-type-label-family: var(--atlas-font-sans);
+  --atlas-type-label-size: 0.875rem;
+  --atlas-type-label-weight: var(--atlas-font-weight-bold);
+  --atlas-type-label-leading: 1.35;
+  --atlas-type-label-tracking: 0.01em;
+  --atlas-type-code-family: var(--atlas-font-mono-stack);
+  --atlas-type-code-size: 0.9em;
+  --atlas-type-code-weight: var(--atlas-font-weight-regular);
+  --atlas-type-code-leading: 1.55;
+  --atlas-type-math-family: var(--atlas-font-math-stack);
+  --atlas-type-math-size: 1em;
+  --atlas-type-math-weight: var(--atlas-font-weight-regular);
+  --atlas-type-math-leading: 1.25;
+
+  /* Compatibility aliases retained until the wider typography migration. */
+  --atlas-font-body: var(--atlas-type-body-family);
+  --atlas-font-mono: var(--atlas-type-code-family);
+  --atlas-font-size-body: var(--atlas-type-body-size);
+  --atlas-leading-body: var(--atlas-type-body-leading);
+  --atlas-leading-compact: var(--atlas-type-caption-leading);
+  --atlas-tracking-body: var(--atlas-type-body-tracking);
+  --atlas-tracking-heading: var(--atlas-type-heading-tracking);
   --atlas-measure: 76ch;
   --atlas-paragraph-gap: 1.85rem;
   --atlas-math-gap: 2rem;
