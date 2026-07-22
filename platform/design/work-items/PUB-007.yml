@@ -2,21 +2,21 @@ schema_version: 1
 id: PUB-007
 title: 타이포그래피·font·token 계약과 대표 수직 조각
 area: design-system
-status: planned
+status: blocked
 priority: P1
 change_class: foundation
 version_impact: compatible
 owner_role: design-system-steward
 review_roles: [math-domain-reviewer, render-qa]
-branch: null
+branch: agent/pub-007-type-foundation
 dependencies: [PUB-002, PUB-018]
 decision_refs:
   - AUTHORING_MANUAL.md#0-이-매뉴얼을-사용하는-법
   - design-system.qmd
   - assets/README.md
 decision_needed: []
-blocker: null
-status_reason: null
+blocker: "번들 Atlas OTF를 적용한 전체 책 Typst 조판이 15분 상한을 초과했다"
+status_reason: "draft PR #34의 최신 main 기준 185 tests·lint·66-page Web은 통과했지만 book은 장 렌더 후 Typst compile 15분 상한에서 중단했다. 같은 입력은 재시도하지 않으며 font subset·Typst 성능을 별도 격리해 상한 내 완료를 증명한 뒤에만 재개한다."
 superseded_by: null
 scope:
   in:
@@ -34,14 +34,25 @@ change_paths:
     - _quarto-book.yml
     - courseware/labs/*.qmd
   write:
+    - _quarto-book.yml
+    - _quarto-proof.yml
+    - assets/README.md
+    - assets/fonts/**
     - assets/styles/_tokens.scss
     - assets/styles/theme.scss
     - assets/styles/_content-blocks.scss
     - assets/styles/epub.css
+    - assets/styles/typst-fonts.typ
     - design-system.qmd
-    - font·token adapter와 contract tests
-    - 대표 개념 장 1개
-    - 대표 lab 1개
+    - scripts/build_epub_fonts.py
+    - scripts/verify_outputs.py
+    - courseware/src/robotics_math_atlas/plot_style.py
+    - courseware/src/robotics_math_atlas/__init__.py
+    - courseware/tests/test_plot_style.py
+    - courseware/tests/test_output_verifier.py
+    - platform/tests/test_design_contract.py
+    - content/concepts/statistics/maximum-likelihood-estimation.qmd
+    - courseware/labs/kalman-lab.qmd
   exclusive_locks: [design-foundations]
   generated: [_site/**, _book/**, _proof/**]
 verification:
@@ -76,7 +87,7 @@ definition_of_done:
   - 폰트 실제 weight·glyph·license·embedding evidence가 있다
 evidence:
   issue: null
-  pr: null
+  pr: 34
   ci_runs: []
   rendered_artifacts: []
   post_merge: []
