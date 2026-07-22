@@ -1,0 +1,17 @@
+name: owner-review-signal
+
+on:
+  pull_request_review:
+    types: [submitted, dismissed]
+
+permissions: {}
+
+jobs:
+  signal:
+    name: owner-review-signal
+    runs-on: ubuntu-latest
+    permissions: {}
+    timeout-minutes: 1
+    steps:
+      - name: Emit fixed owner-review signal
+        run: ':'

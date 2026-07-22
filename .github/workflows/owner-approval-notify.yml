@@ -1,0 +1,285 @@
+name: owner-approval-notify
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  repository_dispatch:
+    types: [trusted-provenance]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: owner-approval-notify-${{ github.event.pull_request.number || github.event.client_payload.pr_number }}-${{ github.event.pull_request.head.sha || github.event.client_payload.head_sha }}
+  cancel-in-progress: true
+
+jobs:
+  notify:
+    name: owner-approval-notify
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Resolve immutable notification target
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          raw="$RUNNER_TEMP/owner-notify-input-raw.json"
+          input="$RUNNER_TEMP/owner-notify-input.json"
+
+          case "$GITHUB_EVENT_NAME" in
+            pull_request_target)
+              jq -c '{number: .number, expected_head: .pull_request.head.sha}' \
+                "$GITHUB_EVENT_PATH" > "$raw"
+              ;;
+            repository_dispatch)
+              jq -c \
+                '{number: .client_payload.pr_number, expected_head: .client_payload.head_sha}' \
+                "$GITHUB_EVENT_PATH" > "$raw"
+              ;;
+            *)
+              exit 1
+              ;;
+          esac
+
+          jq -ce '
+            def canonical_number:
+              if type == "number" and floor == . and . >= 1 and . <= 2147483647 then .
+              elif type == "string" and test("^[1-9][0-9]{0,9}$") then tonumber
+              else error("invalid pull request number")
+              end;
+            {
+              number: (.number | canonical_number),
+              expected_head: .expected_head
+            }
+            | select(
+                (.expected_head | type) == "string"
+                and (.expected_head | test("^[0-9a-f]{40}$"))
+              )
+          ' "$raw" > "$input"
+
+          pr_number=$(jq -r .number "$input")
+          expected_head=$(jq -r .expected_head "$input")
+          {
+            printf 'number=%s\n' "$pr_number"
+            printf 'expected_head=%s\n' "$expected_head"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Inspect live protected paths
+        id: inspect
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.target.outputs.number }}
+          EXPECTED_HEAD: ${{ steps.target.outputs.expected_head }}
+          EXPECTED_AGENT_LOGIN: ${{ vars.AGENT_APP_BOT_LOGIN }}
+          TARGET_REPOSITORY: ycpiglet/linear_algebra_for_robotics
+          TARGET_REPOSITORY_ID: '1300261697'
+        run: |
+          set -euo pipefail
+          printf 'notify=false\n' >> "$GITHUB_OUTPUT"
+
+          test "$GITHUB_REPOSITORY" = "$TARGET_REPOSITORY"
+          jq -en --arg login "$EXPECTED_AGENT_LOGIN" '
+            $login
+            | test("^[a-z0-9](?:[a-z0-9-]{0,98}[a-z0-9])?\\[bot\\]$")
+          ' > /dev/null
+
+          live_before="$RUNNER_TEMP/owner-notify-live-before.json"
+          live_after="$RUNNER_TEMP/owner-notify-live-after.json"
+          file_pages="$RUNNER_TEMP/owner-notify-files.json"
+
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" > "$live_before"
+          if ! jq -e \
+            --argjson number "$PR_NUMBER" \
+            --arg head "$EXPECTED_HEAD" \
+            --arg login "$EXPECTED_AGENT_LOGIN" \
+            --arg repository "$TARGET_REPOSITORY" \
+            --argjson repository_id "$TARGET_REPOSITORY_ID" '
+              .number == $number
+              and .state == "open"
+              and .draft == false
+              and .base.ref == "main"
+              and .base.repo.full_name == $repository
+              and .base.repo.id == $repository_id
+              and (.base.sha | type) == "string"
+              and (.base.sha | test("^[0-9a-f]{40}$"))
+              and .head.sha == $head
+              and (
+                .head.ref == ("agent/pr-" + $head)
+                or .head.ref == "agent/pub-017-trust-transition"
+              )
+              and .head.repo.full_name == $repository
+              and .head.repo.id == $repository_id
+              and .user.login == $login
+            ' "$live_before" > /dev/null
+          then
+            exit 0
+          fi
+
+          expected_base=$(jq -r .base.sha "$live_before")
+          changed_files=$(jq -r .changed_files "$live_before")
+          case "$changed_files" in
+            ""|*[!0-9]*) exit 1 ;;
+          esac
+          if [ "$changed_files" -gt 3000 ]; then
+            exit 1
+          fi
+
+          gh api --paginate --slurp \
+            "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" \
+            > "$file_pages"
+          jq -e '
+            type == "array"
+            and all(.[]; type == "array")
+            and all(.[][]; (.filename | type) == "string")
+            and all(
+              .[][];
+              .previous_filename == null or (.previous_filename | type) == "string"
+            )
+          ' "$file_pages" > /dev/null
+          files_count=$(jq '[.[][]] | length' "$file_pages")
+          test "$files_count" -eq "$changed_files"
+
+          summary=$(jq -r '
+            [
+              .[][]
+              | .filename, (.previous_filename // empty)
+              | select(type == "string")
+            ] as $paths
+            | [
+                if any(
+                  $paths[];
+                  . == ".github/CODEOWNERS"
+                  or . == "CODEOWNERS"
+                  or . == "docs/CODEOWNERS"
+                )
+                then "CODEOWNERS 후보" else empty end,
+                if any($paths[]; startswith(".github/workflows/"))
+                then ".github/workflows/**" else empty end,
+                if any($paths[]; . == "platform/scripts/verify_provenance.py")
+                then "provenance verifier" else empty end,
+                if any($paths[]; . == "platform/scripts/editorial.py")
+                then "editorial controller" else empty end,
+                if any($paths[]; startswith("platform/editorial-runtime/"))
+                then "editorial runtime" else empty end,
+                if any($paths[]; . == "platform/schemas/editorial-event.schema.json")
+                then "editorial schema" else empty end
+              ]
+            | join(", ")
+          ' "$file_pages")
+          if [ -z "$summary" ]; then
+            exit 0
+          fi
+
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" > "$live_after"
+          if ! jq -e \
+            --argjson number "$PR_NUMBER" \
+            --arg base "$expected_base" \
+            --arg head "$EXPECTED_HEAD" \
+            --arg login "$EXPECTED_AGENT_LOGIN" \
+            --arg repository "$TARGET_REPOSITORY" \
+            --argjson repository_id "$TARGET_REPOSITORY_ID" \
+            --argjson changed_files "$changed_files" '
+              .number == $number
+              and .state == "open"
+              and .draft == false
+              and .base.ref == "main"
+              and .base.sha == $base
+              and .base.repo.full_name == $repository
+              and .base.repo.id == $repository_id
+              and .head.sha == $head
+              and (
+                .head.ref == ("agent/pr-" + $head)
+                or .head.ref == "agent/pub-017-trust-transition"
+              )
+              and .head.repo.full_name == $repository
+              and .head.repo.id == $repository_id
+              and .user.login == $login
+              and .changed_files == $changed_files
+            ' "$live_after" > /dev/null
+          then
+            exit 0
+          fi
+
+          head_short=${EXPECTED_HEAD:0:7}
+          {
+            printf 'notify=true\n'
+            printf 'base_sha=%s\n' "$expected_base"
+            printf 'summary=%s\n' "$summary"
+            printf 'head_short=%s\n' "$head_short"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Notify owner approval channel
+        if: steps.inspect.outputs.notify == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          PR_NUMBER: ${{ steps.target.outputs.number }}
+          EXPECTED_BASE: ${{ steps.inspect.outputs.base_sha }}
+          EXPECTED_HEAD: ${{ steps.target.outputs.expected_head }}
+          EXPECTED_AGENT_LOGIN: ${{ vars.AGENT_APP_BOT_LOGIN }}
+          TARGET_REPOSITORY: ycpiglet/linear_algebra_for_robotics
+          TARGET_REPOSITORY_ID: '1300261697'
+          HEAD_SHORT: ${{ steps.inspect.outputs.head_short }}
+          PATH_SUMMARY: ${{ steps.inspect.outputs.summary }}
+        run: |
+          set -euo pipefail
+          [[ -n "${NTFY_TOPIC:-}" ]]
+          [[ "$HEAD_SHORT" == "${EXPECTED_HEAD:0:7}" ]]
+
+          live="$RUNNER_TEMP/owner-notify-live-final.json"
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" > "$live"
+          jq -e \
+            --argjson number "$PR_NUMBER" \
+            --arg base "$EXPECTED_BASE" \
+            --arg head "$EXPECTED_HEAD" \
+            --arg login "$EXPECTED_AGENT_LOGIN" \
+            --arg repository "$TARGET_REPOSITORY" \
+            --argjson repository_id "$TARGET_REPOSITORY_ID" '
+              .number == $number
+              and .state == "open"
+              and .draft == false
+              and .base.ref == "main"
+              and .base.sha == $base
+              and .base.repo.full_name == $repository
+              and .base.repo.id == $repository_id
+              and .head.sha == $head
+              and (
+                .head.ref == ("agent/pr-" + $head)
+                or .head.ref == "agent/pub-017-trust-transition"
+              )
+              and .head.repo.full_name == $repository
+              and .head.repo.id == $repository_id
+              and .user.login == $login
+            ' "$live" > /dev/null
+
+          jq -cn '
+            {
+              topic: env.NTFY_TOPIC,
+              title: "보호 경로 owner 승인 필요",
+              message: (
+                "PR #" + env.PR_NUMBER
+                + " | 보호 경로: " + env.PATH_SUMMARY
+                + " | head " + env.HEAD_SHORT
+              ),
+              click: (
+                "https://github.com/" + env.GITHUB_REPOSITORY
+                + "/pull/" + env.PR_NUMBER
+              )
+            }
+          ' | curl \
+            --fail \
+            --silent \
+            --show-error \
+            --output /dev/null \
+            --retry 3 \
+            --retry-all-errors \
+            --connect-timeout 5 \
+            --max-time 20 \
+            --request POST \
+            --header 'Content-Type: application/json' \
+            --data-binary @- \
+            https://ntfy.sh

@@ -1,0 +1,8 @@
+/.github/CODEOWNERS @ycpiglet
+/.github/workflows/ @ycpiglet
+/CODEOWNERS @ycpiglet
+/docs/CODEOWNERS @ycpiglet
+/platform/scripts/verify_provenance.py @ycpiglet
+/platform/scripts/editorial.py @ycpiglet
+/platform/editorial-runtime/ @ycpiglet
+/platform/schemas/editorial-event.schema.json @ycpiglet

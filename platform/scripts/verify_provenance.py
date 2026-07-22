@@ -2,9 +2,10 @@
 """Verify actor provenance from a GitHub Actions event and the local Git graph.
 
 The verifier is deliberately offline.  It trusts only an immutable Actions
-event payload, a full local Git graph, and the repository-specific historical
-cutline below.  New agent work must use canonical ``Actor: agent`` trailers;
-history at or below the cutline is trusted without being rewritten.
+event payload, a full local Git graph, the canonical CODEOWNERS fixture, and
+the repository-specific historical cutline below.  New agent work must use
+canonical ``Actor: agent`` trailers; history at or below the cutline is trusted
+without being rewritten.
 """
 
 from __future__ import annotations
@@ -22,30 +23,67 @@ from typing import Any
 ALLOWED_ACTORS = frozenset({"agent", "editor", "supervisor"})
 ACTOR_LABELS = frozenset(f"actor:{actor}" for actor in ALLOWED_ACTORS)
 TRUSTED_THROUGH = "37289c06a3c7752ef09d5348f4bc7b5e15bae291"
-BOOTSTRAP_REF = "agent/pub-016-provenance-gate"
+TRUST_TRANSITION_BASE = "1c2268cbf610ecabc60fef38d71808250315e630"
+CANONICAL_CODEOWNERS_PATH = ".github/CODEOWNERS"
+ALTERNATE_CODEOWNERS_PATHS = ("CODEOWNERS", "docs/CODEOWNERS")
+CANONICAL_CODEOWNERS = (
+    "/.github/CODEOWNERS @ycpiglet\n"
+    "/.github/workflows/ @ycpiglet\n"
+    "/CODEOWNERS @ycpiglet\n"
+    "/docs/CODEOWNERS @ycpiglet\n"
+    "/platform/scripts/verify_provenance.py @ycpiglet\n"
+    "/platform/scripts/editorial.py @ycpiglet\n"
+    "/platform/editorial-runtime/ @ycpiglet\n"
+    "/platform/schemas/editorial-event.schema.json @ycpiglet\n"
+)
+BOOTSTRAP_REF = "agent/pub-017-trust-transition"
+EDITORIAL_BATCH_REF = "editorial/batch"
+TARGET_REPOSITORY_ID = 1300261697
+TARGET_REPOSITORY_FULL_NAME = "ycpiglet/linear_algebra_for_robotics"
+OWNER_APPROVAL_NOTIFY_WORKFLOW = ".github/workflows/owner-approval-notify.yml"
+OWNER_REVIEW_SIGNAL_WORKFLOW = ".github/workflows/owner-review-signal.yml"
+PROVENANCE_WORKFLOW = ".github/workflows/provenance.yml"
 TRUSTED_GATE_PATHS = frozenset(
     {
-        ".github/CODEOWNERS",
-        ".github/workflows/provenance.yml",
+        CANONICAL_CODEOWNERS_PATH,
         "CODEOWNERS",
         "docs/CODEOWNERS",
-        "platform/editorial-runtime/pyproject.toml",
-        "platform/editorial-runtime/uv.lock",
         "platform/scripts/verify_provenance.py",
         "platform/scripts/editorial.py",
         "platform/schemas/editorial-event.schema.json",
     }
 )
-BOOTSTRAP_CONTROL_PLANE_PATHS = frozenset(
+TRUSTED_GATE_PREFIXES = (".github/workflows/", "platform/editorial-runtime/")
+BOOTSTRAP_PROTECTED_PATHS = frozenset(
     {
-        ".github/workflows/editorial-digest.yml",
-        ".github/workflows/provenance.yml",
-        ".github/workflows/publish-web.yml",
+        CANONICAL_CODEOWNERS_PATH,
+        OWNER_APPROVAL_NOTIFY_WORKFLOW,
+        OWNER_REVIEW_SIGNAL_WORKFLOW,
+        PROVENANCE_WORKFLOW,
         "platform/scripts/verify_provenance.py",
+    }
+)
+BOOTSTRAP_CHANGED_PATHS = frozenset(
+    {
+        CANONICAL_CODEOWNERS_PATH,
+        OWNER_APPROVAL_NOTIFY_WORKFLOW,
+        OWNER_REVIEW_SIGNAL_WORKFLOW,
+        PROVENANCE_WORKFLOW,
+        "CLAUDE.md",
+        "platform/design/README.md",
+        "platform/design/work-items/PUB-017.yml",
+        "platform/editorial/README.md",
+        "platform/scripts/verify_provenance.py",
+        "platform/tests/test_provenance.py",
+        "platform/tests/test_workflow_contract.py",
     }
 )
 ZERO_SHA = "0" * 40
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+GITHUB_LOGIN_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$")
+GITHUB_APP_BOT_LOGIN_RE = re.compile(
+    r"^[a-z0-9](?:[a-z0-9-]{0,98}[a-z0-9])?\[bot\]$"
+)
 ACTOR_LIKE_LINE_RE = re.compile(r"^[ \t]*actor[ \t]*[:=]", re.IGNORECASE | re.MULTILINE)
 CANONICAL_ACTOR_RE = re.compile(r"^Actor: (agent|editor|supervisor)$", re.MULTILINE)
 ESCAPED_ACTOR_RE = re.compile(r"(?:(?:\\r)?\\n)+[ \t]*actor[ \t]*[:=]", re.IGNORECASE)
@@ -184,6 +222,79 @@ def _changed_paths(root: Path, base: str, head: str) -> set[str]:
     }
 
 
+def classify_protected_paths(paths: set[str]) -> tuple[str, ...]:
+    """Return repository paths whose approval is owned by the trust root."""
+
+    return tuple(
+        sorted(
+            path
+            for path in paths
+            if path in TRUSTED_GATE_PATHS
+            or any(path.startswith(prefix) for prefix in TRUSTED_GATE_PREFIXES)
+        )
+    )
+
+
+def _has_canonical_codeowners(root: Path, commit: str) -> bool:
+    """Check that *commit* has the exact regular-file CODEOWNERS trust root."""
+
+    tree = subprocess.run(
+        ["git", "ls-tree", "-z", commit, "--", CANONICAL_CODEOWNERS_PATH],
+        cwd=root,
+        check=False,
+        capture_output=True,
+    )
+    if tree.returncode != 0:
+        detail = tree.stderr.decode("utf-8", errors="replace").strip()
+        raise ProvenanceError(f"cannot inspect canonical CODEOWNERS fixture: {detail}")
+    records = [record for record in tree.stdout.split(b"\0") if record]
+    if not records:
+        alternates = subprocess.run(
+            ["git", "ls-tree", "-z", commit, "--", *ALTERNATE_CODEOWNERS_PATHS],
+            cwd=root,
+            check=False,
+            capture_output=True,
+        )
+        if alternates.returncode != 0:
+            detail = alternates.stderr.decode("utf-8", errors="replace").strip()
+            raise ProvenanceError(f"cannot inspect alternate CODEOWNERS candidates: {detail}")
+        if any(record for record in alternates.stdout.split(b"\0") if record):
+            raise ProvenanceError(
+                "root or docs CODEOWNERS cannot substitute for the canonical "
+                ".github/CODEOWNERS trust root"
+            )
+        return False
+    if len(records) != 1:
+        raise ProvenanceError("canonical CODEOWNERS path resolved to multiple Git objects")
+    metadata, separator, encoded_path = records[0].partition(b"\t")
+    fields = metadata.split()
+    if (
+        not separator
+        or encoded_path != CANONICAL_CODEOWNERS_PATH.encode()
+        or len(fields) != 3
+        or fields[0] != b"100644"
+        or fields[1] != b"blob"
+    ):
+        raise ProvenanceError(
+            "canonical CODEOWNERS fixture must be one non-executable regular Git file"
+        )
+
+    blob = subprocess.run(
+        ["git", "cat-file", "blob", fields[2].decode("ascii")],
+        cwd=root,
+        check=False,
+        capture_output=True,
+    )
+    if blob.returncode != 0:
+        detail = blob.stderr.decode("utf-8", errors="replace").strip()
+        raise ProvenanceError(f"cannot read canonical CODEOWNERS fixture: {detail}")
+    if blob.stdout != CANONICAL_CODEOWNERS.encode():
+        raise ProvenanceError(
+            "base .github/CODEOWNERS does not match the canonical @ycpiglet fixture"
+        )
+    return True
+
+
 def _parents(root: Path, commit: str) -> list[str]:
     fields = _git(root, "rev-list", "--parents", "-n", "1", commit).stdout.split()
     if not fields or fields[0] != commit:
@@ -231,10 +342,60 @@ def _role_from_labels(labels: Any) -> str:
     return roles[0].split(":", 1)[1]
 
 
+def _require_exact_owner_approval(pull: dict[str, Any], owner: str, head: str) -> None:
+    reviews = pull.get("reviews")
+    if not isinstance(reviews, list) or any(not isinstance(review, dict) for review in reviews):
+        raise ProvenanceError(
+            "trusted owner approval requires a live pull_request.reviews list"
+        )
+
+    decision_states = frozenset({"APPROVED", "CHANGES_REQUESTED", "DISMISSED"})
+    latest_owner_decision: tuple[Any, Any] | None = None
+    for review in reviews:
+        user = review.get("user")
+        if (
+            isinstance(user, dict)
+            and user.get("login") == owner
+            and review.get("state") in decision_states
+        ):
+            latest_owner_decision = (review.get("state"), review.get("commit_id"))
+
+    if latest_owner_decision != ("APPROVED", head):
+        raise ProvenanceError(
+            f"protected pull request requires live {owner!r} APPROVED review for exact "
+            f"head {head}"
+        )
+
+
+def _require_target_repository(record: dict[str, Any], field: str) -> None:
+    repository = record.get("repo")
+    if (
+        not isinstance(repository, dict)
+        or type(repository.get("id")) is not int
+        or repository.get("id") != TARGET_REPOSITORY_ID
+        or repository.get("full_name") != TARGET_REPOSITORY_FULL_NAME
+    ):
+        raise ProvenanceError(
+            f"actor:agent {field}.repo must be exact target repository "
+            f"{TARGET_REPOSITORY_FULL_NAME!r} ({TARGET_REPOSITORY_ID})"
+        )
+
+
+def _require_agent_author(pull: dict[str, Any], expected_login: str) -> None:
+    user = pull.get("user")
+    if not isinstance(user, dict) or user.get("login") != expected_login:
+        raise ProvenanceError(
+            f"actor:agent pull request author must be exact authenticated login "
+            f"{expected_login!r}"
+        )
+
+
 def _verify_pull_request(
     root: Path,
     event: dict[str, Any],
     trusted_through: str,
+    require_owner_approval: str | None,
+    require_agent_login: str | None,
 ) -> Verification:
     pull = event.get("pull_request")
     if not isinstance(pull, dict):
@@ -248,12 +409,16 @@ def _verify_pull_request(
     base = _require_sha(root, base_record.get("sha"), "pull_request.base.sha")
     head = _require_sha(root, head_record.get("sha"), "pull_request.head.sha")
     actor = _role_from_labels(pull.get("labels"))
+    if actor == "agent":
+        _require_target_repository(base_record, "pull_request.base")
+        _require_target_repository(head_record, "pull_request.head")
     head_ref = head_record.get("ref")
     if not isinstance(head_ref, str) or not head_ref:
         raise ProvenanceError("pull_request.head.ref must be a non-empty string")
-    agent_ref = head_ref == "editorial/batch" or head_ref.startswith("agent/")
-    agent_like_ref = head_ref.casefold() == "editorial/batch" or head_ref.casefold().startswith(
-        "agent/"
+    agent_ref = head_ref == EDITORIAL_BATCH_REF or head_ref.startswith("agent/")
+    agent_like_ref = (
+        head_ref.casefold() == EDITORIAL_BATCH_REF
+        or head_ref.casefold().startswith("agent/")
     )
     if agent_like_ref and not agent_ref:
         raise ProvenanceError(f"agent-scoped head ref must use canonical lowercase: {head_ref!r}")
@@ -266,25 +431,66 @@ def _verify_pull_request(
     _verify_main_integrations(root, cutline, base)
 
     changed_paths = _changed_paths(root, base, head)
-    control_plane_changes = sorted(
-        path
-        for path in changed_paths
-        if path in TRUSTED_GATE_PATHS or path.startswith(".github/workflows/")
-    )
-    bootstrap = (
-        actor == "agent"
-        and base == trusted_through
-        and head_ref == BOOTSTRAP_REF
-        and frozenset(control_plane_changes) == BOOTSTRAP_CONTROL_PLANE_PATHS
-    )
-    if control_plane_changes and not bootstrap:
-        raise ProvenanceError(
-            "the Actions/provenance control plane is frozen until supervisor identity is "
-            f"bound to an external trust root; found actor:{actor} changes in "
-            f"{control_plane_changes}"
-        )
-
+    protected_paths = classify_protected_paths(changed_paths)
+    canonical_base = _has_canonical_codeowners(root, base)
     commits = _commits_not_in(root, base, head)
+    bootstrap = (
+        not canonical_base
+        and actor == "agent"
+        and base == TRUST_TRANSITION_BASE
+        and head_ref == BOOTSTRAP_REF
+        and frozenset(protected_paths) == BOOTSTRAP_PROTECTED_PATHS
+        and changed_paths == BOOTSTRAP_CHANGED_PATHS
+        and len(commits) == 1
+        and _parents(root, head) == [base]
+    )
+    if protected_paths and not canonical_base and not bootstrap:
+        raise ProvenanceError(
+            "protected paths require the canonical base CODEOWNERS trust root or the exact "
+            f"{BOOTSTRAP_REF!r} bootstrap; found actor:{actor} changes in "
+            f"{list(protected_paths)}"
+        )
+    if bootstrap and not _has_canonical_codeowners(root, head):
+        raise ProvenanceError(
+            "the trust-transition bootstrap must install the canonical @ycpiglet "
+            "CODEOWNERS fixture"
+        )
+    if protected_paths and canonical_base and not bootstrap:
+        if actor != "agent":
+            raise ProvenanceError(
+                "protected paths require authenticated actor:agent immutable PR delivery; "
+                f"actor:{actor} is limited to non-protected paths"
+            )
+        if head_ref == EDITORIAL_BATCH_REF:
+            raise ProvenanceError(
+                f"legacy {EDITORIAL_BATCH_REF!r} delivery is limited to non-protected paths"
+            )
+    if actor == "agent":
+        expected_ref = f"agent/pr-{head}"
+        if head_ref == BOOTSTRAP_REF:
+            if not bootstrap:
+                raise ProvenanceError(
+                    f"{BOOTSTRAP_REF!r} is reserved for the exact trust-transition bootstrap"
+                )
+        elif head_ref == EDITORIAL_BATCH_REF:
+            # The digest controller owns this legacy integration branch. Steady-state
+            # App pull requests use immutable agent/pr-<exact-head> refs instead.
+            pass
+        elif head_ref != expected_ref:
+            raise ProvenanceError(
+                "steady actor:agent pull request head ref must equal immutable exact-head "
+                f"ref {expected_ref!r}; found {head_ref!r}"
+            )
+        if require_agent_login is not None:
+            expected_login = (
+                "github-actions[bot]"
+                if head_ref == EDITORIAL_BATCH_REF
+                else require_agent_login
+            )
+            _require_agent_author(pull, expected_login)
+    if require_owner_approval is not None and protected_paths and not bootstrap:
+        _require_exact_owner_approval(pull, require_owner_approval, head)
+
     _enforce_role(root, commits, actor)
     return Verification("pull_request", len(commits), actor)
 
@@ -430,9 +636,31 @@ def verify_event(
     github_sha: str,
     *,
     trusted_through: str = TRUSTED_THROUGH,
+    require_owner_approval: str | None = None,
+    require_agent_login: str | None = None,
 ) -> Verification:
+    if require_owner_approval is not None and not GITHUB_LOGIN_RE.fullmatch(
+        require_owner_approval
+    ):
+        raise ProvenanceError("required owner login must be a canonical GitHub login")
+    if require_agent_login is not None and not GITHUB_APP_BOT_LOGIN_RE.fullmatch(
+        require_agent_login
+    ):
+        raise ProvenanceError(
+            "required agent login must be a canonical lowercase GitHub App bot login"
+        )
     if event_name == "pull_request":
-        return _verify_pull_request(root, event, trusted_through)
+        return _verify_pull_request(
+            root,
+            event,
+            trusted_through,
+            require_owner_approval,
+            require_agent_login,
+        )
+    if require_owner_approval is not None or require_agent_login is not None:
+        raise ProvenanceError(
+            "owner approval and agent login can only be required for pull_request events"
+        )
     if event_name == "push":
         return _verify_push(root, event, github_sha, trusted_through)
     if event_name == "workflow_dispatch":
@@ -446,6 +674,16 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument("--event-name", default=os.environ.get("GITHUB_EVENT_NAME"))
     parser.add_argument("--event-path", type=Path, default=os.environ.get("GITHUB_EVENT_PATH"))
     parser.add_argument("--sha", default=os.environ.get("GITHUB_SHA"))
+    parser.add_argument(
+        "--require-owner-approval",
+        metavar="LOGIN",
+        help="require a live exact-head approval for protected pull-request paths",
+    )
+    parser.add_argument(
+        "--require-agent-login",
+        metavar="LOGIN",
+        help="require an exact authenticated GitHub App bot author for actor:agent PRs",
+    )
     return parser.parse_args()
 
 
@@ -469,6 +707,8 @@ def main() -> int:
         event,
         args.sha,
         trusted_through=TRUSTED_THROUGH,
+        require_owner_approval=args.require_owner_approval,
+        require_agent_login=args.require_agent_login,
     )
     actor = f", actor:{result.actor}" if result.actor else ""
     print(f"provenance: {result.commits} commit(s) valid ({result.event}{actor})")

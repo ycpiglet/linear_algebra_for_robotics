@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 import tomllib
 from pathlib import Path
 from typing import Any
 
+import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -116,6 +119,7 @@ def test_trusted_provenance_executes_only_base_side_code() -> None:
     workflow = load_workflow("provenance.yml")
     job = workflow["jobs"]["provenance"]
     steps = steps_by_name(job)
+    ordered_names = [step.get("name") for step in job["steps"]]
     text = (WORKFLOWS / "provenance.yml").read_text(encoding="utf-8")
 
     assert workflow["on"] == {
@@ -124,7 +128,12 @@ def test_trusted_provenance_executes_only_base_side_code() -> None:
             "types": ["opened", "synchronize", "reopened", "labeled", "unlabeled", "edited"],
         },
         "repository_dispatch": {"types": ["trusted-provenance"]},
+        "workflow_run": {
+            "workflows": ["owner-review-signal"],
+            "types": ["completed"],
+        },
     }
+    assert "pull_request_review" not in workflow["on"]
     assert workflow["permissions"] == {
         "contents": "read",
         "pull-requests": "read",
@@ -137,20 +146,28 @@ def test_trusted_provenance_executes_only_base_side_code() -> None:
         "statuses": "write",
     }
     assert job["timeout-minutes"] == "5"
+    assert workflow["concurrency"] == {
+        "group": (
+            "trusted-provenance-${{ github.event_name == 'pull_request_target' && "
+            "format('pr-{0}-target', github.event.number) || "
+            "github.event_name == 'repository_dispatch' && "
+            "format('pr-{0}-dispatch', github.event.client_payload.pr_number) || "
+            "format('review-{0}-{1}-{2}-{3}', github.event.workflow_run.head_sha, "
+            "github.event.workflow_run.actor.login, "
+            "github.event.workflow_run.triggering_actor.login, "
+            "github.event.workflow_run.run_attempt) }}"
+        ),
+        "cancel-in-progress": "true",
+    }
     assert "secrets." not in text
     assert "allow-unsafe-pr-checkout" not in text
     assert "github.event.pull_request.head.ref" not in text
+    assert "gh pr review" not in text
+    assert "actions/upload-artifact" not in text
+    assert "actions/download-artifact" not in text
+    assert "actions/cache" not in text
 
-    checkout = steps["Checkout trusted base-side verifier"]
-    assert checkout["with"] == {
-        "ref": (
-            "${{ github.event_name == 'pull_request_target' && "
-            "github.event.pull_request.base.sha || github.sha }}"
-        ),
-        "fetch-depth": "0",
-        "persist-credentials": "false",
-    }
-    metadata = steps["Resolve immutable PR metadata"]
+    metadata = steps["Resolve immutable PR hints and live base"]
     assert metadata["id"] == "metadata"
     assert metadata["env"] == {
         "GH_TOKEN": "${{ github.token }}",
@@ -158,39 +175,134 @@ def test_trusted_provenance_executes_only_base_side_code() -> None:
         "TARGET_PR": "${{ github.event.number }}",
         "DISPATCH_PR": "${{ github.event.client_payload.pr_number }}",
         "DISPATCH_HEAD": "${{ github.event.client_payload.head_sha }}",
+        "OWNER_LOGIN": "ycpiglet",
+        "SIGNAL_NAME": "owner-review-signal",
+        "SIGNAL_PATH": ".github/workflows/owner-review-signal.yml",
+        "TARGET_OWNER": "ycpiglet",
+        "TARGET_REPOSITORY": "ycpiglet/linear_algebra_for_robotics",
+        "TARGET_REPOSITORY_ID": "1300261697",
     }
-    assert 'if [ "$EVENT_NAME" = "pull_request_target" ]' in metadata["run"]
-    assert metadata["run"].count('""|*[!0-9]*) exit 1') == 2
-    assert metadata["run"].count('test "$pr_number" -ge 1') == 2
-    assert metadata["run"].index('test "$pr_number" -ge 1') < metadata["run"].index(
-        'gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}"'
-    )
-    assert 'gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}"' in metadata["run"]
-    assert 'test "$live_head" = "$DISPATCH_HEAD"' in metadata["run"]
-    assert 'echo "event_path=$event_path"' in metadata["run"]
-    assert '} >> "$GITHUB_OUTPUT"' in metadata["run"]
-    fetch = steps["Fetch untrusted PR head as Git data only"]
+    metadata_run = metadata["run"]
+    assert "set -euo pipefail" in metadata_run
+    assert "pull_request_target)" in metadata_run
+    assert "repository_dispatch)" in metadata_run
+    assert "workflow_run)" in metadata_run
+    for contract in (
+        '.workflow_run.event == "pull_request_review"',
+        '.workflow_run.status == "completed"',
+        ".workflow_run.name == $name",
+        ".workflow_run.actor.login == $owner",
+        ".workflow_run.triggering_actor.login == $owner",
+        ".workflow_run.run_attempt == 1",
+        ".workflow_run.repository.full_name == $repo",
+        ".workflow_run.repository.id == $repo_id",
+        'normalized_path=${signal_path%%@*}',
+        'test "$normalized_path" = "$SIGNAL_PATH"',
+        "expected_head=$(jq -er '.workflow_run.head_sha'",
+        "expected_head_ref=$(jq -er '.workflow_run.head_branch'",
+        'test "$expected_head_ref" = "agent/pr-${expected_head}"',
+        'gh api --method GET --paginate "repos/${TARGET_REPOSITORY}/pulls"',
+        '-f "head=${TARGET_OWNER}:${expected_head_ref}"',
+        "jq -e 'length == 1'",
+    ):
+        assert contract in metadata_run
+    assert "conclusion" not in metadata_run
+    assert "workflow_run.pull_requests" not in metadata_run
+    assert 'expected_merge=$(jq -er \'.workflow_run.head_sha\'' not in metadata_run
+    assert metadata_run.count('expected_merge=""') == 3
+    assert metadata_run.count('""|*[!0-9]*) exit 1') == 1
+    assert 'test "$pr_number" -ge 1' in metadata_run
+    assert metadata_run.count(
+        'gh api "repos/${TARGET_REPOSITORY}/pulls/${pr_number}"'
+    ) == 1
+    assert 'test "$live_state" = "open"' in metadata_run
+    assert 'test "$live_base_ref" = "main"' in metadata_run
+    assert 'test "$live_base_repo" = "$TARGET_REPOSITORY"' in metadata_run
+    assert 'test "$live_head_repo" = "$TARGET_REPOSITORY"' in metadata_run
+    assert 'test "$live_base_repo_id" = "$TARGET_REPOSITORY_ID"' in metadata_run
+    assert 'test "$live_head_repo_id" = "$TARGET_REPOSITORY_ID"' in metadata_run
+    assert 'if [ "$actor_label" = "actor:agent" ]; then' in metadata_run
+    assert 'select(length == 1) | .[0]' in metadata_run
+    assert "actor:agent|actor:editor|actor:supervisor" in metadata_run
+    assert "git " not in metadata_run
+    assert "python" not in metadata_run
+    assert "curl" not in metadata_run
+
+    checkout = steps["Checkout exact trusted PR base"]
+    assert checkout["with"] == {
+        "ref": "${{ steps.metadata.outputs.base_sha }}",
+        "fetch-depth": "0",
+        "persist-credentials": "false",
+    }
+    confirm = steps["Confirm exact trusted base checkout"]
+    assert confirm["env"] == {"EXPECTED_BASE": "${{ steps.metadata.outputs.base_sha }}"}
+    assert "git rev-parse --verify 'HEAD^{commit}'" in confirm["run"]
+
+    fetch = steps["Fetch initial untrusted PR tuple as Git data only"]
     assert fetch["id"] == "target"
     assert fetch["env"] == {
         "PR_NUMBER": "${{ steps.metadata.outputs.number }}",
         "EXPECTED_BASE": "${{ steps.metadata.outputs.base_sha }}",
         "EXPECTED_HEAD": "${{ steps.metadata.outputs.head_sha }}",
+        "EXPECTED_MERGE": "${{ steps.metadata.outputs.expected_merge }}",
     }
-    assert "+refs/pull/${PR_NUMBER}/head:refs/provenance/pr-head" in fetch["run"]
-    assert "+refs/pull/${PR_NUMBER}/merge:refs/provenance/pr-merge" in fetch["run"]
-    assert 'test "$actual" = "$EXPECTED_HEAD"' in fetch["run"]
-    assert 'test "$first_parent" = "$EXPECTED_BASE"' in fetch["run"]
-    assert 'test "$second_parent" = "$EXPECTED_HEAD"' in fetch["run"]
+    assert "+refs/pull/${PR_NUMBER}/head:refs/provenance/initial-head" in fetch["run"]
+    assert "+refs/pull/${PR_NUMBER}/merge:refs/provenance/initial-merge" in fetch["run"]
+    assert "git fetch --atomic --no-tags" in fetch["run"]
+    assert "&& tuple_matches" in fetch["run"]
+    for fail_closed_guard in (
+        'test -z "${extra:-}" || return 1',
+        'test "$actual_head" = "$EXPECTED_HEAD" || return 1',
+        'test "$first_parent" = "$EXPECTED_BASE" || return 1',
+        'test "$second_parent" = "$EXPECTED_HEAD" || return 1',
+        'test "$merge_sha" = "$EXPECTED_MERGE" || return 1',
+    ):
+        assert fail_closed_guard in fetch["run"]
+    assert 'if [ -n "$EXPECTED_MERGE" ]; then' in fetch["run"]
+    assert fetch["run"].count("|| return 1") == 7
+    assert fetch["run"].count("return 0") == 1
+    assert 'echo "sha=$merge_sha"' in fetch["run"]
 
     pending = steps["Mark trusted provenance pending on the test merge"]
+    approval = steps["Recheck live PR approval and immutable tuple"]
     report = steps["Verify and report trusted provenance"]
     assert pending["env"] == {
         "GH_TOKEN": "${{ github.token }}",
         "TARGET_SHA": "${{ steps.target.outputs.sha }}",
     }
+    approval_run = approval["run"]
+    assert approval["id"] == "approval"
+    assert approval_run.count(
+        'gh api "repos/${TARGET_REPOSITORY}/pulls/${PR_NUMBER}"'
+    ) == 2
+    assert "gh api --paginate" in approval_run
+    assert "pulls/${PR_NUMBER}/reviews?per_page=100" in approval_run
+    assert "{user: {login: .user.login}, state: .state, commit_id: .commit_id}" in approval_run
+    assert 'test "$(projection "$before_path")" = "$(projection "$after_path")"' in approval_run
+    assert "+refs/pull/${PR_NUMBER}/head:refs/provenance/recheck-head" in approval_run
+    assert "+refs/pull/${PR_NUMBER}/merge:refs/provenance/recheck-merge" in approval_run
+    for fail_closed_guard in (
+        'test -z "${extra:-}" || return 1',
+        'test "$actual_head" = "$EXPECTED_HEAD" || return 1',
+        'test "$merge_sha" = "$EXPECTED_MERGE" || return 1',
+        'test "$first_parent" = "$EXPECTED_BASE" || return 1',
+        'test "$second_parent" = "$EXPECTED_HEAD" || return 1',
+    ):
+        assert fail_closed_guard in approval_run
+    assert approval_run.count("|| return 1") == 7
+    assert approval_run.count("return 0") == 1
+    assert ".base.repo.full_name == $repo" in approval_run
+    assert ".head.repo.full_name == $head_repo" in approval_run
+    assert ".head.repo.id == $head_repo_id" in approval_run
+    assert '== [$actor_label]' in approval_run
+    assert 'user: {login: .user.login}' in approval_run
+    assert "reviews: $reviews[0]" in approval_run
+    assert 'echo "event_path=$event_path"' in approval_run
     assert report["env"] == {
         "GH_TOKEN": "${{ github.token }}",
-        "PROVENANCE_EVENT": "${{ steps.metadata.outputs.event_path }}",
+        "PROVENANCE_EVENT": "${{ steps.approval.outputs.event_path }}",
+        "EXPECTED_AGENT_LOGIN": "${{ vars.AGENT_APP_BOT_LOGIN }}",
+        "TARGET_BASE": "${{ steps.target.outputs.base_sha }}",
         "TARGET_SHA": "${{ steps.target.outputs.sha }}",
     }
     for step in (pending, report):
@@ -200,8 +312,202 @@ def test_trusted_provenance_executes_only_base_side_code() -> None:
     assert "state=pending" in pending["run"]
     assert "python3 -I platform/scripts/verify_provenance.py" in report["run"]
     assert '--event-name pull_request --event-path "$PROVENANCE_EVENT"' in report["run"]
+    assert '--sha "$TARGET_SHA"' in report["run"]
+    assert "--require-owner-approval ycpiglet" in report["run"]
+    assert '--require-agent-login "$EXPECTED_AGENT_LOGIN"' in report["run"]
     assert "state=success" in report["run"]
     assert "state=failure" in report["run"]
+    assert text.count("statuses/${TARGET_SHA}") == 2
+    assert "statuses/${EXPECTED_HEAD}" not in text
+    assert ordered_names.index("Resolve immutable PR hints and live base") < ordered_names.index(
+        "Checkout exact trusted PR base"
+    )
+    assert ordered_names.index("Checkout exact trusted PR base") < ordered_names.index(
+        "Fetch initial untrusted PR tuple as Git data only"
+    )
+    assert ordered_names.index(
+        "Fetch initial untrusted PR tuple as Git data only"
+    ) < ordered_names.index("Mark trusted provenance pending on the test merge")
+    assert ordered_names.index(
+        "Mark trusted provenance pending on the test merge"
+    ) < ordered_names.index("Recheck live PR approval and immutable tuple")
+    assert ordered_names.index(
+        "Recheck live PR approval and immutable tuple"
+    ) < ordered_names.index("Verify and report trusted provenance")
+
+
+def test_owner_review_signal_is_an_exact_unprivileged_noop() -> None:
+    workflow = load_workflow("owner-review-signal.yml")
+    text = (WORKFLOWS / "owner-review-signal.yml").read_text(encoding="utf-8")
+
+    assert workflow == {
+        "name": "owner-review-signal",
+        "on": {
+            "pull_request_review": {
+                "types": ["submitted", "dismissed"],
+            }
+        },
+        "permissions": {},
+        "jobs": {
+            "signal": {
+                "name": "owner-review-signal",
+                "runs-on": "ubuntu-latest",
+                "permissions": {},
+                "timeout-minutes": "1",
+                "steps": [{"name": "Emit fixed owner-review signal", "run": ":"}],
+            }
+        },
+    }
+    for forbidden in (
+        "uses:",
+        "env:",
+        "if:",
+        "secrets.",
+        "checkout",
+        "artifact",
+        "cache",
+        "gh ",
+        "curl",
+        "api/",
+    ):
+        assert forbidden not in text
+
+
+def run_workflow_run_metadata(
+    tmp_path: Path,
+    association_count: int,
+    *,
+    actor_login: str = "ycpiglet",
+    triggering_actor_login: str | None = None,
+    run_attempt: int = 1,
+) -> tuple[subprocess.CompletedProcess[str], str, str]:
+    metadata = steps_by_name(load_workflow("provenance.yml")["jobs"]["provenance"])[
+        "Resolve immutable PR hints and live base"
+    ]
+    head = "a" * 40
+    base = "b" * 40
+    head_ref = f"agent/pr-{head}"
+    repository = {"id": 1300261697, "full_name": "ycpiglet/linear_algebra_for_robotics"}
+    pull = {
+        "number": 17,
+        "state": "open",
+        "base": {"sha": base, "ref": "main", "repo": repository},
+        "head": {"sha": head, "ref": head_ref, "repo": repository},
+        "labels": [{"name": "actor:agent"}],
+    }
+    associations = [pull | {"number": 17 + index} for index in range(association_count)]
+    event = {
+        "workflow_run": {
+            "event": "pull_request_review",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "name": "owner-review-signal",
+            "actor": {"login": actor_login},
+            "triggering_actor": {"login": triggering_actor_login or actor_login},
+            "run_attempt": run_attempt,
+            "path": ".github/workflows/owner-review-signal.yml@refs/pull/17/merge",
+            "repository": repository,
+            "head_sha": head,
+            "head_branch": head_ref,
+            "pull_requests": [],
+        }
+    }
+
+    event_path = tmp_path / "workflow-run.json"
+    event_path.write_text(json.dumps(event), encoding="utf-8")
+    output_path = tmp_path / "github-output"
+    script_path = tmp_path / "metadata.sh"
+    script_path.write_text(metadata["run"], encoding="utf-8")
+    mock_bin = tmp_path / "bin"
+    mock_bin.mkdir()
+    gh_path = mock_bin / "gh"
+    gh_path.write_text(
+        """#!/bin/sh
+case "$*" in
+  *"--method GET --paginate repos/ycpiglet/linear_algebra_for_robotics/pulls"*)
+    printf '%s\n' "$MOCK_ASSOCIATIONS"
+    ;;
+  *"api repos/ycpiglet/linear_algebra_for_robotics/pulls/17"*)
+    printf '%s\n' "$MOCK_LIVE_PR"
+    ;;
+  *)
+    exit 91
+    ;;
+esac
+""",
+        encoding="utf-8",
+    )
+    gh_path.chmod(0o755)
+    environment = os.environ | {
+        "PATH": f"{mock_bin}:{os.environ['PATH']}",
+        "GH_TOKEN": "test-token",
+        "EVENT_NAME": "workflow_run",
+        "TARGET_PR": "",
+        "DISPATCH_PR": "",
+        "DISPATCH_HEAD": "",
+        "OWNER_LOGIN": "ycpiglet",
+        "SIGNAL_NAME": "owner-review-signal",
+        "SIGNAL_PATH": ".github/workflows/owner-review-signal.yml",
+        "TARGET_OWNER": "ycpiglet",
+        "TARGET_REPOSITORY": "ycpiglet/linear_algebra_for_robotics",
+        "TARGET_REPOSITORY_ID": "1300261697",
+        "GITHUB_EVENT_PATH": str(event_path),
+        "GITHUB_OUTPUT": str(output_path),
+        "GITHUB_REPOSITORY": "ycpiglet/linear_algebra_for_robotics",
+        "RUNNER_TEMP": str(tmp_path),
+        "MOCK_ASSOCIATIONS": "\n".join(json.dumps(item) for item in associations),
+        "MOCK_LIVE_PR": json.dumps(pull),
+    }
+    result = subprocess.run(
+        ["bash", str(script_path)],
+        check=False,
+        capture_output=True,
+        text=True,
+        env=environment,
+    )
+    output = output_path.read_text(encoding="utf-8") if output_path.exists() else ""
+    return result, output, head
+
+
+def test_workflow_run_resolves_realistic_empty_pull_array_by_immutable_ref(
+    tmp_path: Path,
+) -> None:
+    result, output, head = run_workflow_run_metadata(tmp_path, 1)
+
+    assert result.returncode == 0, result.stderr
+    assert "number=17\n" in output
+    assert f"head_sha={head}\n" in output
+    assert f"head_ref=agent/pr-{head}\n" in output
+    assert "expected_merge=\n" in output
+
+
+@pytest.mark.parametrize("association_count", [0, 2])
+def test_workflow_run_rejects_zero_or_multiple_immutable_ref_associations(
+    tmp_path: Path,
+    association_count: int,
+) -> None:
+    result, output, _ = run_workflow_run_metadata(tmp_path, association_count)
+
+    assert result.returncode != 0
+    assert output == ""
+
+
+@pytest.mark.parametrize(
+    "identity",
+    [
+        {"actor_login": "other-reviewer"},
+        {"triggering_actor_login": "other-reviewer"},
+        {"run_attempt": 2},
+    ],
+)
+def test_workflow_run_rejects_non_owner_or_rerun_signal_identity(
+    tmp_path: Path,
+    identity: dict[str, str | int],
+) -> None:
+    result, output, _ = run_workflow_run_metadata(tmp_path, 1, **identity)
+
+    assert result.returncode != 0
+    assert output == ""
 
 
 def test_publication_build_runs_for_forks_and_dispatch_without_write_credentials() -> None:
@@ -474,11 +780,171 @@ def test_editorial_uses_trusted_controller_and_two_phase_finalize() -> None:
     assert 'name = "jsonschema"\nversion = "4.26.0"' in lock
 
 
+def test_owner_approval_notification_is_read_only_and_fail_closed() -> None:
+    workflow = load_workflow("owner-approval-notify.yml")
+    job = workflow["jobs"]["notify"]
+    steps = steps_by_name(job)
+    ordered_names = [step["name"] for step in job["steps"]]
+    text = (WORKFLOWS / "owner-approval-notify.yml").read_text(encoding="utf-8")
+
+    assert workflow["on"] == {
+        "pull_request_target": {
+            "branches": ["main"],
+            "types": ["opened", "synchronize", "reopened", "ready_for_review"],
+        },
+        "repository_dispatch": {"types": ["trusted-provenance"]},
+    }
+    assert workflow["permissions"] == {
+        "contents": "read",
+        "pull-requests": "read",
+    }
+    assert workflow["concurrency"] == {
+        "group": (
+            "owner-approval-notify-${{ github.event.pull_request.number || "
+            "github.event.client_payload.pr_number }}-${{ "
+            "github.event.pull_request.head.sha || github.event.client_payload.head_sha }}"
+        ),
+        "cancel-in-progress": "true",
+    }
+    assert job["name"] == "owner-approval-notify"
+    assert job["runs-on"] == "ubuntu-latest"
+    assert job["timeout-minutes"] == "5"
+    assert uses_in(workflow) == []
+    assert "actions/checkout" not in text
+    assert "git fetch" not in text
+    assert "git checkout" not in text
+    assert "make " not in text
+    assert "python" not in text
+    assert "actor:" not in text.casefold()
+    assert "labels" not in text.casefold()
+
+    target = steps["Resolve immutable notification target"]
+    inspect = steps["Inspect live protected paths"]
+    notify = steps["Notify owner approval channel"]
+    assert ordered_names == [
+        "Resolve immutable notification target",
+        "Inspect live protected paths",
+        "Notify owner approval channel",
+    ]
+    assert target["env"] == {"GH_TOKEN": "${{ github.token }}"}
+    assert "$GITHUB_EVENT_PATH" in target["run"]
+    assert ".pull_request.head.sha" in target["run"]
+    assert ".client_payload.pr_number" in target["run"]
+    assert ".client_payload.head_sha" in target["run"]
+    assert 'test("^[0-9a-f]{40}$")' in target["run"]
+    assert "${{ github.event" not in target["run"]
+    assert "${{ github.event" not in inspect["run"]
+    assert "${{ github.event" not in notify["run"]
+
+    assert inspect["id"] == "inspect"
+    assert inspect["env"] == {
+        "GH_TOKEN": "${{ github.token }}",
+        "PR_NUMBER": "${{ steps.target.outputs.number }}",
+        "EXPECTED_HEAD": "${{ steps.target.outputs.expected_head }}",
+        "EXPECTED_AGENT_LOGIN": "${{ vars.AGENT_APP_BOT_LOGIN }}",
+        "TARGET_REPOSITORY": "ycpiglet/linear_algebra_for_robotics",
+        "TARGET_REPOSITORY_ID": "1300261697",
+    }
+    assert 'test("^[a-z0-9](?:[a-z0-9-]{0,98}[a-z0-9])?\\\\[bot\\\\]$")' in inspect[
+        "run"
+    ]
+    assert inspect["run"].count(
+        'gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}"'
+    ) == 2
+    assert 'pulls/${PR_NUMBER}/files?per_page=100' in inspect["run"]
+    assert "--paginate --slurp" in inspect["run"]
+    assert '.state == "open"' in inspect["run"]
+    assert ".draft == false" in inspect["run"]
+    assert '.base.ref == "main"' in inspect["run"]
+    assert '(.base.sha | test("^[0-9a-f]{40}$"))' in inspect["run"]
+    assert ".head.sha == $head" in inspect["run"]
+    assert inspect["run"].count(".base.repo.id == $repository_id") == 2
+    assert inspect["run"].count(".head.repo.id == $repository_id") == 2
+    assert inspect["run"].count(".head.repo.full_name == $repository") == 2
+    assert inspect["run"].count(".user.login == $login") == 2
+    assert inspect["run"].count('.head.ref == ("agent/pr-" + $head)') == 2
+    assert inspect["run"].count(
+        '.head.ref == "agent/pub-017-trust-transition"'
+    ) == 2
+    assert 'expected_base=$(jq -r .base.sha "$live_before")' in inspect["run"]
+    assert inspect["run"].count(".base.sha == $base") == 1
+    assert ".changed_files == $changed_files" in inspect["run"]
+    assert inspect["run"].count('--argjson changed_files "$changed_files"') == 1
+    assert inspect["run"].index('changed_files=$(jq -r .changed_files') < inspect["run"].index(
+        '--argjson changed_files "$changed_files"'
+    ) < inspect["run"].index(".changed_files == $changed_files")
+    assert ".previous_filename" in inspect["run"]
+    assert '(.previous_filename | type) == "string"' in inspect["run"]
+    for protected_path in (
+        '.github/CODEOWNERS',
+        '.github/workflows/',
+        'CODEOWNERS',
+        'docs/CODEOWNERS',
+        'platform/scripts/verify_provenance.py',
+        'platform/scripts/editorial.py',
+        'platform/editorial-runtime/',
+        'platform/schemas/editorial-event.schema.json',
+    ):
+        assert protected_path in inspect["run"]
+    assert 'startswith(".github/")' not in inspect["run"]
+    assert 'then ".github/**"' not in inspect["run"]
+    assert "printf 'notify=false" in inspect["run"]
+    assert "printf 'notify=true" in inspect["run"]
+
+    assert notify["if"] == "steps.inspect.outputs.notify == 'true'"
+    assert notify.get("continue-on-error") != "true"
+    assert notify["env"] == {
+        "GH_TOKEN": "${{ github.token }}",
+        "NTFY_TOPIC": "${{ secrets.NTFY_TOPIC }}",
+        "PR_NUMBER": "${{ steps.target.outputs.number }}",
+        "EXPECTED_BASE": "${{ steps.inspect.outputs.base_sha }}",
+        "EXPECTED_HEAD": "${{ steps.target.outputs.expected_head }}",
+        "EXPECTED_AGENT_LOGIN": "${{ vars.AGENT_APP_BOT_LOGIN }}",
+        "TARGET_REPOSITORY": "ycpiglet/linear_algebra_for_robotics",
+        "TARGET_REPOSITORY_ID": "1300261697",
+        "HEAD_SHORT": "${{ steps.inspect.outputs.head_short }}",
+        "PATH_SUMMARY": "${{ steps.inspect.outputs.summary }}",
+    }
+    topic_env_steps = [step for step in job["steps"] if "NTFY_TOPIC" in step.get("env", {})]
+    assert topic_env_steps == [notify]
+    assert text.count("${{ secrets.NTFY_TOPIC }}") == 1
+    assert 'topic: env.NTFY_TOPIC' in notify["run"]
+    assert 'title: "보호 경로 owner 승인 필요"' in notify["run"]
+    assert '"PR #" + env.PR_NUMBER' in notify["run"]
+    assert '" | 보호 경로: " + env.PATH_SUMMARY' in notify["run"]
+    assert '" | head " + env.HEAD_SHORT' in notify["run"]
+    assert '"https://github.com/" + env.GITHUB_REPOSITORY' in notify["run"]
+    assert "--data-binary @-" in notify["run"]
+    assert "--output /dev/null" in notify["run"]
+    for retry_option in (
+        "--retry 3",
+        "--retry-all-errors",
+        "--connect-timeout 5",
+        "--max-time 20",
+    ):
+        assert retry_option in notify["run"]
+    assert notify["run"].rstrip().endswith("https://ntfy.sh")
+    assert "https://ntfy.sh/" not in notify["run"]
+    assert '"$NTFY_TOPIC"' not in notify["run"]
+    for final_identity_check in (
+        ".base.repo.id == $repository_id",
+        ".base.sha == $base",
+        ".head.repo.id == $repository_id",
+        ".head.repo.full_name == $repository",
+        ".user.login == $login",
+        '.head.ref == ("agent/pr-" + $head)',
+        '.head.ref == "agent/pub-017-trust-transition"',
+    ):
+        assert final_identity_check in notify["run"]
+
+
 def test_every_workflow_remote_action_is_allowlisted_at_an_exact_commit() -> None:
     paths = workflow_paths()
     assert {path.name for path in paths} == {
         "deploy-pages.yml",
         "editorial-digest.yml",
+        "owner-approval-notify.yml",
+        "owner-review-signal.yml",
         "provenance.yml",
         "publish-web.yml",
     }

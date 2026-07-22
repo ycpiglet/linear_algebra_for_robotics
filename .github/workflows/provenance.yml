@@ -6,6 +6,9 @@ on:
     types: [opened, synchronize, reopened, labeled, unlabeled, edited]
   repository_dispatch:
     types: [trusted-provenance]
+  workflow_run:
+    workflows: [owner-review-signal]
+    types: [completed]
 
 permissions:
   contents: read
@@ -13,7 +16,7 @@ permissions:
   statuses: write
 
 concurrency:
-  group: trusted-provenance-pr-${{ github.event_name == 'pull_request_target' && github.event.number || github.event.client_payload.pr_number }}
+  group: trusted-provenance-${{ github.event_name == 'pull_request_target' && format('pr-{0}-target', github.event.number) || github.event_name == 'repository_dispatch' && format('pr-{0}-dispatch', github.event.client_payload.pr_number) || format('review-{0}-{1}-{2}-{3}', github.event.workflow_run.head_sha, github.event.workflow_run.actor.login, github.event.workflow_run.triggering_actor.login, github.event.workflow_run.run_attempt) }}
   cancel-in-progress: true
 
 jobs:
@@ -26,14 +29,7 @@ jobs:
       statuses: write
     timeout-minutes: 5
     steps:
-      - name: Checkout trusted base-side verifier
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.sha || github.sha }}
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Resolve immutable PR metadata
+      - name: Resolve immutable PR hints and live base
         id: metadata
         env:
           GH_TOKEN: ${{ github.token }}
@@ -41,77 +37,234 @@ jobs:
           TARGET_PR: ${{ github.event.number }}
           DISPATCH_PR: ${{ github.event.client_payload.pr_number }}
           DISPATCH_HEAD: ${{ github.event.client_payload.head_sha }}
+          OWNER_LOGIN: ycpiglet
+          SIGNAL_NAME: owner-review-signal
+          SIGNAL_PATH: .github/workflows/owner-review-signal.yml
+          TARGET_OWNER: ycpiglet
+          TARGET_REPOSITORY: ycpiglet/linear_algebra_for_robotics
+          TARGET_REPOSITORY_ID: '1300261697'
         run: |
-          event_path="$RUNNER_TEMP/provenance-pull-request.json"
-          if [ "$EVENT_NAME" = "pull_request_target" ]; then
-            pr_number="$TARGET_PR"
-            case "$pr_number" in
-              ""|*[!0-9]*) exit 1 ;;
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "$TARGET_REPOSITORY"
+          live_path="$RUNNER_TEMP/provenance-live-base.json"
+          associations_path="$RUNNER_TEMP/provenance-head-pulls.json"
+
+          validate_sha() {
+            case "$1" in
+              ""|*[!0-9a-f]*) return 1 ;;
             esac
-            test "$pr_number" -ge 1
-            jq '{pull_request: {
-              base: {sha: .pull_request.base.sha, ref: .pull_request.base.ref},
-              head: {sha: .pull_request.head.sha, ref: .pull_request.head.ref},
-              labels: [.pull_request.labels[] | {name: .name}]
-            }}' "$GITHUB_EVENT_PATH" > "$event_path"
-          else
-            pr_number="$DISPATCH_PR"
-            case "$pr_number" in
-              ""|*[!0-9]*) exit 1 ;;
-            esac
-            test "$pr_number" -ge 1
-            test "$DISPATCH_HEAD" != ""
-            gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" > "$RUNNER_TEMP/pull.json"
-            live_head=$(jq -r .head.sha "$RUNNER_TEMP/pull.json")
-            test "$live_head" = "$DISPATCH_HEAD"
-            jq '{pull_request: {
-              base: {sha: .base.sha, ref: .base.ref},
-              head: {sha: .head.sha, ref: .head.ref},
-              labels: [.labels[] | {name: .name}]
-            }}' "$RUNNER_TEMP/pull.json" > "$event_path"
-          fi
-          base_sha=$(jq -r .pull_request.base.sha "$event_path")
-          head_sha=$(jq -r .pull_request.head.sha "$event_path")
-          case "$base_sha:$head_sha" in
-            *[!0-9a-f:]*) exit 1 ;;
+            test "${#1}" -eq 40
+          }
+
+          case "$EVENT_NAME" in
+            pull_request_target)
+              pr_number="$TARGET_PR"
+              expected_base=$(jq -er '.pull_request.base.sha' "$GITHUB_EVENT_PATH")
+              expected_head=$(jq -er '.pull_request.head.sha' "$GITHUB_EVENT_PATH")
+              expected_base_ref=$(jq -er '.pull_request.base.ref' "$GITHUB_EVENT_PATH")
+              expected_head_ref=$(jq -er '.pull_request.head.ref' "$GITHUB_EVENT_PATH")
+              expected_merge=""
+              ;;
+            repository_dispatch)
+              pr_number="$DISPATCH_PR"
+              expected_base=""
+              expected_head="$DISPATCH_HEAD"
+              expected_base_ref=""
+              expected_head_ref=""
+              expected_merge=""
+              ;;
+            workflow_run)
+              jq -e \
+                --arg name "$SIGNAL_NAME" \
+                --arg owner "$OWNER_LOGIN" \
+                --arg repo "$TARGET_REPOSITORY" \
+                --argjson repo_id "$TARGET_REPOSITORY_ID" \
+                '.workflow_run.event == "pull_request_review" and
+                 .workflow_run.status == "completed" and
+                 .workflow_run.name == $name and
+                 .workflow_run.actor.login == $owner and
+                 .workflow_run.triggering_actor.login == $owner and
+                 .workflow_run.run_attempt == 1 and
+                 .workflow_run.repository.full_name == $repo and
+                 .workflow_run.repository.id == $repo_id' \
+                "$GITHUB_EVENT_PATH" > /dev/null
+              signal_path=$(jq -er '.workflow_run.path' "$GITHUB_EVENT_PATH")
+              normalized_path=${signal_path%%@*}
+              test "$normalized_path" = "$SIGNAL_PATH"
+              case "$signal_path" in
+                "$normalized_path"|"$normalized_path"@?*) ;;
+                *) exit 1 ;;
+              esac
+              pr_number=""
+              expected_base=""
+              expected_head=$(jq -er '.workflow_run.head_sha' "$GITHUB_EVENT_PATH")
+              expected_base_ref=""
+              expected_head_ref=$(jq -er '.workflow_run.head_branch' "$GITHUB_EVENT_PATH")
+              expected_merge=""
+              ;;
+            *) exit 1 ;;
           esac
-          test "${#base_sha}" -eq 40
-          test "${#head_sha}" -eq 40
+
+          validate_sha "$expected_head"
+          if [ "$EVENT_NAME" = "workflow_run" ]; then
+            test "$expected_head_ref" = "agent/pr-${expected_head}"
+            gh api --method GET --paginate "repos/${TARGET_REPOSITORY}/pulls" \
+              -f state=open \
+              -f base=main \
+              -f "head=${TARGET_OWNER}:${expected_head_ref}" \
+              -f per_page=100 \
+              --jq '.[] | {
+                number, state,
+                base: {sha: .base.sha, ref: .base.ref,
+                       repo: {id: .base.repo.id, full_name: .base.repo.full_name}},
+                head: {sha: .head.sha, ref: .head.ref,
+                       repo: {id: .head.repo.id, full_name: .head.repo.full_name}}
+              }' \
+              | jq -s \
+                  --arg head "$expected_head" \
+                  --arg head_ref "$expected_head_ref" \
+                  --arg repo "$TARGET_REPOSITORY" \
+                  --argjson repo_id "$TARGET_REPOSITORY_ID" \
+                  '[.[] | select(
+                    (.number | type == "number") and
+                    .state == "open" and
+                    .base.ref == "main" and
+                    .head.ref == $head_ref and
+                    .head.sha == $head and
+                    .base.repo.full_name == $repo and .head.repo.full_name == $repo and
+                    .base.repo.id == $repo_id and .head.repo.id == $repo_id
+                  )]' > "$associations_path"
+            jq -e 'length == 1' "$associations_path" > /dev/null
+            pr_number=$(jq -er '.[0].number | tostring' "$associations_path")
+            expected_base=$(jq -er '.[0].base.sha' "$associations_path")
+            expected_base_ref=$(jq -er '.[0].base.ref' "$associations_path")
+            associated_head_ref=$(jq -er '.[0].head.ref' "$associations_path")
+            test "$associated_head_ref" = "$expected_head_ref"
+          fi
+
+          case "$pr_number" in
+            ""|*[!0-9]*) exit 1 ;;
+          esac
+          test "$pr_number" -ge 1
+          if [ -n "$expected_base" ]; then
+            validate_sha "$expected_base"
+            test "$expected_base_ref" = "main"
+            test -n "$expected_head_ref"
+          fi
+          if [ -n "$expected_merge" ]; then
+            validate_sha "$expected_merge"
+          fi
+
+          gh api "repos/${TARGET_REPOSITORY}/pulls/${pr_number}" > "$live_path"
+          live_number=$(jq -er '.number | select(type == "number") | tostring' "$live_path")
+          live_state=$(jq -er '.state' "$live_path")
+          live_base=$(jq -er '.base.sha' "$live_path")
+          live_head=$(jq -er '.head.sha' "$live_path")
+          live_base_ref=$(jq -er '.base.ref' "$live_path")
+          live_head_ref=$(jq -er '.head.ref' "$live_path")
+          live_base_repo=$(jq -er '.base.repo.full_name' "$live_path")
+          live_head_repo=$(jq -er '.head.repo.full_name' "$live_path")
+          live_base_repo_id=$(jq -er \
+            '.base.repo.id | select(type == "number") | tostring' "$live_path")
+          live_head_repo_id=$(jq -er \
+            '.head.repo.id | select(type == "number") | tostring' "$live_path")
+          jq -e '(.labels | type == "array") and
+            all(.labels[]; .name | type == "string")' "$live_path" > /dev/null
+          actor_label=$(jq -er \
+            '[.labels[].name | select(startswith("actor:"))] |
+             select(length == 1) | .[0]' "$live_path")
+          case "$actor_label" in
+            actor:agent|actor:editor|actor:supervisor) ;;
+            *) exit 1 ;;
+          esac
+          test "$live_number" = "$pr_number"
+          test "$live_state" = "open"
+          validate_sha "$live_base"
+          validate_sha "$live_head"
+          test "$live_base_ref" = "main"
+          test -n "$live_head_ref"
+          test "$live_base_repo" = "$TARGET_REPOSITORY"
+          test "$live_base_repo_id" = "$TARGET_REPOSITORY_ID"
+          test "$live_head_repo_id" -ge 1
+          if [ "$actor_label" = "actor:agent" ]; then
+            test "$live_head_repo" = "$TARGET_REPOSITORY"
+            test "$live_head_repo_id" = "$TARGET_REPOSITORY_ID"
+          fi
+          test "$live_head" = "$expected_head"
+          if [ -n "$expected_base" ]; then
+            test "$live_base" = "$expected_base"
+            test "$live_base_ref" = "$expected_base_ref"
+            test "$live_head_ref" = "$expected_head_ref"
+          fi
+
           {
             echo "number=$pr_number"
-            echo "base_sha=$base_sha"
-            echo "head_sha=$head_sha"
-            echo "event_path=$event_path"
+            echo "base_sha=$live_base"
+            echo "head_sha=$live_head"
+            echo "base_ref=$live_base_ref"
+            echo "head_ref=$live_head_ref"
+            echo "head_repo=$live_head_repo"
+            echo "head_repo_id=$live_head_repo_id"
+            echo "actor_label=$actor_label"
+            echo "expected_merge=$expected_merge"
           } >> "$GITHUB_OUTPUT"
 
+      - name: Checkout exact trusted PR base
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ steps.metadata.outputs.base_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Confirm exact trusted base checkout
+        env:
+          EXPECTED_BASE: ${{ steps.metadata.outputs.base_sha }}
+        run: test "$(git rev-parse --verify 'HEAD^{commit}')" = "$EXPECTED_BASE"
+
       # Security boundary: fetch the PR objects as data, but never check out or execute them.
-      - name: Fetch untrusted PR head as Git data only
+      - name: Fetch initial untrusted PR tuple as Git data only
         id: target
         env:
           PR_NUMBER: ${{ steps.metadata.outputs.number }}
           EXPECTED_BASE: ${{ steps.metadata.outputs.base_sha }}
           EXPECTED_HEAD: ${{ steps.metadata.outputs.head_sha }}
+          EXPECTED_MERGE: ${{ steps.metadata.outputs.expected_merge }}
         run: |
-          fetched=false
+          set -euo pipefail
+          tuple_matches() {
+            actual_head=$(git rev-parse --verify "refs/provenance/initial-head^{commit}") \
+              || return 1
+            read -r merge_sha first_parent second_parent extra \
+              < <(git rev-list --parents -n 1 refs/provenance/initial-merge) \
+              || return 1
+            test -z "${extra:-}" || return 1
+            test "$actual_head" = "$EXPECTED_HEAD" || return 1
+            test "$first_parent" = "$EXPECTED_BASE" || return 1
+            test "$second_parent" = "$EXPECTED_HEAD" || return 1
+            if [ -n "$EXPECTED_MERGE" ]; then
+              test "$merge_sha" = "$EXPECTED_MERGE" || return 1
+            fi
+            return 0
+          }
+
+          validated=false
           for attempt in 1 2 3 4 5; do
-            if git fetch --no-tags origin \
-              "+refs/pull/${PR_NUMBER}/head:refs/provenance/pr-head" \
-              "+refs/pull/${PR_NUMBER}/merge:refs/provenance/pr-merge"; then
-              fetched=true
+            if git fetch --atomic --no-tags origin \
+              "+refs/pull/${PR_NUMBER}/head:refs/provenance/initial-head" \
+              "+refs/pull/${PR_NUMBER}/merge:refs/provenance/initial-merge" \
+              && tuple_matches; then
+              validated=true
               break
             fi
-            echo "PR ref fetch attempt ${attempt} failed" >&2
+            echo "PR tuple validation attempt ${attempt} failed" >&2
             sleep 2
           done
-          test "$fetched" = "true"
-          actual=$(git rev-parse --verify "refs/provenance/pr-head^{commit}")
-          test "$actual" = "$EXPECTED_HEAD"
-          read -r merge_sha first_parent second_parent extra \
-            < <(git rev-list --parents -n 1 refs/provenance/pr-merge)
-          test -z "${extra:-}"
-          test "$first_parent" = "$EXPECTED_BASE"
-          test "$second_parent" = "$EXPECTED_HEAD"
-          echo "sha=$merge_sha" >> "$GITHUB_OUTPUT"
+          test "$validated" = "true"
+          {
+            echo "sha=$merge_sha"
+            echo "base_sha=$first_parent"
+            echo "head_sha=$second_parent"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Mark trusted provenance pending on the test merge
         env:
@@ -124,15 +277,135 @@ jobs:
             -f context=trusted-provenance \
             -f description='Base-side provenance verification is running'
 
+      - name: Recheck live PR approval and immutable tuple
+        id: approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.metadata.outputs.number }}
+          EXPECTED_BASE: ${{ steps.target.outputs.base_sha }}
+          EXPECTED_HEAD: ${{ steps.target.outputs.head_sha }}
+          EXPECTED_BASE_REF: ${{ steps.metadata.outputs.base_ref }}
+          EXPECTED_HEAD_REF: ${{ steps.metadata.outputs.head_ref }}
+          EXPECTED_HEAD_REPOSITORY: ${{ steps.metadata.outputs.head_repo }}
+          EXPECTED_HEAD_REPOSITORY_ID: ${{ steps.metadata.outputs.head_repo_id }}
+          EXPECTED_ACTOR_LABEL: ${{ steps.metadata.outputs.actor_label }}
+          EXPECTED_MERGE: ${{ steps.target.outputs.sha }}
+          TARGET_REPOSITORY: ycpiglet/linear_algebra_for_robotics
+          TARGET_REPOSITORY_ID: '1300261697'
+        run: |
+          set -euo pipefail
+          before_path="$RUNNER_TEMP/provenance-pull-before.json"
+          after_path="$RUNNER_TEMP/provenance-pull-after.json"
+          reviews_path="$RUNNER_TEMP/provenance-reviews.json"
+          event_path="$RUNNER_TEMP/provenance-pull-request.json"
+
+          validate_live_pr() {
+            local path="$1"
+            jq -e \
+              --arg number "$PR_NUMBER" \
+              --arg base "$EXPECTED_BASE" \
+              --arg head "$EXPECTED_HEAD" \
+              --arg base_ref "$EXPECTED_BASE_REF" \
+              --arg head_ref "$EXPECTED_HEAD_REF" \
+              --arg head_repo "$EXPECTED_HEAD_REPOSITORY" \
+              --argjson head_repo_id "$EXPECTED_HEAD_REPOSITORY_ID" \
+              --arg actor_label "$EXPECTED_ACTOR_LABEL" \
+              --arg repo "$TARGET_REPOSITORY" \
+              --argjson repo_id "$TARGET_REPOSITORY_ID" \
+              '(.number | type == "number" and tostring == $number) and
+               .state == "open" and
+               (.updated_at | type == "string" and length > 0) and
+               .base.sha == $base and .head.sha == $head and
+               .base.ref == $base_ref and .head.ref == $head_ref and
+               .base.ref == "main" and
+               .base.repo.full_name == $repo and .base.repo.id == $repo_id and
+               .head.repo.full_name == $head_repo and .head.repo.id == $head_repo_id and
+               (.user.login | type == "string" and length > 0) and
+               (.labels | type == "array" and all(.[]; .name | type == "string")) and
+               ([.labels[].name | select(startswith("actor:"))] == [$actor_label])' \
+              "$path" > /dev/null
+          }
+
+          projection() {
+            jq -cS '{
+              number, state, updated_at, user: {login: .user.login},
+              base: {sha: .base.sha, ref: .base.ref,
+                     repo: {id: .base.repo.id, full_name: .base.repo.full_name}},
+              head: {sha: .head.sha, ref: .head.ref,
+                     repo: {id: .head.repo.id, full_name: .head.repo.full_name}},
+              labels: ([.labels[].name] | sort)
+            }' "$1"
+          }
+
+          gh api "repos/${TARGET_REPOSITORY}/pulls/${PR_NUMBER}" > "$before_path"
+          validate_live_pr "$before_path"
+
+          gh api --paginate \
+            "repos/${TARGET_REPOSITORY}/pulls/${PR_NUMBER}/reviews?per_page=100" \
+            --jq '.[] | {user: {login: .user.login}, state: .state, commit_id: .commit_id}' \
+            | jq -s '.' > "$reviews_path"
+          jq -e 'type == "array" and all(.[];
+            (keys | sort) == ["commit_id", "state", "user"] and
+            (.user | keys) == ["login"]
+          )' "$reviews_path" > /dev/null
+
+          gh api "repos/${TARGET_REPOSITORY}/pulls/${PR_NUMBER}" > "$after_path"
+          validate_live_pr "$after_path"
+          test "$(projection "$before_path")" = "$(projection "$after_path")"
+
+          tuple_matches() {
+            actual_head=$(git rev-parse --verify "refs/provenance/recheck-head^{commit}") \
+              || return 1
+            read -r merge_sha first_parent second_parent extra \
+              < <(git rev-list --parents -n 1 refs/provenance/recheck-merge) \
+              || return 1
+            test -z "${extra:-}" || return 1
+            test "$actual_head" = "$EXPECTED_HEAD" || return 1
+            test "$merge_sha" = "$EXPECTED_MERGE" || return 1
+            test "$first_parent" = "$EXPECTED_BASE" || return 1
+            test "$second_parent" = "$EXPECTED_HEAD" || return 1
+            return 0
+          }
+
+          validated=false
+          for attempt in 1 2 3 4 5; do
+            if git fetch --atomic --no-tags origin \
+              "+refs/pull/${PR_NUMBER}/head:refs/provenance/recheck-head" \
+              "+refs/pull/${PR_NUMBER}/merge:refs/provenance/recheck-merge" \
+              && tuple_matches; then
+              validated=true
+              break
+            fi
+            echo "PR tuple revalidation attempt ${attempt} failed" >&2
+            sleep 2
+          done
+          test "$validated" = "true"
+
+          jq --slurpfile reviews "$reviews_path" '{pull_request: {
+            user: {login: .user.login},
+            base: {sha: .base.sha, ref: .base.ref,
+                   repo: {id: .base.repo.id, full_name: .base.repo.full_name}},
+            head: {sha: .head.sha, ref: .head.ref,
+                   repo: {id: .head.repo.id, full_name: .head.repo.full_name}},
+            labels: [.labels[] | {name: .name}],
+            reviews: $reviews[0]
+          }}' "$after_path" > "$event_path"
+          echo "event_path=$event_path" >> "$GITHUB_OUTPUT"
+
       - name: Verify and report trusted provenance
         env:
           GH_TOKEN: ${{ github.token }}
-          PROVENANCE_EVENT: ${{ steps.metadata.outputs.event_path }}
+          PROVENANCE_EVENT: ${{ steps.approval.outputs.event_path }}
+          EXPECTED_AGENT_LOGIN: ${{ vars.AGENT_APP_BOT_LOGIN }}
+          TARGET_BASE: ${{ steps.target.outputs.base_sha }}
           TARGET_SHA: ${{ steps.target.outputs.sha }}
         run: |
+          test "$(git rev-parse --verify 'HEAD^{commit}')" = "$TARGET_BASE"
           set +e
           python3 -I platform/scripts/verify_provenance.py \
-            --event-name pull_request --event-path "$PROVENANCE_EVENT"
+            --event-name pull_request --event-path "$PROVENANCE_EVENT" \
+            --sha "$TARGET_SHA" --require-owner-approval ycpiglet \
+            --require-agent-login "$EXPECTED_AGENT_LOGIN"
           code=$?
           set -e
           if [ "$code" -eq 0 ]; then

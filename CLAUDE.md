@@ -64,7 +64,24 @@
 - 에이전트 커밋은 `Actor:`/`Issue:` 트레일러, PR에 `actor:agent` 라벨
 - PR은 `actor:agent`·`actor:supervisor`·`actor:editor` 중 정확히 한 라벨을 사용한다. agent PR의
   모든 신규 커밋과 보호된 main merge commit은 literal escape가 아닌 canonical `Actor` trailer 필수
-- Actions workflow와 provenance verifier는 PUB-016 bootstrap 이후 PUB-017의 별도 agent identity·
-  사람 승인 신뢰 결박이 끝날 때까지 모든 역할에 대해 동결한다
+- PUB-017 전에는 Actions workflow·provenance verifier를 모든 역할에 대해 동결한다. 전환 뒤에는
+  interactive agent 작업은 저장소 전용 GitHub App만 게시하고, 일반 경로는 required checks 후 자동
+  병합한다. default-branch digest가 관리하는 legacy `editorial/batch`는 별도 기존 계약을 따른다.
+  `.github/CODEOWNERS`·`.github/workflows/**`·다른 CODEOWNERS 후보·verifier·privileged editorial
+  경로만 `@ycpiglet` CODEOWNER 승인을 받는다. `trusted-provenance`는 보호 PR의 live head와
+  `@ycpiglet` APPROVED review commit을 일치시킨다. allimbot은 인증된 App bot author와 same-repository
+  immutable ref를 재확인한 보호 PR의 승인 링크 알림만 담당한다.
+  `--admin` 병합과 사람 credential·App private key의 agent runtime 반입 금지
+- App PR을 열면 live head SHA와 `Actor: agent` merge body를 지정해
+  `gh pr merge --auto --merge --match-head-commit <SHA>`를 등록한다. App PR merge queue는 직렬화한다.
+  steady branch는 `agent/pr-<40자리 head SHA>`로 한 번만 만들고 `agent/pr-*` ruleset이 update·delete를
+  bypass 없이 금지한다.
+  strict base가 앞서가면 update-branch를 쓰지 않고 기존 auto-merge를 끈 뒤 PR을 닫고, 최신 main을
+  단일 parent로 한 새 App commit/ref/PR로 같은 변경을 재생성한다. 보호 PR은 새 알림·exact-head
+  approval이 `trusted-provenance`에 반영되기 전에는 병합할 수 없으며, agent가 review를 생성하거나
+  ruleset을 변경하지 않는다
+- 보호 경로 변경은 역할과 무관하게 authenticated App/broker의 immutable PR로만 게시한다.
+  steady App은 Workflows No access이므로 `.github/workflows/**` 변경을 retry하지 않고 Actions-off
+  외부 exact-tree broker의 일회성 권한 창으로만 게시한다
 - 원고 수정은 `AUTHORING_MANUAL.md` 준수 + `make test`(30건)·`editorial.py lint` 통과 필수
 - 이벤트 원장(`platform/editorial/events/`)은 append 전용 — 직접 편집 금지, `ingest` 명령 사용
