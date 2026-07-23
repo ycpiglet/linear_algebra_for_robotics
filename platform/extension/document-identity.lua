@@ -1,8 +1,9 @@
 -- Give every rendered web document a URL-independent identity.
 --
--- Hypothesis uses DC.identifier when grouping equivalent documents.  The URN
--- is derived only from the repository-relative source path, so repository and
--- GitHub Pages renames do not split a page's annotation identity.
+-- Hypothesis combines DC.relation.ispartof and DC.identifier for ordinary
+-- HTML documents.  Both values are independent of the repository URL, so
+-- repository and GitHub Pages renames do not split a page's annotation
+-- identity.
 
 local function html_escape(value)
   return tostring(value)
@@ -46,6 +47,7 @@ function Meta(meta)
   local identifier = "urn:robotics-math-atlas:document:v1:" .. percent_encode(source)
   quarto.doc.include_text(
     "in-header",
+    '<meta name="DC.relation.ispartof" content="robotics-math-atlas">\n' ..
     '<meta name="DC.identifier" content="' .. html_escape(identifier) .. '">'
   )
   return meta
