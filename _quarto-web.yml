@@ -13,7 +13,7 @@ website:
   title: "Robotics Math Atlas"
   description: "로봇공학 수학·신호·제어·확률추론을 연결하는 탐색형 한국어 교재"
   favicon: assets/favicon.svg
-  repo-url: "https://github.com/ycpiglet/linear_algebra_for_robotics"
+  repo-url: "https://github.com/ycpiglet/robotics-math-atlas"
   repo-actions: [source, issue]
   reader-mode: true
   search:
@@ -42,7 +42,7 @@ website:
       - href: about.qmd
         text: 사용법
       - icon: github
-        href: "https://github.com/ycpiglet/linear_algebra_for_robotics"
+        href: "https://github.com/ycpiglet/robotics-math-atlas"
         aria-label: GitHub 저장소
   sidebar:
     style: floating

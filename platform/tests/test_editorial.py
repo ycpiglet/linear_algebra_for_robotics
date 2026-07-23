@@ -59,7 +59,7 @@ class EditorialTestCase(unittest.TestCase):
             (REPOSITORY_ROOT / editorial.SCHEMA).read_text(encoding="utf-8"),
             encoding="utf-8",
         )
-        self.page = ("https://ycpiglet.github.io/linear_algebra_for_robotics/review/"
+        self.page = ("https://ycpiglet.github.io/robotics-math-atlas/review/"
                      "content/concepts/estimation/kalman-filter.html")
 
     def tearDown(self) -> None:

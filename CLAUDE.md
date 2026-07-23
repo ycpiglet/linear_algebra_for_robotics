@@ -18,7 +18,7 @@
   먼저 나열된 프로필의 스칼라가 우선하므로 뒤집으면 _site를 덮어씀) / `make test` / `make lint`
 - 배포: main 푸시 → read-only build → trusted deploy → gh-pages (루트=독자용, `/review/`=교정용).
   PR은 write credential 없이 immutable review artifact를 만든다. Pages 활성화 완료, 라이브:
-  https://ycpiglet.github.io/linear_algebra_for_robotics/
+  https://ycpiglet.github.io/robotics-math-atlas/
 
 ## 교정 시스템 상태 (Phase 0~3 구현 완료, 가동 중)
 

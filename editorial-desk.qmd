@@ -49,7 +49,7 @@ format:
 <script>
 (function editorialDesk() {
   'use strict';
-  const REPO = 'ycpiglet/linear_algebra_for_robotics';
+  const REPO = 'ycpiglet/robotics-math-atlas';
   const API = 'https://api.github.com';
   const TOKEN_KEY = 'editorial-desk-token';
 

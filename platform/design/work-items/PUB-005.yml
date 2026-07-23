@@ -2,20 +2,20 @@ schema_version: 1
 id: PUB-005
 title: robotics-math-atlas repository·Pages cutover
 area: identity
-status: planned
+status: in_progress
 priority: P0
 change_class: breaking
 version_impact: breaking
 owner_role: release-engineer
 review_roles: [publishing-ops-steward, render-qa]
-branch: null
+branch: agent/pub-005-identity-cutover
 dependencies: [PUB-004]
 decision_refs:
   - platform/design/work-items/PUB-003.yml
   - platform/design/work-items/PUB-004.yml
 decision_needed: []
 blocker: null
-status_reason: null
+status_reason: "2026-07-23 owner가 실제 cutover를 승인했으며 URL-independent Hypothesis fingerprint 선행 배포와 exact-head transition 검증을 진행 중이다."
 superseded_by: null
 scope:
   in:
@@ -35,7 +35,11 @@ change_paths:
     - editorial-desk.qmd
     - platform/tests/test_editorial.py
     - CLAUDE.md
-    - 승인된 경우에만 platform/schemas/*.json
+    - platform/extension/document-identity.lua
+    - platform/tests/test_hypothesis_identity.py
+    - platform/design/repository-rename-runbook.md
+    - platform/design/README.md
+    - platform/design/work-items/PUB-005.yml
   exclusive_locks: [identity-cutover, ci-control-plane]
   generated:
     - _site/**
@@ -79,4 +83,4 @@ evidence:
   last_known_good: null
   revert_ref: null
   follow_up: null
-last_reviewed: "2026-07-20"
+last_reviewed: "2026-07-23"
