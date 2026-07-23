@@ -36,8 +36,8 @@ def history(root: Path, path: Path, limit: int = LIMIT) -> list[dict[str, str]]:
     try:
         raw = subprocess.run(
             ["git", "-C", str(root), "log", f"-n{limit}",
-             "--format=%H%x1f%aI%x1f%an%x1f%s", "--", str(path.relative_to(root))],
-            capture_output=True, text=True, check=True,
+             "--format=%H%x1f%aI%x1f%an%x1f%s", "--", path.relative_to(root).as_posix()],
+            capture_output=True, text=True, encoding="utf-8", errors="replace", check=True,
         ).stdout
     except (subprocess.CalledProcessError, FileNotFoundError):
         return []
@@ -50,7 +50,7 @@ def history(root: Path, path: Path, limit: int = LIMIT) -> list[dict[str, str]]:
 
 def build(root: Path = ROOT) -> Path:
     data = {
-        str(path.relative_to(root)): entries
+        path.relative_to(root).as_posix(): entries
         for path in rendered_sources(root)
         if (entries := history(root, path))
     }
