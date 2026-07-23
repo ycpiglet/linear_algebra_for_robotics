@@ -137,8 +137,8 @@ PUB-008 + PUB-017 → PUB-019 (deferred CI activation)
   ruleset·App permission·배포 credential 변경은 계속 동결하고, PUB-008의 CI 연결만
   `PUB-019`로 분리한다.
 - `PUB-006`은 저장소 소유 inventory·manifest 기반만 만들므로 identity lane과 병렬 진행할 수 있다.
-- 저장소 개명은 typography 계약의 선행 조건이 아니다. 나중에 `PUB-005`를 수행하면 canonical URL
-  smoke와 대표 visual matrix를 다시 실행하되, 렌더가 같다면 baseline을 불필요하게 갱신하지 않는다.
+- 저장소 개명은 typography 계약의 선행 조건이 아니다. `PUB-005`에서 canonical URL smoke와
+  전체 output contract를 다시 실행했으며 identity-only cutover이므로 visual baseline은 갱신하지 않았다.
 - 공통 디자인 계약과 rendered gate가 병합되기 전에는 대량 consumer migration을 시작하지 않는다.
 
 ### PUB-017 보류 중 임시 publication mode

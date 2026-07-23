@@ -2,7 +2,7 @@ schema_version: 1
 id: PUB-005
 title: robotics-math-atlas repository·Pages cutover
 area: identity
-status: in_progress
+status: done
 priority: P0
 change_class: breaking
 version_impact: breaking
@@ -15,7 +15,7 @@ decision_refs:
   - platform/design/work-items/PUB-004.yml
 decision_needed: []
 blocker: null
-status_reason: "2026-07-23 owner가 실제 cutover를 승인했으며 URL-independent Hypothesis fingerprint 선행 배포와 exact-head transition 검증을 진행 중이다."
+status_reason: "2026-07-23 repository ID를 유지한 rename, exact-head merge, 새 Pages·Git·saved-path·Hypothesis fingerprint smoke와 freeze 해제를 완료했다."
 superseded_by: null
 scope:
   in:
@@ -76,11 +76,37 @@ definition_of_done:
   - freeze를 해제하고 last-known-good evidence를 갱신했다
 evidence:
   issue: null
-  pr: null
-  ci_runs: []
-  rendered_artifacts: []
-  post_merge: []
-  last_known_good: null
+  pr: 38
+  ci_runs:
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29979457502
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29979457645
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29979583177
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29979765986
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29979777481
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29979928684
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29979928784
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29980163596
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29980481374
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29980522110
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29980668816
+  rendered_artifacts:
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29979457502/artifacts/8552678959
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29979928684/artifacts/8552841912
+    - https://github.com/ycpiglet/robotics-math-atlas/actions/runs/29980163596/artifacts/8552986614
+    - https://ycpiglet.github.io/robotics-math-atlas/
+    - https://ycpiglet.github.io/robotics-math-atlas/review/
+  post_merge:
+    - "선행 PR #37과 old main 84739ad38bcf5806d6cc32cb601e11c478de09ba가 DC.relation.ispartof+DC.identifier를 old Pages에 먼저 배포함"
+    - "transition PR #38 exact head e3a5583b20704c9e38597069bc19e2449487bfc7를 merge commit 48bacfe3b65736e1f56d147b861c8440d944b17a로 병합함"
+    - "repository rename 전후 ID 1300261697과 node ID R_kgDOTYBrQQ가 같고 old/new SSH URL의 clone·fetch·dry-run push가 성공함"
+    - "old GitHub web URL은 새 repository로 HTTP 301, old project Pages root·review는 HTTP 404, 새 root·review·Jacobian은 HTTP 200임"
+    - "main source run 29980163596 첫 attempt의 stale absolute-path venv cache 5853684331만 삭제하고 새 cache 5979470309로 재실행해 source-contract·publication-build를 성공시킴"
+    - "deploy 29980481374와 Pages build 29980522110 성공; main=48bacfe3b65736e1f56d147b861c8440d944b17a, gh-pages=401affe625e4541b951f205e6ff2c46afbb292d2"
+    - "실제 브라우저에서 navbar·source·issue·GitHub.dev·editorial desk·history 링크, Hypothesis client load와 legacy favorite·bookmark·last-read의 prefix-neutral migration을 확인함"
+    - "old/new root·Jacobian의 DC metadata는 byte-equal하고 인증 없는 공개 Hypothesis API의 URL·URN 조회는 모두 0건; private/restricted group export·canary가 없어 그 범위 annotation 보존까지 증명하지 않음"
+    - "ruleset·Pages environment·deploy key·secret/variable 이름·branch·profile pin repository object가 보존됐으며 App installation permission은 미확인 residual risk로 PUB-017에 남김"
+    - "PUB-007 draft PR #34는 branch를 보존한 채 종결; freeze 해제 후 editorial digest 29980668816이 zero-pending으로 성공하고 열린 editorial issue·PR·active Actions run은 0"
+  last_known_good: 48bacfe3b65736e1f56d147b861c8440d944b17a
   revert_ref: null
-  follow_up: null
+  follow_up: PUB-017
 last_reviewed: "2026-07-23"
