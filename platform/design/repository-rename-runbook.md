@@ -1,10 +1,11 @@
 # Repository rename compatibility and cutover runbook
 
-이 문서는 `PUB-004`의 사전 호환 계약과 `PUB-005`에서만 실행할 실제 cutover 절차를 분리한다.
-현재 이름은 `ycpiglet/linear_algebra_for_robotics`, 승인된 목표 이름은
-`ycpiglet/robotics-math-atlas`다. 이 문서를 병합해도 repository·Pages·외부 설정은 바뀌지 않는다.
+이 문서는 `PUB-004`의 사전 호환 계약과 `PUB-005`에서 실행한 실제 cutover 절차를 분리한다.
+2026-07-23에 canonical repository를 `ycpiglet/robotics-math-atlas`로 변경했다. 이전
+`ycpiglet/linear_algebra_for_robotics` Git·web URL은 redirect 호환 경계로만 남기며 이전
+이름을 재사용하지 않는다.
 
-## 이미 배포할 수 있는 호환 계약
+## 배포된 호환 계약
 
 - 브라우저 저장 키는 `robotics-math-atlas.progress.v1`, export schema는 `1.0.0`으로 유지한다.
 - `favorites`, `bookmarks`, `lastRead`의 key와 `url`만 project-prefix 없는 상대 경로로
@@ -21,7 +22,7 @@
 
 ## hard-coded identity inventory
 
-실제 rename과 같은 `PUB-005` 변경에서 아래 runtime 값을 한 번에 바꾼다.
+실제 rename과 같은 `PUB-005` 변경에서 아래 runtime 값을 한 번에 바꿨다.
 
 | 파일 | 현재 값의 역할 |
 |---|---|
@@ -50,11 +51,14 @@
 - GitHub App installation/repository selection과 aliimbot 등 알림 연동
 - Hypothesis group/export, 사용자 bookmark 안내
 
-2026-07-23의 사전 관찰값은 repository ID `1300261697`, Pages source `gh-pages:/`, custom
-domain 없음, HTTPS 강제, webhook 0개, deploy key `editorial-batch-actions-only` 1개, active
-ruleset 3개, 열린 PR 0개다. 이는 cutover 기준선이 아니며 실행 직전에 새 snapshot으로 대체한다.
-설치된 `ycpiglet-robotics-math-agent`의 현재 permission은 owner 확인 전까지 미확인 residual
-risk이며 이 cutover에서 사용하지 않는다.
+실행 직전 `2026-07-23T13:39:12+09:00` 기준선은 repository ID `1300261697`, main
+`84739ad38bcf5806d6cc32cb601e11c478de09ba`, `gh-pages`
+`a6c88967fef0b9a8a0996c289922f12f3b1472b6`, Pages source `gh-pages:/`, custom domain 없음,
+HTTPS 강제, webhook 0개, deploy key `editorial-batch-actions-only` 1개, active ruleset 3개였다.
+PUB-007 draft PR #34는 branch를 보존한 채 종결했고 exact-head transition PR #38만 열어 두었다.
+`EDITORIAL_FREEZE=true`, pending editorial issue와 active Actions run은 0, 목표 slug는 비어
+있었다. 설치된 `ycpiglet-robotics-math-agent`의 permission은 현재 owner OAuth로 검증할 수
+없어 미확인 residual risk로 남겼고 이 cutover에서 사용하지 않았다.
 
 ## PUB-005 시작 조건
 
@@ -90,6 +94,37 @@ risk이며 이 cutover에서 사용하지 않는다.
 8. 성공 후에만 freeze를 해제하고 새 repository 대상으로 editorial digest dispatch를 한 번
    실행해 zero-pending 또는 정상 batch 처리를 확인한다.
 
+## 2026-07-23 실행 결과
+
+- repository 이름은 한 번만 변경했고 ID `1300261697`과 node ID `R_kgDOTYBrQQ`가 유지됐다.
+  old/new SSH URL은 같은 refs를 반환했으며 각각 shallow clone, `gh-pages` fetch, transition
+  branch dry-run push에 성공했다. 이전 GitHub web URL은 새 repository로 HTTP 301 redirect한다.
+- transition PR #38의 exact head
+  `e3a5583b20704c9e38597069bc19e2449487bfc7`를 merge commit
+  `48bacfe3b65736e1f56d147b861c8440d944b17a`로 병합했다. 새 `gh-pages`는
+  `401affe625e4541b951f205e6ff2c46afbb292d2`다.
+- main source run `29980163596`의 첫 attempt는 rename 전 절대경로가 박힌 main `.venv`
+  cache ID `5853684331` 때문에 `pytest`를 spawn하지 못했다. source·workflow를 바꾸지 않고
+  해당 ref의 cache ID 하나만 삭제해 새 workspace용 cache ID `5979470309`를 만들었고 같은
+  run의 두 번째 attempt에서 source-contract와 publication-build가 성공했다. trusted deploy
+  `29980481374`와 Pages build `29980522110`도 성공했다.
+- canonical root와 `/review/`, reader/review Jacobian 표본은 HTTP 200이고
+  `source-commit.txt`는 `48bacfe3b65736e1f56d147b861c8440d944b17a`다. old project Pages
+  root와 `/review/`는 redirect 없이 HTTP 404다.
+- 실제 브라우저에서 navbar·source·issue·GitHub.dev·editorial desk·history 링크가 새
+  repository를 가리키고 Hypothesis client가 로드됨을 확인했다. old Pages prefix를 가진
+  favorite, bookmark, last-read는 새 site 첫 load에서 prefix-neutral path로 변환됐고
+  `migrations.savedPathsV1=true`가 기록됐다.
+- old site에 먼저 배포한 root·Jacobian의 `DC.relation.ispartof`와 `DC.identifier` 쌍은
+  new reader/review의 값과 byte-equal하다. 공개 Hypothesis API의 old URL, new URL,
+  `urn:x-dc:` 조회 결과는 모두 annotation ID 0건이었다. private group export와 canary는
+  존재하지 않아 그 계정 범위 보존을 증명하지 않았으며, 이 빈 shared corpus에서는
+  deterministic fingerprint test, metadata equality, 실제 client load를 대체 증거로 사용했다.
+- Pages source/environment, ruleset ID 3개, deploy key ID `157811443`, webhook 0개,
+  Actions secret·variable 이름, branch 32개와 profile pin의 repository object가 rename 뒤에도
+  보존됐다. freeze를 `false`로 해제한 뒤 editorial digest `29980668816`이 zero-pending으로
+  성공했고 열린 editorial issue·PR·active Actions run은 모두 0이었다.
+
 ## 중단과 rollback
 
 - rename 전 gate가 하나라도 실패하면 외부 상태를 바꾸지 않고 중단한다.
@@ -102,22 +137,22 @@ risk이며 이 cutover에서 사용하지 않는다.
 - 성공 evidence는 main SHA, `gh-pages` SHA, source/deploy/Page build URL, smoke 결과,
   Hypothesis ID 비교, queue/freeze 결과를 포함한다. secret·token·private key 값은 남기지 않는다.
 
-## 재현 가능한 snapshot 명령
+## 재현 가능한 현재 snapshot 명령
 
 아래 명령은 읽기 전용이다. 결과의 secret 값은 수집하지 않는다.
 
 ```bash
-gh api repos/ycpiglet/linear_algebra_for_robotics \
+gh api repos/ycpiglet/robotics-math-atlas \
   --jq '{id,full_name,default_branch,html_url,visibility,has_pages}'
-gh api repos/ycpiglet/linear_algebra_for_robotics/pages \
+gh api repos/ycpiglet/robotics-math-atlas/pages \
   --jq '{status,cname,html_url,build_type,source,https_enforced}'
-gh api repos/ycpiglet/linear_algebra_for_robotics/hooks \
+gh api repos/ycpiglet/robotics-math-atlas/hooks \
   --jq 'map({id,name,active,events})'
-gh api repos/ycpiglet/linear_algebra_for_robotics/keys \
+gh api repos/ycpiglet/robotics-math-atlas/keys \
   --jq 'map({id,title,read_only,verified,created_at})'
-gh api repos/ycpiglet/linear_algebra_for_robotics/rulesets \
+gh api repos/ycpiglet/robotics-math-atlas/rulesets \
   --jq 'map({id,name,target,enforcement})'
-gh pr list --repo ycpiglet/linear_algebra_for_robotics --state open \
+gh pr list --repo ycpiglet/robotics-math-atlas --state open \
   --json number,headRefName,headRefOid,isDraft,url
 git ls-remote origin refs/heads/main refs/heads/gh-pages
 ```
