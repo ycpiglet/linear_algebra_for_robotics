@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from urllib.parse import quote
 
-
 ROOT = Path(__file__).resolve().parents[2]
 IDENTITY_FILTER = ROOT / "platform/extension/document-identity.lua"
 CONTAINER = "robotics-math-atlas"
