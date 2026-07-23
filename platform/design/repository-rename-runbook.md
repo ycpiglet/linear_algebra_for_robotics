@@ -60,9 +60,10 @@ PUB-007 draft PR #34는 branch를 보존한 채 종결했고 exact-head transiti
 있었다. 설치된 `ycpiglet-robotics-math-agent`의 permission은 현재 owner OAuth로 검증할 수
 없어 미확인 residual risk로 남겼고 이 cutover에서 사용하지 않았다.
 
-## PUB-005 시작 조건
+## PUB-005에 원래 계획한 시작 조건
 
-다음 조건을 모두 만족하고 사용자가 실제 외부 변경을 별도로 확인해야 시작한다.
+원래 runbook은 다음 조건을 모두 만족하고 사용자가 실제 외부 변경을 별도로 확인하도록
+계획했다.
 
 1. PUB-004가 old Pages에 배포되고 Web/review output verifier가 모두 통과한다.
 2. Hypothesis group을 JSON export해 annotation ID와 page별 수를 보존한다.
@@ -75,6 +76,14 @@ PUB-007 draft PR #34는 branch를 보존한 채 종결했고 exact-head transiti
 7. main·`gh-pages` SHA, source/deploy run, Pages 설정, ruleset, hooks, keys, App installation,
    remote 목록을 timestamp와 함께 저장한다.
 8. 별도 사용자 확인 직전에 queue·ref·PR snapshot을 다시 읽어 drift가 없음을 확인한다.
+
+2026-07-23 실행에서는 저장소에 private group export·canary가 존재하지 않았고 인증 없는
+공개 API에서 관찰된 old URL·URN corpus도 0건이어서 2–4를 그대로 수행할 대상이 없었다.
+사용자의 PUB-005 실행 지시 아래 이 차이를 숨기지 않고 URL-independent fingerprint test,
+old/new metadata byte equality와 실제 Hypothesis client load로 대체했다. 이는 private 또는
+restricted group annotation 보존 증명이 아니다. 7의 App installation permission도 현재 owner
+OAuth로 조회할 수 없어 App을 사용하지 않고 residual risk를 `PUB-017`에 남겼다. 나머지 gate는
+실행 직전 충족했으며 이 deviation과 잔여위험을 아래 결과와 work item evidence에 기록한다.
 
 ## cutover 실행 순서
 
@@ -118,7 +127,7 @@ PUB-007 draft PR #34는 branch를 보존한 채 종결했고 exact-head transiti
 - old site에 먼저 배포한 root·Jacobian의 `DC.relation.ispartof`와 `DC.identifier` 쌍은
   new reader/review의 값과 byte-equal하다. 공개 Hypothesis API의 old URL, new URL,
   `urn:x-dc:` 조회 결과는 모두 annotation ID 0건이었다. private group export와 canary는
-  존재하지 않아 그 계정 범위 보존을 증명하지 않았으며, 이 빈 shared corpus에서는
+  존재하지 않아 그 계정 범위 보존을 증명하지 않았으며, 공개 API에서 관찰된 0건 corpus에는
   deterministic fingerprint test, metadata equality, 실제 client load를 대체 증거로 사용했다.
 - Pages source/environment, ruleset ID 3개, deploy key ID `157811443`, webhook 0개,
   Actions secret·variable 이름, branch 32개와 profile pin의 repository object가 rename 뒤에도

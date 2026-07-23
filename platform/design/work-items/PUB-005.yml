@@ -103,7 +103,7 @@ evidence:
     - "main source run 29980163596 첫 attempt의 stale absolute-path venv cache 5853684331만 삭제하고 새 cache 5979470309로 재실행해 source-contract·publication-build를 성공시킴"
     - "deploy 29980481374와 Pages build 29980522110 성공; main=48bacfe3b65736e1f56d147b861c8440d944b17a, gh-pages=401affe625e4541b951f205e6ff2c46afbb292d2"
     - "실제 브라우저에서 navbar·source·issue·GitHub.dev·editorial desk·history 링크, Hypothesis client load와 legacy favorite·bookmark·last-read의 prefix-neutral migration을 확인함"
-    - "old/new root·Jacobian의 DC metadata는 byte-equal하고 공개/shared Hypothesis URL·URN 조회는 모두 0건; private group export·canary가 없어 사용자-private annotation 보존까지 증명하지 않음"
+    - "old/new root·Jacobian의 DC metadata는 byte-equal하고 인증 없는 공개 Hypothesis API의 URL·URN 조회는 모두 0건; private/restricted group export·canary가 없어 그 범위 annotation 보존까지 증명하지 않음"
     - "ruleset·Pages environment·deploy key·secret/variable 이름·branch·profile pin repository object가 보존됐으며 App installation permission은 미확인 residual risk로 PUB-017에 남김"
     - "PUB-007 draft PR #34는 branch를 보존한 채 종결; freeze 해제 후 editorial digest 29980668816이 zero-pending으로 성공하고 열린 editorial issue·PR·active Actions run은 0"
   last_known_good: 48bacfe3b65736e1f56d147b861c8440d944b17a
