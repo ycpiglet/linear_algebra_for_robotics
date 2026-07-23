@@ -17,32 +17,62 @@ HTML, PDF, EPUB, 별도 증명권을 생성합니다.
 
 ## 빠른 시작
 
-```bash
-make bootstrap
-make sync
-make test
-make web
+개발 환경의 기준 진입점은 Windows의 `dev.ps1`, macOS·Linux의 `dev`입니다.
+처음 한 번만 Git과 Python 3.9 이상(Python 3.12 권장)이 필요하며, Quarto·Typst·uv·
+Node와 검사 도구는 검증된 SHA-256으로 저장소 안의 `.tools/`에 자동 설치됩니다.
+
+Windows PowerShell:
+
+```powershell
+pwsh -NoProfile -File .\dev.ps1 test
+pwsh -NoProfile -File .\dev.ps1 lint
+pwsh -NoProfile -File .\dev.ps1 web
 ```
 
-웹 미리보기는 다음 명령으로 실행합니다.
+Python이 없다면 먼저 다음 명령으로 설치합니다.
 
-```bash
-make preview
+```powershell
+winget install Python.Python.3.12
 ```
 
-로컬 도구와 Python 환경은 저장소 안의 `.tools/`, `.venv/`에 격리됩니다.
+macOS·Linux:
+
+```bash
+./dev test
+./dev lint
+./dev web
+```
+
+각 명령은 필요한 bootstrap·동기화·검증을 의존 순서대로 한 번만 실행하므로
+`bootstrap`과 `sync`를 따로 먼저 실행할 필요가 없습니다. macOS·Linux의 기존
+`make test`, `make lint`, `make web`도 같은 공통 runner에 위임되는 호환 명령입니다.
+
+웹 미리보기는 Windows에서 `pwsh -NoProfile -File .\dev.ps1 preview`,
+macOS·Linux에서 `./dev preview`로 실행합니다.
+
+로컬 도구와 Python 환경은 저장소 안의 `.tools/`, `.venv/`에 격리되며 Git에
+올라가지 않습니다. 운영체제나 checkout 경로가 달라지면 `.venv/`는 자동으로
+다시 만들어집니다. 다른 PC로 이 폴더들을 복사하지 말고, Git으로 같은 branch를
+clone/fetch한 뒤 해당 OS의 진입점을 실행하면 됩니다.
+
+환경과 설치 경로를 확인하려면 다음 명령을 사용합니다.
+
+```powershell
+pwsh -NoProfile -File .\dev.ps1 doctor
+```
 
 ## 주요 명령
 
-- `make validate`: 개념·증명 메타데이터·링크·선수 그래프와 한영 용어 원본을 검사하고 중앙 용어집 재생성
-- `make test`: 플랫폼 및 수학 코드 테스트
-- `make web`: 위키형 HTML 지식 아틀라스 생성
-- `make book`: 선형 독서용 PDF/EPUB 교재 생성
-- `make proof`: Particle Filter·MCMC 증명권 생성
-- `make all`: 검사와 모든 출력 생성
+- `validate`: 개념·증명 메타데이터·링크·선수 그래프와 한영 용어 원본을 검사하고 중앙 용어집 재생성
+- `test`: 플랫폼 및 수학 코드 테스트
+- `web`: 위키형 HTML 지식 아틀라스 생성
+- `book`: 선형 독서용 PDF/EPUB 교재 생성
+- `proof`: Particle Filter·MCMC 증명권 생성
+- `all`: 검사와 모든 출력 생성
 
-출력은 각각 `_site/`, `_book/`, `_proof/`에 만들어집니다. `make book`은 HTML, PDF,
-EPUB을 같은 원고에서 생성합니다.
+출력은 각각 `_site/`, `_book/`, `_proof/`에 만들어집니다. `book`은 HTML, PDF,
+EPUB을 같은 원고에서 생성합니다. 위 target 이름은 `dev.ps1`, `dev`, `make`에서
+동일합니다.
 
 ## 저장소 구조
 

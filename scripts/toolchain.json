@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "python_version": "3.12.13",
+  "tools": {
+    "uv": {
+      "version": "0.11.28",
+      "install_dir": "uv",
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.11.28/uv-x86_64-unknown-linux-gnu.tar.gz",
+          "sha256": "e490a6464492183c5d4534a5527fb4440f7f2bb2f228162ad7e4afe076dc0224",
+          "executable": "uv"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.11.28/uv-aarch64-unknown-linux-gnu.tar.gz",
+          "sha256": "03e9fe0a81b0718d0bc84625de3885df6cc3f89a8b6af6121d6b9f6113fb6533",
+          "executable": "uv"
+        },
+        "macos-x86_64": {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.11.28/uv-x86_64-apple-darwin.tar.gz",
+          "sha256": "2ad79983127ffca7d77b77ce6a24278d7e4f7b817a1acf72fea5f8124b4aac5e",
+          "executable": "uv"
+        },
+        "macos-arm64": {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.11.28/uv-aarch64-apple-darwin.tar.gz",
+          "sha256": "33540eb7c883ab857eff79bd5ac2aa31fe27b595abecb4a9c003a2c998447232",
+          "executable": "uv"
+        },
+        "windows-x86_64": {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.11.28/uv-x86_64-pc-windows-msvc.zip",
+          "sha256": "0a23463216d09c6a72ff80ef5dc5a795f07dc1575cb84d24596c2f124a441b7b",
+          "executable": "uv.exe"
+        }
+      }
+    },
+    "quarto": {
+      "version": "1.9.38",
+      "install_dir": "quarto",
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/quarto-dev/quarto-cli/releases/download/v1.9.38/quarto-1.9.38-linux-amd64.tar.gz",
+          "sha256": "ea8c897368791ad9f200010c087ea3111b2e556b12a960487dd4e216902aa102",
+          "executable": "bin/quarto"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/quarto-dev/quarto-cli/releases/download/v1.9.38/quarto-1.9.38-linux-arm64.tar.gz",
+          "sha256": "75fbc5c1121ffe65e564e9d24711db2ad8f617f9552f5dc7d8a06307d72dde38",
+          "executable": "bin/quarto"
+        },
+        "macos-x86_64": {
+          "url": "https://github.com/quarto-dev/quarto-cli/releases/download/v1.9.38/quarto-1.9.38-macos.tar.gz",
+          "sha256": "47089a5020cfb41981ba0d4b46e110edfa608722aea45ef248e14efba6d6b18a",
+          "executable": "bin/quarto"
+        },
+        "macos-arm64": {
+          "url": "https://github.com/quarto-dev/quarto-cli/releases/download/v1.9.38/quarto-1.9.38-macos.tar.gz",
+          "sha256": "47089a5020cfb41981ba0d4b46e110edfa608722aea45ef248e14efba6d6b18a",
+          "executable": "bin/quarto"
+        },
+        "windows-x86_64": {
+          "url": "https://github.com/quarto-dev/quarto-cli/releases/download/v1.9.38/quarto-1.9.38-win.zip",
+          "sha256": "3dd3b22616dcae65f710b1d6c019b818027312c8cbf54a0a08fdd9842346375e",
+          "executable": "bin/quarto.exe"
+        }
+      }
+    },
+    "typst": {
+      "version": "0.15.0",
+      "install_dir": "typst",
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/typst/typst/releases/download/v0.15.0/typst-x86_64-unknown-linux-musl.tar.xz",
+          "sha256": "59b207df01be2dab9f13e80f73d04d7ff8273ffd46b3dd1b9eef5c60f3eeabea",
+          "executable": "typst"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/typst/typst/releases/download/v0.15.0/typst-aarch64-unknown-linux-musl.tar.xz",
+          "sha256": "cdf50ffc7b8ba759ed02200632eda3d78eb8b99aacb6611f4f75684990647620",
+          "executable": "typst"
+        },
+        "macos-x86_64": {
+          "url": "https://github.com/typst/typst/releases/download/v0.15.0/typst-x86_64-apple-darwin.tar.xz",
+          "sha256": "30210c7c539c7954db94c063cd98b43fd0a0cad285d656dbbce2a40aee2e79be",
+          "executable": "typst"
+        },
+        "macos-arm64": {
+          "url": "https://github.com/typst/typst/releases/download/v0.15.0/typst-aarch64-apple-darwin.tar.xz",
+          "sha256": "fe53838737abf93a774495952a1a797b4686e9c4a21c2d99b9fdf77f46cc3572",
+          "executable": "typst"
+        },
+        "windows-x86_64": {
+          "url": "https://github.com/typst/typst/releases/download/v0.15.0/typst-x86_64-pc-windows-msvc.zip",
+          "sha256": "66ae7f0907b4b9afed5c7d6cb9b21e07f0f3c3d4e293ba3e0026a54d88202fe9",
+          "executable": "typst.exe"
+        }
+      }
+    },
+    "actionlint": {
+      "version": "1.7.12",
+      "install_dir": "actionlint",
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz",
+          "sha256": "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8",
+          "executable": "actionlint"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_arm64.tar.gz",
+          "sha256": "325e971b6ba9bfa504672e29be93c24981eeb1c07576d730e9f7c8805afff0c6",
+          "executable": "actionlint"
+        },
+        "macos-x86_64": {
+          "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_darwin_amd64.tar.gz",
+          "sha256": "5b44c3bc2255115c9b69e30efc0fecdf498fdb63c5d58e17084fd5f16324c644",
+          "executable": "actionlint"
+        },
+        "macos-arm64": {
+          "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_darwin_arm64.tar.gz",
+          "sha256": "aba9ced2dee8d27fecca3dc7feb1a7f9a52caefa1eb46f3271ea66b6e0e6953f",
+          "executable": "actionlint"
+        },
+        "windows-x86_64": {
+          "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_windows_amd64.zip",
+          "sha256": "6e7241b51e6817ea6a047693d8e6fed13b31819c9a0dd6c5a726e1592d22f6e9",
+          "executable": "actionlint.exe"
+        }
+      }
+    },
+    "shellcheck": {
+      "version": "0.11.0",
+      "install_dir": "shellcheck",
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.xz",
+          "sha256": "8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198",
+          "executable": "shellcheck"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.aarch64.tar.xz",
+          "sha256": "12b331c1d2db6b9eb13cfca64306b1b157a86eb69db83023e261eaa7e7c14588",
+          "executable": "shellcheck"
+        },
+        "macos-x86_64": {
+          "url": "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.darwin.x86_64.tar.xz",
+          "sha256": "3c89db4edcab7cf1c27bff178882e0f6f27f7afdf54e859fa041fca10febe4c6",
+          "executable": "shellcheck"
+        },
+        "macos-arm64": {
+          "url": "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.darwin.aarch64.tar.xz",
+          "sha256": "56affdd8de5527894dca6dc3d7e0a99a873b0f004d7aabc30ae407d3f48b0a79",
+          "executable": "shellcheck"
+        },
+        "windows-x86_64": {
+          "url": "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.zip",
+          "sha256": "8a4e35ab0b331c85d73567b12f2a444df187f483e5079ceffa6bda1faa2e740e",
+          "executable": "shellcheck.exe"
+        }
+      }
+    },
+    "node": {
+      "version": "24.18.0",
+      "install_dir": "node",
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://nodejs.org/download/release/v24.18.0/node-v24.18.0-linux-x64.tar.xz",
+          "sha256": "55aa7153f9d88f28d765fcdad5ae6945b5c0f98a36881703817e4c450fa76742",
+          "executable": "bin/node"
+        },
+        "linux-arm64": {
+          "url": "https://nodejs.org/download/release/v24.18.0/node-v24.18.0-linux-arm64.tar.xz",
+          "sha256": "58c9520501f6ae2b52d5b210444e24b9d0c029a58c5011b797bc1fe7105886f6",
+          "executable": "bin/node"
+        },
+        "macos-x86_64": {
+          "url": "https://nodejs.org/download/release/v24.18.0/node-v24.18.0-darwin-x64.tar.gz",
+          "sha256": "dfd0dbd3e721503434df7b7205e719f61b3a3a31b2bcf9729b8b91fea240f080",
+          "executable": "bin/node"
+        },
+        "macos-arm64": {
+          "url": "https://nodejs.org/download/release/v24.18.0/node-v24.18.0-darwin-arm64.tar.gz",
+          "sha256": "e1a97e14c99c803e96c7339403282ea05a499c32f8d83defe9ef5ec66f979ed1",
+          "executable": "bin/node"
+        },
+        "windows-x86_64": {
+          "url": "https://nodejs.org/download/release/v24.18.0/node-v24.18.0-win-x64.zip",
+          "sha256": "0ae68406b42d7725661da979b1403ec9926da205c6770827f33aac9d8f26e821",
+          "executable": "node.exe"
+        }
+      }
+    }
+  }
+}

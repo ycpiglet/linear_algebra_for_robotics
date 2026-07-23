@@ -2,9 +2,7 @@ lang: ko
 
 project:
   pre-render:
-    - .tools/uv/uv run python platform/scripts/atlas.py build
-    - .tools/uv/uv run python platform/scripts/glossary.py build
-    - .tools/uv/uv run python platform/scripts/pagehistory.py build
+    - python platform/scripts/quarto_pre_render.py
   resources:
     # Keep these paths explicit. Directory-wide resources can rediscover
     # copies inside another profile's output directory and recursively nest

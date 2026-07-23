@@ -1,0 +1,27 @@
+# Limit normalization to this cross-platform control surface. In particular,
+# do not renormalize manuscripts that may already be edited on Windows.
+/.gitattributes text eol=lf
+/Makefile text eol=lf
+/README.md text eol=lf
+/_quarto.yml text eol=lf
+/dev text eol=lf
+/dev.ps1 text eol=lf
+/scripts/bootstrap-tools.sh text eol=lf
+/scripts/bootstrap-tools.ps1 text eol=lf
+/scripts/dev.py text eol=lf
+/scripts/toolchain.json text eol=lf
+/platform/scripts/pagehistory.py text eol=lf
+/platform/scripts/quarto_pre_render.py text eol=lf
+/platform/tests/test_cross_platform_dev.py text eol=lf
+
+# Binary publishing assets must never be normalized.
+*.epub binary
+*.gif binary
+*.jpeg binary
+*.jpg binary
+*.otf binary
+*.pdf binary
+*.png binary
+*.ttf binary
+*.woff binary
+*.woff2 binary

@@ -1,0 +1,99 @@
+schema_version: 1
+id: PUB-020
+title: Windows-first cross-platform local development toolchain
+area: ci
+status: in_progress
+priority: P0
+change_class: toolchain
+version_impact: compatible
+owner_role: release-engineer
+review_roles: [publishing-ops-steward]
+branch: agent/cross-platform-dev
+dependencies: [PUB-005, PUB-006, PUB-018]
+decision_refs:
+  - README.md
+  - platform/design/work-items/PUB-018.yml
+  - platform/design/work-items/PUB-019.yml
+decision_needed: []
+blocker: null
+status_reason: "2026-07-23 owner가 Windows 원고 작업과 충돌하지 않는 Windows-first·macOS·Linux 공통 개발 환경을 요청했다."
+superseded_by: null
+scope:
+  in:
+    - Windows PowerShell을 공식 진입점으로 제공하고 macOS·Linux에 동등한 명령 제공
+    - Python 표준 라이브러리 기반 공통 task runner와 기존 Make target 호환 facade
+    - OS·CPU별 공식 도구 archive와 SHA-256을 고정한 저장소 로컬 bootstrap
+    - 저장소 경로 또는 OS가 바뀌면 generated virtual environment를 안전하게 재생성
+    - 플랫폼별 archive layout과 native path 계약을 source tests에서 검증
+    - 기존 Linux source-contract·publication-build·Pages 배포 흐름 유지
+  out:
+    - content·courseware 원고와 수식·그림 변경
+    - PUB-007 typography foundation과 PDF·EPUB 글꼴 parity
+    - PUB-008 rendered quality matrix와 PUB-019 Windows·macOS CI activation
+    - ruleset·required check 이름·GitHub App·secret·deploy credential·Pages 설정 변경
+change_paths:
+  read:
+    - pyproject.toml
+    - uv.lock
+    - .github/workflows/publish-web.yml
+    - platform/design/work-items/PUB-018.yml
+    - platform/design/work-items/PUB-019.yml
+  write:
+    - .gitattributes
+    - Makefile
+    - README.md
+    - _quarto.yml
+    - dev
+    - dev.ps1
+    - scripts/bootstrap-tools.sh
+    - scripts/bootstrap-tools.ps1
+    - scripts/dev.py
+    - scripts/toolchain.json
+    - platform/scripts/pagehistory.py
+    - platform/scripts/quarto_pre_render.py
+    - platform/tests/test_cross_platform_dev.py
+    - platform/tests/test_editorial.py
+    - platform/tests/test_workflow_contract.py
+    - platform/design/work-items/PUB-020.yml
+  exclusive_locks: [ci-control-plane]
+  generated: [.tools/**, .venv/**, _site/**, platform/generated/**]
+verification:
+  source_contract:
+    - python3 -m py_compile scripts/dev.py platform/scripts/quarto_pre_render.py
+    - ./dev test
+    - ./dev lint
+    - git diff --check
+  rendered_contract:
+    - ./dev web
+    - Windows checkout의 PowerShell test·lint·web 결과
+  post_merge:
+    - Windows checkout에서 pwsh -NoProfile -File .\dev.ps1 doctor
+    - Windows checkout에서 pwsh -NoProfile -File .\dev.ps1 web
+rollback:
+  triggers:
+    - 기존 Linux source-contract 또는 publication-build가 실패함
+    - Windows·macOS·Linux가 같은 pinned source에서 다른 계약 판정을 냄
+    - bootstrap이 저장소 밖 파일을 변경하거나 검증되지 않은 archive를 설치함
+  unit: merge_commit
+  steps:
+    - cross-platform toolchain merge commit을 revert한다
+    - 기존 Linux Makefile과 bootstrap script를 복구한다
+  compatibility_preserved:
+    - 기존 Make target 이름과 source-contract·publication-build context 유지
+    - 원고·공개 URL·Pages 배포 credential을 변경하지 않음
+    - .tools와 .venv는 생성물이며 clone마다 다시 만들 수 있음
+definition_of_done:
+  - Windows·macOS·Linux가 동일한 task graph와 pinned tool manifest를 사용한다
+  - Windows 사용자는 WSL 없이 PowerShell만으로 bootstrap·test·lint·web을 실행한다
+  - 기존 Make 명령은 macOS·Linux 호환 facade로 계속 동작한다
+  - 세 OS 검증이 성공한 exact PR head만 Windows merge 대상으로 전달한다
+evidence:
+  issue: null
+  pr: null
+  ci_runs: []
+  rendered_artifacts: []
+  post_merge: []
+  last_known_good: 48dae1a8e5be52a854279e9e52287545d70bb6f1
+  revert_ref: null
+  follow_up: null
+last_reviewed: "2026-07-23"

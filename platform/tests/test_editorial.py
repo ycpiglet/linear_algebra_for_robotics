@@ -249,7 +249,10 @@ class EditorialTestCase(unittest.TestCase):
         body = issue_body(self.page, "자코비안은 선형화의 도구다.")
         outcomes = self.apply([make_issue(16, body)])
         self.assertEqual(outcomes[0].action, "comment-only")
-        self.assertEqual(outcomes[0].file, "content/concepts/estimation/kalman-filter.qmd")
+        self.assertEqual(
+            Path(outcomes[0].file or ""),
+            Path("content/concepts/estimation/kalman-filter.qmd"),
+        )
         self.assertEqual(outcomes[0].line, 3)
 
     def test_stale_quote_reports_not_found(self) -> None:

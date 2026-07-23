@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import json
 import tomllib
 from pathlib import Path
@@ -493,30 +494,77 @@ def test_every_workflow_remote_action_is_allowlisted_at_an_exact_commit() -> Non
     assert seen == set(PINNED_ACTIONS)
 
 
-def test_every_uv_make_command_rejects_stale_lockfiles() -> None:
-    lines = (ROOT / "Makefile").read_text(encoding="utf-8").splitlines()
-    uv_commands = [line.strip() for line in lines if "$(UV) sync" in line or "$(UV) run" in line]
-    assert uv_commands
-    for command in uv_commands:
-        assert "--locked" in command, command
-    workflow_lint = next(line for line in lines if "$(ACTIONLINT)" in line)
-    assert '-shellcheck "$(SHELLCHECK)"' in workflow_lint
-    assert "*.yml" in workflow_lint and "*.yaml" in workflow_lint
+def test_every_uv_runner_command_rejects_stale_lockfiles() -> None:
+    runner_path = ROOT / "scripts/dev.py"
+    source = runner_path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(runner_path))
+    uv_calls: list[list[str]] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Name):
+            continue
+        if node.func.id != "_run_uv":
+            continue
+        arguments = [
+            argument.value
+            for argument in node.args
+            if isinstance(argument, ast.Constant) and isinstance(argument.value, str)
+        ]
+        if arguments and arguments[0] in {"run", "sync"}:
+            uv_calls.append(arguments)
+
+    assert uv_calls
+    for arguments in uv_calls:
+        assert "--locked" in arguments, arguments
+    assert '_run_tool("actionlint"' not in source
+    assert 'tool_path("actionlint")' in source
+    assert '"-shellcheck"' in source
+    assert 'tool_path("shellcheck")' in source
+    assert 'glob("*.y*ml")' in source
 
 
 def test_bootstrap_archives_have_reviewed_sha256_pins() -> None:
-    script = (ROOT / "scripts/bootstrap-tools.sh").read_text(encoding="utf-8")
+    manifest = json.loads((ROOT / "scripts/toolchain.json").read_text(encoding="utf-8"))
+    reviewed_pins = """
+uv linux-x86_64 e490a6464492183c5d4534a5527fb4440f7f2bb2f228162ad7e4afe076dc0224
+uv linux-arm64 03e9fe0a81b0718d0bc84625de3885df6cc3f89a8b6af6121d6b9f6113fb6533
+uv macos-x86_64 2ad79983127ffca7d77b77ce6a24278d7e4f7b817a1acf72fea5f8124b4aac5e
+uv macos-arm64 33540eb7c883ab857eff79bd5ac2aa31fe27b595abecb4a9c003a2c998447232
+uv windows-x86_64 0a23463216d09c6a72ff80ef5dc5a795f07dc1575cb84d24596c2f124a441b7b
+quarto linux-x86_64 ea8c897368791ad9f200010c087ea3111b2e556b12a960487dd4e216902aa102
+quarto linux-arm64 75fbc5c1121ffe65e564e9d24711db2ad8f617f9552f5dc7d8a06307d72dde38
+quarto macos-x86_64 47089a5020cfb41981ba0d4b46e110edfa608722aea45ef248e14efba6d6b18a
+quarto macos-arm64 47089a5020cfb41981ba0d4b46e110edfa608722aea45ef248e14efba6d6b18a
+quarto windows-x86_64 3dd3b22616dcae65f710b1d6c019b818027312c8cbf54a0a08fdd9842346375e
+typst linux-x86_64 59b207df01be2dab9f13e80f73d04d7ff8273ffd46b3dd1b9eef5c60f3eeabea
+typst linux-arm64 cdf50ffc7b8ba759ed02200632eda3d78eb8b99aacb6611f4f75684990647620
+typst macos-x86_64 30210c7c539c7954db94c063cd98b43fd0a0cad285d656dbbce2a40aee2e79be
+typst macos-arm64 fe53838737abf93a774495952a1a797b4686e9c4a21c2d99b9fdf77f46cc3572
+typst windows-x86_64 66ae7f0907b4b9afed5c7d6cb9b21e07f0f3c3d4e293ba3e0026a54d88202fe9
+actionlint linux-x86_64 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+actionlint linux-arm64 325e971b6ba9bfa504672e29be93c24981eeb1c07576d730e9f7c8805afff0c6
+actionlint macos-x86_64 5b44c3bc2255115c9b69e30efc0fecdf498fdb63c5d58e17084fd5f16324c644
+actionlint macos-arm64 aba9ced2dee8d27fecca3dc7feb1a7f9a52caefa1eb46f3271ea66b6e0e6953f
+actionlint windows-x86_64 6e7241b51e6817ea6a047693d8e6fed13b31819c9a0dd6c5a726e1592d22f6e9
+shellcheck linux-x86_64 8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198
+shellcheck linux-arm64 12b331c1d2db6b9eb13cfca64306b1b157a86eb69db83023e261eaa7e7c14588
+shellcheck macos-x86_64 3c89db4edcab7cf1c27bff178882e0f6f27f7afdf54e859fa041fca10febe4c6
+shellcheck macos-arm64 56affdd8de5527894dca6dc3d7e0a99a873b0f004d7aabc30ae407d3f48b0a79
+shellcheck windows-x86_64 8a4e35ab0b331c85d73567b12f2a444df187f483e5079ceffa6bda1faa2e740e
+node linux-x86_64 55aa7153f9d88f28d765fcdad5ae6945b5c0f98a36881703817e4c450fa76742
+node linux-arm64 58c9520501f6ae2b52d5b210444e24b9d0c029a58c5011b797bc1fe7105886f6
+node macos-x86_64 dfd0dbd3e721503434df7b7205e719f61b3a3a31b2bcf9729b8b91fea240f080
+node macos-arm64 e1a97e14c99c803e96c7339403282ea05a499c32f8d83defe9ef5ec66f979ed1
+node windows-x86_64 0ae68406b42d7725661da979b1403ec9926da205c6770827f33aac9d8f26e821
+"""
     expected = {
-        "QUARTO_SHA256": "ea8c897368791ad9f200010c087ea3111b2e556b12a960487dd4e216902aa102",
-        "TYPST_SHA256": "59b207df01be2dab9f13e80f73d04d7ff8273ffd46b3dd1b9eef5c60f3eeabea",
-        "UV_SHA256": "e490a6464492183c5d4534a5527fb4440f7f2bb2f228162ad7e4afe076dc0224",
-        "ACTIONLINT_SHA256": (
-            "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
-        ),
-        "SHELLCHECK_SHA256": (
-            "8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198"
-        ),
+        (tool_name, platform_name): digest
+        for tool_name, platform_name, digest in (
+            line.split() for line in reviewed_pins.splitlines() if line
+        )
     }
-    for variable, digest in expected.items():
-        assert f'{variable}="{digest}"' in script
-        assert f'"${{{variable}}}" "${{archive}}" | sha256sum --check --status' in script
+    actual = {
+        (tool_name, platform_name): asset["sha256"]
+        for tool_name, tool in manifest["tools"].items()
+        for platform_name, asset in tool["assets"].items()
+    }
+    assert actual == expected
