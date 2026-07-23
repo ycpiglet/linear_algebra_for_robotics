@@ -487,6 +487,12 @@
  ],
  "editorial-desk.qmd": [
   {
+   "sha": "e3a5583b20704c9e38597069bc19e2449487bfc7",
+   "date": "2026-07-23",
+   "author": "ITP OP PC(JYC)",
+   "subject": "Prepare PUB-005 identity cutover"
+  },
+  {
    "sha": "d274276a561ce0270da3a2188945bd4353a41074",
    "date": "2026-07-19",
    "author": "Claude",
